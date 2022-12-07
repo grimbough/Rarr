@@ -1,3 +1,4 @@
+#' @export
 read_zarr <- function(zarr_file, index) {
   
   metadata <- read_metadata(zarr_file)
@@ -51,16 +52,29 @@ find_chunks_needed <- function(metadata, index) {
 
 read_chunk <- function(zarr_file, chunk_id, metadata) {
   
+  if(missing(metadata)) {
+    metadata <- read_metadata(zarr_file)
+  }
+  
   chunk_file <- file.path(zarr_file, chunk_id)
   size <- file.size(chunk_file)
   chunk_dim <- unlist(metadata$chunks)
   
+  datatype <- parse_datatype(metadata$dtype)
   
   compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
   
-  uncompressed_chunk <- .Call("read_chunk", compressed_chunk, chunk_dim, PACKAGE = "Rarr")
+  uncompressed_chunk <- .Call("decompress_chunk", compressed_chunk, PACKAGE = "Rarr")
   
-  return(uncompressed_chunk)
+  converted_chunk <- .Call("type_convert_chunk", uncompressed_chunk, 
+                           "integer", datatype$nbytes, datatype$is_signed,
+                           chunk_dim, PACKAGE = "Rarr")
+  
+  return(converted_chunk)
+  
+}
+
+check_index <- function(index, metadata) {
   
 }
 
