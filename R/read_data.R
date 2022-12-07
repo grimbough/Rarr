@@ -66,8 +66,14 @@ read_chunk <- function(zarr_file, chunk_id, metadata) {
   
   uncompressed_chunk <- .Call("decompress_chunk", compressed_chunk, PACKAGE = "Rarr")
   
+  output_type <- switch(datatype$base_type,
+                        "logical" = 0L,
+                        "integer" = 1L,
+                        "uinteger" = 1L,
+                        "numeric" = 2L)
+  
   converted_chunk <- .Call("type_convert_chunk", uncompressed_chunk, 
-                           "integer", datatype$nbytes, datatype$is_signed,
+                           output_type, datatype$nbytes, datatype$is_signed,
                            chunk_dim, PACKAGE = "Rarr")
   
   return(converted_chunk)

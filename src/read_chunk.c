@@ -18,14 +18,23 @@ SEXP decompress_chunk(SEXP input) {
 } 
 
 
-SEXP type_convert_chunk(SEXP input, SEXP new_type, SEXP _n_bytes, SEXP _is_signed, SEXP Rdim) {
+SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_signed, SEXP Rdim) {
   
   void* p_input = RAW(input);
   SEXP output;
+  int new_type = INTEGER(_new_type)[0];
   int n_bytes = INTEGER(_n_bytes)[0];
   int is_signed = (int)LOGICAL(_is_signed)[0];
-
-  output = type_convert_INTEGER(p_input, xlength(input), n_bytes, is_signed);
+  
+  if(new_type == 0) {
+    output = type_convert_LOGICAL(p_input, xlength(input));
+  } else if(new_type == 1) {
+    output = type_convert_INTEGER(p_input, xlength(input), n_bytes, is_signed);
+  } else if (new_type == 2) {
+    output = type_convert_REAL(p_input, xlength(input));
+  } else {
+    error("Unknown data type\n");
+  }
   
   setAttrib(output, R_DimSymbol, Rdim);
   
@@ -73,5 +82,36 @@ SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is
   }
   
   return(output);
+}
+
+SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length) {
   
+  double *p_output;
+  SEXP output;
+  
+  R_xlen_t output_length = length / sizeof(double);
+  
+  output = PROTECT(allocVector(REALSXP, output_length));
+  p_output = REAL(output);
+  
+  memcpy(p_output, raw_buffer, length);
+  
+  return(output);
+}
+
+SEXP type_convert_LOGICAL(void *raw_buffer, R_xlen_t length) {
+  
+  int *p_output;
+  SEXP output;
+  
+  R_xlen_t output_length = length;
+  
+  output = PROTECT(allocVector(LGLSXP, output_length));
+  p_output = LOGICAL(output);
+  
+  for (int i = 0; i < output_length; i++) {
+    p_output[i] = ((int8_t *)raw_buffer)[i];
+  }
+  
+  return(output);
 }
