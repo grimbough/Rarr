@@ -1,22 +1,5 @@
 #include "read_chunk.h"
 
-SEXP decompress_chunk(SEXP input) {
-  
-  void* p_input = RAW(input);
-  void *p_output;
-  size_t cbytes, blocksize, outbuf_size;
-  
-  blosc_cbuffer_sizes(p_input, &outbuf_size, &cbytes, &blocksize);
-  
-  SEXP output = PROTECT(allocVector(RAWSXP, outbuf_size));
-  p_output = RAW(output);
-  
-  blosc_decompress(p_input, p_output, outbuf_size);
-  
-  UNPROTECT(1);
-  return output;
-} 
-
 
 SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_signed, SEXP Rdim) {
   

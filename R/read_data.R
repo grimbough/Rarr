@@ -64,7 +64,12 @@ read_chunk <- function(zarr_file, chunk_id, metadata) {
   
   compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
   
-  uncompressed_chunk <- .Call("decompress_chunk", compressed_chunk, PACKAGE = "Rarr")
+  decompressor <- switch(metadata$compressor$id,
+                         "zlib" = 0L,
+                         "blosc" = 1L,
+                         1000L)
+  
+  uncompressed_chunk <- .Call("decompress_chunk", compressed_chunk, decompressor, PACKAGE = "Rarr")
   
   output_type <- switch(datatype$base_type,
                         "logical" = 0L,
