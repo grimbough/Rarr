@@ -1,0 +1,15 @@
+export CC=@CC@
+export PKG_CFLAGS=@CFLAGS@
+export PKG_CPICFLAGS=@CPICFLAGS@
+export PKG_CXXPICFLAGS=@CXXPICFLAGS@
+
+COMPRESSION_LIBS=compression_tools/blosc/libblosc.a
+
+PKG_LIBS=$(COMPRESSION_LIBS)
+
+all: compress $(SHLIB)
+
+compress: $(COMPRESSION_LIBS)
+
+compression_tools/blosc/libblosc.a:
+	$(MAKE) -C compression_tools/blosc
