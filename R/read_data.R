@@ -49,6 +49,25 @@ find_chunks_needed <- function(metadata, index) {
   
 }
 
+get_chunk_size <- function(datatype, dimensions) {
+  
+  sizeof <- switch(datatype$base_type,
+                  "logical" = 4,
+                "integer" = 4,
+                    "uinteger" = 4,
+                       "numeric" = 8,
+                #       "complex",
+                #  "timedelta",
+                #    "datetime",
+                #   "character",
+                #   "unicode",
+                  "other" = 1)
+  
+  buffer_size <- prod(unlist(dimensions), sizeof)
+  
+  return(buffer_size)
+}
+
 
 read_chunk <- function(zarr_file, chunk_id, metadata) {
   
@@ -63,13 +82,10 @@ read_chunk <- function(zarr_file, chunk_id, metadata) {
   datatype <- parse_datatype(metadata$dtype)
   
   compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
+
+
+  uncompressed_chunk <- decompress_chunk(compressed_chunk, metadata)  
   
-  decompressor <- switch(metadata$compressor$id,
-                         "zlib" = 0L,
-                         "blosc" = 1L,
-                         1000L)
-  
-  uncompressed_chunk <- .Call("decompress_chunk", compressed_chunk, decompressor, PACKAGE = "Rarr")
   
   output_type <- switch(datatype$base_type,
                         "logical" = 0L,
@@ -83,6 +99,23 @@ read_chunk <- function(zarr_file, chunk_id, metadata) {
   
   return(converted_chunk)
   
+}
+
+decompress_chunk <- function(compressed_chunk, metadata) {
+  
+  decompressor <- metadata$compressor$id
+  datatype <- parse_datatype(metadata$dtype)
+  buffer_size <- get_chunk_size(datatype, dimensions = metadata$chunks)
+  
+  if(decompressor == "zlib") {
+    uncompressed_chunk <- .Call("decompress_chunk_ZLIB", compressed_chunk, as.integer(buffer_size), PACKAGE = "Rarr")
+  } else if (decompressor == "blosc") {
+    uncompressed_chunk <- .Call("decompress_chunk_BLOSC", compressed_chunk, PACKAGE = "Rarr")
+  } else {
+    stop("Unknown compression tool")
+  }
+  
+  return(uncompressed_chunk)
 }
 
 check_index <- function(index, metadata) {

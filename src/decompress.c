@@ -1,6 +1,61 @@
-/*ZEXTERN int ZEXPORT uncompress OF((Bytef *dest,   uLongf *destLen,
-                                   const Bytef *source, uLong sourceLen));
 
+
+#include "decompress.h"
+
+/*
+#define ZLIB  0
+#define BLOSC 1
+
+SEXP decompress_chunk(SEXP input, SEXP _decompressor, SEXP _outbuffersize) {
+  
+  void* p_input = RAW(input);
+  void *p_output;
+  size_t cbytes, blocksize, outbuf_size;
+  int *p_outbufsize;
+  int decompressor = INTEGER(_decompressor)[0];
+  SEXP output;
+  
+  switch(decompressor) {
+  case ZLIB:
+    p_outbufsize = INTEGER(_outbuffersize);
+    output = PROTECT(allocVector(RAWSXP, *p_outbufsize));
+    p_output = RAW(output);
+    uncompress(p_output, p_outbufsize, p_input, xlength(input));
+  case BLOSC:
+    blosc_cbuffer_sizes(p_input, &outbuf_size, &cbytes, &blocksize);
+    output = PROTECT(allocVector(RAWSXP, outbuf_size));
+    p_output = RAW(output);
+    blosc_decompress(p_input, p_output, outbuf_size);
+    break;
+  default:
+    error("Unkown compression algorithm");
+    break;
+  }
+  
+  UNPROTECT(1);
+  return output;
+} */
+
+SEXP decompress_chunk_BLOSC(SEXP input) {
+  
+  void* p_input = RAW(input);
+  void *p_output;
+  size_t cbytes, blocksize, outbuf_size;
+  SEXP output;
+  
+    blosc_cbuffer_sizes(p_input, &outbuf_size, &cbytes, &blocksize);
+    output = PROTECT(allocVector(RAWSXP, outbuf_size));
+    p_output = RAW(output);
+    blosc_decompress(p_input, p_output, outbuf_size);
+
+  UNPROTECT(1);
+  return output;
+} 
+
+
+/*ZEXTERN int ZEXPORT uncompress OF((Bytef *dest,   uLongf *destLen,
+ const Bytef *source, uLong sourceLen));
+ 
  Decompresses the source buffer into the destination buffer.  sourceLen is
  the byte length of the source buffer.  Upon entry, destLen is the total size
  of the destination buffer, which must be large enough to hold the entire
@@ -15,34 +70,19 @@
  buffer with the uncompressed data up to that point.
  */
 
-#include "decompress.h"
-
-
-#define ZLIB  0
-#define BLOSC 1
-
-SEXP decompress_chunk(SEXP input, SEXP _decompressor) {
+SEXP decompress_chunk_ZLIB(SEXP input, SEXP _outbuffersize) {
   
   void* p_input = RAW(input);
   void *p_output;
-  size_t cbytes, blocksize, outbuf_size;
-  int decompressor = INTEGER(_decompressor)[0];
+
+  size_t outbufsize;
   SEXP output;
-  
-  switch(decompressor) {
-  case ZLIB:
-    
-  case BLOSC:
-    blosc_cbuffer_sizes(p_input, &outbuf_size, &cbytes, &blocksize);
-    output = PROTECT(allocVector(RAWSXP, outbuf_size));
-    p_output = RAW(output);
-    blosc_decompress(p_input, p_output, outbuf_size);
-    break;
-  default:
-    error("Unkown compress algorithm");
-    break;
-  }
-  
+
+  outbufsize = INTEGER(_outbuffersize)[0];
+  output = PROTECT(allocVector(RAWSXP, outbufsize));
+  p_output = RAW(output);
+  uncompress(p_output, &outbufsize, p_input, xlength(input));
+
   UNPROTECT(1);
   return output;
 } 
