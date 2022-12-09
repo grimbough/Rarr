@@ -1,6 +1,18 @@
 #' @import jsonlite
-read_metadata <- function(zarr_file) {
-  metadata <- read_json(file.path(zarr_file, ".zarray"))
+read_array_metadata <- function(path) {
+  metadata <- read_json(file.path(path, ".zarray"))
+  return(metadata)
+}
+
+#' @import jsonlite
+read_zarr_metadata <- function(zarr_file) {
+  
+  archive_metadata <- file.path(zarr_file, ".zmetadata")
+  if(file.exists(archive_metadata)) {
+    metadata <- read_json(file.path(zarr_file, ".zmetadata"))
+  } else {
+    metadata <- NULL
+  }
   return(metadata)
 }
 
@@ -15,15 +27,15 @@ parse_datatype <- function(typestr) {
                             "|" = NA)
   
   datatype$base_type <- switch(datatype_parts[2],
-                               "b" = "logical",
-                               "i" = "integer",
-                               "u" = "uinteger",
-                               "f" = "numeric",
+                               "b" = "boolean",
+                               "i" = "int",
+                               "u" = "uint",
+                               "f" = "float",
                                "c" = "complex",
                                "m" = "timedelta",
                                "M" = "datetime",
-                               "S" = "character",
-                               "U" = "unicode",
+                               "S" = "string",
+                               "U" = "Unicode",
                                "v" = "other")
   
   datatype$nbytes <- as.integer(datatype_parts[3])

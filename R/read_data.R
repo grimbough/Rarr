@@ -1,7 +1,7 @@
 #' @export
-read_zarr <- function(zarr_file, index) {
+read_zarr_array <- function(zarr_array, index) {
   
-  metadata <- read_metadata(zarr_file)
+  metadata <- read_array_metadata(zarr_array)
   
   required_chunks <- as.matrix(find_chunks_needed(metadata, index))
   
@@ -19,6 +19,10 @@ read_zarr <- function(zarr_file, index) {
     chunk <- read_chunk(zarr_file, 
                         chunk_id = paste(required_chunks[i,], collapse = "."),
                         metadata = metadata)
+    
+    if(metadata$order == "C") {
+      chunk <- t(chunk)
+    }
     
     index_in_chunk <- list()
     for(j in seq_len(ncol(required_chunks))) {
@@ -51,17 +55,18 @@ find_chunks_needed <- function(metadata, index) {
 
 get_chunk_size <- function(datatype, dimensions) {
   
+  ## determine the size of the R datatype we're going to return
   sizeof <- switch(datatype$base_type,
-                  "logical" = 4,
-                "integer" = 4,
-                    "uinteger" = 4,
-                       "numeric" = 8,
-                #       "complex",
-                #  "timedelta",
-                #    "datetime",
-                #   "character",
-                #   "unicode",
-                  "other" = 1)
+                   "logical"  = 4,
+                   "integer"  = 4,
+                   "uinteger" = 4,
+                   "numeric"  = 8,
+                   #       "complex",
+                   #  "timedelta",
+                   #    "datetime",
+                   #   "character",
+                   #   "unicode",
+                   "other" = 1)
   
   buffer_size <- prod(unlist(dimensions), sizeof)
   
@@ -82,16 +87,16 @@ read_chunk <- function(zarr_file, chunk_id, metadata) {
   datatype <- parse_datatype(metadata$dtype)
   
   compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
-
-
+  
+  
   uncompressed_chunk <- decompress_chunk(compressed_chunk, metadata)  
   
   
   output_type <- switch(datatype$base_type,
-                        "logical" = 0L,
-                        "integer" = 1L,
-                        "uinteger" = 1L,
-                        "numeric" = 2L)
+                        "boolean" = 0L,
+                        "int" = 1L,
+                        "uint" = 1L,
+                        "float" = 2L)
   
   converted_chunk <- .Call("type_convert_chunk", uncompressed_chunk, 
                            output_type, datatype$nbytes, datatype$is_signed,

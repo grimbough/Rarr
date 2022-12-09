@@ -1,5 +1,5 @@
 #include <Rdefines.h>
-#include "read_chunk.h"
+#include "type_conversion.h"
 #include "decompress.h"
 
 R_CallMethodDef callMethods[] = {
