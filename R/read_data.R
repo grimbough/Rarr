@@ -1,7 +1,9 @@
 #' @export
 read_zarr_array <- function(zarr_array, index) {
   
-  metadata <- read_array_metadata(zarr_array)
+  is_s3 <- ifelse(grepl(pattern = "^s3://", x = zarr_array), yes = TRUE, no = FALSE)
+  
+  metadata <- read_array_metadata(zarr_array, is_s3 = is_s3)
   
   required_chunks <- as.matrix(find_chunks_needed(metadata, index))
   

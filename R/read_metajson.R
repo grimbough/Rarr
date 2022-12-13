@@ -1,6 +1,23 @@
 #' @import jsonlite
-read_array_metadata <- function(path) {
-  metadata <- read_json(file.path(path, ".zarray"))
+#' @importFrom httr2 url_parse
+#' @importFrom stringr str_extract str_remove
+#' @importFrom aws.s3 s3read_using
+read_array_metadata <- function(path, is_s3 = FALSE) {
+  
+  zarray_path <- file.path(path, ".zarray")
+  
+  if(is_s3) {
+    parsed_url <- url_parse(zarray_path)
+    bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") %>% 
+      str_remove("/")
+    object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/")
+    metadata <- s3read_using(FUN = read_json, 
+                 object = object, 
+                 bucket = bucket, 
+                 opts = list(region = "", base_url = parsed_url$hostname))
+  } else {
+    metadata <- read_json(file.path(path, ".zarray"))
+  }
   return(metadata)
 }
 
