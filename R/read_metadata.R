@@ -8,7 +8,7 @@ read_array_metadata <- function(path, is_s3 = FALSE) {
   
   if(is_s3) {
     parsed_url <- url_parse(zarray_path)
-    bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") %>% 
+    bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") |> 
       str_remove("/")
     object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/")
     metadata <- s3read_using(FUN = read_json, 
@@ -33,6 +33,7 @@ read_zarr_metadata <- function(zarr_file) {
   return(metadata)
 }
 
+#' @internal
 parse_datatype <- function(typestr) {
   
   datatype <- list()

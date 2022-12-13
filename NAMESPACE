@@ -2,4 +2,9 @@
 
 export(read_zarr_array)
 import(jsonlite)
+importFrom(aws.s3,get_object)
+importFrom(aws.s3,s3read_using)
+importFrom(httr2,url_parse)
+importFrom(stringr,str_extract)
+importFrom(stringr,str_remove)
 useDynLib(Rarr)

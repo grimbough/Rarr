@@ -6,11 +6,15 @@ SEXP decompress_chunk_BLOSC(SEXP input) {
   void *p_output;
   size_t cbytes, blocksize, outbuf_size;
   SEXP output;
+  int dsize;
   
-    blosc_cbuffer_sizes(p_input, &outbuf_size, &cbytes, &blocksize);
-    output = PROTECT(allocVector(RAWSXP, outbuf_size));
-    p_output = RAW(output);
-    blosc_decompress(p_input, p_output, outbuf_size);
+  blosc_cbuffer_sizes(p_input, &outbuf_size, &cbytes, &blocksize);
+  output = PROTECT(allocVector(RAWSXP, outbuf_size));
+  p_output = RAW(output);
+  dsize = blosc_decompress_ctx(p_input, p_output, outbuf_size, 1);
+  if(dsize < 0) {
+    error("BLOSC decompression error - error code: %d\n", dsize);
+  }
 
   UNPROTECT(1);
   return output;

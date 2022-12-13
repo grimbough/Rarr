@@ -18,12 +18,12 @@ read_zarr_array <- function(zarr_array, index) {
     }
     
     ## read this chunk
-    chunk <- read_chunk(zarr_file, 
+    chunk <- read_chunk(zarr_array, 
                         chunk_id = paste(required_chunks[i,], collapse = "."),
-                        metadata = metadata)
+                        metadata = metadata, is_s3 = is_s3)
     
     if(metadata$order == "C") {
-      chunk <- t(chunk)
+      chunk <- aperm(chunk)
     }
     
     index_in_chunk <- list()
@@ -75,20 +75,33 @@ get_chunk_size <- function(datatype, dimensions) {
   return(buffer_size)
 }
 
-
-read_chunk <- function(zarr_file, chunk_id, metadata) {
+#' @importFrom aws.s3 get_object
+read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
   
   if(missing(metadata)) {
-    metadata <- read_metadata(zarr_file)
+    metadata <- read_array_metadata(zarr_file, is_s3 = is_s3)
   }
   
-  chunk_file <- file.path(zarr_file, chunk_id)
-  size <- file.size(chunk_file)
-  chunk_dim <- unlist(metadata$chunks)
-  
   datatype <- parse_datatype(metadata$dtype)
+  chunk_dim <- unlist(metadata$chunks)
+  chunk_file <- file.path(zarr_file, chunk_id)
   
-  compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
+  if(!is_s3) {
+    size <- file.size(chunk_file)
+    compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
+  } else {
+    
+    parsed_url <- url_parse(zarr_file)
+    bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") %>% 
+      str_remove("/")
+    object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/") |>
+      paste(chunk_id, sep = "/")
+    
+    compressed_chunk <- get_object(object = object, 
+                                   bucket = bucket, 
+                                   region = "",
+                                   base_url = parsed_url$hostname)
+  }
   
   
   uncompressed_chunk <- decompress_chunk(compressed_chunk, metadata)  
