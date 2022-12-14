@@ -18,97 +18,117 @@ SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_sign
     error("Unknown data type\n");
   }
   
-  setAttrib(output, R_DimSymbol, Rdim);
+  setAttrib(VECTOR_ELT(output, 0), R_DimSymbol, Rdim);
   
-  UNPROTECT(1);
+  UNPROTECT(3);
   return output;
 } 
 
 SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is_signed) {
   
-  int *p_output;
-  SEXP output;
-  R_xlen_t output_length = length / n_bytes;
+  int *p_data;
+  SEXP output, data, warning;
+  R_xlen_t data_length = length / n_bytes;
   R_xlen_t i;
   
-  output = PROTECT(allocVector(INTSXP, output_length));
-  p_output = INTEGER(output);
+  // space for the converted output
+  data = PROTECT(allocVector(INTSXP, data_length));
+  p_data = INTEGER(data);
+  
+  // vector to indicate if a warning has been raised
+  warning = PROTECT(allocVector(INTSXP, 1));
   
   if(n_bytes == 1) {
     if(is_signed == 1) {
-      for (i = 0; i < output_length; i++) {
-        p_output[i] = ((int8_t *)raw_buffer)[i];
+      for (i = 0; i < data_length; i++) {
+        p_data[i] = ((int8_t *)raw_buffer)[i];
       }
     } else {
-      for (i = 0; i < output_length; i++) {
-        p_output[i] = ((uint8_t *)raw_buffer)[i];
+      for (i = 0; i < data_length; i++) {
+        p_data[i] = ((uint8_t *)raw_buffer)[i];
       }
     }
   } else if(n_bytes == 2) {
     
     if(is_signed == 1) {
       int16_t *mock_buffer = (int16_t *)raw_buffer;
-      for (i = 0; i < output_length; i++) {
-        p_output[i] = mock_buffer[0];
+      for (i = 0; i < data_length; i++) {
+        p_data[i] = mock_buffer[0];
         mock_buffer++;
       }
     } else {
       uint16_t *mock_buffer = (uint16_t *)raw_buffer;
-      for (i = 0; i < output_length; i++) {
-        p_output[i] = mock_buffer[0];
+      for (i = 0; i < data_length; i++) {
+        p_data[i] = mock_buffer[0];
         mock_buffer++;
       }
     }
         
-  } else if((n_bytes == 4)) {
+  } else if(n_bytes == 4) {
     
     if(is_signed == 1) {
-      memcpy(p_output, raw_buffer, length);
+      memcpy(p_data, raw_buffer, length);
     } else {
-      error("Unsupported type conversion");
+      error("uint32 to int32 is currently an unsupported type conversion");
     }
     
   } else if (n_bytes == 8) {
-    
-    // for now we convert to 32bit in and overflow values are NA_integer
+    int8_t warn = 0;
+    // for now we convert to 32bit int and overflow values are NA_integer
     int bit64conversion = 0;
     if (bit64conversion == 0) { 
-      int64_to_int32(raw_buffer, output_length, p_output, is_signed);
+      warn = int64_to_int32(raw_buffer, data_length, p_data, is_signed);
     }
-    
+    INTEGER(warning)[0] = (int32_t)warn;
   }
   
+  output = PROTECT(allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(output, 0, data);
+  SET_VECTOR_ELT(output, 1, warning);
+    
   return(output);
 }
 
 SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length) {
   
-  double *p_output;
-  SEXP output;
+  double *p_data;
+  SEXP output, data, warning;
   
-  R_xlen_t output_length = length / sizeof(double);
+  R_xlen_t data_length = length / sizeof(double);
+
+  data = PROTECT(allocVector(REALSXP, data_length));
+  p_data = REAL(data);
+  warning = PROTECT(allocVector(INTSXP, 1));
+  INTEGER(warning)[0] = 0;
   
-  output = PROTECT(allocVector(REALSXP, output_length));
-  p_output = REAL(output);
+  memcpy(p_data, raw_buffer, length);
   
-  memcpy(p_output, raw_buffer, length);
+  output = PROTECT(allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(output, 0, data);
+  SET_VECTOR_ELT(output, 1, warning);
   
   return(output);
 }
 
 SEXP type_convert_LOGICAL(void *raw_buffer, R_xlen_t length) {
   
-  int *p_output;
-  SEXP output;
+  int *p_data;
+  SEXP output, data, warning;
   
-  R_xlen_t output_length = length;
+  R_xlen_t data_length = length;
   
-  output = PROTECT(allocVector(LGLSXP, output_length));
-  p_output = LOGICAL(output);
+  data = PROTECT(allocVector(LGLSXP, data_length));
+  p_data = LOGICAL(data);
+  warning = PROTECT(allocVector(INTSXP, 1));
+  INTEGER(warning)[0] = 0;
   
-  for (int i = 0; i < output_length; i++) {
-    p_output[i] = ((int8_t *)raw_buffer)[i];
+  for (int i = 0; i < data_length; i++) {
+    p_data[i] = ((int8_t *)raw_buffer)[i];
   }
+  
+  output = PROTECT(allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(output, 0, data);
+  SET_VECTOR_ELT(output, 1, warning);
   
   return(output);
 }

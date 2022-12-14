@@ -11,6 +11,8 @@ read_zarr_array <- function(zarr_array, index) {
   
   output <- array(dim = vapply(index, length, integer(1)))
   
+  warn <- 0L
+  
   for(i in seq_len(nrow(required_chunks))) {
     
     ## find which elements in the output we will replace
@@ -24,8 +26,12 @@ read_zarr_array <- function(zarr_array, index) {
                         chunk_id = paste(required_chunks[i,], collapse = "."),
                         metadata = metadata, is_s3 = is_s3)
     
+    warn <- max(warn, chunk$warning[1])
+    
     if(metadata$order == "C") {
-      chunk <- aperm(chunk)
+      chunk_data <- aperm(chunk$chunk_data)
+    } else {
+      chunk_data <- chunk$chunk_data
     }
     
     index_in_chunk <- list()
@@ -34,10 +40,13 @@ read_zarr_array <- function(zarr_array, index) {
       index_in_chunk[[j]] <- ((index[[j]][which_indices]-1) %% metadata$chunks[[j]])+1
     }
     
-    
     ## extract the required elements and insert into our output array
-    selection <- do.call("[", args = c(list(chunk), index_in_chunk, drop = FALSE))
+    selection <- do.call("[", args = c(list(chunk_data), index_in_chunk, drop = FALSE))
     output <- do.call("[<-", args = c(list(output), index_in_result, list(selection)))
+  }
+  
+  if(isTRUE(warn > 0)) {
+    warning("Integer overflow detected.")
   }
   
   return(output)
@@ -122,6 +131,8 @@ read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
   converted_chunk <- .Call("type_convert_chunk", uncompressed_chunk, 
                            output_type, datatype$nbytes, datatype$is_signed,
                            chunk_dim, PACKAGE = "Rarr")
+  
+  names(converted_chunk) <- c("chunk_data", "warning")
   
   return(converted_chunk)
   
