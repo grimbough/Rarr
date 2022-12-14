@@ -5,6 +5,8 @@ read_zarr_array <- function(zarr_array, index) {
   
   metadata <- read_array_metadata(zarr_array, is_s3 = is_s3)
   
+  check_index(index = index, metadata = metadata)
+  
   required_chunks <- as.matrix(find_chunks_needed(metadata, index))
   
   output <- array(dim = vapply(index, length, integer(1)))
@@ -92,7 +94,7 @@ read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
   } else {
     
     parsed_url <- url_parse(zarr_file)
-    bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") %>% 
+    bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") |> 
       str_remove("/")
     object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/") |>
       paste(chunk_id, sep = "/")
@@ -112,6 +114,10 @@ read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
                         "int" = 1L,
                         "uint" = 1L,
                         "float" = 2L)
+  
+  if(metadata$order == "C") {
+    chunk_dim <- rev(chunk_dim)
+  }
   
   converted_chunk <- .Call("type_convert_chunk", uncompressed_chunk, 
                            output_type, datatype$nbytes, datatype$is_signed,
@@ -139,6 +145,24 @@ decompress_chunk <- function(compressed_chunk, metadata) {
 }
 
 check_index <- function(index, metadata) {
+  
+  if(isFALSE(length(index) == length(metadata$shape))) {
+    stop("The number of dimensions provided to 'index' does not match the shape of the array")
+  }
+  
+  failed <- rep(FALSE, n = length(index))
+  for(i in seq_along(index)) {
+    if(any(index[[i]] < 1) || any(index[[i]] > metadata$shape[[i]])) {
+      failed[i] <- TRUE
+    }
+  }
+  
+  if(any(failed)) {
+    stop(sprintf("Selected indices for dimension(s) %s are out of range.", 
+                 paste(which(failed), collapse = " & ")))
+  }
+  
+  invisible(TRUE)
   
 }
 
