@@ -37,6 +37,7 @@ SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is
   
   // vector to indicate if a warning has been raised
   warning = PROTECT(allocVector(INTSXP, 1));
+  INTEGER(warning)[0] = 0;
   
   if(n_bytes == 1) {
     if(is_signed == 1) {
