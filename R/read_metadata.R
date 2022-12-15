@@ -33,7 +33,7 @@ read_zarr_metadata <- function(zarr_file) {
   return(metadata)
 }
 
-#' @internal
+
 parse_datatype <- function(typestr) {
   
   datatype <- list()
