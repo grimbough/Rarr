@@ -70,16 +70,16 @@ get_chunk_size <- function(datatype, dimensions) {
   
   ## determine the size of the R datatype we're going to return
   sizeof <- switch(datatype$base_type,
-                   "logical"  = 4,
-                   "integer"  = 4,
-                   "uinteger" = 4,
-                   "numeric"  = 8,
-                   #       "complex",
-                   #  "timedelta",
-                   #    "datetime",
-                   #   "character",
-                   #   "unicode",
-                   "other" = 1)
+                   "boolean" = 4,
+                   "int"     = 4,
+                   "uint"    = 4,
+                   "float"   = 8,
+                   # "complex",
+                   # "timedelta",
+                   # "datetime",
+                   # "character",
+                   # "unicode",
+                   "other"   = 1)
   
   buffer_size <- prod(unlist(dimensions), sizeof)
   
@@ -144,10 +144,13 @@ decompress_chunk <- function(compressed_chunk, metadata) {
   datatype <- parse_datatype(metadata$dtype)
   buffer_size <- get_chunk_size(datatype, dimensions = metadata$chunks)
   
-  if(decompressor == "zlib") {
-    uncompressed_chunk <- .Call("decompress_chunk_ZLIB", compressed_chunk, as.integer(buffer_size), PACKAGE = "Rarr")
-  } else if (decompressor == "blosc") {
+  if(decompressor == "blosc") {
     uncompressed_chunk <- .Call("decompress_chunk_BLOSC", compressed_chunk, PACKAGE = "Rarr")
+  } else if (decompressor == "zlib") {
+    #uncompressed_chunk <- .Call("decompress_chunk_ZLIB", compressed_chunk, as.integer(buffer_size), PACKAGE = "Rarr")
+    uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "gzip", asChar = FALSE)
+  } else if (decompressor == "bz2") {
+    uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "bzip2", asChar = FALSE)
   } else {
     stop("Unknown compression tool")
   }
