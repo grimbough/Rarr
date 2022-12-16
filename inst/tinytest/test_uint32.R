@@ -12,7 +12,7 @@ expect_silent( row_major <- read_zarr_array(zarr_f, index = index) )
 expect_identical(column_major, row_major)
 
 ## we return an array
-expect_is(column_major, "array")
+expect_inherits(column_major, "array")
 
 ## dimensions equal to the index
 expect_equal(dim(column_major), c(30,20,1))
