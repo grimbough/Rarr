@@ -38,6 +38,7 @@ SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is
   // vector to indicate if a warning has been raised
   warning = PROTECT(allocVector(INTSXP, 1));
   INTEGER(warning)[0] = 0;
+  int32_t warn = 0;
   
   if(n_bytes == 1) {
     if(is_signed == 1) {
@@ -70,17 +71,17 @@ SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is
     if(is_signed == 1) {
       memcpy(p_data, raw_buffer, length);
     } else {
-      error("uint32 to int32 is currently an unsupported type conversion");
+      warn = uint32_to_int32(raw_buffer, data_length, p_data);
+      INTEGER(warning)[0] = warn;
     }
     
   } else if (n_bytes == 8) {
-    int8_t warn = 0;
     // for now we convert to 32bit int and overflow values are NA_integer
     int bit64conversion = 0;
     if (bit64conversion == 0) { 
       warn = int64_to_int32(raw_buffer, data_length, p_data, is_signed);
     }
-    INTEGER(warning)[0] = (int32_t)warn;
+    INTEGER(warning)[0] = warn;
   }
   
   output = PROTECT(allocVector(VECSXP, 2));
