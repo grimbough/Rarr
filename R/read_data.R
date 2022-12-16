@@ -46,7 +46,9 @@ read_zarr_array <- function(zarr_array, index) {
   }
   
   if(isTRUE(warn > 0)) {
-    warning("Integer overflow detected.")
+    warning("Integer overflow detected in at least one chunk.\n",
+            "Overflowing values have been replaced with NA",
+            call. = FALSE)
   }
   
   return(output)

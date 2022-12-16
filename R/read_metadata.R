@@ -58,7 +58,7 @@ parse_datatype <- function(typestr) {
   
   datatype$nbytes <- as.integer(datatype_parts[3])
   
-  datatype$is_signed <- ifelse(datatype$base_type != "uinteger", TRUE, FALSE)
+  datatype$is_signed <- ifelse(datatype$base_type != "uint", TRUE, FALSE)
   
   return(datatype)
   
