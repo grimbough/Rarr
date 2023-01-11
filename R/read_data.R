@@ -79,7 +79,7 @@ get_chunk_size <- function(datatype, dimensions) {
                    # "complex",
                    # "timedelta",
                    # "datetime",
-                   # "character",
+                   "string"  = datatype$nbytes,
                    # "unicode",
                    "other"   = 1)
   

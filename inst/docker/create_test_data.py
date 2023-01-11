@@ -1,17 +1,17 @@
 import zarr
 import numpy as np
 
-z1 = zarr.open('/data/column-first/int32.zarr', mode='w', shape=(30, 20, 10),
+z = zarr.open('/data/column-first/int32.zarr', mode='w', shape=(30, 20, 10),
                chunks=(10, 10, 5), dtype='i4', order="C")
-z1[:] = 0
-z1[0, :, 0] = np.arange(start=1, stop=21)
-z1[:, 0, 0] = 1
+z[:] = 0
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 1
 
-z2 = zarr.open('/data/row-first/int32.zarr', mode='w', shape=(30, 20, 10),
+z = zarr.open('/data/row-first/int32.zarr', mode='w', shape=(30, 20, 10),
                chunks=(10, 10, 5), dtype='i4', order="F")
-z2[:] = 0
-z2[0, :, 0] = np.arange(start=1, stop=21)
-z2[:, 0, 0] = 1
+z[:] = 0
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 1
 
 ####################
 
@@ -42,6 +42,35 @@ z6 = zarr.open('/data/row-first/int8.zarr', mode='w', shape=(30, 20, 10),
 z6[:] = 0
 z6[0, :, 0] = np.arange(start=1, stop=21)
 z6[:, 0, 0] = 1
+
+
+z3 = zarr.open('/data/column-first/int64.zarr', mode='w', shape=(30, 20, 10),
+               chunks=(10, 10, 5), dtype='i8', order="C")
+z3[:] = 0
+z3[0, :, 0] = np.arange(start=1, stop=21)
+z3[:, 0, 0] = 1
+z3[29,19,9] = pow(2,32)
+
+z4 = zarr.open('/data/row-first/int64.zarr', mode='w', shape=(30, 20, 10),
+               chunks=(10, 10, 5), dtype='i8', order="F")
+z4[:] = 0
+z4[0, :, 0] = np.arange(start=1, stop=21)
+z4[:, 0, 0] = 1
+z4[29,19,9] = pow(2,32)
+
+#######################
+
+z = zarr.open('/data/column-first/string.zarr', mode='w', shape=(30, 20, 10),
+               chunks=(10, 10, 5), dtype='|S6', order="C")
+
+z[0, :, 0] = "test"
+z[:, 0, 0] = "ready"
+
+z = zarr.open('/data/row-first/string.zarr', mode='w', shape=(30, 20, 10),
+               chunks=(10, 10, 5), dtype='|S6', order="F")
+
+z[0, :, 0] = "test"
+z[:, 0, 0] = "ready"
 
 
 # z3 = zarr.open('/data/2bit-int.zarr', mode='w', shape=(100, 250),
