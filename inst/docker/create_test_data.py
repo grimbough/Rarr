@@ -89,11 +89,18 @@ z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
 
 z = zarr.open('/data/row-first/double.zarr', mode='w', shape=(30, 20, 10),
-                chunks=(10, 10, 5), dtype='f8', order="C", fill_value = "NaN")
+                chunks=(10, 10, 5), dtype='f8', order="C", fill_value = "0.0")
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
 
-# 
+
+z = zarr.open('/data/fill-values/double-inf.zarr', mode='w', shape=(20, 10),
+              chunks=(10, 10), dtype='f8', order="F", fill_value = "Infinity")
+z[0, :] = 1
+z = zarr.open('/data/fill-values/double-neginf.zarr', mode='w', shape=(20, 10),
+              chunks=(10, 10), dtype='f8', order="F", fill_value = "-Infinity")
+z[0, :] = 1
+            
 # 
 # z5 = zarr.open('/data/boolean.zarr', mode='w', shape=(100, 250),
 #                chunks=(10, 25), dtype='b1', order="F")
