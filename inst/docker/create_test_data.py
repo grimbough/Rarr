@@ -61,13 +61,13 @@ z4[29,19,9] = pow(2,32)
 #######################
 
 z = zarr.open('/data/column-first/string.zarr', mode='w', shape=(30, 20, 10),
-               chunks=(10, 10, 5), dtype='|S6', order="C")
+               chunks=(10, 10, 5), dtype='|S6', order="C", fill_value = "")
 
 z[0, :, 0] = "test"
 z[:, 0, 0] = "ready"
 
 z = zarr.open('/data/row-first/string.zarr', mode='w', shape=(30, 20, 10),
-               chunks=(10, 10, 5), dtype='|S6', order="F")
+               chunks=(10, 10, 5), dtype='|S6', order="F", fill_value = "")
 
 z[0, :, 0] = "test"
 z[:, 0, 0] = "ready"
