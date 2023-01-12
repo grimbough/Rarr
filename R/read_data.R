@@ -23,8 +23,9 @@ read_zarr_array <- function(zarr_array, index) {
     
     ## read this chunk
     chunk <- read_chunk(zarr_array, 
-                        chunk_id = paste(required_chunks[i,], collapse = "."),
-                        metadata = metadata, is_s3 = is_s3)
+                        chunk_id = required_chunks[i,],
+                        metadata = metadata, 
+                        is_s3 = is_s3)
     
     warn <- max(warn, chunk$warning[1])
     chunk_data <- chunk$chunk_data
@@ -89,6 +90,10 @@ read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
   if(missing(metadata)) {
     metadata <- read_array_metadata(zarr_file, is_s3 = is_s3)
   }
+  
+  dim_separator <- ifelse(is.null(metadata$dimension_separator), 
+                          yes = ".", no = metadata$dimension_separator)
+  chunk_id <- paste(chunk_id, collapse = dim_separator)
   
   datatype <- parse_datatype(metadata$dtype)
   chunk_dim <- unlist(metadata$chunks)
