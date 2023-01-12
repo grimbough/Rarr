@@ -27,12 +27,7 @@ read_zarr_array <- function(zarr_array, index) {
                         metadata = metadata, is_s3 = is_s3)
     
     warn <- max(warn, chunk$warning[1])
-    
-    if(metadata$order == "C") {
-      chunk_data <- aperm(chunk$chunk_data)
-    } else {
-      chunk_data <- chunk$chunk_data
-    }
+    chunk_data <- chunk$chunk_data
     
     index_in_chunk <- list()
     for(j in seq_len(ncol(required_chunks))) {
@@ -119,25 +114,53 @@ read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
   
   uncompressed_chunk <- decompress_chunk(compressed_chunk, metadata)  
   
+  converted_chunk <- format_chunk(uncompressed_chunk, metadata)
   
-  output_type <- switch(datatype$base_type,
-                        "boolean" = 0L,
-                        "int" = 1L,
-                        "uint" = 1L,
-                        "float" = 2L)
+  return(converted_chunk)
   
+}
+
+#' @returns A list of length 2.  The first element is the formatted chunk data.
+#'   The second is an integer of length 1, indicating if warnings were encountered
+#'   when converting types
+#' @keywords Internal
+format_chunk <- function(uncompressed_chunk, metadata) {
+  
+  datatype <- parse_datatype(metadata$dtype)
+  chunk_dim <- unlist(metadata$chunks)
+  ## reverse dimensions for column first datasets
   if(metadata$order == "C") {
     chunk_dim <- rev(chunk_dim)
   }
   
-  converted_chunk <- .Call("type_convert_chunk", uncompressed_chunk, 
-                           output_type, datatype$nbytes, datatype$is_signed,
-                           chunk_dim, PACKAGE = "Rarr")
+  if(datatype$base_type == "string") {
+    ## break raw vector into list where is each element is the bytes for 1 string
+    tmp <- split(uncompressed_chunk, rep(seq_len(length(uncompressed_chunk) / datatype$nbytes), 
+                                         each = datatype$nbytes))
+    converted_chunk <- list()
+    converted_chunk[[1]] <- sapply(tmp, rawToChar)
+    dim(converted_chunk[[1]]) <- chunk_dim
+    converted_chunk[[2]] <- 0L
+    
+  } else {
+    output_type <- switch(datatype$base_type,
+                          "boolean" = 0L,
+                          "int" = 1L,
+                          "uint" = 1L,
+                          "float" = 2L)
+    converted_chunk <- .Call("type_convert_chunk", uncompressed_chunk, 
+                             output_type, datatype$nbytes, datatype$is_signed,
+                             chunk_dim, PACKAGE = "Rarr")
+  }
+  
+  ## more manipulation to get the correct dimensions. 
+  ## Surely there's a way to do this in one step rather than two??
+  if(metadata$order == "C") {
+    converted_chunk[[1]] <- aperm(converted_chunk[[1]])
+  } 
   
   names(converted_chunk) <- c("chunk_data", "warning")
-  
   return(converted_chunk)
-  
 }
 
 decompress_chunk <- function(compressed_chunk, metadata) {
