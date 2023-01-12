@@ -96,7 +96,11 @@ read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
   
   if(!is_s3) {
     size <- file.size(chunk_file)
-    compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
+    if(file.exists(chunk_file)) {
+      compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
+    } else {
+      compressed_chunk <- NULL
+    }
   } else {
     
     parsed_url <- url_parse(zarr_file)
@@ -111,10 +115,17 @@ read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
                                    base_url = parsed_url$hostname)
   }
   
-  
-  uncompressed_chunk <- decompress_chunk(compressed_chunk, metadata)  
-  
-  converted_chunk <- format_chunk(uncompressed_chunk, metadata)
+  ## either decompress and format the chunk data
+  ## or create a new chunk based on the fill value
+  if(!is.null(compressed_chunk)) {
+    uncompressed_chunk <- decompress_chunk(compressed_chunk, metadata)  
+    converted_chunk <- format_chunk(uncompressed_chunk, metadata)
+  } else {
+    converted_chunk <- list(
+      "chunk_data" = array(data = metadata$fill_value, dim = chunk_dim),
+      "warning"    = 0
+    )
+  }
   
   return(converted_chunk)
   

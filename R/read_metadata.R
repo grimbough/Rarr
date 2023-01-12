@@ -18,7 +18,33 @@ read_array_metadata <- function(path, is_s3 = FALSE) {
   } else {
     metadata <- read_json(file.path(path, ".zarray"))
   }
+  
+  metadata <- update_fill_value(metadata)
+  
   return(metadata)
+}
+
+#' Special case fill values are encoded as strings.  R will create arrays of
+#' type character if these are defined and the chunk isn't present on disk.
+#' This function updates the fill value to be R's representation of these 
+#' special values, so numeric arrays are created.
+#' 
+#' @keywords Internal
+update_fill_value <- function(metadata) {
+  
+  if(metadata$fill_value %in% c("NaN", "Infinity", "-Infinity")) {
+    datatype <- parse_datatype(metadata$dtype)
+    if(datatype$base_type != "string") {
+      metadata$fill_value <- switch(
+        metadata$fill_value,
+        "NaN" = NaN,
+        "Infinity" = Inf,
+        "-Infinity" = -Inf
+      )
+    }
+  }
+  return(metadata)
+  
 }
 
 #' @import jsonlite

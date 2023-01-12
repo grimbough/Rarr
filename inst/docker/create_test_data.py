@@ -72,6 +72,8 @@ z = zarr.open('/data/row-first/string.zarr', mode='w', shape=(30, 20, 10),
 z[0, :, 0] = "test"
 z[:, 0, 0] = "ready"
 
+#######################
+
 
 # z3 = zarr.open('/data/2bit-int.zarr', mode='w', shape=(100, 250),
 #                chunks=(10, 25), dtype='u2', order="F")
@@ -81,11 +83,16 @@ z[:, 0, 0] = "ready"
 # 
 # 
 # 
-# z4 = zarr.open('/data/double.zarr', mode='w', shape=(100, 250),
-#                chunks=(10, 25), dtype='f8', order="C")
-# z4[:] = 0
-# z4[0, :] = np.arange(start=0, stop=250)
-# z4[:, 0] = np.arange(start=0, stop=200, step=2)
+z = zarr.open('/data/column-first/double.zarr', mode='w', shape=(30, 20, 10),
+                chunks=(10, 10, 5), dtype='f8', order="C")
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 10.52
+
+z = zarr.open('/data/row-first/double.zarr', mode='w', shape=(30, 20, 10),
+                chunks=(10, 10, 5), dtype='f8', order="C", fill_value = "NaN")
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 10.52
+
 # 
 # 
 # z5 = zarr.open('/data/boolean.zarr', mode='w', shape=(100, 250),
