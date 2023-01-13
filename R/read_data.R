@@ -5,6 +5,8 @@ read_zarr_array <- function(zarr_array, index) {
   
   metadata <- read_array_metadata(zarr_array, is_s3 = is_s3)
   
+  ## if no index provided we will return everything
+  if(missing(index)) { index <- vector(mode = "list", length = metadata$shape) }
   check_index(index = index, metadata = metadata)
   
   required_chunks <- as.matrix(find_chunks_needed(metadata, index))
@@ -199,25 +201,4 @@ decompress_chunk <- function(compressed_chunk, metadata) {
   return(uncompressed_chunk)
 }
 
-check_index <- function(index, metadata) {
-  
-  if(isFALSE(length(index) == length(metadata$shape))) {
-    stop("The number of dimensions provided to 'index' does not match the shape of the array")
-  }
-  
-  failed <- rep(FALSE, n = length(index))
-  for(i in seq_along(index)) {
-    if(any(index[[i]] < 1) || any(index[[i]] > metadata$shape[[i]])) {
-      failed[i] <- TRUE
-    }
-  }
-  
-  if(any(failed)) {
-    stop(sprintf("Selected indices for dimension(s) %s are out of range.", 
-                 paste(which(failed), collapse = " & ")))
-  }
-  
-  invisible(TRUE)
-  
-}
 
