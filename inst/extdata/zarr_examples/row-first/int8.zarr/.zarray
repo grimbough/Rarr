@@ -11,11 +11,10 @@
         "id": "blosc",
         "shuffle": 1
     },
-    "dimension_separator": "/",
-    "dtype": "<i4",
+    "dtype": "|i1",
     "fill_value": 0,
     "filters": null,
-    "order": "C",
+    "order": "F",
     "shape": [
         30,
         20,
