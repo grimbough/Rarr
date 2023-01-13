@@ -22,6 +22,45 @@ check_index <- function(index, metadata) {
                  paste(which(failed), collapse = " & ")))
   }
   
-  invisible(TRUE)
+  return(index)
+  
+}
+
+s3_provider <- function(path) {
+  
+  if(!grepl(pattern = "(^https?://)|(^s3://)", x = path)) {
+    provider <- NULL
+  } else {
+    matches <- regmatches(x = path, 
+                          m = regexpr(pattern = "(amazonaws\\.com)|(embl\\.de)", 
+                                      text = path))
+    if(!length(matches)) { matches <- "other" }
+    provider <- switch(matches,
+      "amazonaws.com" = "aws",
+      "embl.de"       = "other",
+      "other")
+  }
+  return(provider)
+}
+
+url_parse_aws <- function(url) {
+  
+  res <- list()
+  
+  if(grepl(pattern = "^https?://s3\\.", x = url)) {
+      tmp <- httr2::url_parse(url)
+      bucket <- gsub(x = tmp$path, pattern = "^/([a-z-]*)/.*", replacement = "\\1", ignore.case = TRUE)
+      object <- gsub(x = tmp$path, pattern = "^/([a-z-]*)/(.*)", replacement = "\\2", ignore.case = TRUE)
+      region <- gsub(x = url, pattern = "^https?://s3\\.([a-z0-1-]*)\\.amazonaws\\.com/.*$", replacement = "\\1")
+  } else {
+      stop("Only path style URLs are currently supported")
+  }
+  
+  res$bucket <- bucket
+  res$object <- object
+  res$region <- region
+  res$hostname <- "s3.amazonaws.com"
+  
+  return(res)
   
 }

@@ -1,13 +1,13 @@
 #' @export
 read_zarr_array <- function(zarr_array, index) {
   
-  is_s3 <- ifelse(grepl(pattern = "^s3://", x = zarr_array), yes = TRUE, no = FALSE)
+  s3_provider <- s3_provider(path = zarr_array)
   
-  metadata <- read_array_metadata(zarr_array, is_s3 = is_s3)
+  metadata <- read_array_metadata(zarr_array, s3_provider = s3_provider)
   
   ## if no index provided we will return everything
-  if(missing(index)) { index <- vector(mode = "list", length = metadata$shape) }
-  check_index(index = index, metadata = metadata)
+  if(missing(index)) { index <- vector(mode = "list", length = length(metadata$shape)) }
+  index <- check_index(index = index, metadata = metadata)
   
   required_chunks <- as.matrix(find_chunks_needed(metadata, index))
   
@@ -27,7 +27,7 @@ read_zarr_array <- function(zarr_array, index) {
     chunk <- read_chunk(zarr_array, 
                         chunk_id = required_chunks[i,],
                         metadata = metadata, 
-                        is_s3 = is_s3)
+                        s3_provider = s3_provider)
     
     warn <- max(warn, chunk$warning[1])
     chunk_data <- chunk$chunk_data
@@ -87,10 +87,10 @@ get_chunk_size <- function(datatype, dimensions) {
 }
 
 #' @importFrom aws.s3 get_object
-read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
+read_chunk <- function(zarr_file, chunk_id, metadata, s3_provider = NULL) {
   
   if(missing(metadata)) {
-    metadata <- read_array_metadata(zarr_file, is_s3 = is_s3)
+    metadata <- read_array_metadata(zarr_file, s3_provider = s3_provider)
   }
   
   dim_separator <- ifelse(is.null(metadata$dimension_separator), 
@@ -101,7 +101,7 @@ read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
   chunk_dim <- unlist(metadata$chunks)
   chunk_file <- file.path(zarr_file, chunk_id)
   
-  if(!is_s3) {
+  if(is.null(s3_provider)) {
     size <- file.size(chunk_file)
     if(file.exists(chunk_file)) {
       compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
@@ -110,16 +110,27 @@ read_chunk <- function(zarr_file, chunk_id, metadata, is_s3 = FALSE) {
     }
   } else {
     
-    parsed_url <- url_parse(zarr_file)
-    bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") |> 
-      str_remove("/")
-    object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/") |>
-      paste(chunk_id, sep = "/")
-    
-    compressed_chunk <- get_object(object = object, 
-                                   bucket = bucket, 
-                                   region = "",
-                                   base_url = parsed_url$hostname)
+    if(s3_provider == "aws") {
+      
+      parsed_url <- url_parse_aws(chunk_file)
+      compressed_chunk <- get_object(
+                   object = parsed_url$object, 
+                   bucket = parsed_url$bucket, 
+                   region = parsed_url$region,
+                   base_url = parsed_url$hostname)
+      
+    } else {
+      parsed_url <- url_parse(zarr_file)
+      bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") |> 
+        str_remove("/")
+      object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/") |>
+        paste(chunk_id, sep = "/")
+      
+      compressed_chunk <- get_object(object = object, 
+                                     bucket = bucket, 
+                                     region = "",
+                                     base_url = parsed_url$hostname)
+    }
   }
   
   ## either decompress and format the chunk data
