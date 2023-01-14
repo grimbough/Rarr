@@ -13,7 +13,7 @@ SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_sign
   } else if(new_type == 1) {
     output = type_convert_INTEGER(p_input, xlength(input), n_bytes, is_signed);
   } else if (new_type == 2) {
-    output = type_convert_REAL(p_input, xlength(input));
+    output = type_convert_REAL(p_input, xlength(input), n_bytes);
   } else {
     error("Unknown data type\n");
   }
@@ -91,19 +91,23 @@ SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is
   return(output);
 }
 
-SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length) {
+SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length, int n_bytes) {
   
   double *p_data;
   SEXP output, data, warning;
   
-  R_xlen_t data_length = length / sizeof(double);
-
-  data = PROTECT(allocVector(REALSXP, data_length));
-  p_data = REAL(data);
-  warning = PROTECT(allocVector(INTSXP, 1));
-  INTEGER(warning)[0] = 0;
+  if (n_bytes == 4) {
+    R_xlen_t data_length = length / sizeof(double);
   
-  memcpy(p_data, raw_buffer, length);
+    data = PROTECT(allocVector(REALSXP, data_length));
+    p_data = REAL(data);
+    warning = PROTECT(allocVector(INTSXP, 1));
+    INTEGER(warning)[0] = 0;
+    
+    memcpy(p_data, raw_buffer, length);
+  } else {
+    error("%d byte floating point values are not currently supported\n", n_bytes);
+  }
   
   output = PROTECT(allocVector(VECSXP, 2));
   SET_VECTOR_ELT(output, 0, data);
