@@ -46,12 +46,12 @@ read_zarr_array(path, index = list(1, 1:10, 1:10))
 
 | Data Type | Status | Notes |
 |-----------|--------|-------|
-|`int8`|&#x2754||
+|`int8`|&#x2754;||
 |`unit8`|❔||
 |`int16`|❔||
-|`uint16`|✅||
+|`uint16`|&#x2714;||
 |`int32`|✅||
-|`uint32`|✅||Values outs ide the range of `int32` are converted to `NA` 
+|`uint32`|&#x2714;|Values outs ide the range of `int32` are converted to `NA`| 
 |`int64`|❌||
 |`uint64`|❔||
 |`float`|❌||
