@@ -101,6 +101,8 @@ read_chunk <- function(zarr_file, chunk_id, metadata, s3_provider = NULL) {
   chunk_dim <- unlist(metadata$chunks)
   chunk_file <- file.path(zarr_file, chunk_id)
   
+  if(nzchar(Sys.getenv("RARR_DEBUG"))) { message(chunk_file) }
+  
   if(is.null(s3_provider)) {
     size <- file.size(chunk_file)
     if(file.exists(chunk_file)) {
