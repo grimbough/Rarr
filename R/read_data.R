@@ -1,6 +1,48 @@
+#' Read a Zarr array
+#'
+#' @param zarr_array Path to a Zarr array. A character vector of length 1. This
+#'   can either be a location on a local file system or the URI to an array in
+#'   S3 storage.
+#' @param index. A list of the same length as the number of dimensions in the
+#'   Zarr array.  Each entry in the list provides the indices in that dimension
+#'   that should be read from the array.  Setting a list entry to `NULL` will
+#'   read everything in the associated dimension.  If this argument is missing
+#'   the entirety of the the Zarr array will be read.
+#'
+#' @returns An array with the same number of dimensions as the input array. The
+#'   extent of each dimension will correspond to the length of the values
+#'   provided to the `index` argument.
+#'
+#' @examples
+#'
+#' ## Using a local file provided with the package
+#' ## This array has 3 dimensions
+#' z1 <- system.file("extdata", "zarr_examples", "row-first",
+#'                   "double.zarr", package = "Rarr")
+#'
+#' ## read the entire array
+#' read_zarr_array(zarr_array = z1)
+#'
+#' ## extract values for first 10 entries in the x-dimension, all entries in the y-dimension
+#' ## first entry in the z-dimension
+#' read_zarr_array(zarr_array = z1, index = list(1:10, NULL, 1))
+#'
+#' \dontrun {
+#' ## using a Zarr file hosted on Amazon S3
+#' ## This array has a single dimension with length 128
+#' z2 <- "https://s3.us-west-2.amazonaws.com/cmip6-pds/CMIP3/BCCR/bccr_bcm2_0/piControl/r1i1p1f1/Amon/psl/lon"
+#'
+#' ## read the entire array
+#' read_zarr_array(zarr_array = z2)
+#'
+#' ## read alternating elements
+#' read_zarr_array(zarr_array = z2, index = list(seq(1, 128, 2)))
+#' }
+#'
 #' @export
 read_zarr_array <- function(zarr_array, index) {
   
+  ## determine if this is a local or S3 array
   s3_provider <- s3_provider(path = zarr_array)
   
   metadata <- read_array_metadata(zarr_array, s3_provider = s3_provider)
@@ -11,6 +53,7 @@ read_zarr_array <- function(zarr_array, index) {
   
   required_chunks <- as.matrix(find_chunks_needed(metadata, index))
   
+  ## predefine our array to be populated from the read chunks
   output <- array(dim = vapply(index, length, integer(1)))
   
   warn <- 0L
