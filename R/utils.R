@@ -49,9 +49,9 @@ url_parse_aws <- function(url) {
   
   if(grepl(pattern = "^https?://s3\\.", x = url)) {
       tmp <- httr2::url_parse(url)
-      bucket <- gsub(x = tmp$path, pattern = "^/([a-z-]*)/.*", replacement = "\\1", ignore.case = TRUE)
-      object <- gsub(x = tmp$path, pattern = "^/([a-z-]*)/(.*)", replacement = "\\2", ignore.case = TRUE)
-      region <- gsub(x = url, pattern = "^https?://s3\\.([a-z0-1-]*)\\.amazonaws\\.com/.*$", replacement = "\\1")
+      bucket <- gsub(x = tmp$path, pattern = "^/([a-z0-9-]*)/.*", replacement = "\\1", ignore.case = TRUE)
+      object <- gsub(x = tmp$path, pattern = "^/([a-z0-9-]*)/(.*)", replacement = "\\2", ignore.case = TRUE)
+      region <- gsub(x = url, pattern = "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/.*$", replacement = "\\1")
   } else {
       stop("Only path style URLs are currently supported")
   }

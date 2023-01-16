@@ -34,6 +34,24 @@ read_zarr_array(zarr_example, index = index)
 
 ## Read a data selection from an S3 bucket
 
+### Amazon Web Services
+
+If reading from and AWS S3 bucket, **Rarr** currently required you to use the `https` address
+and provide it in the oath style.  Support for virtual-host style addressing, using `s3://` notation
+and other features is planned.
+
+The examples below read Zarr arrays found in public datasets such as  
+[Pangeo / ESGF Coupled Model Intercomparison Project 6](https://registry.opendata.aws/cmip6/) and
+[NASA Prediction of Worldwide Energy Resources](https://registry.opendata.aws/nasa-power/) 
+
+
+```r
+read_zarr_array("https://s3.us-west-2.amazonaws.com/cmip6-pds/CMIP3/BCCR/bccr_bcm2_0/piControl/r1i1p1f1/Amon/psl/lon/")
+read_zarr_array("https://s3.us-west-2.amazonaws.com/power-analysis-ready-datastore/power_901_constants.zarr/FRLAKE")
+```
+
+### Other S
+
 ```{r}
 path <- 's3://mghp.osn.xsede.org/bir190004-bucket01/TMA11/zarr/10.zarr'
 read_zarr_array(path, index = list(1, 1:10, 1:10))
@@ -57,9 +75,10 @@ datatype support.  It will be updated as progress is made.
 |`uint16`|&#x2714;||
 |`int32`|&#x2714;||
 |`uint32`|&#x2714;|Values outs ide the range of `int32` are converted to `NA`| 
-|`int64`|&#274C;||
+|`int64`|&#x274C;||
 |`uint64`|&#x2754;||
-|`float`|&#274C;||
+|`float16`|&#x274C;||
+|`float32`|&#x274C;||
 |`double`|&#x2714;||
 |`string`|&#x2714;||
-|`Unicode`|&#274C;||
+|`Unicode`|&#x274C;||

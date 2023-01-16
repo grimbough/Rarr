@@ -93,10 +93,25 @@ SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is
 
 SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length, int n_bytes) {
   
+  R_xlen_t i;
   double *p_data;
   SEXP output, data, warning;
   
-  if (n_bytes == 4) {
+  if(n_bytes == 4) {
+    R_xlen_t data_length = length / sizeof(float);
+    
+    data = PROTECT(allocVector(REALSXP, data_length));
+    p_data = REAL(data);
+    warning = PROTECT(allocVector(INTSXP, 1));
+    INTEGER(warning)[0] = 0;
+    
+    float *mock_buffer = (float *)raw_buffer;
+    for (i = 0; i < data_length; i++) {
+      p_data[i] = (double)mock_buffer[0];
+      mock_buffer++;
+    }
+    
+  } else if (n_bytes == 8) {
     R_xlen_t data_length = length / sizeof(double);
   
     data = PROTECT(allocVector(REALSXP, data_length));
