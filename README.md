@@ -11,7 +11,7 @@ zarr_example <- system.file("extdata", "zarr_examples", "column-first", "int32.z
 
 In this example the array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`:
 
-``{r}
+```{r}
 index <- list(1:4, 1:2, 1)
 ```
 
