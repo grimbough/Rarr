@@ -1,6 +1,6 @@
-zarr_c <- system.file("extdata", "zarr_examples", "column-first", "double.zarr",
+zarr_c <- system.file("extdata", "zarr_examples", "column-first", "float16.zarr",
                       package = "Rarr")
-zarr_f <- system.file("extdata", "zarr_examples", "row-first", "double.zarr",
+zarr_f <- system.file("extdata", "zarr_examples", "row-first", "float16.zarr",
                       package = "Rarr")
 index <- list(1:30, 1:20, 1)
 

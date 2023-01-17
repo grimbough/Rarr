@@ -79,14 +79,39 @@ z[:, 0, 0] = "ready"
 # z3[0, :] = np.arange(start=0, stop=250)
 # z3[:, 0] = np.arange(start=0, stop=200, step=2)
 # 
-# 
-# 
-z = zarr.open('/data/column-first/double.zarr', mode='w', shape=(30, 20, 10),
+#
+
+z = zarr.open('/data/column-first/float16.zarr', mode='w', shape=(30, 20, 10),
+                chunks=(10, 10, 5), dtype='f2', order="C")
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[0, 0, 0] = -1
+z[0, 19, 0] = np.inf
+
+z = zarr.open('/data/row-first/float16.zarr', mode='w', shape=(30, 20, 10),
+                chunks=(10, 10, 5), dtype='f2', order="C", fill_value = "0.0")
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 10.52
+
+######################
+
+z = zarr.open('/data/column-first/float32.zarr', mode='w', shape=(30, 20, 10),
+                chunks=(10, 10, 5), dtype='f4', order="C")
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 10.52
+
+z = zarr.open('/data/row-first/float32.zarr', mode='w', shape=(30, 20, 10),
+                chunks=(10, 10, 5), dtype='f4', order="C", fill_value = "0.0")
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 10.52
+
+######################
+
+z = zarr.open('/data/column-first/float64.zarr', mode='w', shape=(30, 20, 10),
                 chunks=(10, 10, 5), dtype='f8', order="C")
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
 
-z = zarr.open('/data/row-first/double.zarr', mode='w', shape=(30, 20, 10),
+z = zarr.open('/data/row-first/float64.zarr', mode='w', shape=(30, 20, 10),
                 chunks=(10, 10, 5), dtype='f8', order="C", fill_value = "0.0")
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
