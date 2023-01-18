@@ -20,7 +20,23 @@ zarr_example <- system.file("extdata", "zarr_examples", "column-first", "int32.z
                       package = "Rarr")
 ```
 
-In this example the array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
+We can get an summary of the array properties, such as its shape and datatype, using the function `zarr_array_overview()`:
+
+```r
+zarr_array_overview(zarr_example)
+```
+
+```
+Path: /home/msmith/Projects/Rarr/inst/extdata/zarr_examples/column-first/int32.zarr 
+Shape: 30 x 20 x 10 
+Chunk Shape: 10 x 10 x 5 
+No. of Chunks: 12 (3 x 2 x 2)
+Data Type: int32
+Endianness:  little 
+Compressor: blosc
+```
+
+This is useful as to read the array with **Rarr** you need to know the shape and size of the array (unless you want to read the entire array).  From the output above we can see our example array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
 The list must have the same length as the number of dimensions in our array.
 
 ```{r}

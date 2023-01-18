@@ -1,3 +1,26 @@
+#' @export
+zarr_array_overview <- function(zarr_array_path) {
+  
+  s3_provider <- s3_provider(path = zarr_array_path)
+  dot_zarray <- read_array_metadata(path = zarr_array_path, s3_provider = s3_provider)
+  
+  dt <- parse_datatype(dot_zarray$dtype)
+  nchunks <- ceiling(unlist(dot_zarray$shape) / unlist(dot_zarray$chunks))
+  
+  cat("Path:", normalizePath(zarr_array_path, mustWork = FALSE), "\n")
+  cat("Shape:", paste(unlist(dot_zarray$shape), collapse = " x "), "\n")
+  cat("Chunk Shape:", paste(unlist(dot_zarray$chunks), collapse = " x "), "\n")
+  cat("No. of Chunks: ", prod(nchunks), " (", paste(nchunks, collapse = " x "), ")", "\n", sep = "")
+  cat("Data Type: ", dt$base_type, 8 * dt$nbytes, "\n", sep = "")
+  cat("Endianness:", dt$endian, "\n")
+  if(is.null(dot_zarray$compressor)) {
+    cat("Compressor: None\n")
+  } else {
+    cat("Compressor:", dot_zarray$compressor$id)
+  }
+}
+
+
 #' @import jsonlite
 #' @importFrom httr2 url_parse
 #' @importFrom stringr str_extract str_remove
