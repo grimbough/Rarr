@@ -1,4 +1,15 @@
-# Rarr
+# Introduction to Rarr
+
+**Rarr** is intended to be a simple interface to reading (and eventually writing) individual Zarr arrays.  
+
+It is developed in R and C with no reliance on external libraries or APIs for interfacing with the Zarr arrays.
+Additional compression libraries (e.g. blosc) are bundled with **Rarr** to provide support for datasets compressed
+using these tools.
+
+**Rarr** is not designed to be aware of heirarchical Zarr array stores, but the component arrays can be read individually
+by providing the path to them directly.
+
+# Basic usage
 
 ## Reading a subset from a local Zarr array
 
@@ -9,7 +20,8 @@ zarr_example <- system.file("extdata", "zarr_examples", "column-first", "int32.z
                       package = "Rarr")
 ```
 
-In this example the array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`:
+In this example the array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
+The list must have the same length as the number of dimensions in our array.
 
 ```{r}
 index <- list(1:4, 1:2, 1)
@@ -58,35 +70,55 @@ read_zarr_array(path, index = list(1, 1:10, 1:10))
 ```
 
 
+
 # Current Status
 
+## Reading
+
+Reading Zarr arrays is partially supported and under active development.  
+
+### Data Types
+
 Currently there is only support for reading a subset of the possible datatypes
-that can be found in a Zarr array.  
-
-## Data Type
-
-There are limitations on the 
-datatypes supported by R.  The table below summarised the current status of
+that can be found in a Zarr array.  In some instances there are also limitations on the 
+datatypes natively supported by R, requiring conversion from the Zarr datatype.  The table below summarises the current status of
 datatype support.  It will be updated as progress is made.
 
-## Datatypes
-
-| Data Type | Status | Notes |
+| Zarr Data Type | Status | Notes |
 |-----------|--------|-------|
 |`int8`|&#x2754;||
 |`uint8`|&#x2754;||
 |`int16`|&#x2754;||
 |`uint16`|&#x2714;||
 |`int32`|&#x2714;||
-|`uint32`|&#x2714;|Values outside the range of `int32` are converted to `NA`| 
-|`int64`|&#x274C;|Values outside the range of `int32` are converted to `NA`|
+|`uint32`|&#x2714;|Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
+|`int64`|&#x274C;|Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
 |`uint64`|&#x2754;||
-|`float16`|&#x274C;||
-|`float32`|&#x274C;||
-|`double`|&#x2714;||
+|`half` / `float16`|&#x274C;||
+|`single` / `float32`|&#x2714;||
+|`double` / `float64`|&#x2714;||
 |`complex`|&#x274C;||
 |`timedelta`|&#x274C;||
 |`datetime`|&#x274C;||
 |`string`|&#x2714;||
 |`Unicode`|&#x274C;||
 |`void *`|&#x274C;||
+| Structured data types | &#x274C; | |
+
+### Compression Tools
+
+| Data Type | Status | Notes |
+|-----------|--------|-------|
+|`zlib / gzip`|&#x2714;||
+|`bzip2`|&#x2714;||
+|`blosc`|&#x2714;||
+
+Please open an issue if support for a required compression tool is missing.
+
+### Filters
+
+The is currently no support for additional filters.  Please open an issue if you require filter support.
+
+# Writing
+
+There is currently no support for writing Zarr arrays with **Rarr**.  This will be added once the reading functionality is more mature.
