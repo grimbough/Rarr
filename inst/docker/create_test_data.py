@@ -72,25 +72,25 @@ z[:, 0, 0] = "ready"
 
 #######################
 
-
-# z3 = zarr.open('/data/2bit-int.zarr', mode='w', shape=(100, 250),
-#                chunks=(10, 25), dtype='u2', order="F")
-# z3[:] = 0
-# z3[0, :] = np.arange(start=0, stop=250)
-# z3[:, 0] = np.arange(start=0, stop=200, step=2)
-# 
-#
-
 z = zarr.open('/data/column-first/float16.zarr', mode='w', shape=(30, 20, 10),
                 chunks=(10, 10, 5), dtype='f2', order="C")
 z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 10.52
 z[0, 0, 0] = -1
-z[0, 19, 0] = np.inf
+## some denormalised examples
+z[1, 1, 0] = 0.00005693
+z[1, 2, 0] = -5.97e-8
+z[1, 3, 0] = 0.0000039
 
 z = zarr.open('/data/row-first/float16.zarr', mode='w', shape=(30, 20, 10),
                 chunks=(10, 10, 5), dtype='f2', order="C", fill_value = "0.0")
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
+z[0, 0, 0] = -1
+## some denormalised examples
+z[1, 1, 0] = 0.00005693
+z[1, 2, 0] = -5.97e-8
+z[1, 3, 0] = 0.0000039
 
 ######################
 

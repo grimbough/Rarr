@@ -69,13 +69,14 @@ double float16_to_float64(uint16_t float16_value) {
       // can be represented as ordinary value in float32
       // 2 ** -14 * 0.0101
       // => 2 ** -16 * 1.0100
-      exponent = 127 - 14;
+      exponent = 1023 - 14;
       while ((fraction & (1 << 10)) == 0)
       {
         exponent--;
         fraction <<= 1;
       }
       fraction &= 0x3FF;
+      Rprintf("denormalised Number: %llu %llu %llu\n", sign, exponent, fraction);
       float64_value = (sign << 63) | (exponent << 52) | (fraction << 42);  
     }    
   }
@@ -87,7 +88,7 @@ double float16_to_float64(uint16_t float16_value) {
   else
   {
     /* ordinary number */
-    Rprintf("Ordinary Number: %llu %llu %llu\n", sign, exponent, fraction);
+    //Rprintf("Ordinary Number: %llu %llu %llu\n", sign, exponent, fraction);
     float64_value = (sign << 63) | ((exponent + (1023-15)) << 52) | (fraction << 42);
   }
   
