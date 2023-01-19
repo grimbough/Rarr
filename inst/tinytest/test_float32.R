@@ -19,6 +19,6 @@ expect_inherits(column_major, "array")
 expect_equal(dim(column_major), sapply(index, length))
 
 ## first row should be 2 to 20 except the first element which is 10.52
-expect_equal(column_major[1,,], c(10.52, 2:20))
+expect_equal(column_major[1,,], c(10.52, 2:20), tolerance = 1e-7)
 ## first column should be all 10.52
-expect_true(all(column_major[,1,] == 10.52))
+expect_equal(column_major[,1,],  rep(10.52, 30), tolerance = 1e-7)

@@ -36,7 +36,7 @@ Endianness:  little
 Compressor: blosc
 ```
 
-This is useful as to read the array with **Rarr** you need to know the shape and size of the array (unless you want to read the entire array).  From the output above we can see our example array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
+This is useful, as to read the array with **Rarr** you need to know the shape and size of the array (unless you want to read the entire array).  From the output above we can see our example array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
 The list must have the same length as the number of dimensions in our array.
 
 ```{r}
@@ -64,8 +64,8 @@ read_zarr_array(zarr_example, index = index)
 
 ### Amazon Web Services
 
-If reading from and AWS S3 bucket, **Rarr** currently required you to use the `https` address
-and provide it in the oath style.  Support for virtual-host style addressing, using `s3://` notation
+If reading from an AWS S3 bucket, **Rarr** currently required you to use the `https` address
+and provide it in the path style.  Support for virtual-host style addressing, using `s3://` notation
 and other features is planned.
 
 The examples below read Zarr arrays found in public datasets such as  
@@ -108,10 +108,10 @@ datatype support.  It will be updated as progress is made.
 |`uint16`|&#x2714;||
 |`int32`|&#x2714;||
 |`uint32`|&#x2714;|Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
-|`int64`|&#x274C;|Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
+|`int64`|&#x2714;|Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
 |`uint64`|&#x2754;||
-|`half` / `float16`|&#x274C;||
-|`single` / `float32`|&#x2714;||
+|`half` / `float16`|&#x2714;| Converted to `double` in R.  No effort is made to assess loss of precision due to conversion.  |
+|`single` / `float32`|&#x2714;| Converted to `double` in R.  No effort is made to assess loss of precision due to conversion. |
 |`double` / `float64`|&#x2714;||
 |`complex`|&#x274C;||
 |`timedelta`|&#x274C;||
@@ -126,8 +126,11 @@ datatype support.  It will be updated as progress is made.
 | Data Type | Status | Notes |
 |-----------|--------|-------|
 |`zlib / gzip`|&#x2714;||
-|`bzip2`|&#x2714;||
-|`blosc`|&#x2714;||
+|`bzip2`      |&#x2714;||
+|`blosc`      |&#x2714;||
+|`LZMA `      |&#x2714;||
+|`LZ4`        |&#x274C;||
+|`Zstd`       |&#x274C;||
 
 Please open an issue if support for a required compression tool is missing.
 

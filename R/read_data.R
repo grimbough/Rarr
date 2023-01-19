@@ -250,6 +250,8 @@ decompress_chunk <- function(compressed_chunk, metadata) {
     uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "gzip", asChar = FALSE)
   } else if (decompressor == "bz2") {
     uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "bzip2", asChar = FALSE)
+  } else if (decompressor == "lzma") {
+    uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "xz", asChar = FALSE)
   } else {
     stop("Unsupported compression tool")
   }

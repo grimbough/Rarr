@@ -137,11 +137,20 @@ z[0, :] = 1
 # 
 # 
 # 
-# z6 = zarr.open('/data/zlib.zarr', mode='w', shape=(1000, 1000),
-#                chunks=(100, 100), dtype='i4', order="F", compressor=zarr.Zlib(level=1))
-# z6[:] = 42
-# z6[0, :] = np.arange(start=1, stop=1001)
-# z6[:, 0] = np.arange(start=1, stop=3000, step=3)
+z = zarr.open('/data/compression/zlib.zarr', mode='w', shape=(20, 10),
+              chunks=(10, 10), dtype='i4', order="F", compressor=zarr.Zlib(level=6))
+z[0, :] = np.arange(start=1, stop=11)
+z[:, 0] = np.arange(start=1, stop=60, step=3)
+
+z = zarr.open('/data/compression/bzip2.zarr', mode='w', shape=(20, 10),
+              chunks=(10, 10), dtype='i4', order="F", compressor=zarr.BZ2(level=6))
+z[0, :] = np.arange(start=1, stop=11)
+z[:, 0] = np.arange(start=1, stop=60, step=3)
+
+z = zarr.open('/data/compression/lzma.zarr', mode='w', shape=(20, 10),
+              chunks=(10, 10), dtype='i4', order="F", compressor=zarr.LZMA())
+z[0, :] = np.arange(start=1, stop=11)
+z[:, 0] = np.arange(start=1, stop=60, step=3)
 # 
 # 
 # z7 = zarr.open('/data/8bit-int.zarr', mode='w', shape=(100, 250),
