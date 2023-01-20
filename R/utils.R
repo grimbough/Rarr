@@ -36,9 +36,9 @@ s3_provider <- function(path) {
                                       text = path))
     if(!length(matches)) { matches <- "other" }
     provider <- switch(matches,
-      "amazonaws.com" = "aws",
-      "embl.de"       = "other",
-      "other")
+                       "amazonaws.com" = "aws",
+                       "embl.de"       = "other",
+                       "other")
   }
   return(provider)
 }
@@ -47,13 +47,18 @@ url_parse_aws <- function(url) {
   
   res <- list()
   
-  if(grepl(pattern = "^https?://s3\\.", x = url)) {
-      tmp <- httr2::url_parse(url)
-      bucket <- gsub(x = tmp$path, pattern = "^/([a-z0-9-]*)/.*", replacement = "\\1", ignore.case = TRUE)
-      object <- gsub(x = tmp$path, pattern = "^/([a-z0-9-]*)/(.*)", replacement = "\\2", ignore.case = TRUE)
-      region <- gsub(x = url, pattern = "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/.*$", replacement = "\\1")
+  if(grepl(pattern = "^https?://s3\\.", x = url, ignore.case = TRUE)) {
+    tmp <- httr2::url_parse(url)
+    bucket <- gsub(x = tmp$path, pattern = "^/([a-z0-9\\.-]*)/.*", replacement = "\\1", ignore.case = TRUE)
+    object <- gsub(x = tmp$path, pattern = "^/([a-z0-9\\.-]*)/(.*)", replacement = "\\2", ignore.case = TRUE)
+    region <- gsub(x = url, pattern = "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/.*$", replacement = "\\1")
+  } else if (grepl(pattern = "^https?://[a-z0-9\\.-]*.s3\\.", x = url, ignore.case = TRUE)) {
+    tmp <- httr2::url_parse(url)
+    bucket <- gsub(x = tmp$hostname, pattern = "^([a-z0-9\\.-]*)\\.s3.*", replacement = "\\1", ignore.case = TRUE)
+    object <- tmp$path
+    region <- gsub(x = tmp$hostname, pattern = "^.*\\.s3\\.([a-z0-9-]*)\\.amazonaws\\.com$", replacement = "\\1", ignore.case = TRUE)
   } else {
-      stop("Only path style URLs are currently supported")
+    stop("Unknown AWS path style.  Please report this the package maintainer.")
   }
   
   res$bucket <- bucket

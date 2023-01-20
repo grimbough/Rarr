@@ -67,7 +67,7 @@ read_zarr_array <- function(zarr_array_path, index) {
     }
     
     ## read this chunk
-    chunk <- read_chunk(zarr_array, 
+    chunk <- read_chunk(zarr_array_path, 
                         chunk_id = required_chunks[i,],
                         metadata = metadata, 
                         s3_provider = s3_provider)

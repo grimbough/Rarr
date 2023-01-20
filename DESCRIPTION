@@ -12,5 +12,8 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: jsonlite, httr2, aws.s3, stringr
-Suggests: tinytest
+Suggests: 
+    BiocStyle,
+    knitr,
+    tinytest
 SystemRequirements: GNU make

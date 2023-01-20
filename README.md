@@ -6,7 +6,7 @@ It is developed in R and C with no reliance on external libraries or APIs for in
 Additional compression libraries (e.g. blosc) are bundled with **Rarr** to provide support for datasets compressed
 using these tools.
 
-**Rarr** is not designed to be aware of heirarchical Zarr array stores, but the component arrays can be read individually
+**Rarr** is not designed to be aware of hierarchical Zarr array stores, but the component arrays can be read individually
 by providing the path to them directly.
 
 # Basic usage
@@ -64,17 +64,22 @@ read_zarr_array(zarr_example, index = index)
 
 ### Amazon Web Services
 
-If reading from an AWS S3 bucket, **Rarr** currently required you to use the `https` address
-and provide it in the path style.  Support for virtual-host style addressing, using `s3://` notation
-and other features is planned.
+If reading from an AWS S3 bucket, **Rarr** currently required you to use the `https://` address rater than `s3://`.
+You can provide either a path or virtual-host style address.  For more information see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-bucket-intro.html).
+Support for using `s3://` notation and other features is planned.
 
 The examples below read Zarr arrays found in public datasets such as  
 [Pangeo / ESGF Coupled Model Intercomparison Project 6](https://registry.opendata.aws/cmip6/) and
-[NASA Prediction of Worldwide Energy Resources](https://registry.opendata.aws/nasa-power/) 
+[NASA Prediction of Worldwide Energy Resources](https://registry.opendata.aws/nasa-power/).  
+The first example uses Amazon's recommended virtual-host style address while the second
+uses the path address style.
 
 
 ```r
-read_zarr_array("https://s3.us-west-2.amazonaws.com/cmip6-pds/CMIP3/BCCR/bccr_bcm2_0/piControl/r1i1p1f1/Amon/psl/lon")
+read_zarr_array("https://cmip6-pds.s3.us-west-2.amazonaws.com/CMIP3/BCCR/bccr_bcm2_0/piControl/r1i1p1f1/Amon/psl/lon")
+```
+
+```r
 read_zarr_array("https://s3.us-west-2.amazonaws.com/power-analysis-ready-datastore/power_901_constants.zarr/FRLAKE")
 ```
 
@@ -102,14 +107,14 @@ datatype support.  It will be updated as progress is made.
 
 | Zarr Data Type | Status | Notes |
 |-----------|--------|-------|
-|`int8`  |&#x2714;||
+|`int8`  |&#x2754;||
 |`uint8` |&#x2714;||
-|`int16` |&#x2714;||
+|`int16` |&#x2754;||
 |`uint16`|&#x2714;||
 |`int32` |&#x2714;||
 |`uint32`|&#x2714;|Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
 |`int64`|&#x2714;|Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
-|`uint64`|&#x2754;||
+|`uint64`|&#x2714;|Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
 |`half` / `float16`|&#x2714;| Converted to `double` in R.  No effort is made to assess loss of precision due to conversion.  |
 |`single` / `float32`|&#x2714;| Converted to `double` in R.  No effort is made to assess loss of precision due to conversion. |
 |`double` / `float64`|&#x2714;||
