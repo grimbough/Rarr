@@ -13,7 +13,7 @@ env:
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
-    name: ${{ matrix.config.os }} (${{ matrix.config.bioc }})
+    name: ${{ matrix.config.os }} (${{ matrix.config.bioc-version }})
 
     strategy:
       fail-fast: false

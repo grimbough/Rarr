@@ -102,9 +102,9 @@ datatype support.  It will be updated as progress is made.
 
 | Zarr Data Type | Status | Notes |
 |-----------|--------|-------|
-|`int8`  |&#x2754;||
+|`int8`  |&#x2714;||
 |`uint8` |&#x2714;||
-|`int16` |&#x2754;||
+|`int16` |&#x2714;||
 |`uint16`|&#x2714;||
 |`int32` |&#x2714;||
 |`uint32`|&#x2714;|Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
