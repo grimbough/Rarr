@@ -1,0 +1,64 @@
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+
+name: R-CMD-check
+
+env:
+  GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+  R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.bioc }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - { os: windows-2022, bioc-version: 'devel'}
+        - { os: macOS-latest, bioc-version: 'devel'}
+        - { os: ubuntu-20.04, bioc-version: 'devel'}
+
+    steps:
+      - name: Configure git
+        run: |
+          git config --global core.autocrlf false
+
+      - uses: actions/checkout@v3
+          
+      - name: Setup R and Bioconductor
+        uses: grimbough/bioc-actions/setup-bioc@v1
+        with:
+          bioc-version: ${{ matrix.config.bioc-version }}
+          bioc-mirror: https://ftp.gwdg.de/pub/misc/bioconductor
+          
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        
+      - name: Bioc - Build, Install, Check
+        id: build-install-check
+        uses: grimbough/bioc-actions/build-install-check@v1
+        
+      - name: Run BiocCheck
+        uses: grimbough/bioc-actions/run-BiocCheck@v1
+        with:
+          error-on: 'never'
+          arguments: '--no-check-bioc-help' 
+      
+      - name: Session info
+        run: |
+          sessionInfo()
+        shell: Rscript {0}
+        
+      - name: Upload check results
+        if: always()
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ matrix.config.os }}-results
+          path: ${{ steps.build-install-check.outputs.check-dir }}
+          
