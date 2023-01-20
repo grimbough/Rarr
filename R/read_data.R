@@ -3,7 +3,7 @@
 #' @param zarr_array Path to a Zarr array. A character vector of length 1. This
 #'   can either be a location on a local file system or the URI to an array in
 #'   S3 storage.
-#' @param index. A list of the same length as the number of dimensions in the
+#' @param index A list of the same length as the number of dimensions in the
 #'   Zarr array.  Each entry in the list provides the indices in that dimension
 #'   that should be read from the array.  Setting a list entry to `NULL` will
 #'   read everything in the associated dimension.  If this argument is missing

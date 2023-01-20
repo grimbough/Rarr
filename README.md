@@ -102,11 +102,11 @@ datatype support.  It will be updated as progress is made.
 
 | Zarr Data Type | Status | Notes |
 |-----------|--------|-------|
-|`int8`|&#x2754;||
-|`uint8`|&#x2754;||
-|`int16`|&#x2754;||
+|`int8`  |&#x2754;||
+|`uint8` |&#x2714;||
+|`int16` |&#x2754;||
 |`uint16`|&#x2714;||
-|`int32`|&#x2714;||
+|`int32` |&#x2714;||
 |`uint32`|&#x2714;|Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
 |`int64`|&#x2714;|Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
 |`uint64`|&#x2754;||
@@ -132,11 +132,11 @@ datatype support.  It will be updated as progress is made.
 |`LZ4`        |&#x274C;||
 |`Zstd`       |&#x274C;||
 
-Please open an issue if support for a required compression tool is missing.
+Please open an [issue](https://github.com/grimbough/Rarr/issues) if support for a required compression tool is missing.
 
 ### Filters
 
-The is currently no support for additional filters.  Please open an issue if you require filter support.
+The is currently no support for additional filters.  Please open an [issue](https://github.com/grimbough/Rarr/issues) if you require filter support.
 
 # Writing
 

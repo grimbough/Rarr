@@ -11,7 +11,7 @@ read_zarr_array(zarr_array, index)
 can either be a location on a local file system or the URI to an array in
 S3 storage.}
 
-\item{index.}{A list of the same length as the number of dimensions in the
+\item{index}{A list of the same length as the number of dimensions in the
 Zarr array.  Each entry in the list provides the indices in that dimension
 that should be read from the array.  Setting a list entry to \code{NULL} will
 read everything in the associated dimension.  If this argument is missing

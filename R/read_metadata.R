@@ -1,3 +1,39 @@
+#' Print a summary of a Zarr array
+#'
+#' When reading a Zarr array using [read_zarr_array()] it is necessary to know
+#' it's shape and size. `zarr_array_overview()` can be used to get a quick
+#' overview of the array shape and contents, based on the .zarray metadata file
+#' each array contains.
+#'
+#' The function currently prints the following information to the R console: 
+#'  - array path
+#'  - array shape and size
+#'  - chunk and size
+#'  - the number of chunks
+#'  - the datatype of the array
+#'  - codec used for data compression (if any)
+#'
+#' @param zarr_array_path A character vector of length 1.  This provides the
+#'   path to a single Zarr array. This can either be on a local file system or
+#'   on S3 storage.
+#'
+#' @return The function invisible returns `TRUE` if successful.  However it is
+#'   primarily called for the side effect of printing details of the Zarr array
+#'   to the screen.
+#'   
+#' @examples
+#'
+#' ## Using a local file provided with the package
+#' z1 <- system.file("extdata", "zarr_examples", "row-first",
+#'                   "double.zarr", package = "Rarr")
+#'
+#' ## read the entire array
+#' zarr_array_overview(zarr_array_path = z1)  
+#' 
+#' ## using a file on S3 storage
+#' z2 <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0101A/13457539.zarr/1"
+#' zarr_array_overview(z2)
+#'
 #' @export
 zarr_array_overview <- function(zarr_array_path) {
   
@@ -18,6 +54,8 @@ zarr_array_overview <- function(zarr_array_path) {
   } else {
     cat("Compressor:", dot_zarray$compressor$id)
   }
+  
+  invisible(TRUE)
 }
 
 
