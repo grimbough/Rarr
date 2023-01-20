@@ -1,6 +1,6 @@
 #include "float16_conversion.h"
 
-/* this function is based on the float16->float32 implementation found:
+/* this function is based on the float16->float32 implementation found at
  *  https://gist.github.com/milhidaka/95863906fe828198f47991c813dbe233
  *  as well as the process described 
  *  https://fgiesen.wordpress.com/2012/03/28/half-to-float-done-quic/
