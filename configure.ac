@@ -22,7 +22,5 @@ AR=`"${R_HOME}/bin/R" CMD config AR`
 AS_IF([test "x$AR" = "xERROR: no information for variable 'AR'"], [AC_PATH_PROG([AR], [ar])], [])
 AC_SUBST(AR)
 
-
-
 AC_CONFIG_FILES([src/Makevars])
 AC_OUTPUT
