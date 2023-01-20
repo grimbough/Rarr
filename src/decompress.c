@@ -20,20 +20,20 @@ SEXP decompress_chunk_BLOSC(SEXP input) {
   return output;
 } 
 
-
-SEXP decompress_chunk_ZLIB(SEXP input, SEXP _outbuffersize) {
-  
-  void* p_input = RAW(input);
-  void *p_output;
-
-  size_t outbufsize;
-  SEXP output;
-
-  outbufsize = INTEGER(_outbuffersize)[0];
-  output = PROTECT(allocVector(RAWSXP, outbufsize));
-  p_output = RAW(output);
-  uncompress(p_output, &outbufsize, p_input, xlength(input));
-
-  UNPROTECT(1);
-  return output;
-} 
+/* not required as R has a native decompressor for ZLIB */
+// SEXP decompress_chunk_ZLIB(SEXP input, SEXP _outbuffersize) {
+//   
+//   void* p_input = RAW(input);
+//   void *p_output;
+// 
+//   size_t outbufsize;
+//   SEXP output;
+// 
+//   outbufsize = INTEGER(_outbuffersize)[0];
+//   output = PROTECT(allocVector(RAWSXP, outbufsize));
+//   p_output = RAW(output);
+//   uncompress(p_output, &outbufsize, p_input, xlength(input));
+// 
+//   UNPROTECT(1);
+//   return output;
+// } 

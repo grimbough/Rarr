@@ -5,7 +5,7 @@ export PKG_CXXPICFLAGS=@CXXPICFLAGS@
 
 COMPRESSION_LIBS=compression_tools/blosc/libblosc.a
 
-PKG_LIBS=$(COMPRESSION_LIBS) -lz
+PKG_LIBS=$(COMPRESSION_LIBS)
 
 all: compress $(SHLIB)
 
