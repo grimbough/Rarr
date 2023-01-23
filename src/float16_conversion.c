@@ -12,6 +12,7 @@ double float16_to_float64(uint16_t float16_value) {
   uint64_t exponent = (float16_value >> 10) & 0x1F;
   uint64_t fraction = (float16_value & 0x3FF);
   uint64_t float64_value;
+  double res;
   if (exponent == 0) {
     if (fraction == 0) {
       /* zero */
@@ -28,11 +29,13 @@ double float16_to_float64(uint16_t float16_value) {
     }    
   } else if (exponent == 0x1F)  {
     /* Inf or NaN */
-    float64_value = (sign << 63) | (0x7FFUL << 52) | (fraction << 42);
+    float64_value = (sign << 63) | (0x7FFULL << 52) | (fraction << 42);
   } else {
     /* ordinary number */
     float64_value = (sign << 63) | ((exponent + (1023-15)) << 52) | (fraction << 42);
   }
   
-  return *((double*)&float64_value);
+  // we do this to avoid GCC warnings about casting uint64_t to double
+  memcpy(&res, &float64_value, sizeof(double));
+  return res;
 }
