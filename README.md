@@ -134,8 +134,8 @@ datatype support.  It will be updated as progress is made.
 |`bzip2`      |&#x2714;||
 |`blosc`      |&#x2714;||
 |`LZMA `      |&#x2714;||
-|`LZ4`        |&#x274C;||
-|`Zstd`       |&#x274C;||
+|`LZ4`        |&#x274C;| Algorithm is available via blosc |
+|`Zstd`       |&#x274C;| Algorithm is available via blosc |
 
 Please open an [issue](https://github.com/grimbough/Rarr/issues) if support for a required compression tool is missing.
 

@@ -15,11 +15,69 @@ output:
   BiocStyle::html_document
 ---
 
+**Rarr** is intended to be a simple interface to reading (and eventually writing) individual Zarr arrays.  
+
+It is developed in R and C with no reliance on external libraries or APIs for interfacing with the Zarr arrays.
+Additional compression libraries (e.g. blosc) are bundled with **Rarr** to provide support for datasets compressed
+using these tools.
+
+**Rarr** is not designed to be aware of hierarchical Zarr array stores, but the component arrays can be read individually
+by providing the path to them directly.
+
+# Basic usage
+
 ```{r, load_library}
 library(Rarr)
 ```
 
+Rpackage("Rarr") can be used to read files either on local disk or on remote S3 storage systems.  First lets take a look at reading from a local file.
+
+## Reading a subset from a local Zarr array
+
+The are some example Zarr arrays in the package.  These were created using 
+
+```{r, local-examples}
+list.dirs(system.file("extdata", "zarr_examples", package = "Rarr"), recursive = TRUE) |> 
+  grep(pattern = "zarr$", value = TRUE)
+```
+
+We'll pick the example file containing 32-bit integers arrange in the "column first" ordering.
+
+```{r, use-example}
+zarr_example <- system.file("extdata", "zarr_examples", "column-first", "int32.zarr",
+                      package = "Rarr")
+```
+
+We can get an summary of the array properties, such as its shape and datatype, using the function `zarr_array_overview()`.  We can see in the output that follows that the data type (`int32`) corresponds to what we expect.
+
+```{r, overview-1}
+zarr_array_overview(zarr_example)
+```
+
+This information is also useful, as to read the array with **Rarr** you need to know the shape and size of the array (unless you want to read the entire array).  From the output above we can see our example array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
+The list must have the same length as the number of dimensions in our array, with each element of the list corresponding to the indices you want to extract in that dimension.
+
+```{r}
+index <- list(1:4, 1:2, 1)
+```
+
+We then extract the subset using `read_zarr_array()`:
+
+```{r, extract-subset}
+read_zarr_array(zarr_example, index = index)
+```
+
+
+## Reading from S3 storage
+
+
 ```{r, read-from-s3}
-s3_address = "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0101A/13457539.zarr/1"
-z2 <- read_zarr_array(s3_address)
+s3_address = "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
+z2 <- read_zarr_array(s3_address, index = list(c(1,10), NULL, NULL))
+```
+
+```{r, plot-raster} 
+library(terra)
+r <- terra::rast(aperm(z2))
+plot(r)
 ```
