@@ -4,10 +4,10 @@
 \alias{read_zarr_array}
 \title{Read a Zarr array}
 \usage{
-read_zarr_array(zarr_array, index)
+read_zarr_array(zarr_array_path, index)
 }
 \arguments{
-\item{zarr_array}{Path to a Zarr array. A character vector of length 1. This
+\item{zarr_array_path}{Path to a Zarr array. A character vector of length 1. This
 can either be a location on a local file system or the URI to an array in
 S3 storage.}
 
@@ -33,11 +33,11 @@ z1 <- system.file("extdata", "zarr_examples", "row-first",
                   "double.zarr", package = "Rarr")
 
 ## read the entire array
-read_zarr_array(zarr_array = z1)
+read_zarr_array(zarr_array_path = z1)
 
 ## extract values for first 10 entries in the x-dimension, all entries in the y-dimension
 ## first entry in the z-dimension
-read_zarr_array(zarr_array = z1, index = list(1:10, NULL, 1))
+read_zarr_array(zarr_array_path = z1, index = list(1:10, NULL, 1))
 
 \dontrun{
 ## using a Zarr file hosted on Amazon S3
@@ -45,10 +45,10 @@ read_zarr_array(zarr_array = z1, index = list(1:10, NULL, 1))
 z2 <- "https://s3.us-west-2.amazonaws.com/cmip6-pds/CMIP3/BCCR/bccr_bcm2_0/piControl/r1i1p1f1/Amon/psl/lon"
 
 ## read the entire array
-read_zarr_array(zarr_array = z2)
+read_zarr_array(zarr_array_path = z2)
 
 ## read alternating elements
-read_zarr_array(zarr_array = z2, index = list(seq(1, 128, 2)))
+read_zarr_array(zarr_array_path = z2, index = list(seq(1, 128, 2)))
 }
 
 }

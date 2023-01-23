@@ -30,6 +30,20 @@ The function currently prints the following information to the R console:
 \item chunk and size
 \item the number of chunks
 \item the datatype of the array
-\item approach used for data compression (if any)
+\item codec used for data compression (if any)
 }
+}
+\examples{
+
+## Using a local file provided with the package
+z1 <- system.file("extdata", "zarr_examples", "row-first",
+                  "double.zarr", package = "Rarr")
+
+## read the entire array
+zarr_array_overview(zarr_array_path = z1)  
+
+## using a file on S3 storage
+z2 <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0101A/13457539.zarr/1"
+zarr_array_overview(z2)
+
 }
