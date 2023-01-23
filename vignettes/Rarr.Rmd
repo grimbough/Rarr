@@ -1,0 +1,25 @@
+---
+title: "Reading Zarr arrays with Rarr"
+date: "`r BiocStyle::doc_date()`"
+author:
+- name: Mike L. Smith
+  affiliation:  
+  - EMBL Heidelberg
+  email: mike.smith@embl.de
+package: "`r BiocStyle::pkg_ver('Rarr')`"
+vignette: >
+  %\VignetteIndexEntry{"Reading Zarr arrays with Rarr"}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output: 
+  BiocStyle::html_document
+---
+
+```{r, load_library}
+library(Rarr)
+```
+
+```{r, read-from-s3}
+s3_address = "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0101A/13457539.zarr/1"
+z2 <- read_zarr_array(s3_address)
+```
