@@ -16,4 +16,5 @@ Suggests:
     BiocStyle,
     knitr,
     tinytest
+VignetteBuilder: knitr
 SystemRequirements: GNU make
