@@ -1,0 +1,23 @@
+USER_LIB_DIR = ${R_PACKAGE_DIR}/lib${R_ARCH}/
+
+export CC=`R CMD config CC`
+export CFLAGS=`R CMD config CFLAGS`
+export CXX=`R CMD config CXX`
+export CXXFLAGS=`R CMD config CXXFLAGS`
+export AR=`R CMD config AR`
+export RANLIB=`R CMD config RANLIB`
+export MAKE=`R CMD config MAKE`
+
+COMPRESSION_LIBS=compression_tools/blosc/libblosc.a
+
+PKG_LIBS=$(COMPRESSION_LIBS)
+
+all: compress $(SHLIB)
+
+compress: $(COMPRESSION_LIBS)
+
+compression_tools/blosc/libblosc.a:
+	$(MAKE) -C compression_tools/blosc
+
+clean:
+	$(MAKE) -C blosc clean
