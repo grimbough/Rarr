@@ -113,5 +113,5 @@ AC_SUBST(AVX2_BITSHUFFLE_OBJ)
 AC_SUBST(AVX2_SHUFFLE_OBJ)
 AC_SUBST(AVX2_OBJ_PATH)
 
-AC_CONFIG_FILES([src/compression_tools/blosc/lib/blosc-1.20.1/Makefile])
+AC_CONFIG_FILES([src/compression_tools/blosc/lib/blosc-1.20.1/Makefile src/compression_tools/blosc/Makefile])
 AC_OUTPUT

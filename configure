@@ -4853,7 +4853,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files src/compression_tools/blosc/lib/blosc-1.20.1/Makefile"
+ac_config_files="$ac_config_files src/compression_tools/blosc/lib/blosc-1.20.1/Makefile src/compression_tools/blosc/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5557,6 +5557,7 @@ do
   case $ac_config_target in
     "src/Makevars") CONFIG_FILES="$CONFIG_FILES src/Makevars" ;;
     "src/compression_tools/blosc/lib/blosc-1.20.1/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/lib/blosc-1.20.1/Makefile" ;;
+    "src/compression_tools/blosc/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

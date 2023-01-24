@@ -1,11 +1,11 @@
-BLOSC_OBJS=	lib/blosc-1.20.1/bitshuffle-avx2.o \
+BLOSC_OBJS=	@AVX2_OBJ_PATH@@AVX2_BITSHUFFLE_OBJ@ \
 			lib/blosc-1.20.1/blosc.o \
-			lib/blosc-1.20.1/shuffle-avx2.o \
-			lib/blosc-1.20.1/shuffle-sse2.o \
+			@AVX2_OBJ_PATH@@AVX2_SHUFFLE_OBJ@ \
+			@SSE2_OBJ_PATH@@SSE2_SHUFFLE_OBJ@ \
 			lib/blosc-1.20.1/bitshuffle-generic.o \
 			lib/blosc-1.20.1/blosclz.o \
 			lib/blosc-1.20.1/shuffle.o \
-			lib/blosc-1.20.1/bitshuffle-sse2.o \
+			@SSE2_OBJ_PATH@@SSE2_BITSHUFFLE_OBJ@ \
 			lib/blosc-1.20.1/fastcopy.o \
 			lib/blosc-1.20.1/shuffle-generic.o
 
@@ -31,8 +31,6 @@ libblosc.a: blosc
 	ar cq libblosc.a $(BLOSC_OBJS) $(SNAPPY_OBJS) $(LZ4_OBJS) $(ZSTD_OBJS)
 	ranlib libblosc.a
 
-.PHONY: blosc
-
 blosc: subdirs
 	$(MAKE) -C lib/blosc-1.20.1 all
 
@@ -46,7 +44,6 @@ $(SUBDIRS):
 	$(MAKE) -C $@
 
 clean:
-	rm -f libH5Zblosc.so
 	rm -f libblosc.a
 	rm -f lib/blosc-1.20.1/*.o
 	rm -f lib/snappy-1.1.1/*.o
