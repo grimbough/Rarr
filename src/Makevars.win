@@ -10,7 +10,7 @@ export MAKE=`R CMD config MAKE`
 
 COMPRESSION_LIBS=compression_tools/blosc/libblosc.a
 
-PKG_LIBS=$(COMPRESSION_LIBS)
+PKG_LIBS=$(COMPRESSION_LIBS) -lz -lstdc++
 
 all: compress $(SHLIB)
 
