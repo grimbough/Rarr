@@ -177,6 +177,11 @@ z = zarr.open('/data/compression/lzma.zarr', mode='w', shape=(20, 10),
               chunks=(10, 10), dtype='i4', order="F", compressor=zarr.LZMA())
 z[0, :] = np.arange(start=1, stop=11)
 z[:, 0] = np.arange(start=1, stop=60, step=3)
+
+z = zarr.open('/data/compression/lz4.zarr', mode='w', shape=(20, 10),
+              chunks=(10, 10), dtype='i4', order="F", compressor=zarr.LZ4())
+z[0, :] = np.arange(start=1, stop=11)
+z[:, 0] = np.arange(start=1, stop=60, step=3)
 # 
 # 
 # z7 = zarr.open('/data/8bit-int.zarr', mode='w', shape=(100, 250),

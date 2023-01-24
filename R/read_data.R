@@ -252,6 +252,9 @@ decompress_chunk <- function(compressed_chunk, metadata) {
     uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "bzip2", asChar = FALSE)
   } else if (decompressor == "lzma") {
     uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "xz", asChar = FALSE)
+  } else if (decompressor == "lz4") {
+    ## numpy codecs stores the original size of the buffer in the first 4 bytes; we exclude those
+    uncompressed_chunk <- .Call("decompress_chunk_LZ4", compressed_chunk[-(1:4)], as.integer(buffer_size), PACKAGE = "Rarr")
   } else {
     stop("Unsupported compression tool")
   }
