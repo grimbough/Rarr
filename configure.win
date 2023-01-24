@@ -19,6 +19,7 @@
              lines <- gsub("@SSE2_BITSHUFFLE@", "bitshuffle-sse2.o: bitshuffle-sse2.c\n\t$(CC) $(FLAGS) -c bitshuffle-sse2.c", lines);
              lines <- gsub("@SSE2_SHUFFLE_OBJ@", "shuffle-sse2.o", lines);
              lines <- gsub("@SSE2_SHUFFLE@", "shuffle-sse2.o: shuffle-sse2.c\n\t$(CC) $(FLAGS) -c shuffle-sse2.c", lines);
+             lines <- gsub("@SSE2_OBJ_PATH@", "lib/blosc-1.20.1/");
              out_file <- file("src/compression_tools/blosc/Makefile", open="wb");
              writeLines(lines, con = out_file, sep = "\n");
              close(out_file);'
