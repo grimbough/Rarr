@@ -1,0 +1,13 @@
+#!/bin/sh
+
+## use R to remove SSE2 or AVX2 references from BLOSC Makefiles
+"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e 'lines <- gsub("@M?AVX2[A-Z_]*@", "", readLines("src/blosc/lib/blosc-1.20.1/Makefile.in"));
+             lines <- gsub("@M?SSE2[A-Z_]*@", "", lines);
+             out_file <- file("src/blosc/lib/blosc-1.20.1/Makefile", open="wb");
+             writeLines(lines, con = out_file, sep = "\n");
+             close(out_file);'
+"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e 'lines <- gsub("@M?AVX2[A-Z_]*@", "", readLines("src/blosc/Makefile.in"));
+             lines <- gsub("@M?SSE2[A-Z_]*@", "", lines);
+             out_file <- file("src/blosc/Makefile", open="wb");
+             writeLines(lines, con = out_file);
+             close(out_file);'
