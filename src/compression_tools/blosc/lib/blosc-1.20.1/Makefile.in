@@ -5,7 +5,6 @@ BLOSC_FILES := $(sort $(wildcard *.c))
 
 BLOSC_OBJS=	@AVX2_BITSHUFFLE_OBJ@ @AVX2_SHUFFLE_OBJ@ @SSE2_BITSHUFFLE_OBJ@ @SSE2_SHUFFLE_OBJ@ bitshuffle-generic.o shuffle-generic.o shuffle.o blosclz.o blosc.o fastcopy.o
 
-
 all: $(BLOSC_OBJS)
 
 @AVX2_BITSHUFFLE@

@@ -3,10 +3,11 @@
 ## use R to remove SSE2 or AVX2 references from BLOSC Makefiles
 "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e 'lines <- gsub("@M?AVX2[A-Z_]*@", "", readLines("src/compression_tools/blosc/lib/blosc-1.20.1/Makefile.in"));
              lines <- gsub("@MSSE2@", "-msse2", lines);
+             lines <- gsub("@SSE2@", "-DSHUFFLE_SSE2_ENABLED", lines);
              lines <- gsub("@SSE2_BITSHUFFLE_OBJ@", "bitshuffle-sse2.o", lines);
              lines <- gsub("@SSE2_BITSHUFFLE@", "bitshuffle-sse2.o: bitshuffle-sse2.c\n  $(CC) $(FLAGS) -c bitshuffle-sse2.c", lines);
              lines <- gsub("@SSE2_SHUFFLE_OBJ@", "shuffle-sse2.o", lines);
-             lines <- gsub("@SSE2_BITSHUFFLE@", "shuffle-sse2.o: shuffle-sse2.c\n  $(CC) $(FLAGS) -c shuffle-sse2.c", lines);
+             lines <- gsub("@SSE2_SHUFFLE@", "shuffle-sse2.o: shuffle-sse2.c\n  $(CC) $(FLAGS) -c shuffle-sse2.c", lines);
              out_file <- file("src/compression_tools/blosc/lib/blosc-1.20.1/Makefile", open="wb");
              writeLines(lines, con = out_file, sep = "\n");
              close(out_file);'
