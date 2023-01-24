@@ -55,10 +55,10 @@ jobs:
           sessionInfo()
         shell: Rscript {0}
         
-      - name: Upload check results
-        if: always()
-        uses: actions/upload-artifact@master
-        with:
-          name: ${{ matrix.config.os }}-results
-          path: ${{ steps.build-install-check.outputs.check-dir }}
+      # - name: Upload check results
+      #   if: always()
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ matrix.config.os }}-results
+      #     path: ${{ steps.build-install-check.outputs.check-dir }}
           
