@@ -37,7 +37,7 @@ The function currently prints the following information to the R console:
 
 ## Using a local file provided with the package
 z1 <- system.file("extdata", "zarr_examples", "row-first",
-                  "double.zarr", package = "Rarr")
+                  "int32.zarr", package = "Rarr")
 
 ## read the entire array
 zarr_array_overview(zarr_array_path = z1)  

@@ -30,7 +30,7 @@ Read a Zarr array
 ## Using a local file provided with the package
 ## This array has 3 dimensions
 z1 <- system.file("extdata", "zarr_examples", "row-first",
-                  "double.zarr", package = "Rarr")
+                  "int32.zarr", package = "Rarr")
 
 ## read the entire array
 read_zarr_array(zarr_array_path = z1)
