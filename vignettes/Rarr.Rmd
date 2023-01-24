@@ -77,7 +77,8 @@ z2 <- read_zarr_array(s3_address, index = list(c(1,10), NULL, NULL))
 ```
 
 ```{r, plot-raster} 
-library(terra)
-r <- terra::rast(aperm(z2))
-plot(r)
+image(log2(z2[1,,]), col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100/100), 
+      asp = dim(z2)[2] / dim(z2)[3], axes = FALSE)
+image(log2(z2[2,,]), col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100/100), 
+      asp = dim(z2)[2] / dim(z2)[3], axes = FALSE, add = TRUE)
 ```

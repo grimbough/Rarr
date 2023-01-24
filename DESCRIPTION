@@ -15,7 +15,6 @@ Imports: jsonlite, httr2, aws.s3, stringr
 Suggests: 
     BiocStyle,
     knitr,
-    tinytest,
-    terra
+    tinytest
 VignetteBuilder: knitr
 SystemRequirements: GNU make
