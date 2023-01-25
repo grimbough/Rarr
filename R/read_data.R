@@ -53,6 +53,20 @@ read_zarr_array <- function(zarr_array_path, index) {
   
   required_chunks <- as.matrix(find_chunks_needed(metadata, index))
   
+  res <- read_data_orig(required_chunks, zarr_array_path, s3_provider, index, metadata)
+
+  if(isTRUE(res$warn > 0)) {
+    warning("Integer overflow detected in at least one chunk.\n",
+            "Overflowing values have been replaced with NA",
+            call. = FALSE)
+  }
+  
+  return(res$output)
+  
+}
+
+read_data_orig <- function(required_chunks, zarr_array_path, s3_provider, index, metadata) {
+  
   ## predefine our array to be populated from the read chunks
   output <- array(dim = vapply(index, length, integer(1)))
   
@@ -86,14 +100,60 @@ read_zarr_array <- function(zarr_array_path, index) {
     output <- do.call("[<-", args = c(list(output), index_in_result, list(selection)))
   }
   
-  if(isTRUE(warn > 0)) {
-    warning("Integer overflow detected in at least one chunk.\n",
-            "Overflowing values have been replaced with NA",
-            call. = FALSE)
+  return(list(output = output, warn = warn))
+  
+}
+
+read_data_v2 <- function() {
+  
+  ## predefine our array to be populated from the read chunks
+  output <- array(dim = vapply(index, length, integer(1)))
+  warn <- 0L
+  
+  chunk_selections <- lapply(seq_len(nrow(required_chunks)), FUN = function(i) { 
+    
+    ## find which elements in the output we will replace
+    index_in_result <- list()
+    for(j in seq_len(ncol(required_chunks))) {
+      index_in_result[[j]] <- which((index[[j]]-1) %/% metadata$chunks[[j]] == required_chunks[i,j])
+    }
+    index_in_chunk <- list()
+    for(j in seq_len(ncol(required_chunks))) {
+      which_indices <- which((index[[j]]-1) %/% metadata$chunks[[j]] == required_chunks[i,j])
+      index_in_chunk[[j]] <- ((index[[j]][which_indices]-1) %% metadata$chunks[[j]])+1
+    }
+    
+    ## read this chunk
+    chunk <- read_chunk(zarr_array_path, 
+                        chunk_id = required_chunks[i,],
+                        metadata = metadata, 
+                        s3_provider = s3_provider)
+    
+    warn <- max(warn, chunk$warning[1])
+    chunk_data <- chunk$chunk_data
+    
+    ## extract the required elements and insert into our output array
+    selection <- do.call("[", args = c(list(chunk_data), index_in_chunk, drop = FALSE))
+    
+    return(list(selection, index_in_result, warn))
+  })
+  
+  for(i in seq_along(chunk_selections)) {
+    
+    index_in_result <- eval(chunk_selections[[i]][[2]])
+    dims <- seq_along(index_in_result)
+    args <- rep("", times=length(index_in_result))
+    for (kk in seq_along(index_in_result)) {
+      dd <- dims[kk]
+      args[dd] <- sprintf("index_in_result[[%d]]", kk)
+    }
+    args <- paste(args, collapse=",")
+    code <- paste("output[", args, "] <- chunk_selections[[i]][[1]]", sep="")
+    
+    eval(parse(text = code))
+    
   }
-  
   return(output)
-  
 }
 
 
