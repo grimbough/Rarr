@@ -1,7 +1,7 @@
 #' Print a summary of a Zarr array
 #'
 #' When reading a Zarr array using [read_zarr_array()] it is necessary to know
-#' it's shape and size. `zarr_array_overview()` can be used to get a quick
+#' it's shape and size. `zarr_overview()` can be used to get a quick
 #' overview of the array shape and contents, based on the .zarray metadata file
 #' each array contains.
 #'
@@ -12,13 +12,16 @@
 #'  - the number of chunks
 #'  - the datatype of the array
 #'  - codec used for data compression (if any)
+#'  
+#' If given the path to a group of arrays the function will attempt to print
+#' the details of all sub-arrays in the group.
 #'
 #' @param zarr_array_path A character vector of length 1.  This provides the
-#'   path to a single Zarr array. This can either be on a local file system or
+#'   path to a Zarr array or group of arrays. This can either be on a local file system or
 #'   on S3 storage.
 #'
 #' @return The function invisible returns `TRUE` if successful.  However it is
-#'   primarily called for the side effect of printing details of the Zarr array
+#'   primarily called for the side effect of printing details of the Zarr array(s)
 #'   to the screen.
 #'   
 #' @examples
@@ -28,34 +31,54 @@
 #'                   "int32.zarr", package = "Rarr")
 #'
 #' ## read the entire array
-#' zarr_array_overview(zarr_array_path = z1)  
+#' zarr_overview(zarr_array_path = z1)  
 #' 
 #' ## using a file on S3 storage
 #' z2 <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0101A/13457539.zarr/1"
-#' zarr_array_overview(z2)
+#' zarr_overview(z2)
 #'
 #' @export
-zarr_array_overview <- function(zarr_array_path) {
+zarr_overview <- function(zarr_array_path) {
   
+  zarr_array_path <- .normalize_array_path(zarr_array_path)
   s3_provider <- s3_provider(path = zarr_array_path)
-  dot_zarray <- read_array_metadata(path = zarr_array_path, s3_provider = s3_provider)
   
-  dt <- parse_datatype(dot_zarray$dtype)
+  dot_zmeta <- .read_zmetadata(zarr_path = zarr_array_path, s3_provider = s3_provider)
+  if(!is.null(dot_zmeta)) {
+    
+    arrays <- grep(names(dot_zmeta$metadata), pattern = "/.zarray", fixed = TRUE, value = TRUE)
+    cat("Type: Group of Arrays\n")
+    cat("Path:", normalizePath(zarr_array_path, mustWork = FALSE), "\n")
+    cat("Arrays:\n")
+    for(a in arrays) {
+      cat("---\n")
+      .print_array_metadata(dirname(a), dot_zarray = dot_zmeta$metadata[[ a ]], indent = "  ")
+    }
+    
+  } else {
+    dot_zarray <- read_array_metadata(path = zarr_array_path, s3_provider = s3_provider)
+    cat("Type: Array\n")
+    .print_array_metadata(zarr_array_path, dot_zarray = dot_zarray)
+    
+  }
+  invisible(TRUE)
+}
+
+.print_array_metadata <- function(zarr_array_path , dot_zarray, indent = "") {
+  dt <- .parse_datatype(dot_zarray$dtype)
   nchunks <- ceiling(unlist(dot_zarray$shape) / unlist(dot_zarray$chunks))
   
-  cat("Path:", normalizePath(zarr_array_path, mustWork = FALSE), "\n")
-  cat("Shape:", paste(unlist(dot_zarray$shape), collapse = " x "), "\n")
-  cat("Chunk Shape:", paste(unlist(dot_zarray$chunks), collapse = " x "), "\n")
-  cat("No. of Chunks: ", prod(nchunks), " (", paste(nchunks, collapse = " x "), ")", "\n", sep = "")
-  cat("Data Type: ", dt$base_type, 8 * dt$nbytes, "\n", sep = "")
-  cat("Endianness:", dt$endian, "\n")
+  cat(indent, "Path: ", normalizePath(zarr_array_path, mustWork = FALSE), "\n", sep = "")
+  cat(indent, "Shape: ", paste(unlist(dot_zarray$shape), collapse = " x "), "\n", sep = "")
+  cat(indent, "Chunk Shape: ", paste(unlist(dot_zarray$chunks), collapse = " x "), "\n", sep = "")
+  cat(indent, "No. of Chunks: ", prod(nchunks), " (", paste(nchunks, collapse = " x "), ")", "\n", sep = "")
+  cat(indent, "Data Type: ", dt$base_type, 8 * dt$nbytes, "\n", sep = "")
+  cat(indent, "Endianness: ", dt$endian, "\n", sep = "")
   if(is.null(dot_zarray$compressor)) {
-    cat("Compressor: None\n")
+    cat(indent, "Compressor: None\n", sep = "")
   } else {
-    cat("Compressor:", dot_zarray$compressor$id)
+    cat(indent, "Compressor: ", dot_zarray$compressor$id, "\n", sep = "")
   }
-  
-  invisible(TRUE)
 }
 
 
@@ -67,7 +90,7 @@ zarr_array_overview <- function(zarr_array_path) {
 #' @keywords Internal
 read_array_metadata <- function(path, s3_provider = NULL) {
   
-  zarray_path <- file.path(path, ".zarray")
+  zarray_path <- paste0(path, ".zarray")
   
   if(!is.null(s3_provider)) {
     if(s3_provider == "aws") {
@@ -84,9 +107,9 @@ read_array_metadata <- function(path, s3_provider = NULL) {
         str_remove("/")
       object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/")
       metadata <- s3read_using(FUN = read_json, 
-                   object = object, 
-                   bucket = bucket, 
-                   opts = list(region = "", base_url = parsed_url$hostname))
+                               object = object, 
+                               bucket = bucket, 
+                               opts = list(region = "", base_url = parsed_url$hostname))
     }
   } else {
     metadata <- read_json(file.path(path, ".zarray"))
@@ -111,7 +134,7 @@ read_array_metadata <- function(path, s3_provider = NULL) {
 update_fill_value <- function(metadata) {
   
   if(metadata$fill_value %in% c("NaN", "Infinity", "-Infinity")) {
-    datatype <- parse_datatype(metadata$dtype)
+    datatype <- .parse_datatype(metadata$dtype)
     if(datatype$base_type != "string") {
       metadata$fill_value <- switch(
         metadata$fill_value,
@@ -126,44 +149,72 @@ update_fill_value <- function(metadata) {
 }
 
 #' @import jsonlite
-read_zarr_metadata <- function(zarr_file) {
+#' @keywords Internal
+.read_zmetadata <- function(zarr_path, s3_provider) {
   
-  archive_metadata <- file.path(zarr_file, ".zmetadata")
-  if(file.exists(archive_metadata)) {
-    metadata <- read_json(file.path(zarr_file, ".zmetadata"))
+  zmeta_path <- paste0(zarr_path, ".zmetadata")
+  zmeta <- NULL
+  
+  if(!is.null(s3_provider)) {
+    
+    if(s3_provider == "aws") {
+      parsed_url <- url_parse_aws(zmeta_path)
+    } else {
+      parsed_url <- .url_parse_other(zmeta_path)
+    }
+    zmeta_exists <- suppressMessages(
+      object_exists(object = parsed_url$object, bucket = parsed_url$bucket, 
+                    region = parsed_url$region, base_url = parsed_url$hostname)
+    )
+    if(zmeta_exists) {
+      zmeta <- s3read_using(FUN = read_json, 
+                            object = parsed_url$object, 
+                            bucket = parsed_url$bucket, 
+                            opts = list(region = parsed_url$region, 
+                                        base_url = parsed_url$hostname))
+    }
   } else {
-    metadata <- NULL
+    if(file.exists(zmeta_path)) {
+      zmeta <- read_json(zmeta_path)
+    }
   }
-  return(metadata)
+  
+  return(zmeta)
 }
 
-
-parse_datatype <- function(typestr) {
-  
-  datatype <- list()
-  datatype_parts <- strsplit(typestr, "")[[1]]
-  
-  datatype$endian <- switch(datatype_parts[1],
-                            "<" = "little",
-                            ">" = "big",
-                            "|" = NA)
-  
-  datatype$base_type <- switch(datatype_parts[2],
-                               "b" = "boolean",
-                               "i" = "int",
-                               "u" = "uint",
-                               "f" = "float",
-                               "c" = "complex",
-                               "m" = "timedelta",
-                               "M" = "datetime",
-                               "S" = "string",
-                               "U" = "Unicode",
-                               "v" = "other")
-  
-  datatype$nbytes <- as.integer(datatype_parts[3])
-  
-  datatype$is_signed <- ifelse(datatype$base_type != "uint", TRUE, FALSE)
-  
-  return(datatype)
-  
-}
+#' #' @importFrom aws.s3 object_exists
+#' .group_or_array <- function(zarr_path, s3_provider) {
+#'   
+#'   zgroup_path <- file.path(path, ".zgroup", fsep = "/")
+#'   zarray_path <- file.path(path, ".zarray", fsep = "/")
+#'   
+#'   if(!is.null(s3_provider)) {
+#'     
+#'     if(s3_provider == "aws") {
+#'       parsed_url <- url_parse_aws(zgroup_path)
+#'       zgroup_exists <- object_exists( 
+#'                                object = parsed_url$object, 
+#'                                bucket = parsed_url$bucket, 
+#'                                region = parsed_url$region, 
+#'                                base_url = parsed_url$hostname)
+#'       
+#'     } else {
+#'       parsed_url <- .url_parse_other(zarray_path)
+#'       bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") |> 
+#'         str_remove("/")
+#'       object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/")
+#'       metadata <- s3read_using(FUN = read_json, 
+#'                                object = object, 
+#'                                bucket = bucket, 
+#'                                opts = list(region = "", base_url = parsed_url$hostname))
+#'     }
+#'   } else {
+#'     metadata <- read_json(file.path(path, ".zarray"))
+#'   }
+#'   
+#'     
+#'   } else {
+#'     zarray_path <- file.path(path, ".zarray")
+#'   }
+#'   
+#' }

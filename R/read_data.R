@@ -192,7 +192,7 @@ read_chunk <- function(zarr_file, chunk_id, metadata, s3_provider = NULL) {
                           yes = ".", no = metadata$dimension_separator)
   chunk_id <- paste(chunk_id, collapse = dim_separator)
   
-  datatype <- parse_datatype(metadata$dtype)
+  datatype <- .parse_datatype(metadata$dtype)
   chunk_dim <- unlist(metadata$chunks)
   chunk_file <- file.path(zarr_file, chunk_id)
   
@@ -252,7 +252,7 @@ read_chunk <- function(zarr_file, chunk_id, metadata, s3_provider = NULL) {
 #' @keywords Internal
 format_chunk <- function(uncompressed_chunk, metadata) {
   
-  datatype <- parse_datatype(metadata$dtype)
+  datatype <- .parse_datatype(metadata$dtype)
   chunk_dim <- unlist(metadata$chunks)
   ## reverse dimensions for column first datasets
   if(metadata$order == "C") {
@@ -292,7 +292,7 @@ format_chunk <- function(uncompressed_chunk, metadata) {
 decompress_chunk <- function(compressed_chunk, metadata) {
   
   decompressor <- metadata$compressor$id
-  datatype <- parse_datatype(metadata$dtype)
+  datatype <- .parse_datatype(metadata$dtype)
   buffer_size <- get_chunk_size(datatype, dimensions = metadata$chunks)
   
   if(decompressor == "blosc") {
