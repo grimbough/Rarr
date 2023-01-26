@@ -65,7 +65,7 @@ read_zarr_array(zarr_example, index = index)
 
 ### Amazon Web Services
 
-If reading from an AWS S3 bucket, **Rarr** currently required you to use the `https://` address rater than `s3://`.
+If reading from an AWS S3 bucket, **Rarr** currently required you to use the `https://` address rather than `s3://`.
 You can provide either a path or virtual-host style address.  For more information see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-bucket-intro.html).
 Support for using `s3://` notation and other features is planned.
 
