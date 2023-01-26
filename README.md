@@ -20,13 +20,14 @@ zarr_example <- system.file("extdata", "zarr_examples", "column-first", "int32.z
                       package = "Rarr")
 ```
 
-We can get an summary of the array properties, such as its shape and datatype, using the function `zarr_array_overview()`:
+We can get an summary of the array properties, such as its shape and datatype, using the function `zarr_overview()`:
 
 ```r
-zarr_array_overview(zarr_example)
+zarr_overview(zarr_example)
 ```
 
 ```
+Type: Array
 Path: /home/msmith/Projects/Rarr/inst/extdata/zarr_examples/column-first/int32.zarr 
 Shape: 30 x 20 x 10 
 Chunk Shape: 10 x 10 x 5 
