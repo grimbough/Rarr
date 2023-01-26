@@ -69,3 +69,19 @@ url_parse_aws <- function(url) {
   return(res)
   
 }
+
+.extract_and_replace <- function(x, indices, y) {
+  
+  dims <- seq_along(indices)
+  args <- rep("", times=length(indices))
+  for (kk in seq_along(indices)) {
+    dd <- dims[kk]
+    args[dd] <- sprintf("indices[[%d]]", kk)
+  }
+  args <- paste(args, collapse=",")
+  code <- paste("x[", args, "] <- y", sep="")
+  
+  eval(parse(text = code))
+  return(x)
+  
+}

@@ -3,6 +3,7 @@
 export(read_zarr_array)
 export(zarr_array_overview)
 import(jsonlite)
+importFrom(R.utils,extract)
 importFrom(aws.s3,get_object)
 importFrom(aws.s3,s3read_using)
 importFrom(httr2,url_parse)
