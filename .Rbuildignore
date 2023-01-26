@@ -1,0 +1,5 @@
+^LICENSE\.md$
+inst/ext/zarr_docker*
+^.*\.Rproj$
+^\.Rproj\.user$
+.github
