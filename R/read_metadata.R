@@ -95,24 +95,17 @@ read_array_metadata <- function(path, s3_provider = NULL) {
   if(!is.null(s3_provider)) {
     if(s3_provider == "aws") {
       parsed_url <- url_parse_aws(zarray_path)
-      metadata <- s3read_using(FUN = read_json, 
-                               object = parsed_url$object, 
-                               bucket = parsed_url$bucket, 
-                               opts = list(region = parsed_url$region, 
-                                           base_url = parsed_url$hostname))
-      
     } else {
-      parsed_url <- url_parse(zarray_path)
-      bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") |> 
-        str_remove("/")
-      object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/")
-      metadata <- s3read_using(FUN = read_json, 
-                               object = object, 
-                               bucket = bucket, 
-                               opts = list(region = "", base_url = parsed_url$hostname))
+      parsed_url <- .url_parse_other(zarray_path)
     }
+    metadata <- s3read_using(FUN = read_json, 
+                             object = parsed_url$object, 
+                             bucket = parsed_url$bucket, 
+                             opts = list(region = parsed_url$region, 
+                                         base_url = parsed_url$hostname))
+
   } else {
-    metadata <- read_json(file.path(path, ".zarray"))
+    metadata <- read_json(zarray_path)
   }
   
   metadata <- update_fill_value(metadata)
@@ -149,6 +142,7 @@ update_fill_value <- function(metadata) {
 }
 
 #' @import jsonlite
+#' @importFrom aws.s3 object_exists
 #' @keywords Internal
 .read_zmetadata <- function(zarr_path, s3_provider) {
   
@@ -182,39 +176,3 @@ update_fill_value <- function(metadata) {
   return(zmeta)
 }
 
-#' #' @importFrom aws.s3 object_exists
-#' .group_or_array <- function(zarr_path, s3_provider) {
-#'   
-#'   zgroup_path <- file.path(path, ".zgroup", fsep = "/")
-#'   zarray_path <- file.path(path, ".zarray", fsep = "/")
-#'   
-#'   if(!is.null(s3_provider)) {
-#'     
-#'     if(s3_provider == "aws") {
-#'       parsed_url <- url_parse_aws(zgroup_path)
-#'       zgroup_exists <- object_exists( 
-#'                                object = parsed_url$object, 
-#'                                bucket = parsed_url$bucket, 
-#'                                region = parsed_url$region, 
-#'                                base_url = parsed_url$hostname)
-#'       
-#'     } else {
-#'       parsed_url <- .url_parse_other(zarray_path)
-#'       bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") |> 
-#'         str_remove("/")
-#'       object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/")
-#'       metadata <- s3read_using(FUN = read_json, 
-#'                                object = object, 
-#'                                bucket = bucket, 
-#'                                opts = list(region = "", base_url = parsed_url$hostname))
-#'     }
-#'   } else {
-#'     metadata <- read_json(file.path(path, ".zarray"))
-#'   }
-#'   
-#'     
-#'   } else {
-#'     zarray_path <- file.path(path, ".zarray")
-#'   }
-#'   
-#' }

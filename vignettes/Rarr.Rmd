@@ -73,12 +73,23 @@ read_zarr_array(zarr_example, index = index)
 
 ```{r, read-from-s3}
 s3_address = "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-z2 <- read_zarr_array(s3_address, index = list(c(1,10), NULL, NULL))
 ```
 
-```{r, plot-raster} 
+
+```{r, s3-overview}
+zarr_overview( s3_address )
+```
+
+The output above indicates that the array is stored in 50 chunks, each containing a slice of the overall data.  
+In the example below we use the `index` argument to extract the first and tenth slices from the array.
+We then plot these on top of one another using the `image()` function.
+
+```{r, plot-raster}
+z2 <- read_zarr_array(s3_address, index = list(c(1,10), NULL, NULL))
+## plot the first slice in blue
 image(log2(z2[1,,]), col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100/100), 
       asp = dim(z2)[2] / dim(z2)[3], axes = FALSE)
+## overlay the tenth slice in green
 image(log2(z2[2,,]), col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100/100), 
       asp = dim(z2)[2] / dim(z2)[3], axes = FALSE, add = TRUE)
 ```

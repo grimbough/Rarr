@@ -129,7 +129,10 @@ url_parse_aws <- function(url) {
 .normalize_array_path <- function(path) {
   
   ## we strip the protocol because it gets messed up by the slash removal later on
-  protocol <- gsub(x = path, pattern = "^((https?://)|(s3://)).*$", replacement = "\\1")
+  if(grepl(x = path, pattern = "^((https?://)|(s3://)).*$"))
+    protocol <- gsub(x = path, pattern = "^((https?://)|(s3://)).*$", replacement = "\\1")
+  else 
+    protocol <- "/"
   path <- gsub(x = path, pattern = "^((https?://)|(s3://))(.*$)", replacement = "\\4")
   
   ## Replace all backward slash characters ("\\") with forward slash characters ("/")

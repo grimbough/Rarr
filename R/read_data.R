@@ -42,6 +42,7 @@
 #' @export
 read_zarr_array <- function(zarr_array_path, index) {
   
+  zarr_array_path <- .normalize_array_path(zarr_array_path)
   ## determine if this is a local or S3 array
   s3_provider <- s3_provider(path = zarr_array_path)
   
@@ -55,7 +56,7 @@ read_zarr_array <- function(zarr_array_path, index) {
   
   #res <- read_data_orig(required_chunks, zarr_array_path, s3_provider, index, metadata)
   res <- read_data_v2(required_chunks, zarr_array_path, s3_provider, index, metadata)
-
+  
   if(isTRUE(res$warn > 0)) {
     warning("Integer overflow detected in at least one chunk.\n",
             "Overflowing values have been replaced with NA",
@@ -122,7 +123,7 @@ read_data_v2 <- function(required_chunks, zarr_array_path, s3_provider, index, m
       which_indices <- which((index[[j]]-1) %/% metadata$chunks[[j]] == required_chunks[i,j])
       index_in_chunk[[j]] <- ((index[[j]][which_indices]-1) %% metadata$chunks[[j]])+1
     }
-
+    
     ## read this chunk
     chunk <- read_chunk(zarr_array_path, 
                         chunk_id = required_chunks[i,],
@@ -194,7 +195,7 @@ read_chunk <- function(zarr_file, chunk_id, metadata, s3_provider = NULL) {
   
   datatype <- .parse_datatype(metadata$dtype)
   chunk_dim <- unlist(metadata$chunks)
-  chunk_file <- file.path(zarr_file, chunk_id)
+  chunk_file <- paste0(zarr_file, chunk_id)
   
   if(nzchar(Sys.getenv("RARR_DEBUG"))) { message(chunk_file) }
   
@@ -208,26 +209,16 @@ read_chunk <- function(zarr_file, chunk_id, metadata, s3_provider = NULL) {
   } else {
     
     if(s3_provider == "aws") {
-      
       parsed_url <- url_parse_aws(chunk_file)
-      compressed_chunk <- get_object(
-                   object = parsed_url$object, 
-                   bucket = parsed_url$bucket, 
-                   region = parsed_url$region,
-                   base_url = parsed_url$hostname)
-      
     } else {
-      parsed_url <- url_parse(zarr_file)
-      bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)") |> 
-        str_remove("/")
-      object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/") |>
-        paste(chunk_id, sep = "/")
-      
-      compressed_chunk <- get_object(object = object, 
-                                     bucket = bucket, 
-                                     region = "",
-                                     base_url = parsed_url$hostname)
+      parsed_url <- .url_parse_other(chunk_file)
     }
+    compressed_chunk <- get_object(
+      object = parsed_url$object, 
+      bucket = parsed_url$bucket, 
+      region = parsed_url$region,
+      base_url = parsed_url$hostname)
+    
   }
   
   ## either decompress and format the chunk data
@@ -298,7 +289,6 @@ decompress_chunk <- function(compressed_chunk, metadata) {
   if(decompressor == "blosc") {
     uncompressed_chunk <- .Call("decompress_chunk_BLOSC", compressed_chunk, PACKAGE = "Rarr")
   } else if (decompressor == "zlib") {
-    #uncompressed_chunk <- .Call("decompress_chunk_ZLIB", compressed_chunk, as.integer(buffer_size), PACKAGE = "Rarr")
     uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "gzip", asChar = FALSE)
   } else if (decompressor == "bz2") {
     uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "bzip2", asChar = FALSE)
