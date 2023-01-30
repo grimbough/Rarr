@@ -90,6 +90,7 @@ zarr_overview <- function(zarr_array_path) {
 #' @keywords Internal
 read_array_metadata <- function(path, s3_provider = NULL) {
   
+  path <- .normalize_array_path(path)
   zarray_path <- paste0(path, ".zarray")
   
   if(!is.null(s3_provider)) {

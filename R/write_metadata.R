@@ -6,6 +6,8 @@
   
   zarray$shape <- array_shape
   zarray$chunks <- chunk_shape
+  zarray$dtype <- data_type
+  zarray$compressor <- list(id = "zlib", level = "6")
   zarray$fill_value <- 0
   zarray$dimension_separator <- "."
   zarray$order <- "F"
@@ -16,7 +18,7 @@
   names(zarray)[length(zarray)] <- "filters"
   
   json <- .format_json(toJSON(zarray, auto_unbox = TRUE, pretty = TRUE, null = "null"))
-  write_json(x = json, path = path)
+  write(x = json, file = path)
   
 }
 
