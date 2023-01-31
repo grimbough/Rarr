@@ -106,26 +106,26 @@ that can be found in a Zarr array.  In some instances there are also limitations
 datatypes natively supported by R, requiring conversion from the Zarr datatype.  The table below summarises the current status of
 datatype support.  It will be updated as progress is made.
 
-| Zarr Data Type | Status | Notes |
-|-----------|--------|-------|
-|`int8`  |&#x2754;||
-|`uint8` |&#x2714;||
-|`int16` |&#x2754;||
-|`uint16`|&#x2714;||
-|`int32` |&#x2714;||
-|`uint32`|&#x2714;|Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
-|`int64`|&#x2714;|Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
-|`uint64`|&#x2714;|Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
-|`half` / `float16`|&#x2714;| Converted to `double` in R.  No effort is made to assess loss of precision due to conversion.  |
-|`single` / `float32`|&#x2714;| Converted to `double` in R.  No effort is made to assess loss of precision due to conversion. |
-|`double` / `float64`|&#x2714;||
-|`complex`|&#x274C;||
-|`timedelta`|&#x274C;||
-|`datetime`|&#x274C;||
-|`string`|&#x2714;||
-|`Unicode`|&#x274C;||
-|`void *`|&#x274C;||
-| Structured data types | &#x274C; | |
+| Zarr Data Type | Status Reading | Status Writing | Notes |
+|-----------|:------:|:--------:|-------|
+|`int8`  |&#x2754;| &#x274C; | |
+|`uint8` |&#x2714;| &#x274C; | |
+|`int16` |&#x2754;| &#x274C; | |
+|`uint16`|&#x2714;| &#x274C; | |
+|`int32` |&#x2714;| &#x274C; | |
+|`uint32`|&#x2714;| |Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
+|`int64`|&#x2714;| |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
+|`uint64`|&#x2714;| |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
+|`half` / `float16`  |&#x2714;| &#x2754; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion.  |
+|`single` / `float32`|&#x2714;| &#x2754; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion. |
+|`double` / `float64`|&#x2714;| &#x2714; | |
+|`complex`           |&#x274C;|          | |
+|`timedelta`|&#x274C;|| |
+|`datetime`|&#x274C;|| |
+|`string`|&#x2714;|| |
+|`Unicode`|&#x274C;|| |
+|`void *`|&#x274C;|| |
+| Structured data types | &#x274C; | | |
 
 ### Compression Tools
 

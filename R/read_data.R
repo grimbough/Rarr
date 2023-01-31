@@ -182,6 +182,8 @@ get_chunk_size <- function(datatype, dimensions) {
   return(buffer_size)
 }
 
+#' @param chunk_id A numeric vector with length equal to the number of
+#'   dimensions of a chunk.
 #' @importFrom aws.s3 get_object
 read_chunk <- function(zarr_file, chunk_id, metadata, s3_provider = NULL) {
   

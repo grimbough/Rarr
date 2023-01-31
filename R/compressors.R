@@ -7,3 +7,7 @@ use_zlib <- function() {
   res <- list(id = "zlib", level = 6)
   return(res)
 }
+
+use_lzma <- function() {
+  res <- list(id = "lzma", format = 1, level = "9")
+}

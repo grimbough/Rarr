@@ -1,6 +1,6 @@
 
 
-.write_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib()) {
+.write_new_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib()) {
   
   path <- .normalize_array_path(path)
   if(!dir.exists(path)) { dir.create(path) }
@@ -17,7 +17,7 @@
   
   chunk_names <- expand.grid(lapply(dim(x) %/% chunk_dim, seq_len)) - 1
   
-  ## iterate of each chunk
+  ## iterate over each chunk
   for(i in seq_len(nrow(chunk_names))) {
     
     chunk_path <- paste0(path, paste(chunk_names[i,], collapse = "."))
@@ -42,13 +42,53 @@
   invisible(return(TRUE))
 }
 
-
+.update_zarr_array <- function(path, x,  index) {
+  
+  stopifnot(is.list(index))
+  
+  metadata <- read_array_metadata(path)
+  zarr_dim <- unlist(metadata$shape)
+  chunk_dim <- unlist(metadata$chunks)
+  
+  chunk_names <- expand.grid(lapply(zarr_dim %/% chunk_dim, seq_len)) - 1
+  
+  ## coerce x to the same shape as the zarr to be updated
+  x <- array(x, dim = vapply(index, length, integer(1)))
+  
+  for(i in seq_len(nrow(chunk_names))) {
+    
+    chunk_path <- paste0(path, paste(chunk_names[i,], collapse = "."))
+    
+    idx_in_zarr <- idx_in_x <- list(); 
+    for(j in seq_along(zarr_dim)) { 
+      idx_in_zarr[[j]] <- index[[j]][ which((index[[j]]-1) %/% chunk_dim[j] == chunk_names[i,j]) ]
+      idx_in_x[[j]] <- which((index[[j]]-1) %/% chunk_dim[j] == chunk_names[i,j])
+    }
+    
+    ## only read and update this chunk if there are some values to be changed
+    if(all(vapply(idx_in_zarr, function(x) { length(x) > 0 }, logical(1)))){
+      
+      idx_in_chunk <- list()
+      for(j in seq_along(zarr_dim)) { 
+        idx_in_chunk[[j]] <- ((idx_in_zarr[[j]]-1) %% chunk_dim[[j]])+1
+      }
+      
+      chunk_in_mem <- read_chunk(zarr_file = path, chunk_id = chunk_names[i,], metadata = metadata)[["chunk_data"]]
+      chunk_in_mem <- .extract_and_replace(chunk_in_mem, idx_in_chunk, R.utils::extract(x, indices = idx_in_x))
+      
+      ## re-compress updated chunk and write back to disk
+      compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = metadata$compressor)
+      writeBin(compressed_chunk, con = chunk_path)
+    }
+  }
+  invisible(return(TRUE))
+}
 
 .compress_chunk <- function(input_chunk, compressor = use_blosc()) {
   
   ## the compression tools need a raw vector
   ## any permuting for "C" ordering needs to happen before this
-  raw_chunk <- .as_raw(as.vector(chunk_in_mem))
+  raw_chunk <- .as_raw(as.vector(input_chunk))
   
   if(compressor$id == "blosc") {
     compressed_chunk <- .Call("compress_chunk_BLOSC", raw_chunk, PACKAGE = "Rarr")
