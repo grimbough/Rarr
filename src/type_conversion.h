@@ -1,8 +1,4 @@
-#include <R.h>
-#include <Rdefines.h>
-#include <Rinternals.h>
-
-#include <stdint.h>
+#include "Rarr.h"
 
 #include "bit64_conversion.h"
 #include "float16_conversion.h"

@@ -7,6 +7,4 @@
   #include "compression_tools/blosc/lib/lz4-1.9.2/lz4hc.h"
 #endif
 
-SEXP decompress_chunk_BLOSC(SEXP input);
-//SEXP decompress_chunk_ZLIB(SEXP input, SEXP _outbuffersize);
-SEXP decompress_chunk_LZ4(SEXP input, SEXP _outbuffersize);
+SEXP compress_chunk_BLOSC(SEXP input);
