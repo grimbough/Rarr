@@ -1,4 +1,4 @@
-
+# write_zarr_array <-function(x, zarr_array_path, chunk_dim)
 
 .write_new_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib()) {
   
@@ -42,11 +42,23 @@
   invisible(return(TRUE))
 }
 
-.update_zarr_array <- function(path, x,  index) {
+#' Update the contents of an existing Zarr array
+#' 
+#' @param zarr_array_path 
+#' @export
+update_zarr_array <- function(zarr_array_path, x,  index) {
   
   stopifnot(is.list(index))
   
   metadata <- read_array_metadata(path)
+
+  data_type <- switch(storage.mode(x),
+                      "integer" = "<i4",
+                      "double"  = "<f8",
+                      "character" = "|S",
+                      NULL)
+  if(data_type != metadata$dtype) { stop("New data is not of the same type as the existing array.") }
+  
   zarr_dim <- unlist(metadata$shape)
   chunk_dim <- unlist(metadata$chunks)
   
@@ -84,7 +96,7 @@
   invisible(return(TRUE))
 }
 
-.compress_chunk <- function(input_chunk, compressor = use_blosc()) {
+.compress_chunk <- function(input_chunk, compressor = use_zlib()) {
   
   ## the compression tools need a raw vector
   ## any permuting for "C" ordering needs to happen before this
@@ -109,18 +121,6 @@
 }
 
 .as_raw <- function(d) { writeBin(d, raw()); }
-
-
-.find_chunks_needed <- function(metadata, index) {
-  
-  index_chunks <- list()
-  for(i in seq_along(index)) {
-    index_chunks[[i]] <- unique((index[[i]]-1) %/% metadata$chunks[[i]])
-  }
-  
-  required_chunks <- expand.grid(index_chunks)
-  return(required_chunks)
-}
 
 .check_chunk_shape <- function(x_dim, chunk_dim) {
   

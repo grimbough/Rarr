@@ -182,13 +182,26 @@ get_chunk_size <- function(datatype, dimensions) {
   return(buffer_size)
 }
 
-#' @param chunk_id A numeric vector with length equal to the number of
-#'   dimensions of a chunk.
+#' Read a single Zarr chunk
+#'
+#' @param zarr_array_path A character vector of length 1, giving the path to the
+#'   Zarr array
+#' @param chunk_id A numeric vector or single data.frame row with length equal
+#'   to the number of dimensions of a chunk.
+#' @param List produced by [read_array_metadata()] holding the contents of the
+#'   `.zarray` file. If missing this function will be called automatically, but
+#'   it is probably preferable to pass the meta data rather than read it
+#'   repeatedly for every chunk.
+#' @param s3_provider Character indicating whether the Zarr is store on S3 and
+#'   if so which platform.  Valid entries are "aws" or "other".  Leave as `NULL`
+#'   for a file on local storage.
+#'
 #' @importFrom aws.s3 get_object
-read_chunk <- function(zarr_file, chunk_id, metadata, s3_provider = NULL) {
+#' @keywords Internal
+read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL) {
   
   if(missing(metadata)) {
-    metadata <- read_array_metadata(zarr_file, s3_provider = s3_provider)
+    metadata <- read_array_metadata(zarr_array_path, s3_provider = s3_provider)
   }
   
   dim_separator <- ifelse(is.null(metadata$dimension_separator), 

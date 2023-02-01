@@ -129,14 +129,14 @@ datatype support.  It will be updated as progress is made.
 
 ### Compression Tools
 
-| Data Type | Status | Notes |
-|-----------|--------|-------|
-|`zlib / gzip`| &#x2714; | |
-|`bzip2`      | &#x2714; | |
-|`blosc`      | &#x2714; | |
-|`LZMA `      | &#x2714; | |
-|`LZ4`        | &#x2714; | |
-|`Zstd`       | &#x274C; | Algorithm is available via blosc |
+| Data Type   | Status<br/>(reading / writing) | Notes |
+|-------------|:--------:|-------|
+|`zlib / gzip`| &#x2714; / &#x2714; | Only system default compression level (normally 6) is enabled for writing. |
+|`bzip2`      | &#x2714; / &#x2714; | Only compression level 9 is enabled for writing. |
+|`blosc`      | &#x2714; / &#x2714; | Only `lz4` compression level 5 is enabled for writing. |
+|`LZMA `      | &#x2714; / &#x2754; | |
+|`LZ4`        | &#x2714; / &#x274C; | |
+|`Zstd`       | &#x274C; / &#x274C; | Algorithm is available via blosc |
 
 Please open an [issue](https://github.com/grimbough/Rarr/issues) if support for a required compression tool is missing.
 
