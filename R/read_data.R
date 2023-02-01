@@ -210,7 +210,7 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL) 
   
   datatype <- .parse_datatype(metadata$dtype)
   chunk_dim <- unlist(metadata$chunks)
-  chunk_file <- paste0(zarr_file, chunk_id)
+  chunk_file <- paste0(zarr_array_path, chunk_id)
   
   if(nzchar(Sys.getenv("RARR_DEBUG"))) { message(chunk_file) }
   

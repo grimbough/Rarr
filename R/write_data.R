@@ -85,7 +85,7 @@ update_zarr_array <- function(zarr_array_path, x,  index) {
         idx_in_chunk[[j]] <- ((idx_in_zarr[[j]]-1) %% chunk_dim[[j]])+1
       }
       
-      chunk_in_mem <- read_chunk(zarr_file = path, chunk_id = chunk_names[i,], metadata = metadata)[["chunk_data"]]
+      chunk_in_mem <- read_chunk(zarr_array_path = path, chunk_id = chunk_names[i,], metadata = metadata)[["chunk_data"]]
       chunk_in_mem <- .extract_and_replace(chunk_in_mem, idx_in_chunk, R.utils::extract(x, indices = idx_in_x))
       
       ## re-compress updated chunk and write back to disk
