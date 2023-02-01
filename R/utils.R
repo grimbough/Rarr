@@ -60,7 +60,7 @@ url_parse_aws <- function(url) {
     object <- tmp$path
     region <- gsub(x = tmp$hostname, pattern = "^.*\\.s3\\.([a-z0-9-]*)\\.amazonaws\\.com$", replacement = "\\1", ignore.case = TRUE)
   } else {
-    stop("Unknown AWS path style.  Please report this the package maintainer.")
+    stop("Unknown AWS path style.  Please report this to the package maintainer.")
   }
   
   res <- list(bucket = bucket, object = object, region = region, hostname = "s3.amazonaws.com")  
@@ -70,8 +70,8 @@ url_parse_aws <- function(url) {
 #' @keywords Internal
 .url_parse_other <- function(url) {
   parsed_url <- url_parse(url)
-  bucket <- str_extract(parsed_url$path, pattern = "^/([[:alnum:]-]*)")
-  object <- str_remove(string = parsed_url$path, pattern = "^/[[:alnum:]-_]*/")
+  bucket <- gsub(x = parsed_url$path, pattern = "^/([[a-z0-9\\.-]*)/.*", replacement = "\\1", ignore.case = TRUE)
+  object <- gsub(x = parsed_url$path, pattern = "^/([a-z0-9\\.-]*)/(.*)", replacement = "\\2", ignore.case = TRUE)
   res <- list(bucket = bucket, object = object, region = "", hostname = parsed_url$hostname)  
   return(res)
 }
