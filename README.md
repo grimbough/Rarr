@@ -37,7 +37,7 @@ Endianness:  little
 Compressor: blosc
 ```
 
-This is useful, as to read the array with **Rarr** you need to know the shape and size of the array (unless you want to read the entire array).  From the output above we can see our example array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
+This is useful, as to read the array with **Rarr** you need to know the shape and size of the array (unless you want to read the entire array).  From the output above we can see our example array has three dimensions and is of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
 The list must have the same length as the number of dimensions in our array.
 
 ```{r}
