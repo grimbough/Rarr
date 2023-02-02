@@ -93,3 +93,15 @@ image(log2(z2[1,,]), col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100/100),
 image(log2(z2[2,,]), col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100/100), 
       asp = dim(z2)[2] / dim(z2)[3], axes = FALSE, add = TRUE)
 ```
+
+### Using credentials to access private S3 buckets
+
+If you're accessing data in a private S3 bucket, you can set the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to store your credentials.  For example, the key pair below give read-only access to the objects in the bucket `s3.embl.de/rarr-testing`.  
+
+```{r}
+Sys.setenv("AWS_ACCESS_KEY_ID" = "V352gmotks4ZyhfU",
+           "AWS_SECRET_ACCESS_KEY" = "2jveausI91c8P3c7OCRIOrxdLbp3LNW8")
+zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
+```
+
+
