@@ -1,6 +1,6 @@
 
 
-.write_zarray <- function(path, array_shape, chunk_shape, data_type, compressor) {
+.write_zarray <- function(path, array_shape, chunk_shape, data_type, fill_value, compressor) {
   
   zarray <- list()
   
@@ -8,7 +8,7 @@
   zarray$chunks <- chunk_shape
   zarray$dtype <- data_type
   zarray$compressor <- compressor
-  zarray$fill_value <- 0
+  zarray$fill_value <- fill_value
   zarray$dimension_separator <- "."
   zarray$order <- "F"
   zarray$zarr_format <- 2

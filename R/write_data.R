@@ -1,95 +1,131 @@
-.check_datatype <- function(data_type, fill_value) {
+.check_datatype <- function(data_type, fill_value, nchar) {
   
   if(missing(data_type) && missing(fill_value)) {
+    
     stop("Data type cannot be determined if both 'data_type' and 'fill_value' arguments are missing.")
+    
   } else if(missing(data_type) && !missing(fill_value)) {
-    data_type <- switch(storage.mode(fill_value),
+    ## if we only have a fill value, infer the data type from that
+    data_type <- storage.mode(fill_value)
+  } 
+  
+  ## if data type was supplied directly, always use that
+  if(!data_type %in% c("<i4", "<f8", "|S")) {
+    data_type <- switch(data_type,
                         "integer" = "<i4",
                         "double"  = "<f8",
                         "character" = "|S",
                         NULL)
-  } else if(!missing(data_type)) {
-  
-    if(!data_type %in% c("<i4", "<f8", "|S")) {
-      data_type <- switch(data_type,
-                          "integer" = "<i4",
-                          "double"  = "<f8",
-                          "character" = "|S",
-                          NULL)
-    }
-  } else {
-    stop("How did we end up here?")
   }
   
   if(is.null(data_type)) { stop("Currently only able to write integer, double, and character arrays") }
   
-  return(data_type)
+  ## set a default fill value if needed
+  if(missing(fill_value)) {
+    fill_value <- switch(data_type,
+           "<i4" = 0L,
+           "<f8" = 0,
+           "|S"  = "",
+           NULL)
+  }
+  
+  if(data_type == "|S") {
+    if(missing(nchar) || nchar < 1) {
+      stop("The 'nchar' argument must be provided and be a positive integer")
+    }
+    data_type <- paste0("|S", as.integer(nchar))
+  }
+  
+
+  
+  return(list(data_type = data_type, fill_value = fill_value))
   
 }
 
 
+#' Create an (empty) Zarr array
+#'
+#'
+#'
 #' @param path Character vector of length 1 giving the path to the new Zarr
 #'   array.
 #' @param dim Dimensions of the new array.  Should be a numeric vector with the
 #'   same length as the number of dimensions.
 #' @param chunk_dim Dimensions of the array chunks. Should be a numeric vector
 #'   with the same length as the `dim` argument.
+#' @param data_type Character vector giving the data type of the new array.
+#'   Currently this is limited to standard R data types.  Valid options are:
+#'   "integer", "double", "character".  You can also use the analogous NumpPy
+#'   formats: "<i4", "<f8", "|S".  If this argument isn't provided the
+#'   `fill_value` will be used to determine the datatype.
 #' @param compressor What (if any) compression tool should be applied to the
 #'   array chunks.  The default is to use `zlib` compression.
-.create_empty_zarr_array <- function(path, dim, chunk_dim, data_type, compressor = use_zlib(), fill_value, nchar = NULL) {
+#' @param fill_value The default value for uninitialized portions of the array.
+#'   Does not have to be provided, in which case the default for the specified
+#'   data type will be used.
+#' @param nchar For `datatype = "character"` this parameter gives the maximum
+#'   length of the stored strings. It is an error not to specify this for a
+#'   character array, but it is ignored for other data types.
+#'
+#' @returns If successful returns (invisibly) `TRUE`.  However this function is
+#'   primarily called for the size effect of initialising a Zarr array location
+#'   and creating the `.zarray` metadata.
+#'
+#' @export
+create_empty_zarr_array <- function(path, dim, chunk_dim, data_type, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
   
   path <- .normalize_array_path(path)
   if(!dir.exists(path)) { dir.create(path) }
   
-  data_type <- switch(storage.mode(fill_value),
-                      "integer" = "<i4",
-                      "double"  = "<f8",
-                      "character" = "|S",
-                      NULL)
-  if(is.null(data_type)) { stop("Currently only able to write integer, double, and character arrays") }
+  dt <- .check_datatype(data_type = data_type, fill_value = fill_value, nchar = nchar)
+  data_type <- dt$data_type
+  fill_value <- dt$fill_value
   
   .check_chunk_shape(x_dim = dim, chunk_dim = chunk_dim)
   
   .write_zarray(path = paste0(path, ".zarray"), 
-                array_shape = dim(x), 
+                array_shape = dim, 
                 chunk_shape = chunk_dim, 
                 data_type = data_type,
+                fill_value = fill_value,
                 compressor = compressor)
+  
+  invisible(return(TRUE))
   
 }
 
-.write_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib(), fill_value, nchar = NULL) {
+#' @export
+write_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
   
-  if(storage.mode(x) == "character" && is.null(nchar)) { nchar = max(nchar(x)) }
+  if(storage.mode(x) == "character" && missing(nchar)) { nchar = max(nchar(x)) }
   
-  .create_empty_zarr_array(path = path, dim = dim(x), chunk_dim = chunk_dim, 
-                           data_type = storage.mode(x),
-                           fill_value = fill_value, compressor = compressor,
-                           nchar = nchar)
-  
-  if(data_type == "S") { data_type <- paste0("S", max(nchar(x))) }
-
+  create_empty_zarr_array(path = path, dim = dim(x), chunk_dim = chunk_dim, 
+                          data_type = storage.mode(x),
+                          fill_value = fill_value, compressor = compressor,
+                          nchar = nchar)
   
   chunk_names <- expand.grid(lapply(dim(x) %/% chunk_dim, seq_len)) - 1
+  chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
   
   ## iterate over each chunk
-  for(i in seq_len(nrow(chunk_names))) {
-    
-    chunk_path <- paste0(path, paste(chunk_names[i,], collapse = "."))
-    
-    idx_in_array <- list(); 
-    for(j in seq_along(dim(x))) { 
-      idx_in_array[[j]] <- which((seq_len(dim(x)[j])-1) %/% chunk_dim[j] == chunk_names[i,j]) 
-    }
-    
-    chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)
-    
-    compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = compressor)
-    
-    writeBin(compressed_chunk, con = chunk_path)
-    
-  }
+  res <- lapply(chunk_ids, FUN = .write_chunk, x = x, path = path, compressor = compressor)
+  
+  invisible(return(all(unlist(res))))
+}
 
+.write_chunk <- function(chunk_id, x, path, compressor) {
+  
+  chunk_id_split <- as.integer(strsplit(chunk_id, ".", fixed = TRUE)[[1]])
+  chunk_path <- paste0(path, chunk_id)
+  
+  idx_in_array <- list(); 
+  for(j in seq_along(dim(x))) { 
+    idx_in_array[[j]] <- which((seq_len(dim(x)[j])-1) %/% chunk_dim[j] == chunk_id_split[j])
+  }
+  
+  chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)
+  compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = compressor)
+  writeBin(compressed_chunk, con = chunk_path)
   invisible(return(TRUE))
 }
 
@@ -102,7 +138,7 @@ update_zarr_array <- function(zarr_array_path, x,  index) {
   stopifnot(is.list(index))
   
   metadata <- read_array_metadata(path)
-
+  
   data_type <- switch(storage.mode(x),
                       "integer" = "<i4",
                       "double"  = "<f8",
@@ -161,9 +197,9 @@ update_zarr_array <- function(zarr_array_path, x,  index) {
     compressed_chunk <- memCompress(from = raw_chunk, type = "bzip2")
   } else if (compressor$id == "lzma") {
     compressed_chunk <- memCompress(from = raw_chunk, type = "xz")
-  #} else if (compressor$id == "lz4") {
+    #} else if (compressor$id == "lz4") {
     ## numpy codecs stores the original size of the buffer in the first 4 bytes; we exclude those
-  #  compressed_chunk <- .Call("decompress_chunk_LZ4", compressed_chunk[-(1:4)], as.integer(buffer_size), PACKAGE = "Rarr")
+    #  compressed_chunk <- .Call("decompress_chunk_LZ4", compressed_chunk[-(1:4)], as.integer(buffer_size), PACKAGE = "Rarr")
   } else {
     stop("Unsupported compression tool")
   }
