@@ -84,7 +84,8 @@ The output above indicates that the array is stored in 50 chunks, each containin
 In the example below we use the `index` argument to extract the first and tenth slices from the array.
 We then plot these on top of one another using the `image()` function.
 
-```{r, plot-raster}
+```{r, plot-raster, echo = 2:4}
+par(mar = c(0,0,0,0))
 z2 <- read_zarr_array(s3_address, index = list(c(1,10), NULL, NULL))
 ## plot the first slice in blue
 image(log2(z2[1,,]), col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100/100), 
@@ -96,7 +97,13 @@ image(log2(z2[2,,]), col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100/100),
 
 ### Using credentials to access private S3 buckets
 
-If you're accessing data in a private S3 bucket, you can set the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to store your credentials.  For example, the key pair below give read-only access to the objects in the bucket `s3.embl.de/rarr-testing`.  
+If you're accessing data in a private S3 bucket, you can set the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to store your credentials.  For example, lets try reading a file in a private S3 bucket:
+
+```{r, s3-forbidden,  error=TRUE}
+zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
+```
+
+We can see the "Access Denied" message in our output, indicating that we don't have persmissions to access this resource.  However, if we use the key pair below, which give read-only access to the objects in the `r`arr-testing` bucket, we're now able to interogate the files with functions in *Rarr*.
 
 ```{r}
 Sys.setenv("AWS_ACCESS_KEY_ID" = "V352gmotks4ZyhfU",
