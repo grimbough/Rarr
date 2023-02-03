@@ -1,19 +1,74 @@
-# write_zarr_array <-function(x, zarr_array_path, chunk_dim)
+.check_datatype <- function(data_type, fill_value) {
+  
+  if(missing(data_type) && missing(fill_value)) {
+    stop("Data type cannot be determined if both 'data_type' and 'fill_value' arguments are missing.")
+  } else if(missing(data_type) && !missing(fill_value)) {
+    data_type <- switch(storage.mode(fill_value),
+                        "integer" = "<i4",
+                        "double"  = "<f8",
+                        "character" = "|S",
+                        NULL)
+  } else if(!missing(data_type)) {
+  
+    if(!data_type %in% c("<i4", "<f8", "|S")) {
+      data_type <- switch(data_type,
+                          "integer" = "<i4",
+                          "double"  = "<f8",
+                          "character" = "|S",
+                          NULL)
+    }
+  } else {
+    stop("How did we end up here?")
+  }
+  
+  if(is.null(data_type)) { stop("Currently only able to write integer, double, and character arrays") }
+  
+  return(data_type)
+  
+}
 
-.write_new_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib()) {
+
+#' @param path Character vector of length 1 giving the path to the new Zarr
+#'   array.
+#' @param dim Dimensions of the new array.  Should be a numeric vector with the
+#'   same length as the number of dimensions.
+#' @param chunk_dim Dimensions of the array chunks. Should be a numeric vector
+#'   with the same length as the `dim` argument.
+#' @param compressor What (if any) compression tool should be applied to the
+#'   array chunks.  The default is to use `zlib` compression.
+.create_empty_zarr_array <- function(path, dim, chunk_dim, data_type, compressor = use_zlib(), fill_value, nchar = NULL) {
   
   path <- .normalize_array_path(path)
   if(!dir.exists(path)) { dir.create(path) }
   
-  data_type <- switch(storage.mode(x),
+  data_type <- switch(storage.mode(fill_value),
                       "integer" = "<i4",
                       "double"  = "<f8",
                       "character" = "|S",
                       NULL)
-  if(data_type == "S") { data_type <- paste0("S", max(nchar(x))) }
   if(is.null(data_type)) { stop("Currently only able to write integer, double, and character arrays") }
+  
+  .check_chunk_shape(x_dim = dim, chunk_dim = chunk_dim)
+  
+  .write_zarray(path = paste0(path, ".zarray"), 
+                array_shape = dim(x), 
+                chunk_shape = chunk_dim, 
+                data_type = data_type,
+                compressor = compressor)
+  
+}
 
-  .check_chunk_shape(x_dim = dim(x), chunk_dim = chunk_dim)
+.write_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib(), fill_value, nchar = NULL) {
+  
+  if(storage.mode(x) == "character" && is.null(nchar)) { nchar = max(nchar(x)) }
+  
+  .create_empty_zarr_array(path = path, dim = dim(x), chunk_dim = chunk_dim, 
+                           data_type = storage.mode(x),
+                           fill_value = fill_value, compressor = compressor,
+                           nchar = nchar)
+  
+  if(data_type == "S") { data_type <- paste0("S", max(nchar(x))) }
+
   
   chunk_names <- expand.grid(lapply(dim(x) %/% chunk_dim, seq_len)) - 1
   
@@ -34,11 +89,7 @@
     writeBin(compressed_chunk, con = chunk_path)
     
   }
-  
-  .write_zarray(path = paste0(path, ".zarray"), array_shape = dim(x), chunk_shape = chunk_dim, 
-                data_type = data_type,
-                compressor = compressor)
-  
+
   invisible(return(TRUE))
 }
 
