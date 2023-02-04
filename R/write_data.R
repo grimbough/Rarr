@@ -97,6 +97,8 @@ create_empty_zarr_array <- function(path, dim, chunk_dim, data_type, compressor 
 #' @export
 write_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
   
+  path <- .normalize_array_path(path)
+  
   if(storage.mode(x) == "character" && missing(nchar)) { nchar = max(nchar(x)) }
   
   create_empty_zarr_array(path = path, dim = dim(x), chunk_dim = chunk_dim, 
@@ -108,12 +110,13 @@ write_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib(), fill_v
   chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
   
   ## iterate over each chunk
-  res <- lapply(chunk_ids, FUN = .write_chunk, x = x, path = path, compressor = compressor)
+  res <- lapply(chunk_ids, FUN = .write_chunk, x = x, path = path, 
+                chunk_dim = chunk_dim, compressor = compressor)
   
   invisible(return(all(unlist(res))))
 }
 
-.write_chunk <- function(chunk_id, x, path, compressor) {
+.write_chunk <- function(chunk_id, x, path, chunk_dim, compressor) {
   
   chunk_id_split <- as.integer(strsplit(chunk_id, ".", fixed = TRUE)[[1]])
   chunk_path <- paste0(path, chunk_id)
