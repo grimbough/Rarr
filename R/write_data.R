@@ -1,9 +1,7 @@
 .check_datatype <- function(data_type, fill_value, nchar) {
   
   if(missing(data_type) && missing(fill_value)) {
-    
     stop("Data type cannot be determined if both 'data_type' and 'fill_value' arguments are missing.")
-    
   } else if(missing(data_type) && !missing(fill_value)) {
     ## if we only have a fill value, infer the data type from that
     data_type <- storage.mode(fill_value)
@@ -23,10 +21,10 @@
   ## set a default fill value if needed
   if(missing(fill_value)) {
     fill_value <- switch(data_type,
-           "<i4" = 0L,
-           "<f8" = 0,
-           "|S"  = "",
-           NULL)
+                         "<i4" = 0L,
+                         "<f8" = 0,
+                         "|S"  = "",
+                         NULL)
   }
   
   if(data_type == "|S") {
@@ -36,10 +34,7 @@
     data_type <- paste0("|S", as.integer(nchar))
   }
   
-
-  
   return(list(data_type = data_type, fill_value = fill_value))
-  
 }
 
 

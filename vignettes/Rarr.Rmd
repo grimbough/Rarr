@@ -34,7 +34,7 @@ Rpackage("Rarr") can be used to read files either on local disk or on remote S3 
 
 ## Reading a subset from a local Zarr array
 
-The are some example Zarr arrays in the package.  These were created using 
+The are some example Zarr arrays in the package.  These were created using the  Zarr Python implementation.
 
 ```{r, local-examples}
 list.dirs(system.file("extdata", "zarr_examples", package = "Rarr"), recursive = TRUE) |> 
