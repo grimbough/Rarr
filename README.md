@@ -91,52 +91,78 @@ path <- 's3://mghp.osn.xsede.org/bir190004-bucket01/TMA11/zarr/10.zarr'
 read_zarr_array(path, index = list(1, 1:10, 1:10))
 ```
 
+## Writing an R array to Zarr
+
+```r
+path_to_new_zarr <- file.path(tempdir(), "new.zarr")
+x <- array(1:50, dim = c(10,5))
+write_zarr_array(x = x, zarr_array_path = path_to_new_zarr, chunk_dim = c(5,1))
+```
+
+```r
+read_zarr_array(path_to_new_zarr)
+```
+
+```
+      [,1] [,2] [,3] [,4] [,5]
+ [1,]    1   11   21   31   41
+ [2,]    2   12   22   32   42
+ [3,]    3   13   23   33   43
+ [4,]    4   14   24   34   44
+ [5,]    5   15   25   35   45
+ [6,]    6   16   26   36   46
+ [7,]    7   17   27   37   47
+ [8,]    8   18   28   38   48
+ [9,]    9   19   29   39   49
+[10,]   10   20   30   40   50
+```
+
 
 
 # Current Status
 
-## Reading
+## Reading and Writing
 
-Reading Zarr arrays is partially supported and under active development.  
+Reading Zarr arrays is reasonably well supported. Writing is available, but is more limited.  Both aspects are under active development.  
 
 ### Data Types
 
-Currently there is only support for reading a subset of the possible datatypes
+Currently there is only support for reading and writing a subset of the possible datatypes
 that can be found in a Zarr array.  In some instances there are also limitations on the 
 datatypes natively supported by R, requiring conversion from the Zarr datatype.  The table below summarises the current status of
 datatype support.  It will be updated as progress is made.
 
-| Zarr Data Type | Status Reading | Status Writing | Notes |
-|-----------|:------:|:--------:|-------|
-|`int8`  |&#x2754;| &#x274C; | |
-|`uint8` |&#x2714;| &#x274C; | |
-|`int16` |&#x2754;| &#x274C; | |
-|`uint16`|&#x2714;| &#x274C; | |
-|`int32` |&#x2714;| &#x274C; | |
-|`uint32`|&#x2714;| |Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
-|`int64`|&#x2714;| |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
-|`uint64`|&#x2714;| |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
-|`half` / `float16`  |&#x2714;| &#x2754; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion.  |
-|`single` / `float32`|&#x2714;| &#x2754; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion. |
-|`double` / `float64`|&#x2714;| &#x2714; | |
-|`complex`           |&#x274C;|          | |
-|`timedelta`|&#x274C;|| |
-|`datetime`|&#x274C;|| |
-|`string`|&#x2714;|| |
-|`Unicode`|&#x274C;|| |
-|`void *`|&#x274C;|| |
-| Structured data types | &#x274C; | | |
+| Zarr Data Type | Status<br/>(reading / writing) | Notes |
+|-----------|:--------------:|-------|
+|`int8`  |&#x2754; / &#x274C; | |
+|`uint8` |&#x2714; / &#x274C; | |
+|`int16` |&#x2754; / &#x274C; | |
+|`uint16`|&#x2714; / &#x274C; | |
+|`int32` |&#x2714; / &#x274C; | |
+|`uint32`|&#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
+|`int64`|&#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
+|`uint64`|&#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
+|`half` / `float16`   |&#x2714; / &#x274C; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion.  |
+|`single` / `float32` |&#x2714; / &#x274C; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion. |
+|`double` / `float64` |&#x2714; / &#x2714; | |
+|`complex`            |&#x274C; / &#x274C; | |
+|`timedelta`          | &#x274C; / &#x274C; | |
+|`datetime`           | &#x274C; / &#x274C; | |
+|`string`             | &#x2714; / &#x2714; | |
+|`Unicode`            | &#x274C; / &#x274C; | |
+|`void *`             | &#x274C; / &#x274C; | |
+| Structured data types | &#x274C; / &#x274C; | |
 
 ### Compression Tools
 
 | Data Type   | Status<br/>(reading / writing) | Notes |
-|-------------|:--------:|-------|
+|-------------|:-------------------:|-------|
 |`zlib / gzip`| &#x2714; / &#x2714; | Only system default compression level (normally 6) is enabled for writing. |
 |`bzip2`      | &#x2714; / &#x2714; | Only compression level 9 is enabled for writing. |
 |`blosc`      | &#x2714; / &#x2714; | Only `lz4` compression level 5 is enabled for writing. |
 |`LZMA `      | &#x2714; / &#x2754; | |
 |`LZ4`        | &#x2714; / &#x274C; | |
-|`Zstd`       | &#x274C; / &#x274C; | Algorithm is available via blosc |
+|`Zstd`       | &#x274C; / &#x274C; | Algorithm is available via blosc for writing, but can't currently be access through the R interface |
 
 Please open an [issue](https://github.com/grimbough/Rarr/issues) if support for a required compression tool is missing.
 
@@ -144,6 +170,4 @@ Please open an [issue](https://github.com/grimbough/Rarr/issues) if support for 
 
 The is currently no support for additional filters.  Please open an [issue](https://github.com/grimbough/Rarr/issues) if you require filter support.
 
-# Writing
 
-There is currently no support for writing Zarr arrays with **Rarr**.  This will be added once the reading functionality is more mature.
