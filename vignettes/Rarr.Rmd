@@ -8,12 +8,20 @@ author:
   email: mike.smith@embl.de
 package: "`r BiocStyle::pkg_ver('Rarr')`"
 vignette: >
-  %\VignetteIndexEntry{"Reading Zarr arrays with Rarr"}
+  %\VignetteIndexEntry{"Working with Zarr arrays with Rarr"}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 output: 
   BiocStyle::html_document
 ---
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
 
 **Rarr** is intended to be a simple interface to reading (and eventually writing) individual Zarr arrays.  
 
@@ -32,12 +40,13 @@ library(Rarr)
 
 Rpackage("Rarr") can be used to read files either on local disk or on remote S3 storage systems.  First lets take a look at reading from a local file.
 
-## Reading a subset from a local Zarr array
+## Reading a from a local Zarr array
 
-The are some example Zarr arrays in the package.  These were created using the  Zarr Python implementation.
+The are some example Zarr arrays in the package.  These were created using the Zarr Python implementation.  You can use the code below to list the complete set on your system, however it's a long list so we don't show the output here.
 
-```{r, local-examples}
-list.dirs(system.file("extdata", "zarr_examples", package = "Rarr"), recursive = TRUE) |> 
+```{r, local-examples, echo = TRUE, results = "hide"}
+list.dirs(system.file("extdata", "zarr_examples", package = "Rarr"), 
+          recursive = TRUE) |> 
   grep(pattern = "zarr$", value = TRUE)
 ```
 
@@ -48,13 +57,23 @@ zarr_example <- system.file("extdata", "zarr_examples", "column-first", "int32.z
                       package = "Rarr")
 ```
 
+### Exploring the data
+
 We can get an summary of the array properties, such as its shape and datatype, using the function `zarr_overview()`.  We can see in the output that follows that the data type (`int32`) corresponds to what we expect.
 
 ```{r, overview-1}
 zarr_overview(zarr_example)
 ```
 
-This information is also useful, as to read the array with **Rarr** you need to know the shape and size of the array (unless you want to read the entire array).  From the output above we can see our example array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
+The `zarr_overview()` function also has the argument `as_data_frame` which toggles whether to print the output to screen, as shown above, or to return a `data.frame` containing the array details.  This latter option is useful if you want to compute on the array metadata later.
+
+```{r, overview-2}
+zarr_overview(zarr_example, as_data_frame = TRUE)
+```
+
+### Reading from an array
+
+The summary information retrieved above is required, as to read the array with **Rarr** you need to know the shape and size of the array (unless you want to read the entire array).  From the previous output we can see our example array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
 The list must have the same length as the number of dimensions in our array, with each element of the list corresponding to the indices you want to extract in that dimension.
 
 ```{r}
@@ -73,18 +92,14 @@ read_zarr_array(zarr_example, index = index)
 
 ```{r, read-from-s3}
 s3_address = "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-```
-
-
-```{r, s3-overview}
 zarr_overview( s3_address )
 ```
 
 The output above indicates that the array is stored in 50 chunks, each containing a slice of the overall data.  
 In the example below we use the `index` argument to extract the first and tenth slices from the array.
-We then plot these on top of one another using the `image()` function.
+We then plot these on top of one another using the `image()` function.  Choosing to read only 2 of the 50 slices is much faster than if we opted to download the entire array before accessing the data.
 
-```{r, plot-raster, echo = 2:4}
+```{r, plot-raster, echo = 2:4, cache = TRUE, out.width="30%"}
 par(mar = c(0,0,0,0))
 z2 <- read_zarr_array(s3_address, index = list(c(1,10), NULL, NULL))
 ## plot the first slice in blue
@@ -111,4 +126,26 @@ Sys.setenv("AWS_ACCESS_KEY_ID" = "V352gmotks4ZyhfU",
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
 ```
 
+## Writing to a Zarr array
+
+```{r, example-array}
+x <- array(1:600, dim = c(10,10,6))
+```
+
+```{r}
+path_to_new_zarr <- file.path(tempdir(), "new.zarr")
+write_zarr_array(x = x, zarr_array_path = path_to_new_zarr, chunk_dim = c(10,5,1))
+```
+
+```{r, check-written-array}
+read_zarr_array(zarr_array_path = path_to_new_zarr, index = list(6:10, 10, 1))
+```
+
+# Appendix
+
+## Session info {.unnumbered}
+
+```{r, session-info, echo = FALSE}
+sessionInfo()
+```
 

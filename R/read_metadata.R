@@ -1,29 +1,33 @@
 #' Print a summary of a Zarr array
 #'
 #' When reading a Zarr array using [read_zarr_array()] it is necessary to know
-#' it's shape and size. `zarr_overview()` can be used to get a quick
-#' overview of the array shape and contents, based on the .zarray metadata file
-#' each array contains.
+#' it's shape and size. `zarr_overview()` can be used to get a quick overview of
+#' the array shape and contents, based on the .zarray metadata file each array
+#' contains.
 #'
-#' The function currently prints the following information to the R console: 
+#' The function currently prints the following information to the R console:
 #'  - array path
 #'  - array shape and size
 #'  - chunk and size
 #'  - the number of chunks
 #'  - the datatype of the array
 #'  - codec used for data compression (if any)
-#'  
-#' If given the path to a group of arrays the function will attempt to print
-#' the details of all sub-arrays in the group.
+#'
+#' If given the path to a group of arrays the function will attempt to print the
+#' details of all sub-arrays in the group.
 #'
 #' @param zarr_array_path A character vector of length 1.  This provides the
-#'   path to a Zarr array or group of arrays. This can either be on a local file system or
-#'   on S3 storage.
+#'   path to a Zarr array or group of arrays. This can either be on a local file
+#'   system or on S3 storage.
+#' @param as_data_frame Logical determining whether the Zarr array details
+#'   should be printed to screen (`FALSE`) or returned as a `data.frame`
+#'   (`TRUE`) so they can be used computationally.
 #'
-#' @return The function invisible returns `TRUE` if successful.  However it is
-#'   primarily called for the side effect of printing details of the Zarr array(s)
-#'   to the screen.
-#'   
+#' @return If `as_data_frame = FALSE` the function invisible returns `TRUE` if
+#'   successful.  However it is primarily called for the side effect of printing
+#'   details of the Zarr array(s) to the screen.  If `as_data_frame = TRUE` then
+#'   a `data.frame` containing details of the array is returned.
+#'
 #' @examples
 #'
 #' ## Using a local file provided with the package
@@ -31,14 +35,14 @@
 #'                   "int32.zarr", package = "Rarr")
 #'
 #' ## read the entire array
-#' zarr_overview(zarr_array_path = z1)  
-#' 
+#' zarr_overview(zarr_array_path = z1)
+#'
 #' ## using a file on S3 storage
 #' z2 <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0101A/13457539.zarr/1"
 #' zarr_overview(z2)
 #'
 #' @export
-zarr_overview <- function(zarr_array_path) {
+zarr_overview <- function(zarr_array_path, as_data_frame = FALSE) {
   
   zarr_array_path <- .normalize_array_path(zarr_array_path)
   s3_provider <- s3_provider(path = zarr_array_path)
@@ -47,21 +51,62 @@ zarr_overview <- function(zarr_array_path) {
   if(!is.null(dot_zmeta)) {
     
     arrays <- grep(names(dot_zmeta$metadata), pattern = "/.zarray", fixed = TRUE, value = TRUE)
-    cat("Type: Group of Arrays\n")
-    cat("Path:", normalizePath(zarr_array_path, mustWork = FALSE), "\n")
-    cat("Arrays:\n")
-    for(a in arrays) {
-      cat("---\n")
-      .print_array_metadata(dirname(a), dot_zarray = dot_zmeta$metadata[[ a ]], indent = "  ")
+    
+    if(as_data_frame) {
+      tmp <- lapply(arrays, FUN = .rbind_array_metadata, 
+                    metadata = dot_zmeta$metadata,
+                    zarr_array_path = zarr_array_path)
+      res <- do.call(rbind.data.frame, tmp)
+      return(res)
+    } else {
+    
+      cat("Type: Group of Arrays\n")
+      cat("Path:", normalizePath(zarr_array_path, mustWork = FALSE), "\n")
+      cat("Arrays:\n")
+      for(a in arrays) {
+        cat("---\n")
+        .print_array_metadata(dirname(a), dot_zarray = dot_zmeta$metadata[[ a ]], indent = "  ")
+      }
     }
+    invisible(TRUE)
     
   } else {
     dot_zarray <- read_array_metadata(path = zarr_array_path, s3_provider = s3_provider)
+    if(as_data_frame) {
+      res <- .rbind_array_metadata(array_name = basename(zarr_array_path), metadata = dot_zarray, dirname(zarr_array_path))
+      return(res)
+    } else {
+      
+
     cat("Type: Array\n")
     .print_array_metadata(zarr_array_path, dot_zarray = dot_zarray)
-    
+    invisible(TRUE)
+    }
   }
-  invisible(TRUE)
+  
+}
+
+.rbind_array_metadata <- function(array_name, metadata, zarr_array_path) {
+  
+  if(array_name %in% names(metadata)) {
+    dot_zarray <- metadata[[array_name]]
+    array_name <- dirname(array_name)
+  } else {
+    dot_zarray <- metadata
+  }
+  
+  dt <- .parse_datatype(dot_zarray$dtype)
+  nchunks <- ceiling(unlist(dot_zarray$shape) / unlist(dot_zarray$chunks))
+  
+  res <- data.frame(
+    path       = paste0(.normalize_array_path(zarr_array_path), array_name),
+    nchunks    = prod(nchunks),
+    data_type  = paste0(dt$base_type, 8 * dt$nbytes),
+    compressor = ifelse(is.null(dot_zarray$compressor), NA, dot_zarray$compressor$id)
+  )
+  res$dim       <- list(unlist(dot_zarray$shape))
+  res$chunk_dim <- list(unlist(dot_zarray$chunks))
+  return(res)
 }
 
 .print_array_metadata <- function(zarr_array_path , dot_zarray, indent = "") {

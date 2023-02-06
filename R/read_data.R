@@ -27,7 +27,7 @@
 #' ## first entry in the z-dimension
 #' read_zarr_array(zarr_array_path = z1, index = list(1:10, NULL, 1))
 #'
-#' \dontrun{
+#' \donttest{
 #' ## using a Zarr file hosted on Amazon S3
 #' ## This array has a single dimension with length 128
 #' z2 <- "https://s3.us-west-2.amazonaws.com/cmip6-pds/CMIP3/BCCR/bccr_bcm2_0/piControl/r1i1p1f1/Amon/psl/lon"
@@ -54,8 +54,7 @@ read_zarr_array <- function(zarr_array_path, index) {
   
   required_chunks <- as.matrix(find_chunks_needed(metadata, index))
   
-  #res <- read_data_orig(required_chunks, zarr_array_path, s3_provider, index, metadata)
-  res <- read_data_v2(required_chunks, zarr_array_path, s3_provider, index, metadata)
+  res <- read_data(required_chunks, zarr_array_path, s3_provider, index, metadata)
   
   if(isTRUE(res$warn > 0)) {
     warning("Integer overflow detected in at least one chunk.\n",
@@ -67,47 +66,8 @@ read_zarr_array <- function(zarr_array_path, index) {
   
 }
 
-read_data_orig <- function(required_chunks, zarr_array_path, s3_provider, index, metadata) {
-  
-  ## predefine our array to be populated from the read chunks
-  output <- array(dim = vapply(index, length, integer(1)))
-  
-  warn <- 0L
-  
-  for(i in seq_len(nrow(required_chunks))) {
-    
-    ## find which elements in the output we will replace
-    index_in_result <- list()
-    for(j in seq_len(ncol(required_chunks))) {
-      index_in_result[[j]] <- which((index[[j]]-1) %/% metadata$chunks[[j]] == required_chunks[i,j])
-    }
-    
-    ## read this chunk
-    chunk <- read_chunk(zarr_array_path, 
-                        chunk_id = required_chunks[i,],
-                        metadata = metadata, 
-                        s3_provider = s3_provider)
-    
-    warn <- max(warn, chunk$warning[1])
-    chunk_data <- chunk$chunk_data
-    
-    index_in_chunk <- list()
-    for(j in seq_len(ncol(required_chunks))) {
-      which_indices <- which((index[[j]]-1) %/% metadata$chunks[[j]] == required_chunks[i,j])
-      index_in_chunk[[j]] <- ((index[[j]][which_indices]-1) %% metadata$chunks[[j]])+1
-    }
-    
-    ## extract the required elements and insert into our output array
-    selection <- do.call("[", args = c(list(chunk_data), index_in_chunk, drop = FALSE))
-    output <- do.call("[<-", args = c(list(output), index_in_result, list(selection)))
-  }
-  
-  return(list(output = output, warn = warn))
-  
-}
-
 #' @importFrom R.utils extract
-read_data_v2 <- function(required_chunks, zarr_array_path, s3_provider, index, metadata) {
+read_data <- function(required_chunks, zarr_array_path, s3_provider, index, metadata) {
   
   ## predefine our array to be populated from the read chunks
   output <- array(dim = vapply(index, length, integer(1)))
@@ -270,8 +230,9 @@ format_chunk <- function(uncompressed_chunk, metadata) {
     tmp <- split(uncompressed_chunk, rep(seq_len(length(uncompressed_chunk) / datatype$nbytes), 
                                          each = datatype$nbytes))
     converted_chunk <- list()
-    converted_chunk[[1]] <- sapply(tmp, rawToChar)
+    converted_chunk[[1]] <- vapply(tmp, rawToChar, character(1), USE.NAMES = FALSE)
     dim(converted_chunk[[1]]) <- chunk_dim
+    ## no warning so set the second element to zero
     converted_chunk[[2]] <- 0L
     
   } else {

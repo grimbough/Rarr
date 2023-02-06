@@ -134,12 +134,12 @@ datatype support.  It will be updated as progress is made.
 
 | Zarr Data Type | Status<br/>(reading / writing) | Notes |
 |-----------|:--------------:|-------|
-|`int8`  |&#x2754; / &#x274C; | |
-|`uint8` |&#x2714; / &#x274C; | |
-|`int16` |&#x2754; / &#x274C; | |
-|`uint16`|&#x2714; / &#x274C; | |
-|`int32` |&#x2714; / &#x274C; | |
-|`uint32`|&#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
+|`int8`  | &#x2714; / &#x274C; | |
+|`uint8` | &#x2714; / &#x274C; | |
+|`int16` | &#x2754; / &#x274C; | |
+|`uint16`| &#x2714; / &#x274C; | |
+|`int32` | &#x2714; / &#x274C; | |
+|`uint32`| &#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
 |`int64`|&#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
 |`uint64`|&#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
 |`half` / `float16`   |&#x2714; / &#x274C; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion.  |

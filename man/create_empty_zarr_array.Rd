@@ -53,6 +53,12 @@ and creating the \code{.zarray} metadata.
 \description{
 Create an (empty) Zarr array
 }
+\examples{
+
+new_zarr_array <- file.path(tempdir(), "temp.zarr")
+create_empty_zarr_arry(new_zarr_array, dim = c(10,20), chunk_dim = c(2,5), datatype = "integer")
+
+}
 \seealso{
 \code{\link[=write_zarr_array]{write_zarr_array()}}, \code{\link[=update_zarr_array]{update_zarr_array()}}
 }

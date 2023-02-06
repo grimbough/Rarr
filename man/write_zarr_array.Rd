@@ -43,3 +43,11 @@ in the names of the chunk files.  Valid options are limited to "." and "/".}
 \description{
 Write an R array to Zarr
 }
+\examples{
+
+new_zarr_array <- file.path(tempdir(), "integer.zarr")
+x <- array(1:50, dim = c(10,5))
+write_zarr_arry(x = x, zarr_array_path = new_zarr_array, 
+                chunk_dim = c(2,5))
+
+}

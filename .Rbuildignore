@@ -3,3 +3,4 @@ inst/ext/zarr_docker*
 ^.*\.Rproj$
 ^\.Rproj\.user$
 .github
+vignettes/Rarr_cache*

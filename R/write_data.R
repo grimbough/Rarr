@@ -69,6 +69,11 @@
 #'   and creating the `.zarray` metadata.
 #'   
 #' @seealso [write_zarr_array()], [update_zarr_array()]
+#' 
+#' @examples 
+#' 
+#' new_zarr_array <- file.path(tempdir(), "temp.zarr")
+#' create_empty_zarr_arry(new_zarr_array, dim = c(10,20), chunk_dim = c(2,5), datatype = "integer")
 #'
 #' @export
 create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
@@ -113,13 +118,20 @@ create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type, 
 #'   `nchar` can provide a modest performance improvement.
 #' @param dimension_separator The character used to to separate the dimensions
 #'   in the names of the chunk files.  Valid options are limited to "." and "/".
+#'   
+#' @examples 
+#' 
+#' new_zarr_array <- file.path(tempdir(), "integer.zarr")
+#' x <- array(1:50, dim = c(10,5))
+#' write_zarr_arry(x = x, zarr_array_path = new_zarr_array, 
+#'                 chunk_dim = c(2,5))
 #'
 #' @export
 write_zarr_array <- function(x, zarr_array_path, chunk_dim, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
   
   path <- .normalize_array_path(zarr_array_path)
   
-  if(storage.mode(x) == "character" && missing(nchar)) { nchar = max(nchar(x)) }
+  if(storage.mode(x) == "character" && missing(nchar)) { nchar <- max(nchar(x)) }
   
   create_empty_zarr_array(zarr_array_path = path, dim = dim(x), chunk_dim = chunk_dim, 
                           data_type = storage.mode(x),
@@ -221,7 +233,7 @@ update_zarr_array <- function(zarr_array_path, x,  index) {
   
   if(compressor$id == "blosc") {
     compressed_chunk <- .Call("compress_chunk_BLOSC", raw_chunk, PACKAGE = "Rarr")
-  } else if (compressor$id %in% c("zlib", "gzip")) {
+  } else if (compressor$id %in% c("zlib")) {
     compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
   } else if (compressor$id == "bz2") {
     compressed_chunk <- memCompress(from = raw_chunk, type = "bzip2")
