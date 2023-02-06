@@ -2,13 +2,21 @@
 % Please edit documentation in R/write_data.R
 \name{update_zarr_array}
 \alias{update_zarr_array}
-\title{Update the contents of an existing Zarr array}
+\title{Update (a subset of) an existing Zarr array}
 \usage{
 update_zarr_array(zarr_array_path, x, index)
 }
 \arguments{
-\item{zarr_array_path}{}
+\item{zarr_array_path}{Character vector of length 1 giving the path to the
+Zarr array that is to be modified.}
+
+\item{x}{The R array (or object that can be coerced to an array) that will be
+written to the Zarr array.}
+
+\item{index}{A list with the same length as the number of dimensions of the
+target array. This argument indicates which elements in the target array
+should be updated.}
 }
 \description{
-Update the contents of an existing Zarr array
+Update (a subset of) an existing Zarr array
 }

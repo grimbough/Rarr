@@ -42,7 +42,7 @@
 #'
 #'
 #'
-#' @param path Character vector of length 1 giving the path to the new Zarr
+#' @param zarr_array_path Character vector of length 1 giving the path to the new Zarr
 #'   array.
 #' @param dim Dimensions of the new array.  Should be a numeric vector with the
 #'   same length as the number of dimensions.
@@ -61,15 +61,19 @@
 #' @param nchar For `datatype = "character"` this parameter gives the maximum
 #'   length of the stored strings. It is an error not to specify this for a
 #'   character array, but it is ignored for other data types.
+#' @param dimension_separator The character used to to separate the dimensions
+#'   in the names of the chunk files.  Valid options are limited to "." and "/".
 #'
 #' @returns If successful returns (invisibly) `TRUE`.  However this function is
 #'   primarily called for the size effect of initialising a Zarr array location
 #'   and creating the `.zarray` metadata.
+#'   
+#' @seealso [write_zarr_array()], [update_zarr_array()]
 #'
 #' @export
-create_empty_zarr_array <- function(path, dim, chunk_dim, data_type, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
+create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
   
-  path <- .normalize_array_path(path)
+  path <- .normalize_array_path(zarr_array_path)
   if(!dir.exists(path)) { dir.create(path) }
   
   dt <- .check_datatype(data_type = data_type, fill_value = fill_value, nchar = nchar)
@@ -89,14 +93,35 @@ create_empty_zarr_array <- function(path, dim, chunk_dim, data_type, compressor 
   
 }
 
+#' Write an R array to Zarr
+#'
+#' @param x The R array (or object that can be coerced to an array) that will be
+#'   written to the Zarr array.
+#' @param zarr_array_path Character vector of length 1 giving the path to the new Zarr
+#'   array.
+#' @param chunk_dim Dimensions of the array chunks. Should be a numeric vector
+#'   with the same length as the `dim` argument.
+#' @param compressor What (if any) compression tool should be applied to the
+#'   array chunks.  The default is to use `zlib` compression.
+#' @param fill_value The default value for uninitialized portions of the array.
+#'   Does not have to be provided, in which case the default for the specified
+#'   data type will be used.
+#' @param nchar For character arrays this parameter gives the maximum length of
+#'   the stored strings. If this argument is not specified the array provided to
+#'   `x` will be checked and the length of the longest string found will be used
+#'   so no data are truncated. However this may be slow and providing a value to
+#'   `nchar` can provide a modest performance improvement.
+#' @param dimension_separator The character used to to separate the dimensions
+#'   in the names of the chunk files.  Valid options are limited to "." and "/".
+#'
 #' @export
-write_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
+write_zarr_array <- function(x, zarr_array_path, chunk_dim, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
   
-  path <- .normalize_array_path(path)
+  path <- .normalize_array_path(zarr_array_path)
   
   if(storage.mode(x) == "character" && missing(nchar)) { nchar = max(nchar(x)) }
   
-  create_empty_zarr_array(path = path, dim = dim(x), chunk_dim = chunk_dim, 
+  create_empty_zarr_array(zarr_array_path = path, dim = dim(x), chunk_dim = chunk_dim, 
                           data_type = storage.mode(x),
                           fill_value = fill_value, compressor = compressor,
                           nchar = nchar)
@@ -108,7 +133,7 @@ write_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib(), fill_v
   res <- lapply(chunk_ids, FUN = .write_chunk, x = x, path = path, 
                 chunk_dim = chunk_dim, compressor = compressor)
   
-  invisible(return(all(unlist(res))))
+  return(invisible(all(unlist(res))))
 }
 
 .write_chunk <- function(chunk_id, x, path, chunk_dim, compressor) {
@@ -124,18 +149,25 @@ write_zarr_array <- function(x, path, chunk_dim, compressor = use_zlib(), fill_v
   chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)
   compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = compressor)
   writeBin(compressed_chunk, con = chunk_path)
-  invisible(return(TRUE))
+  return(invisible(TRUE))
 }
 
-#' Update the contents of an existing Zarr array
-#' 
-#' @param zarr_array_path 
+#' Update (a subset of) an existing Zarr array
+#'
+#' @param zarr_array_path Character vector of length 1 giving the path to the
+#'   Zarr array that is to be modified.
+#' @param x The R array (or object that can be coerced to an array) that will be
+#'   written to the Zarr array.
+#' @param index A list with the same length as the number of dimensions of the
+#'   target array. This argument indicates which elements in the target array
+#'   should be updated.
+#'   
 #' @export
 update_zarr_array <- function(zarr_array_path, x,  index) {
   
   stopifnot(is.list(index))
   
-  metadata <- read_array_metadata(path)
+  metadata <- read_array_metadata(zarr_array_path)
   
   data_type <- switch(storage.mode(x),
                       "integer" = "<i4",
@@ -154,7 +186,7 @@ update_zarr_array <- function(zarr_array_path, x,  index) {
   
   for(i in seq_len(nrow(chunk_names))) {
     
-    chunk_path <- paste0(path, paste(chunk_names[i,], collapse = "."))
+    chunk_path <- paste0(zarr_array_path, paste(chunk_names[i,], collapse = "."))
     
     idx_in_zarr <- idx_in_x <- list(); 
     for(j in seq_along(zarr_dim)) { 
@@ -170,7 +202,7 @@ update_zarr_array <- function(zarr_array_path, x,  index) {
         idx_in_chunk[[j]] <- ((idx_in_zarr[[j]]-1) %% chunk_dim[[j]])+1
       }
       
-      chunk_in_mem <- read_chunk(zarr_array_path = path, chunk_id = chunk_names[i,], metadata = metadata)[["chunk_data"]]
+      chunk_in_mem <- read_chunk(zarr_array_path = zarr_array_path, chunk_id = chunk_names[i,], metadata = metadata)[["chunk_data"]]
       chunk_in_mem <- .extract_and_replace(chunk_in_mem, idx_in_chunk, R.utils::extract(x, indices = idx_in_x))
       
       ## re-compress updated chunk and write back to disk
@@ -178,7 +210,7 @@ update_zarr_array <- function(zarr_array_path, x,  index) {
       writeBin(compressed_chunk, con = chunk_path)
     }
   }
-  invisible(return(TRUE))
+  return(invisible(TRUE))
 }
 
 .compress_chunk <- function(input_chunk, compressor = use_zlib()) {
@@ -219,6 +251,6 @@ update_zarr_array <- function(zarr_array_path, x,  index) {
     }
   }
   
-  invisible(return(TRUE))
+  return(invisible(TRUE))
   
 }

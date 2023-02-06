@@ -13,14 +13,14 @@ Zarr array}
 \item{chunk_id}{A numeric vector or single data.frame row with length equal
 to the number of dimensions of a chunk.}
 
-\item{s3_provider}{Character indicating whether the Zarr is store on S3 and
-if so which platform.  Valid entries are "aws" or "other".  Leave as \code{NULL}
-for a file on local storage.}
-
-\item{List}{produced by \code{\link[=read_array_metadata]{read_array_metadata()}} holding the contents of the
+\item{metadata}{List produced by \code{read_array_metadata()} holding the contents of the
 \code{.zarray} file. If missing this function will be called automatically, but
 it is probably preferable to pass the meta data rather than read it
 repeatedly for every chunk.}
+
+\item{s3_provider}{Character indicating whether the Zarr is store on S3 and
+if so which platform.  Valid entries are "aws" or "other".  Leave as \code{NULL}
+for a file on local storage.}
 }
 \description{
 Read a single Zarr chunk

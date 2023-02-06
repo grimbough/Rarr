@@ -2,9 +2,12 @@
 % Please edit documentation in R/utils.R
 \name{.normalize_array_path}
 \alias{.normalize_array_path}
-\title{Taken from https://zarr.readthedocs.io/en/stable/spec/v2.html#logical-storage-paths}
+\title{Normalize a Zarr array path}
 \usage{
 .normalize_array_path(path)
+}
+\arguments{
+\item{path}{Character vector of length 1 giving the path to be normalised.}
 }
 \description{
 Taken from https://zarr.readthedocs.io/en/stable/spec/v2.html#logical-storage-paths

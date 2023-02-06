@@ -123,7 +123,11 @@ url_parse_aws <- function(url) {
 }
 
 
+#' Normalize a Zarr array path
+#' 
 #' Taken from https://zarr.readthedocs.io/en/stable/spec/v2.html#logical-storage-paths
+#' 
+#' @param path Character vector of length 1 giving the path to be normalised.
 #' 
 #' @keywords Internal
 .normalize_array_path <- function(path) {

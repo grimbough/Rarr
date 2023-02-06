@@ -188,7 +188,7 @@ get_chunk_size <- function(datatype, dimensions) {
 #'   Zarr array
 #' @param chunk_id A numeric vector or single data.frame row with length equal
 #'   to the number of dimensions of a chunk.
-#' @param List produced by [read_array_metadata()] holding the contents of the
+#' @param metadata List produced by `read_array_metadata()` holding the contents of the
 #'   `.zarray` file. If missing this function will be called automatically, but
 #'   it is probably preferable to pass the meta data rather than read it
 #'   repeatedly for every chunk.
