@@ -129,6 +129,8 @@ url_parse_aws <- function(url) {
 #' 
 #' @param path Character vector of length 1 giving the path to be normalised.
 #' 
+#' @returns A character vector of length 1 containing the normalised path.
+#' 
 #' @keywords Internal
 .normalize_array_path <- function(path) {
   

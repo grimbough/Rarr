@@ -126,20 +126,20 @@ get_chunk_size <- function(datatype, dimensions) {
   
   ## determine the size of the R datatype we're going to return
   sizeof <- switch(datatype$base_type,
-                   "boolean" = 4,
-                   "int"     = 4,
-                   "uint"    = 4,
-                   "float"   = 8,
+                   "boolean" = 4L,
+                   "int"     = 4L,
+                   "uint"    = 4L,
+                   "float"   = 8L,
                    # "complex",
                    # "timedelta",
                    # "datetime",
-                   "string"  = datatype$nbytes,
+                   "string"  = as.integer(datatype$nbytes),
                    # "unicode",
-                   "other"   = 1)
+                   "other"   = 1L)
   
   buffer_size <- prod(unlist(dimensions), sizeof)
   
-  return(buffer_size)
+  return(as.integer(buffer_size))
 }
 
 #' Read a single Zarr chunk
@@ -148,13 +148,18 @@ get_chunk_size <- function(datatype, dimensions) {
 #'   Zarr array
 #' @param chunk_id A numeric vector or single data.frame row with length equal
 #'   to the number of dimensions of a chunk.
-#' @param metadata List produced by `read_array_metadata()` holding the contents of the
-#'   `.zarray` file. If missing this function will be called automatically, but
-#'   it is probably preferable to pass the meta data rather than read it
-#'   repeatedly for every chunk.
+#' @param metadata List produced by `read_array_metadata()` holding the contents
+#'   of the `.zarray` file. If missing this function will be called
+#'   automatically, but it is probably preferable to pass the meta data rather
+#'   than read it repeatedly for every chunk.
 #' @param s3_provider Character indicating whether the Zarr is store on S3 and
 #'   if so which platform.  Valid entries are "aws" or "other".  Leave as `NULL`
 #'   for a file on local storage.
+#'
+#' @returns A list of length 2.  The entries should be names "chunk_data" and
+#'   "warning". The first is an array containing the decompressed chunk values,
+#'   the second is an integer indicating whether there were any overflow
+#'   warnings generated will reading the chunk into an R datatype.
 #'
 #' @importFrom aws.s3 get_object
 #' @keywords Internal
@@ -182,7 +187,6 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL) 
       compressed_chunk <- NULL
     }
   } else {
-    
     if(s3_provider == "aws") {
       parsed_url <- url_parse_aws(chunk_file)
     } else {
@@ -193,7 +197,6 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL) 
       bucket = parsed_url$bucket, 
       region = parsed_url$region,
       base_url = parsed_url$hostname)
-    
   }
   
   ## either decompress and format the chunk data
@@ -209,7 +212,6 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL) 
   }
   
   return(converted_chunk)
-  
 }
 
 #' @returns A list of length 2.  The first element is the formatted chunk data.
@@ -272,7 +274,7 @@ decompress_chunk <- function(compressed_chunk, metadata) {
     uncompressed_chunk <- memDecompress(from = compressed_chunk, type = "xz", asChar = FALSE)
   } else if (decompressor == "lz4") {
     ## numpy codecs stores the original size of the buffer in the first 4 bytes; we exclude those
-    uncompressed_chunk <- .Call("decompress_chunk_LZ4", compressed_chunk[-(1:4)], as.integer(buffer_size), PACKAGE = "Rarr")
+    uncompressed_chunk <- .Call("decompress_chunk_LZ4", tail(x = compressed_chunk, n = -4L), as.integer(buffer_size), PACKAGE = "Rarr")
   } else {
     stop("Unsupported compression tool")
   }

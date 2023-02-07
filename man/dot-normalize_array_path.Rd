@@ -9,6 +9,9 @@
 \arguments{
 \item{path}{Character vector of length 1 giving the path to be normalised.}
 }
+\value{
+A character vector of length 1 containing the normalised path.
+}
 \description{
 Taken from https://zarr.readthedocs.io/en/stable/spec/v2.html#logical-storage-paths
 }

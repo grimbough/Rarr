@@ -18,8 +18,8 @@ write_zarr_array(
 \item{x}{The R array (or object that can be coerced to an array) that will be
 written to the Zarr array.}
 
-\item{zarr_array_path}{Character vector of length 1 giving the path to the new Zarr
-array.}
+\item{zarr_array_path}{Character vector of length 1 giving the path to the
+new Zarr array.}
 
 \item{chunk_dim}{Dimensions of the array chunks. Should be a numeric vector
 with the same length as the \code{dim} argument.}
@@ -40,6 +40,10 @@ so no data are truncated. However this may be slow and providing a value to
 \item{dimension_separator}{The character used to to separate the dimensions
 in the names of the chunk files.  Valid options are limited to "." and "/".}
 }
+\value{
+The function is primarily called for the side effect of writing to
+disk. Returns (invisibly) \code{TRUE} if the array is successfully written.
+}
 \description{
 Write an R array to Zarr
 }
@@ -47,7 +51,7 @@ Write an R array to Zarr
 
 new_zarr_array <- file.path(tempdir(), "integer.zarr")
 x <- array(1:50, dim = c(10,5))
-write_zarr_arry(x = x, zarr_array_path = new_zarr_array, 
+write_zarr_arry(x = x, zarr_array_path = new_zarr_array,
                 chunk_dim = c(2,5))
 
 }

@@ -13,14 +13,20 @@ Zarr array}
 \item{chunk_id}{A numeric vector or single data.frame row with length equal
 to the number of dimensions of a chunk.}
 
-\item{metadata}{List produced by \code{read_array_metadata()} holding the contents of the
-\code{.zarray} file. If missing this function will be called automatically, but
-it is probably preferable to pass the meta data rather than read it
-repeatedly for every chunk.}
+\item{metadata}{List produced by \code{read_array_metadata()} holding the contents
+of the \code{.zarray} file. If missing this function will be called
+automatically, but it is probably preferable to pass the meta data rather
+than read it repeatedly for every chunk.}
 
 \item{s3_provider}{Character indicating whether the Zarr is store on S3 and
 if so which platform.  Valid entries are "aws" or "other".  Leave as \code{NULL}
 for a file on local storage.}
+}
+\value{
+A list of length 2.  The entries should be names "chunk_data" and
+"warning". The first is an array containing the decompressed chunk values,
+the second is an integer indicating whether there were any overflow
+warnings generated will reading the chunk into an R datatype.
 }
 \description{
 Read a single Zarr chunk
