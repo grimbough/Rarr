@@ -258,6 +258,7 @@ format_chunk <- function(uncompressed_chunk, metadata) {
   return(converted_chunk)
 }
 
+#' @importFrom utils tail
 decompress_chunk <- function(compressed_chunk, metadata) {
   
   decompressor <- metadata$compressor$id

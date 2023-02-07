@@ -73,7 +73,8 @@
 #' @examples 
 #' 
 #' new_zarr_array <- file.path(tempdir(), "temp.zarr")
-#' create_empty_zarr_arry(new_zarr_array, dim = c(10,20), chunk_dim = c(2,5), datatype = "integer")
+#' create_empty_zarr_array(new_zarr_array, dim = c(10,20), chunk_dim = c(2,5), 
+#'                         data_type = "integer")
 #'
 #' @export
 create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type, 
@@ -128,7 +129,7 @@ create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
 #'
 #' new_zarr_array <- file.path(tempdir(), "integer.zarr")
 #' x <- array(1:50, dim = c(10,5))
-#' write_zarr_arry(x = x, zarr_array_path = new_zarr_array,
+#' write_zarr_array(x = x, zarr_array_path = new_zarr_array,
 #'                 chunk_dim = c(2,5))
 #'
 #' @export
@@ -147,6 +148,7 @@ write_zarr_array <- function(x, zarr_array_path, chunk_dim, compressor = use_zli
   chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
   
   ## iterate over each chunk
+  ## TODO: maybe this can be done in parallel is bplapply() ?
   res <- lapply(chunk_ids, FUN = .write_chunk, x = x, path = path, 
                 chunk_dim = chunk_dim, compressor = compressor)
   
@@ -217,50 +219,59 @@ update_zarr_array <- function(zarr_array_path, x,  index) {
   zarr_dim <- unlist(metadata$shape)
   chunk_dim <- unlist(metadata$chunks)
   
-  chunk_names <- expand.grid(lapply(zarr_dim %/% chunk_dim, seq_len)) - 1
-  
   ## coerce x to the same shape as the zarr to be updated
   x <- array(x, dim = vapply(index, length, integer(1)))
   
+  ## create all possible chunk names, then remove those that won't be touched
+  chunk_names <- expand.grid(lapply(zarr_dim %/% chunk_dim, seq_len)) - 1
+  chunk_needed <- rep(FALSE, nrow(chunk_names))
   for(i in seq_len(nrow(chunk_names))) {
-    
-    chunk_path <- paste0(zarr_array_path, paste(chunk_names[i,], collapse = "."))
-    
-    idx_in_zarr <- idx_in_x <- list(); 
+    idx_in_zarr <- list()
     for(j in seq_along(zarr_dim)) { 
       idx_in_zarr[[j]] <- index[[j]][ which((index[[j]]-1) %/% chunk_dim[j] == chunk_names[i,j]) ]
-      idx_in_x[[j]] <- which((index[[j]]-1) %/% chunk_dim[j] == chunk_names[i,j])
     }
-    
-    ## only read and update this chunk if there are some values to be changed
-    if(all(vapply(idx_in_zarr, function(x) { length(x) > 0 }, logical(1)))){
-      
-      idx_in_chunk <- list()
-      for(j in seq_along(zarr_dim)) { 
-        idx_in_chunk[[j]] <- ((idx_in_zarr[[j]]-1) %% chunk_dim[[j]])+1
-      }
-      
-      chunk_in_mem <- read_chunk(zarr_array_path = zarr_array_path, 
-                                 chunk_id = chunk_names[i,], 
-                                 metadata = metadata)[["chunk_data"]]
-      chunk_in_mem <- .extract_and_replace(chunk_in_mem, idx_in_chunk, 
-                                           R.utils::extract(x, indices = idx_in_x))
-      
-      ## re-compress updated chunk and write back to disk
-      compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = metadata$compressor)
-      writeBin(compressed_chunk, con = chunk_path)
-    }
+    chunk_needed[i] <- all(lengths(idx_in_zarr) > 0)
   }
-  return(invisible(TRUE))
+  chunk_names <- chunk_names[chunk_needed, , drop = FALSE]
+  chunk_ids <- apply(chunk_names, 1, paste0, collapse = metadata$dimension_separator)
+  
+  ## only update the chunks that need to be
+  ## TODO: maybe this can be done in parallel is bplapply() ?
+  res <- lapply(chunk_ids, FUN = .update_chunk, x = x, path = zarr_array_path, 
+                chunk_dim = chunk_dim, index = index,
+                metadata = metadata)
+  
+  return(invisible(all(unlist(res))))
 }
 
-.update_chunk <- function(chunk_id, x, path, chunk_dim, compressor) {
+.update_chunk <- function(chunk_id, x, path, chunk_dim, index, 
+                          metadata) {
   
-  chunk_id_split <- as.integer(strsplit(chunk_id, ".", fixed = TRUE)[[1]])
+  chunk_id_split <- as.integer(
+    strsplit(chunk_id, metadata$dimension_separator, 
+             fixed = TRUE)[[1]]
+  )
   chunk_path <- paste0(path, chunk_id)
   
+  ## determine which elements of x are being used and where in this specific
+  ## chunk they should be inserted
+  ## TODO: This is pretty ugly, maybe there's something more elegant
+  idx_in_zarr <- idx_in_x <- idx_in_chunk <- list(); 
+  for(j in seq_along(chunk_dim)) { 
+    idx_in_zarr[[j]]  <- index[[j]][ which((index[[j]]-1) %/% chunk_dim[j] == chunk_id_split[j]) ]
+    idx_in_x[[j]]     <- which((index[[j]]-1) %/% chunk_dim[j] == chunk_id_split[j])
+    idx_in_chunk[[j]] <- ((idx_in_zarr[[j]]-1) %% chunk_dim[j])+1
+  }
+  
+  chunk_in_mem <- read_chunk(zarr_array_path = path, 
+                             chunk_id = chunk_id_split, 
+                             metadata = metadata)[["chunk_data"]]
+  chunk_in_mem <- .extract_and_replace(chunk_in_mem, idx_in_chunk, 
+                                       R.utils::extract(x, indices = idx_in_x))
+  
   ## re-compress updated chunk and write back to disk
-  compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = compressor)
+  compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, 
+                                      compressor = metadata$compressor)
   writeBin(compressed_chunk, con = chunk_path)
 }
 
