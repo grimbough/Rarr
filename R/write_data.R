@@ -97,7 +97,7 @@ create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
                 fill_value = fill_value,
                 compressor = compressor)
   
-  invisible(return(TRUE))
+  return(invisible(TRUE))
   
 }
 
