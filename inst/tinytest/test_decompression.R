@@ -1,4 +1,5 @@
-zarr_arrays <- list.files(system.file("extdata", "zarr_examples", "compression", package = "Rarr"), full.names = TRUE)
+zarr_arrays <- list.files(system.file("extdata", "zarr_examples", "compression", 
+                                      package = "Rarr"), full.names = TRUE)
 
 for(zarr in zarr_arrays) {
   

@@ -15,5 +15,5 @@ expect_identical(read_zarr_array(path), x)
 path <- tempfile()
 expect_silent(res <- write_zarr_array(x = x, zarr_array_path = path, 
                                       chunk_dim = c(2, 5, 1), 
-                                      compressor = use_blosc()))
+                                      compressor = Rarr:::use_blosc()))
 expect_identical(read_zarr_array(path), x)
