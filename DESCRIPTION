@@ -18,6 +18,7 @@ RoxygenNote: 7.2.3
 Imports: jsonlite, httr2, aws.s3, stringr, R.utils
 Suggests: 
     BiocStyle,
+    covr,
     knitr,
     tinytest
 VignetteBuilder: knitr

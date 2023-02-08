@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/grimbough/Rarr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/grimbough/Rarr?branch=main)
+<!-- badges: end -->
+
 # Introduction to Rarr
 
 **Rarr** is intended to be a simple interface to reading (and eventually writing) individual Zarr arrays.  

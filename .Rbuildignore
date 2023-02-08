@@ -4,3 +4,5 @@ inst/ext/zarr_docker*
 ^\.Rproj\.user$
 .github
 vignettes/Rarr_cache*
+^codecov\.yml$
+^\.github$
