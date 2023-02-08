@@ -133,7 +133,9 @@ create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
 #'                 chunk_dim = c(2,5))
 #'
 #' @export
-write_zarr_array <- function(x, zarr_array_path, chunk_dim, compressor = use_zlib(), fill_value, nchar, dimension_separator = ".") {
+write_zarr_array <- function(x, zarr_array_path, chunk_dim, 
+                             compressor = use_zlib(), fill_value, nchar, 
+                             dimension_separator = ".") {
   
   path <- .normalize_array_path(zarr_array_path)
   
@@ -144,7 +146,7 @@ write_zarr_array <- function(x, zarr_array_path, chunk_dim, compressor = use_zli
                           fill_value = fill_value, compressor = compressor,
                           nchar = nchar)
   
-  chunk_names <- expand.grid(lapply(dim(x) %/% chunk_dim, seq_len)) - 1
+  chunk_names <- .generate_chunk_names(x_dim = dim(x), chunk_dim = chunk_dim)
   chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
   
   ## iterate over each chunk
@@ -153,6 +155,13 @@ write_zarr_array <- function(x, zarr_array_path, chunk_dim, compressor = use_zli
                 chunk_dim = chunk_dim, compressor = compressor)
   
   return(invisible(all(unlist(res))))
+}
+
+.generate_chunk_names <- function(x_dim, chunk_dim) {
+  
+  n_chunks_in_dim <- (x_dim %/% chunk_dim) + as.logical(x_dim %% chunk_dim)
+  expand.grid(lapply(n_chunks_in_dim, seq_len)) - 1
+  
 }
 
 .write_chunk <- function(chunk_id, x, path, chunk_dim, compressor) {
@@ -202,7 +211,7 @@ write_zarr_array <- function(x, zarr_array_path, chunk_dim, compressor = use_zli
 #' read_zarr_array(new_zarry_array, index = list(1:5, 1:5))
 #'
 #' @export
-update_zarr_array <- function(zarr_array_path, x,  index) {
+update_zarr_array <- function(zarr_array_path, x, index) {
   
   stopifnot(is.list(index))
   

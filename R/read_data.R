@@ -88,7 +88,8 @@ read_data <- function(required_chunks, zarr_array_path, s3_provider, index, meta
     chunk <- read_chunk(zarr_array_path, 
                         chunk_id = required_chunks[i,],
                         metadata = metadata, 
-                        s3_provider = s3_provider)
+                        s3_provider = s3_provider,
+                        alt_chunk_dim = lengths(index_in_result))
     
     warn <- chunk$warning[1]
     chunk_data <- chunk$chunk_data
@@ -155,6 +156,11 @@ get_chunk_size <- function(datatype, dimensions) {
 #' @param s3_provider Character indicating whether the Zarr is store on S3 and
 #'   if so which platform.  Valid entries are "aws" or "other".  Leave as `NULL`
 #'   for a file on local storage.
+#' @param alt_chunk_dim The dimensions of the array that should be created from
+#'   this chunk.  Normally this will be the same as the chunk shape in
+#'   `metadata`, but when dealing with edge chunks, which may overlap the true
+#'   extent of the array the returned array should be smaller than the chunk
+#'   shape.
 #'
 #' @returns A list of length 2.  The entries should be names "chunk_data" and
 #'   "warning". The first is an array containing the decompressed chunk values,
@@ -163,7 +169,8 @@ get_chunk_size <- function(datatype, dimensions) {
 #'
 #' @importFrom aws.s3 get_object
 #' @keywords Internal
-read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL) {
+read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL, 
+                       alt_chunk_dim = NULL) {
   
   if(missing(metadata)) {
     metadata <- read_array_metadata(zarr_array_path, s3_provider = s3_provider)
@@ -203,7 +210,7 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL) 
   ## or create a new chunk based on the fill value
   if(!is.null(compressed_chunk)) {
     uncompressed_chunk <- decompress_chunk(compressed_chunk, metadata)  
-    converted_chunk <- format_chunk(uncompressed_chunk, metadata)
+    converted_chunk <- format_chunk(uncompressed_chunk, metadata, alt_chunk_dim)
   } else {
     converted_chunk <- list(
       "chunk_data" = array(data = metadata$fill_value, dim = chunk_dim),
@@ -218,10 +225,10 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL) 
 #'   The second is an integer of length 1, indicating if warnings were encountered
 #'   when converting types
 #' @keywords Internal
-format_chunk <- function(uncompressed_chunk, metadata) {
+format_chunk <- function(uncompressed_chunk, metadata, alt_chunk_dim) {
   
   datatype <- .parse_datatype(metadata$dtype)
-  chunk_dim <- unlist(metadata$chunks)
+  chunk_dim <- alt_chunk_dim
   ## reverse dimensions for column first datasets
   if(metadata$order == "C") {
     chunk_dim <- rev(chunk_dim)
