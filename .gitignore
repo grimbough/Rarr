@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+## compiled files
+*.o
+*.a
+*.so
+
+## generated files
+src/Makevars
+src/compression_tools/blosc/Makefile
+src/compression_tools/blosc/lib/blosc-1.20.1/Makefile
