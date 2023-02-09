@@ -35,8 +35,7 @@ z1 <- system.file("extdata", "zarr_examples", "row-first",
 ## read the entire array
 read_zarr_array(zarr_array_path = z1)
 
-## extract values for first 10 entries in the x-dimension, all entries in the y-dimension
-## first entry in the z-dimension
+## extract values for first 10 rows, all columns, first slice
 read_zarr_array(zarr_array_path = z1, index = list(1:10, NULL, 1))
 
 \donttest{
