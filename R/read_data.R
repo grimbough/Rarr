@@ -84,12 +84,11 @@ read_data <- function(required_chunks, zarr_array_path, s3_provider, index, meta
       index_in_result[[j]] <- which((index[[j]] - 1) %/% metadata$chunks[[j]] == required_chunks[i, j])
       ## are we requesting values outside the array due to overhanging chunks?
       outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
-      if (any(outside_extent)) {
+      if (any(outside_extent))
         index_in_result[[j]] <- index_in_result[[j]][-outside_extent]
-      }
-      if (any(index_in_result[[j]] == metadata$shape[[j]])) {
+      if (any(index_in_result[[j]] == metadata$shape[[j]])) 
         alt_chunk_dim[j] <- length(index_in_result[[j]])
-      }
+      
       index_in_chunk[[j]] <- ((index[[j]][index_in_result[[j]]] - 1) %% metadata$chunks[[j]]) + 1
     }
 

@@ -188,6 +188,7 @@ update_fill_value <- function(metadata) {
 
 #' @import jsonlite
 #' @importFrom aws.s3 object_exists
+#' @importFrom utils capture.output
 #' @keywords Internal
 .read_zmetadata <- function(zarr_path, s3_provider) {
   zarr_path <- .normalize_array_path(zarr_path)
