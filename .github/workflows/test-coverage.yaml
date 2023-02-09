@@ -36,7 +36,7 @@ jobs:
           )
         shell: Rscript {0}
 
-      - name: Show testthat output
+      - name: Show tinytest output
         if: always()
         run: |
           ## --------------------------------------------------------------------

@@ -18,7 +18,9 @@
 #' ## Using a local file provided with the package
 #' ## This array has 3 dimensions
 #' z1 <- system.file("extdata", "zarr_examples", "row-first",
-#'                   "int32.zarr", package = "Rarr")
+#'   "int32.zarr",
+#'   package = "Rarr"
+#' )
 #'
 #' ## read the entire array
 #' read_zarr_array(zarr_array_path = z1)
@@ -40,115 +42,111 @@
 #'
 #' @export
 read_zarr_array <- function(zarr_array_path, index) {
-  
   zarr_array_path <- .normalize_array_path(zarr_array_path)
   ## determine if this is a local or S3 array
   s3_provider <- s3_provider(path = zarr_array_path)
-  
+
   metadata <- read_array_metadata(zarr_array_path, s3_provider = s3_provider)
-  
+
   ## if no index provided we will return everything
-  if(missing(index)) { index <- vector(mode = "list", length = length(metadata$shape)) }
-  index <- check_index(index = index, metadata = metadata)
-  
-  required_chunks <- as.matrix(find_chunks_needed(metadata, index))
-  
-  res <- read_data(required_chunks, zarr_array_path, s3_provider, index, metadata)
-  
-  if(isTRUE(res$warn > 0)) {
-    warning("Integer overflow detected in at least one chunk.\n",
-            "Overflowing values have been replaced with NA",
-            call. = FALSE)
+  if (missing(index)) {
+    index <- vector(mode = "list", length = length(metadata$shape))
   }
-  
+  index <- check_index(index = index, metadata = metadata)
+
+  required_chunks <- as.matrix(find_chunks_needed(metadata, index))
+
+  res <- read_data(required_chunks, zarr_array_path, s3_provider, index, metadata)
+
+  if (isTRUE(res$warn > 0)) {
+    warning("Integer overflow detected in at least one chunk.\n",
+      "Overflowing values have been replaced with NA",
+      call. = FALSE
+    )
+  }
+
   return(res$output)
-  
 }
 
 #' @importFrom R.utils extract
 read_data <- function(required_chunks, zarr_array_path, s3_provider, index, metadata) {
-  
   ## predefine our array to be populated from the read chunks
   output <- array(dim = vapply(index, length, integer(1)))
   warn <- 0L
-  
+
   ## hopefully we can eventually do this in parallel
-  chunk_selections <- lapply(seq_len(nrow(required_chunks)), FUN = function(i) { 
-    
+  chunk_selections <- lapply(seq_len(nrow(required_chunks)), FUN = function(i) {
     ## find which elements to select from the chunk and which in the output we will replace
     index_in_result <- index_in_chunk <- list()
     alt_chunk_dim <- unlist(metadata$chunks)
-    
-    for(j in seq_len(ncol(required_chunks))) {
-      index_in_result[[j]] <- which((index[[j]]-1) %/% metadata$chunks[[j]] == required_chunks[i,j])
+
+    for (j in seq_len(ncol(required_chunks))) {
+      index_in_result[[j]] <- which((index[[j]] - 1) %/% metadata$chunks[[j]] == required_chunks[i, j])
       ## are we requesting values outside the array due to overhanging chunks?
       outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
-      if(any(outside_extent)) {
+      if (any(outside_extent)) {
         index_in_result[[j]] <- index_in_result[[j]][-outside_extent]
       }
-      if( any(index_in_result[[j]] == metadata$shape[[j]]) ) {
+      if (any(index_in_result[[j]] == metadata$shape[[j]])) {
         alt_chunk_dim[j] <- length(index_in_result[[j]])
       }
-      index_in_chunk[[j]] <- ((index[[j]][ index_in_result[[j]] ]-1) %% metadata$chunks[[j]])+1
+      index_in_chunk[[j]] <- ((index[[j]][index_in_result[[j]]] - 1) %% metadata$chunks[[j]]) + 1
     }
-    
+
     ## read this chunk
-    chunk <- read_chunk(zarr_array_path, 
-                        chunk_id = required_chunks[i,],
-                        metadata = metadata, 
-                        s3_provider = s3_provider,
-                        alt_chunk_dim = alt_chunk_dim)
-    
+    chunk <- read_chunk(zarr_array_path,
+      chunk_id = required_chunks[i, ],
+      metadata = metadata,
+      s3_provider = s3_provider,
+      alt_chunk_dim = alt_chunk_dim
+    )
     warn <- chunk$warning[1]
     chunk_data <- chunk$chunk_data
-    
+
     ## extract the required elements from the chunk
     selection <- R.utils::extract(chunk_data, indices = index_in_chunk, drop = FALSE)
-    
+
     return(list(selection, index_in_result, warning = warn))
   })
-  
+
   ## proceed in serial and update the output with each chunk selection in turn
-  for(i in seq_along(chunk_selections)) {
-    
+  for (i in seq_along(chunk_selections)) {
     index_in_result <- chunk_selections[[i]][[2]]
-    output <- .extract_and_replace(output, index_in_result, 
-                                   y = chunk_selections[[i]][[1]])
+    output <- .extract_and_replace(output, index_in_result,
+      y = chunk_selections[[i]][[1]]
+    )
     warn <- max(warn, chunk_selections[[i]]$warning[1])
-    
   }
   return(list(output = output, warn = warn))
 }
 
 find_chunks_needed <- function(metadata, index) {
-  
   index_chunks <- list()
-  for(i in seq_along(index)) {
-    index_chunks[[i]] <- unique((index[[i]]-1) %/% metadata$chunks[[i]])
+  for (i in seq_along(index)) {
+    index_chunks[[i]] <- unique((index[[i]] - 1) %/% metadata$chunks[[i]])
   }
-  
+
   required_chunks <- expand.grid(index_chunks)
   return(required_chunks)
-  
 }
 
 get_chunk_size <- function(datatype, dimensions) {
-  
   ## determine the size of the R datatype we're going to return
   sizeof <- switch(datatype$base_type,
-                   "boolean" = 4L,
-                   "int"     = 4L,
-                   "uint"    = 4L,
-                   "float"   = 8L,
-                   # "complex",
-                   # "timedelta",
-                   # "datetime",
-                   "string"  = as.integer(datatype$nbytes),
-                   # "unicode",
-                   "other"   = 1L)
-  
+    "boolean" = 4L,
+    "int"     = 4L,
+    "uint"    = 4L,
+    "float"   = 8L,
+    # "complex",
+    # "timedelta",
+    # "datetime",
+    "string"  = as.integer(datatype$nbytes),
+    # "unicode",
+    "other"   = 1L
+  )
+
   buffer_size <- prod(unlist(dimensions), sizeof)
-  
+
   return(as.integer(buffer_size))
 }
 
@@ -178,55 +176,55 @@ get_chunk_size <- function(datatype, dimensions) {
 #'
 #' @importFrom aws.s3 get_object
 #' @keywords Internal
-read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL, 
+read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL,
                        alt_chunk_dim = NULL) {
-  
-  if(missing(metadata)) {
+  if (missing(metadata)) {
     metadata <- read_array_metadata(zarr_array_path, s3_provider = s3_provider)
   }
-  
-  dim_separator <- ifelse(is.null(metadata$dimension_separator), 
-                          yes = ".", no = metadata$dimension_separator)
+
+  dim_separator <- ifelse(is.null(metadata$dimension_separator),
+    yes = ".", no = metadata$dimension_separator
+  )
   chunk_id <- paste(chunk_id, collapse = dim_separator)
-  
+
   datatype <- .parse_datatype(metadata$dtype)
-  chunk_dim <- unlist(metadata$chunks)
   chunk_file <- paste0(zarr_array_path, chunk_id)
-  
-  if(nzchar(Sys.getenv("RARR_DEBUG"))) { message(chunk_file) }
-  
-  if(is.null(s3_provider)) {
+
+  if (nzchar(Sys.getenv("RARR_DEBUG"))) { message(chunk_file) }
+
+  if (is.null(s3_provider)) {
     size <- file.size(chunk_file)
-    if(file.exists(chunk_file)) {
+    if (file.exists(chunk_file)) {
       compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
     } else {
       compressed_chunk <- NULL
     }
   } else {
-    if(s3_provider == "aws") {
-      parsed_url <- url_parse_aws(chunk_file)
+    if (s3_provider == "aws") {
+      parsed_url <- .url_parse_aws(chunk_file)
     } else {
       parsed_url <- .url_parse_other(chunk_file)
     }
     compressed_chunk <- get_object(
-      object = parsed_url$object, 
-      bucket = parsed_url$bucket, 
+      object = parsed_url$object,
+      bucket = parsed_url$bucket,
       region = parsed_url$region,
-      base_url = parsed_url$hostname)
+      base_url = parsed_url$hostname
+    )
   }
-  
+
   ## either decompress and format the chunk data
   ## or create a new chunk based on the fill value
-  if(!is.null(compressed_chunk)) {
-    decompressed_chunk <- .decompress_chunk(compressed_chunk, metadata)  
+  if (!is.null(compressed_chunk)) {
+    decompressed_chunk <- .decompress_chunk(compressed_chunk, metadata)
     converted_chunk <- .format_chunk(decompressed_chunk, metadata, alt_chunk_dim)
   } else {
     converted_chunk <- list(
-      "chunk_data" = array(data = metadata$fill_value, dim = chunk_dim),
-      "warning"    = 0
+      "chunk_data" = array(data = metadata$fill_value, dim = unlist(metadata$chunks)),
+      "warning"    = 0L
     )
   }
-  
+
   return(converted_chunk)
 }
 
@@ -253,85 +251,98 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL,
 #'   encountered when converting types
 #' @keywords Internal
 .format_chunk <- function(decompressed_chunk, metadata, alt_chunk_dim) {
-  
   datatype <- .parse_datatype(metadata$dtype)
   chunk_dim <- alt_chunk_dim
   ## reverse dimensions for column first datasets
-  if(metadata$order == "C") {
+  if (metadata$order == "C") {
     chunk_dim <- rev(chunk_dim)
   }
-  
-  if(datatype$base_type == "string") {
+
+  if (datatype$base_type == "string") {
     ## break raw vector into list where is each element is the bytes for 1 string
-    tmp <- split(decompressed_chunk, rep(seq_len(length(decompressed_chunk) / datatype$nbytes), 
-                                         each = datatype$nbytes))
-    converted_chunk <- list()
-    converted_chunk[[1]] <- vapply(tmp, rawToChar, character(1), USE.NAMES = FALSE)
+    tmp <- split(decompressed_chunk, rep(seq_len(length(decompressed_chunk) / datatype$nbytes),
+      each = datatype$nbytes
+    ))
+    converted_chunk <- list(
+      vapply(tmp, rawToChar, character(1), USE.NAMES = FALSE),
+      0L ## no warning so set the second element to zero
+    )
     dim(converted_chunk[[1]]) <- chunk_dim
-    ## no warning so set the second element to zero
-    converted_chunk[[2]] <- 0L
-    
   } else {
     output_type <- switch(datatype$base_type,
-                          "boolean" = 0L,
-                          "int" = 1L,
-                          "uint" = 1L,
-                          "float" = 2L)
-    converted_chunk <- .Call("type_convert_chunk", decompressed_chunk, 
-                             output_type, datatype$nbytes, datatype$is_signed,
-                             chunk_dim, PACKAGE = "Rarr")
+      "boolean" = 0L,
+      "int" = 1L,
+      "uint" = 1L,
+      "float" = 2L
+    )
+    converted_chunk <- .Call("type_convert_chunk", decompressed_chunk,
+      output_type, datatype$nbytes, datatype$is_signed,
+      chunk_dim,
+      PACKAGE = "Rarr"
+    )
   }
-  
-  ## more manipulation to get the correct dimensions. 
+
+  ## more manipulation to get the correct dimensions.
   ## Surely there's a way to do this in one step rather than two??
-  if(metadata$order == "C") {
+  if (metadata$order == "C") {
     converted_chunk[[1]] <- aperm(converted_chunk[[1]])
-  } 
-  
+  }
+
   names(converted_chunk) <- c("chunk_data", "warning")
   return(converted_chunk)
 }
 
 #' Decompress a chunk in memory
-#' 
-#' R has internal decompression tools for zlib, bz2 and lzma compression.  We 
+#'
+#' R has internal decompression tools for zlib, bz2 and lzma compression.  We
 #' use external libraries bundled with the package for blosc and lz4 decompression.
-#' 
+#'
 #' @param compressed_chunk Raw vector holding the compressed bytes for this
 #'   chunk.
 #' @param metadata List produced by `read_array_metadata()` with the contents
 #'   of the `.zarray` file.
 #'   
+#' @returns An array with the number of dimensions specified in the Zarr
+#' metadata.  In most cases it will have the same size as the Zarr chunk,
+#' however in the case of edge chunks, which overlap the extent of the array,
+#' the returned chunk will be smaller.
+#'
 #' @importFrom utils tail
 #' @keywords Internal
 .decompress_chunk <- function(compressed_chunk, metadata) {
-  
   decompressor <- metadata$compressor$id
   datatype <- .parse_datatype(metadata$dtype)
   buffer_size <- get_chunk_size(datatype, dimensions = metadata$chunks)
-  
-  if(decompressor == "blosc") {
-    decompressed_chunk <- .Call("decompress_chunk_BLOSC", compressed_chunk, 
-                                PACKAGE = "Rarr")
+
+  if (decompressor == "blosc") {
+    decompressed_chunk <- .Call("decompress_chunk_BLOSC", compressed_chunk,
+      PACKAGE = "Rarr"
+    )
   } else if (decompressor == "zlib") {
-    decompressed_chunk <- memDecompress(from = compressed_chunk, type = "gzip", 
-                                        asChar = FALSE)
+    decompressed_chunk <- memDecompress(
+      from = compressed_chunk, type = "gzip",
+      asChar = FALSE
+    )
   } else if (decompressor == "bz2") {
-    decompressed_chunk <- memDecompress(from = compressed_chunk, type = "bzip2", 
-                                        asChar = FALSE)
+    decompressed_chunk <- memDecompress(
+      from = compressed_chunk, type = "bzip2",
+      asChar = FALSE
+    )
   } else if (decompressor == "lzma") {
-    decompressed_chunk <- memDecompress(from = compressed_chunk, type = "xz", 
-                                        asChar = FALSE)
+    decompressed_chunk <- memDecompress(
+      from = compressed_chunk, type = "xz",
+      asChar = FALSE
+    )
   } else if (decompressor == "lz4") {
     ## numpy codecs stores the original size of the buffer in the first 4 bytes; we exclude those
-    decompressed_chunk <- .Call("decompress_chunk_LZ4", 
-                                tail(x = compressed_chunk, n = -4L), 
-                                buffer_size, PACKAGE = "Rarr")
+    decompressed_chunk <- .Call("decompress_chunk_LZ4",
+      tail(x = compressed_chunk, n = -4L),
+      buffer_size,
+      PACKAGE = "Rarr"
+    )
   } else {
     stop("Unsupported compression tool")
   }
-  
+
   return(decompressed_chunk)
 }
-
-

@@ -45,7 +45,9 @@ details of all sub-arrays in the group.
 
 ## Using a local file provided with the package
 z1 <- system.file("extdata", "zarr_examples", "row-first",
-                  "int32.zarr", package = "Rarr")
+  "int32.zarr",
+  package = "Rarr"
+)
 
 ## read the entire array
 zarr_overview(zarr_array_path = z1)

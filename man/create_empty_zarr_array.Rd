@@ -56,8 +56,10 @@ Create an (empty) Zarr array
 \examples{
 
 new_zarr_array <- file.path(tempdir(), "temp.zarr")
-create_empty_zarr_array(new_zarr_array, dim = c(10,20), chunk_dim = c(2,5), 
-                        data_type = "integer")
+create_empty_zarr_array(new_zarr_array,
+  dim = c(10, 20), chunk_dim = c(2, 5),
+  data_type = "integer"
+)
 
 }
 \seealso{

@@ -4,14 +4,31 @@
 
 # Introduction to Rarr
 
-**Rarr** is intended to be a simple interface to reading (and eventually writing) individual Zarr arrays.  
+The Zarr specification defines a format for chunked, compressed, N-dimensional
+arrays.  It's design allows efficient access to subsets of the stored array, and
+supports both local and cloud storage systems. Zarr is experiencing increasing
+adoption in a number of scientific fields, where multi-dimensional data are
+prevalent. 
 
-It is developed in R and C with no reliance on external libraries or APIs for interfacing with the Zarr arrays.
-Additional compression libraries (e.g. blosc) are bundled with **Rarr** to provide support for datasets compressed
-using these tools.
+**Rarr** is intended to be a simple interface to reading and writing individual 
+Zarr arrays. It is developed
+in R and C with no reliance on external libraries or APIs for interfacing with
+the Zarr arrays. Additional compression libraries (e.g. blosc) are bundled with
+**Rarr** to provide support for datasets compressed using these tools.
 
-**Rarr** is not designed to be aware of hierarchical Zarr array stores, but the component arrays can be read individually
-by providing the path to them directly.
+## Limitations with **Rarr**
+
+If you know about Zarr arrays already, you'll probably be aware they can be
+stored in hierarchical groups, where additional meta data can explain the
+relationship between the arrays.  Currently, **Rarr** is not designed to be
+aware of these hierarchical Zarr array collections. However, the component
+arrays can be read individually by providing the path to them directly.
+
+Currently, there are also limitations on the Zarr datatypes that can be accessed
+using **Rarr**.  For now most numeric types can be read into R, although in some
+instances e.g. 64-bit integers there is potential for loss of information.
+Writing is more limited with support only for datatypes that are supported
+natively in R and only using the column-first representation.
 
 # Basic usage
 

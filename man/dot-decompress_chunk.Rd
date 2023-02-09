@@ -13,6 +13,12 @@ chunk.}
 \item{metadata}{List produced by \code{read_array_metadata()} with the contents
 of the \code{.zarray} file.}
 }
+\value{
+An array with the number of dimensions specified in the Zarr
+metadata.  In most cases it will have the same size as the Zarr chunk,
+however in the case of edge chunks, which overlap the extent of the array,
+the returned chunk will be smaller.
+}
 \description{
 R has internal decompression tools for zlib, bz2 and lzma compression.  We
 use external libraries bundled with the package for blosc and lz4 decompression.

@@ -28,16 +28,18 @@ Update (a subset of) an existing Zarr array
 
 ## first create a new, empty, Zarr array
 new_zarry_array <- file.path(tempdir(), "new_array.zarr")
-create_empty_zarr_array(zarr_array_path = new_zarry_array, dim = c(20, 10),
-                        chunk_dim = c(10, 5), data_type = "double")
-                        
+create_empty_zarr_array(
+  zarr_array_path = new_zarry_array, dim = c(20, 10),
+  chunk_dim = c(10, 5), data_type = "double"
+)
+
 ## create a matrix smaller than our Zarr array
 small_matrix <- matrix(runif(6), nrow = 3)
 
 ## insert the matrix into the first 3 rows, 2 columns of the Zarr array
 update_zarr_array(new_zarry_array, x = small_matrix, index = list(1:3, 1:2))
 
-## reading back a slightly larger subset, 
+## reading back a slightly larger subset,
 ## we can see only the top left corner has been changed
 read_zarr_array(new_zarry_array, index = list(1:5, 1:5))
 

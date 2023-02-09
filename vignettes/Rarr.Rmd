@@ -1,20 +1,19 @@
 ---
-title: "Reading Zarr arrays with Rarr"
-date: "`r BiocStyle::doc_date()`"
+title: "Reading Zarr arrays with Rarr" 
+date: "`r BiocStyle::doc_date()`" 
 author:
-- name: Mike L. Smith
-  affiliation:  
+  - name: Mike L. Smith
+affiliation:
   - EMBL Heidelberg
-  email: mike.smith@embl.de
-package: "`r BiocStyle::pkg_ver('Rarr')`"
+email: mike.smith@embl.de 
+package: "`r BiocStyle::pkg_ver('Rarr')`" 
 vignette: >
-  %\VignetteIndexEntry{"Working with Zarr arrays with Rarr"}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-output: 
+  %\VignetteIndexEntry{"Working with Zarr arrays in R"}
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8} 
+output:
   BiocStyle::html_document
 ---
-
 <style type="text/css">
 .main-container {
   max-width: 1800px;
@@ -25,56 +24,106 @@ output:
 
 # Introduction
 
-**Rarr** is intended to be a simple interface to reading and writing individual Zarr arrays.  
+The Zarr specification defines a format for chunked, compressed, N-dimensional
+arrays.  It's design allows efficient access to subsets of the stored array, and
+supports both local and cloud storage systems. Zarr is experiencing increasing
+adoption in a number of scientific fields, where multi-dimensional data are
+prevalent. In particular as a back-end to the The Open Microscopy Environment's
+[OME-NGFF format](https://ngff.openmicroscopy.org/latest/) for storing
+bioimaging data in the cloud.
 
-It is developed in R and C with no reliance on external libraries or APIs for interfacing with the Zarr arrays.
-Additional compression libraries (e.g. blosc) are bundled with **Rarr** to provide support for datasets compressed
-using these tools.
+**Rarr** is intended to be a simple interface to reading and writing individual 
+Zarr arrays. It is developed
+in R and C with no reliance on external libraries or APIs for interfacing with
+the Zarr arrays. Additional compression libraries (e.g. blosc) are bundled with
+**Rarr** to provide support for datasets compressed using these tools.
 
-**Rarr** is not designed to be aware of hierarchical Zarr array stores, but the component arrays can be read individually
-by providing the path to them directly.
+## Limitations with **Rarr**
 
-The are some example Zarr arrays in the package.  These were created using the Zarr Python implementation.  You can use the code below to list the complete set on your system, however it's a long list so we don't show the output here.
+If you know about Zarr arrays already, you'll probably be aware they can be
+stored in hierarchical groups, where additional meta data can explain the
+relationship between the arrays.  Currently, **Rarr** is not designed to be
+aware of these hierarchical Zarr array collections. However, the component
+arrays can be read individually by providing the path to them directly.
+
+Currently, there are also limitations on the Zarr datatypes that can be accessed
+using **Rarr**.  For now most numeric types can be read into R, although in some
+instances e.g. 64-bit integers there is potential for loss of information.
+Writing is more limited with support only for datatypes that are supported
+natively in R and only using the column-first representation.
+
+## Example data
+
+The are some example Zarr arrays included with the package.  These were created
+using the Zarr Python implementation and are primarily intended for testing the
+functionality of **Rarr**.  You can use the code below to list the complete set
+on your system, however it's a long list so we don't show the output here.
 
 ```{r, local-examples, echo = TRUE, results = "hide"}
-list.dirs(system.file("extdata", "zarr_examples", package = "Rarr"), 
-          recursive = TRUE) |> 
+list.dirs(
+  system.file("extdata", "zarr_examples", package = "Rarr"),
+  recursive = TRUE
+) |>
   grep(pattern = "zarr$", value = TRUE)
 ```
 
-# Basic usage
+# Quick start guide
 
-If you want to quickly get started reading an existing Zarr array with the package, this section should have the essentials covered.  First, we need to load the **Rarr** package.
+## Installation and setup
 
-```{r, load_library}
+If you want to quickly get started reading an existing Zarr array with the
+package, this section should have the essentials covered.  First, we need to
+install **Rarr**^[you only need to do the installation step once] with the 
+commands below.
+
+```{r, installation, eval = FALSE}
+## we need BiocManager to perform the installation
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+## install Rarr
+BiocManager::install("Rarr")
+```
+
+Once **Rarr** is installed, we have to load it into our R session:
+
+```{r, loading}
 library(Rarr)
 ```
 
-**Rarr** can be used to read files either on local disk or on remote S3 storage systems.  First lets take a look at reading from a local file.
+**Rarr** can be used to read files either on local disk or on remote S3 storage 
+systems.  First lets take a look at reading from a local file.
 
 ## Reading a from a local Zarr array
-
-To demonstrate reading a local file, we'll pick the example file containing 32-bit integers arranged in the "column first" ordering.
+To demonstrate reading a local file, we'll pick the example file containing
+32-bit integers arranged in the "column first" ordering.
 
 ```{r, use-example}
 zarr_example <- system.file("extdata", "zarr_examples", "column-first", "int32.zarr",
-                      package = "Rarr")
+  package = "Rarr"
+)
 ```
 
 ### Exploring the data
-
-We can get an summary of the array properties, such as its shape and datatype, using the function `zarr_overview()`^[This is essentially reading and formatting the array metadata that accompanies any Zarr array.]. 
+We can get an summary of the array properties, such as its shape and datatype,
+using the function `zarr_overview()`^[This is essentially reading and formatting
+the array metadata that accompanies any Zarr array.].
 
 ```{r, overview-1}
 zarr_overview(zarr_example)
 ```
-
-You can use this to check that the location is a valid Zarr array, and that the shape and datatype of the array content are what you are expecting.  For example, we can see in the output above that the data type (`int32`) corresponds to what we expect.
+You can use this to check that the location is a valid Zarr array, and that the
+shape and datatype of the array content are what you are expecting.  For
+example, we can see in the output above that the data type (`int32`) corresponds
+to what we expect.
 
 ### Reading the Zarr array
-
-The summary information retrieved above is required, as to read the array with **Rarr** you need to know the shape and size of the array (unless you want to read the entire array).  From the previous output we can see our example array has three dimensions of size 30 x 20 x 10.  We can select the subset we want to extract using a `list`.
-The list must have the same length as the number of dimensions in our array, with each element of the list corresponding to the indices you want to extract in that dimension.
+The summary information retrieved above is required, as to read the array with
+**Rarr** you need to know the shape and size of the array (unless you want to
+read the entire array).  From the previous output we can see our example array
+has three dimensions of size 30 x 20 x 10.  We can select the subset we want to
+extract using a `list`. The list must have the same length as the number of
+dimensions in our array, with each element of the list corresponding to the
+indices you want to extract in that dimension.
 
 ```{r}
 index <- list(1:4, 1:2, 1)
@@ -86,140 +135,189 @@ We then extract the subset using `read_zarr_array()`:
 read_zarr_array(zarr_example, index = index)
 ```
 
-
 ## Reading from S3 storage
-
-Reading files in S3 storage works in a very similar fashion to local disk.  This time the path needs to be a URL to the Zarr array. 
-
+Reading files in S3 storage works in a very similar fashion to local disk.  This
+time the path needs to be a URL to the Zarr array.
 We can again use `zarr_overview()` to quickly retrieve the array metadata.
-
-
 ```{r, read-from-s3}
-s3_address = "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-zarr_overview( s3_address )
+s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
+zarr_overview(s3_address)
 ```
 
-The output above indicates that the array is stored in 50 chunks, each containing a slice of the overall data.  
-In the example below we use the `index` argument to extract the first and tenth slices from the array.
-We then plot these on top of one another using the `image()` function.  Choosing to read only 2 of the 50 slices is much faster than if we opted to download the entire array before accessing the data.
+The output above indicates that the array is stored in 50 chunks, each
+containing a slice of the overall data. In the example below we use the `index`
+argument to extract the first and tenth slices from the array. We then plot
+these on top of one another using the `image()` function.  Choosing to read only
+2 of the 50 slices is much faster than if we opted to download the entire array
+before accessing the data.
 
-```{r, plot-raster, echo = 2:4, cache = TRUE, out.width="30%"}
-par(mar = c(0,0,0,0))
-z2 <- read_zarr_array(s3_address, index = list(c(1,10), NULL, NULL))
+```{r, plot-raster, echo = 2:9, cache = TRUE, out.width="30%"}
+par(mar = c(0, 0, 0, 0))
+z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
 ## plot the first slice in blue
-image(log2(z2[1,,]), col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100/100), 
-      asp = dim(z2)[2] / dim(z2)[3], axes = FALSE)
+image(log2(z2[1, , ]),
+  col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
+  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE
+)
 ## overlay the tenth slice in green
-image(log2(z2[2,,]), col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100/100), 
-      asp = dim(z2)[2] / dim(z2)[3], axes = FALSE, add = TRUE)
+image(log2(z2[2, , ]),
+  col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100 / 100),
+  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE, add = TRUE
+)
 ```
 
 ## Writing to a Zarr array
 
-Up until now we've only covered reading existing Zarr array into R.  However, **Rarr** can also be used to write R data to disk following the Zarr specification.  To explore this, lets create an example array we want to save as a Zarr.  In this case it's going to be a three dimensional array and store the values 1 to 600.
-
+Up until now we've only covered reading existing Zarr array into R.  However,
+**Rarr** can also be used to write R data to disk following the Zarr
+specification.  To explore this, lets create an example array we want to save as
+a Zarr.  In this case it's going to be a three dimensional array and store the
+values 1 to 600.
 ```{r, example-array}
-x <- array(1:600, dim = c(10,10,6))
+x <- array(1:600, dim = c(10, 10, 6))
 ```
-
-
-
 ```{r}
 path_to_new_zarr <- file.path(tempdir(), "new.zarr")
-write_zarr_array(x = x, zarr_array_path = path_to_new_zarr, chunk_dim = c(10,5,1))
+write_zarr_array(x = x, zarr_array_path = path_to_new_zarr, chunk_dim = c(10, 5, 1))
 ```
-
-We can check that the contents of the Zarr array is what we're expecting.  Since the contents of the whole array will be too large to display here, we use the `index` argument to extract rows 6 to 10, from the 10th column and 1st slice.  That should be the values `r x[6:10, 10, 1]`, but retaining the 3-dimensional array structure of the original array.  The second line below uses `identical()` to confirm that reading the whole Zarr returns something equivalent to our original input `x`.
-
+We can check that the contents of the Zarr array is what we're expecting.  Since
+the contents of the whole array will be too large to display here, we use the
+`index` argument to extract rows 6 to 10, from the 10th column and 1st slice.
+That should be the values `r x[6:10, 10, 1]`, but retaining the 3-dimensional
+array structure of the original array.  The second line below uses `identical()`
+to confirm that reading the whole Zarr returns something equivalent to our
+original input `x`.
 ```{r, check-written-array}
 read_zarr_array(zarr_array_path = path_to_new_zarr, index = list(6:10, 10, 1))
 identical(read_zarr_array(zarr_array_path = path_to_new_zarr), x)
 ```
-
 # Additional details
-
 ## Optaining Zarr metadata
-
-By default the `zarr_overview()` function prints a summary of the array to screen, so you can get a quick idea of the array properties.  However, there are times when it might be useful to compute on that metadata, in which case printing to screen isn't very helpful.  If his is the case the function also has the argument `as_data_frame` which toggles whether to print the output to screen, as seen before above, or to return a `data.frame` containing the array details. 
-
+By default the `zarr_overview()` function prints a summary of the array to
+screen, so you can get a quick idea of the array properties.  However, there are
+times when it might be useful to compute on that metadata, in which case
+printing to screen isn't very helpful.  If his is the case the function also has
+the argument `as_data_frame` which toggles whether to print the output to
+screen, as seen before above, or to return a `data.frame` containing the array
+details.
 ```{r, overview-2}
 zarr_overview(zarr_example, as_data_frame = TRUE)
 ```
 
 ## Using credentials to access private S3 buckets
 
-If you're accessing data in a private S3 bucket, you can set the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to store your credentials.  For example, lets try reading a file in a private S3 bucket:
-
+If you're accessing data in a private S3 bucket, you can set the environment
+variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to store your
+credentials.  For example, lets try reading a file in a private S3 bucket:
 ```{r, s3-forbidden,  error=TRUE}
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
 ```
 
-We can see the "Access Denied" message in our output, indicating that we don't have persmissions to access this resource.  However, if we use the key pair below, which give read-only access to the objects in the `rarr-testing` bucket, we're now able to interogate the files with functions in *Rarr*.
+We can see the "Access Denied" message in our output, indicating that we don't
+have persmissions to access this resource.  However, if we use the key pair
+below, which give read-only access to the objects in the `rarr-testing` bucket,
+we're now able to interogate the files with functions in *Rarr*.
 
 ```{r}
-Sys.setenv("AWS_ACCESS_KEY_ID" = "V352gmotks4ZyhfU",
-           "AWS_SECRET_ACCESS_KEY" = "2jveausI91c8P3c7OCRIOrxdLbp3LNW8")
+Sys.setenv(
+  "AWS_ACCESS_KEY_ID" = "V352gmotks4ZyhfU",
+  "AWS_SECRET_ACCESS_KEY" = "2jveausI91c8P3c7OCRIOrxdLbp3LNW8"
+)
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
 ```
 
 ## Writing subsets of data
 
-One of the key features of the Zarr specification is that the arrays are chunked, allowing rapid access to the required data without needed to read or write everything else.  If you want to modify a subset of a Zarr array, it is very inefficient to write all chunks to disk, which is what `write_zarr_array()` does.  Instead, **Rarr** provides two functions for reducing the amount of writing required if the circumstances allow: `create_empty_zarr_array()` and `update_zarr_array()`.
+One of the key features of the Zarr specification is that the arrays are
+chunked, allowing rapid access to the required data without needed to read or
+write everything else.  If you want to modify a subset of a Zarr array, it is
+very inefficient to write all chunks to disk, which is what `write_zarr_array()`
+does.  Instead, **Rarr** provides two functions for reducing the amount of
+writing required if the circumstances allow: `create_empty_zarr_array()` and
+`update_zarr_array()`.
 
 ### Creating an "empty" array
 
-Despite the name, you can actually think of `create_empty_zarr_array()` as creating an array where all the values are the same.  The Zarr specification allows for "uninitialized" chunks, which are not actually present on disk.  In this case, any reading application assumes the entirety of the chunk is filled with a single value, which is found in the array metadata.  This allows for very efficient creation of the new array, since only a small metadata file is actually written.  However it is necessary to provide some additional details, such as the shape of the array, since there's no R array to infer these from.  Let's look at an example:
+Despite the name, you can actually think of `create_empty_zarr_array()` as
+creating an array where all the values are the same.  The Zarr specification
+allows for "uninitialized" chunks, which are not actually present on disk.  In
+this case, any reading application assumes the entirety of the chunk is filled
+with a single value, which is found in the array metadata.  This allows for very
+efficient creation of the new array, since only a small metadata file is
+actually written.  However it is necessary to provide some additional details,
+such as the shape of the array, since there's no R array to infer these from.
+Let's look at an example:
 
 ```{r, create-empty-array}
 path <- tempfile()
 create_empty_zarr_array(
   zarr_array_path = path,
   dim = c(50, 20),
-  chunk_dim = c(5,10),
+  chunk_dim = c(5, 10),
   data_type = "integer",
   fill_value = 7L
 )
 ```
 
-First we have to provide a location for the array to be created using the `zarr_array_path` argument.  Then we provide the dimensions of the new array, and the shape of the chunks it should be split into.  These two arguments must be compatible with one another i.e. have the same number of dimensions and no value in `chunk_dim` should exceed the corresponding value in `dim`.  The `data_type` argument defines what type of values will be stored in the array.  This is currently limited to: `"integer"`, `"double"`, and `"string"`^[**Rarr** is currently limited to writing Zarr arrays using data types native to R, rather than the full range provided by other implementations.].  Finally we use the `fill_value` argument to provide our default value for the uninitialized chunks.
-
-The next few lines check what's actually been created on our file system.  First, we use `list.files()` to confirm that that only file that's been created is the `.zarray` metadata; there are no chunk files.  Then we use `table()` to check the contents of the array, and confirm that when it's read the resulting array in R is full of 7s, our fill value.
+First we have to provide a location for the array to be created using the
+`zarr_array_path` argument.  Then we provide the dimensions of the new array,
+and the shape of the chunks it should be split into.  These two arguments must
+be compatible with one another i.e. have the same number of dimensions and no
+value in `chunk_dim` should exceed the corresponding value in `dim`.  The
+`data_type` argument defines what type of values will be stored in the array.
+This is currently limited to: `"integer"`, `"double"`, and `"string"`^[**Rarr**
+is currently limited to writing Zarr arrays using data types native to R, rather
+than the full range provided by other implementations.].  Finally we use the
+`fill_value` argument to provide our default value for the uninitialized chunks.
+The next few lines check what's actually been created on our file system.
+First, we use `list.files()` to confirm that that only file that's been created
+is the `.zarray` metadata; there are no chunk files.  Then we use `table()` to
+check the contents of the array, and confirm that when it's read the resulting
+array in R is full of 7s, our fill value.
 
 ```{r, check-empty-array}
 list.files(path, all.files = TRUE, no.. = TRUE)
-table( read_zarr_array(path) )
+table(read_zarr_array(path))
 ```
 
 ### Updating a subset of an existing array
-
-Lets assume we want to update the first row of our array to contain the sequence of integers from 1 to 20.  In the code below we create an example vector containing the new data.  We then use `update_zarr_array()`, passing the location of the Zarr and the new values to be inserted.  Finally, we provide the `index` argument which defines which elements in the Zarr array should be updated.  It's important that the shape and number of values in `x` corresponds to the total count of points in the Zarr array we want to update e.g. in this case we're updating a single row of 20 values.
+Lets assume we want to update the first row of our array to contain the sequence
+of integers from 1 to 20.  In the code below we create an example vector
+containing the new data.  We then use `update_zarr_array()`, passing the
+location of the Zarr and the new values to be inserted.  Finally, we provide the
+`index` argument which defines which elements in the Zarr array should be
+updated.  It's important that the shape and number of values in `x` corresponds
+to the total count of points in the Zarr array we want to update e.g. in this
+case we're updating a single row of 20 values.
 
 ```{r, update-array}
 x <- 1:20
-
 update_zarr_array(
-  zarr_array_path = path, 
-  x = x, 
+  zarr_array_path = path,
+  x = x,
   index = list(1, 1:20)
 )
 ```
 
-As before, we can take a look at what's happend on disk and confirm the values are present in the array if we read it into R.
+As before, we can take a look at what's happend on disk and confirm the values
+are present in the array if we read it into R.
 
 ```{r, check-update}
 list.files(path, all.files = TRUE, no.. = TRUE)
 read_zarr_array(path, index = list(1:2, 1:5))
-table( read_zarr_array(path) )
+table(read_zarr_array(path))
 ```
 
-Here `list.files()` confirms that there's now two chunk files that have been created.  When we first created the Zarr we specified that the chunks should be 10 columns wide, so by modifying 20 columns we'd expect at least two chunks to be realized on disk.  We use `read_zarr_array()` to confirm visually that the first row contains our sequence of values, whilst the second row is still all 7.  We use `table()` to confirm that the total contents is as expected.
-
+Here `list.files()` confirms that there's now two chunk files that have been
+created.  When we first created the Zarr we specified that the chunks should be
+10 columns wide, so by modifying 20 columns we'd expect at least two chunks to
+be realized on disk.  We use `read_zarr_array()` to confirm visually that the
+first row contains our sequence of values, whilst the second row is still all 7.
+We use `table()` to confirm that the total contents is as expected.
 
 # Appendix
 
 ## Session info {.unnumbered}
-
 ```{r, session-info, echo = FALSE}
 sessionInfo()
 ```
-
