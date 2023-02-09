@@ -24,3 +24,4 @@ expect_equal(column_major[1,,], c(-1, 2:20))
 expect_equal(column_major[2:20,1,], rep(10.52, 19), tolerance = 0.0005)
 expect_equal(column_major[2,2:4,], c(0.00005693, -5.97e-8, 0.0000039), tolerance = 0.0001)
 
+expect_equal(column_major[3,2:4,], c(NaN, Inf, -Inf))
