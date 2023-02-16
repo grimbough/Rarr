@@ -4,12 +4,15 @@
 \alias{zarr_overview}
 \title{Print a summary of a Zarr array}
 \usage{
-zarr_overview(zarr_array_path, as_data_frame = FALSE)
+zarr_overview(zarr_array_path, s3_client, as_data_frame = FALSE)
 }
 \arguments{
 \item{zarr_array_path}{A character vector of length 1.  This provides the
 path to a Zarr array or group of arrays. This can either be on a local file
 system or on S3 storage.}
+
+\item{s3_client}{A list representing an S3 client.  This should be produced
+by \code{\link[paws.storage:s3]{paws.storage::s3()}}.}
 
 \item{as_data_frame}{Logical determining whether the Zarr array details
 should be printed to screen (\code{FALSE}) or returned as a \code{data.frame}

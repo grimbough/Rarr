@@ -19,6 +19,8 @@
 #' @param zarr_array_path A character vector of length 1.  This provides the
 #'   path to a Zarr array or group of arrays. This can either be on a local file
 #'   system or on S3 storage.
+#' @param s3_client A list representing an S3 client.  This should be produced
+#' by [paws.storage::s3()].
 #' @param as_data_frame Logical determining whether the Zarr array details
 #'   should be printed to screen (`FALSE`) or returned as a `data.frame`
 #'   (`TRUE`) so they can be used computationally.
@@ -44,11 +46,13 @@
 #' zarr_overview(z2)
 #'
 #' @export
-zarr_overview <- function(zarr_array_path, as_data_frame = FALSE) {
+zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   zarr_array_path <- .normalize_array_path(zarr_array_path)
-  s3_provider <- s3_provider(path = zarr_array_path)
+  
+  if(missing(s3_client)) 
+    s3_client <- .create_s3_client(path = zarr_array_path)
 
-  dot_zmeta <- .read_zmetadata(zarr_path = zarr_array_path, s3_provider = s3_provider)
+  dot_zmeta <- .read_zmetadata(zarr_path = zarr_array_path, s3_client = s3_client)
   if (!is.null(dot_zmeta)) {
     arrays <- grep(names(dot_zmeta$metadata), pattern = "/.zarray", fixed = TRUE, value = TRUE)
 
@@ -71,7 +75,7 @@ zarr_overview <- function(zarr_array_path, as_data_frame = FALSE) {
     }
     invisible(TRUE)
   } else {
-    dot_zarray <- read_array_metadata(path = zarr_array_path, s3_provider = s3_provider)
+    dot_zarray <- read_array_metadata(path = zarr_array_path, s3_client = s3_client)
     if (as_data_frame) {
       res <- .rbind_array_metadata(array_name = basename(zarr_array_path), metadata = dot_zarray, dirname(zarr_array_path))
       return(res)
@@ -123,31 +127,22 @@ zarr_overview <- function(zarr_array_path, as_data_frame = FALSE) {
 }
 
 
-#' @import jsonlite
-#' @importFrom httr2 url_parse
+#' @importFrom jsonlite read_json fromJSON
 #' @importFrom stringr str_extract str_remove
-#' @importFrom aws.s3 s3read_using
 #'
 #' @keywords Internal
-read_array_metadata <- function(path, s3_provider = NULL) {
+read_array_metadata <- function(path, s3_client = NULL) {
   path <- .normalize_array_path(path)
   zarray_path <- paste0(path, ".zarray")
 
-  if (!is.null(s3_provider)) {
-    if (s3_provider == "aws") {
-      parsed_url <- .url_parse_aws(zarray_path)
-    } else {
-      parsed_url <- .url_parse_other(zarray_path)
-    }
-    metadata <- s3read_using(
-      FUN = read_json,
-      object = parsed_url$object,
-      bucket = parsed_url$bucket,
-      opts = list(
-        region = parsed_url$region,
-        base_url = parsed_url$hostname
-      )
-    )
+  if (!is.null(s3_client)) {
+
+    parsed_url <- parse_s3_path(zarray_path)
+    
+    s3_object <- s3_client$get_object(Bucket = parsed_url$bucket, 
+                                      Key = parsed_url$object)
+
+    metadata <- fromJSON(rawToChar(s3_object$Body))
   } else {
     metadata <- read_json(zarray_path)
   }
@@ -190,35 +185,19 @@ update_fill_value <- function(metadata) {
 #' @importFrom aws.s3 object_exists
 #' @importFrom utils capture.output
 #' @keywords Internal
-.read_zmetadata <- function(zarr_path, s3_provider) {
+.read_zmetadata <- function(zarr_path, s3_client) {
+  
   zarr_path <- .normalize_array_path(zarr_path)
   zmeta_path <- paste0(zarr_path, ".zmetadata")
   zmeta <- NULL
 
-  if (!is.null(s3_provider)) {
-    if (s3_provider == "aws") {
-      parsed_url <- .url_parse_aws(zmeta_path)
-    } else {
-      parsed_url <- .url_parse_other(zmeta_path)
-    }
-    ## object_exists always prints a 404 message if the object isn't found
-    ## we capture that here to suppress it
-    capture.output(
-      zmeta_exists <- object_exists(
-          object = parsed_url$object, bucket = parsed_url$bucket,
-          region = parsed_url$region, base_url = parsed_url$hostname
-        ), type = "message"
-    )
-    if (zmeta_exists) {
-      zmeta <- s3read_using(
-        FUN = read_json,
-        object = parsed_url$object,
-        bucket = parsed_url$bucket,
-        opts = list(
-          region = parsed_url$region,
-          base_url = parsed_url$hostname
-        )
-      )
+  if (!is.null(s3_client)) {
+    parsed_url <- parse_s3_path(zmeta_path)
+    if(.s3_object_exists(s3_client, parsed_url$bucket, parsed_url$object)) {
+      s3_object <- s3_client$get_object(Bucket = parsed_url$bucket, 
+                                        Key = parsed_url$object)
+
+      zmeta <- fromJSON(rawToChar(s3_object$Body))
     }
   } else {
     if (file.exists(zmeta_path)) {

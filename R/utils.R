@@ -26,66 +26,6 @@ check_index <- function(index, metadata) {
   return(index)
 }
 
-s3_provider <- function(path) {
-  if (!grepl(pattern = "(^https?://)|(^s3://)", x = path)) {
-    provider <- NULL
-  } else {
-    matches <- regmatches(
-      x = path,
-      m = regexpr(
-        pattern = "(amazonaws\\.com)|(embl\\.de)",
-        text = path
-      )
-    )
-    if (!length(matches)) {
-      matches <- "other"
-    }
-    provider <- switch(matches,
-      "amazonaws.com" = "aws",
-      "embl.de"       = "other",
-      "other"
-    )
-  }
-  return(provider)
-}
-
-#' @importFrom httr2 url_parse
-#' @keywords Internal
-.url_parse_aws <- function(url) {
-  tmp <- httr2::url_parse(url)
-
-  if (grepl(pattern = "^https?://s3\\.", x = url, ignore.case = TRUE)) {
-    ## path style address
-    bucket <- gsub(x = tmp$path, pattern = "^/([a-z0-9\\.-]*)/.*", replacement = "\\1", ignore.case = TRUE)
-    object <- gsub(x = tmp$path, pattern = "^/([a-z0-9\\.-]*)/(.*)", replacement = "\\2", ignore.case = TRUE)
-    region <- gsub(x = url, pattern = "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/.*$", replacement = "\\1")
-  } else if (grepl(pattern = "^https?://[a-z0-9\\.-]*.s3\\.", x = url, ignore.case = TRUE)) {
-    ## virtual-host style address
-    bucket <- gsub(x = tmp$hostname, pattern = "^([a-z0-9\\.-]*)\\.s3.*", replacement = "\\1", ignore.case = TRUE)
-    object <- tmp$path
-    region <- gsub(x = tmp$hostname, pattern = "^.*\\.s3\\.([a-z0-9-]*)\\.amazonaws\\.com$", replacement = "\\1", ignore.case = TRUE)
-  } else {
-    stop("Unknown AWS path style.  Please report this to the package maintainer.")
-  }
-
-  res <- list(bucket = bucket, object = object, region = region, hostname = "s3.amazonaws.com")
-  return(res)
-}
-
-#' @keywords Internal
-.url_parse_other <- function(url) {
-  parsed_url <- url_parse(url)
-  bucket <- gsub(x = parsed_url$path, pattern = "^/([[a-z0-9\\.-]*)/.*", 
-                 replacement = "\\1", ignore.case = TRUE)
-  object <- gsub(x = parsed_url$path, pattern = "^/([a-z0-9\\.-]*)/(.*)", 
-                 replacement = "\\2", ignore.case = TRUE)
-  
-  #object <- .normalize_array_path(object)
-  
-  res <- list(bucket = bucket, object = object, region = "", hostname = parsed_url$hostname)
-  return(res)
-}
-
 .extract_and_replace <- function(x, indices, y) {
   dims <- seq_along(indices)
   args <- rep("", times = length(indices))

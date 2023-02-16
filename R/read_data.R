@@ -44,9 +44,9 @@
 read_zarr_array <- function(zarr_array_path, index) {
   zarr_array_path <- .normalize_array_path(zarr_array_path)
   ## determine if this is a local or S3 array
-  s3_provider <- s3_provider(path = zarr_array_path)
+  s3_client <- .create_s3_client(path = zarr_array_path)
 
-  metadata <- read_array_metadata(zarr_array_path, s3_provider = s3_provider)
+  metadata <- read_array_metadata(zarr_array_path, s3_client = s3_client)
 
   ## if no index provided we will return everything
   if (missing(index)) {
@@ -56,7 +56,7 @@ read_zarr_array <- function(zarr_array_path, index) {
 
   required_chunks <- as.matrix(find_chunks_needed(metadata, index))
 
-  res <- read_data(required_chunks, zarr_array_path, s3_provider, index, metadata)
+  res <- read_data(required_chunks, zarr_array_path, s3_client, index, metadata)
 
   if (isTRUE(res$warn > 0)) {
     warning("Integer overflow detected in at least one chunk.\n",
@@ -69,7 +69,7 @@ read_zarr_array <- function(zarr_array_path, index) {
 }
 
 #' @importFrom R.utils extract
-read_data <- function(required_chunks, zarr_array_path, s3_provider, index, metadata) {
+read_data <- function(required_chunks, zarr_array_path, s3_client, index, metadata) {
   ## predefine our array to be populated from the read chunks
   output <- array(dim = vapply(index, length, integer(1)))
   warn <- 0L
@@ -96,7 +96,7 @@ read_data <- function(required_chunks, zarr_array_path, s3_provider, index, meta
     chunk <- read_chunk(zarr_array_path,
       chunk_id = required_chunks[i, ],
       metadata = metadata,
-      s3_provider = s3_provider,
+      s3_client = s3_client,
       alt_chunk_dim = alt_chunk_dim
     )
     warn <- chunk$warning[1]
@@ -175,10 +175,10 @@ get_chunk_size <- function(datatype, dimensions) {
 #'
 #' @importFrom aws.s3 get_object
 #' @keywords Internal
-read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL,
+read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
                        alt_chunk_dim = NULL) {
   if (missing(metadata)) {
-    metadata <- read_array_metadata(zarr_array_path, s3_provider = s3_provider)
+    metadata <- read_array_metadata(zarr_array_path, s3_client = s3_client)
   }
 
   dim_separator <- ifelse(is.null(metadata$dimension_separator),
@@ -191,7 +191,7 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL,
 
   if (nzchar(Sys.getenv("RARR_DEBUG"))) { message(chunk_file) }
 
-  if (is.null(s3_provider)) {
+  if (is.null(s3_client)) {
     size <- file.size(chunk_file)
     if (file.exists(chunk_file)) {
       compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
@@ -199,17 +199,16 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_provider = NULL,
       compressed_chunk <- NULL
     }
   } else {
-    if (s3_provider == "aws") {
-      parsed_url <- .url_parse_aws(chunk_file)
+    
+    parsed_url <- parse_s3_path(chunk_file)
+    
+    if(.s3_object_exists(s3_client, parsed_url$bucket, parsed_url$object)) {
+      compressed_chunk <- s3_client$get_object(Bucket = parsed_url$bucket, 
+                                               Key = parsed_url$object)$Body
     } else {
-      parsed_url <- .url_parse_other(chunk_file)
+      compressed_chunk <- NULL
     }
-    compressed_chunk <- get_object(
-      object = parsed_url$object,
-      bucket = parsed_url$bucket,
-      region = parsed_url$region,
-      base_url = parsed_url$hostname
-    )
+
   }
 
   ## either decompress and format the chunk data
