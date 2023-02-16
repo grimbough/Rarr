@@ -24,15 +24,14 @@ of the \code{.zarray} file. If missing this function will be called
 automatically, but it is probably preferable to pass the meta data rather
 than read it repeatedly for every chunk.}
 
+\item{s3_client}{Object created by \code{\link[paws.storage:s3]{paws.storage::s3()}}. Only required for a
+file on S3. Leave as \code{NULL} for a file on local storage.}
+
 \item{alt_chunk_dim}{The dimensions of the array that should be created from
 this chunk.  Normally this will be the same as the chunk shape in
 \code{metadata}, but when dealing with edge chunks, which may overlap the true
 extent of the array the returned array should be smaller than the chunk
 shape.}
-
-\item{s3_provider}{Character indicating whether the Zarr is store on S3 and
-if so which platform.  Valid entries are "aws" or "other".  Leave as \code{NULL}
-for a file on local storage.}
 }
 \value{
 A list of length 2.  The entries should be names "chunk_data" and

@@ -4,7 +4,7 @@
 \alias{read_zarr_array}
 \title{Read a Zarr array}
 \usage{
-read_zarr_array(zarr_array_path, index)
+read_zarr_array(zarr_array_path, index, s3_client)
 }
 \arguments{
 \item{zarr_array_path}{Path to a Zarr array. A character vector of length 1. This
@@ -16,6 +16,9 @@ Zarr array.  Each entry in the list provides the indices in that dimension
 that should be read from the array.  Setting a list entry to \code{NULL} will
 read everything in the associated dimension.  If this argument is missing
 the entirety of the the Zarr array will be read.}
+
+\item{s3_client}{Object created by \code{\link[paws.storage:s3]{paws.storage::s3()}}. Only required for a
+file on S3. Leave as \code{NULL} for a file on local storage.}
 }
 \value{
 An array with the same number of dimensions as the input array. The

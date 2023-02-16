@@ -8,6 +8,8 @@
 #'   that should be read from the array.  Setting a list entry to `NULL` will
 #'   read everything in the associated dimension.  If this argument is missing
 #'   the entirety of the the Zarr array will be read.
+#' @param s3_client Object created by [paws.storage::s3()]. Only required for a
+#'   file on S3. Leave as `NULL` for a file on local storage.
 #'
 #' @returns An array with the same number of dimensions as the input array. The
 #'   extent of each dimension will correspond to the length of the values
@@ -41,10 +43,12 @@
 #' }
 #'
 #' @export
-read_zarr_array <- function(zarr_array_path, index) {
+read_zarr_array <- function(zarr_array_path, index, s3_client) {
+  
   zarr_array_path <- .normalize_array_path(zarr_array_path)
   ## determine if this is a local or S3 array
-  s3_client <- .create_s3_client(path = zarr_array_path)
+  if(missing(s3_client)) 
+    s3_client <- .create_s3_client(path = zarr_array_path)
 
   metadata <- read_array_metadata(zarr_array_path, s3_client = s3_client)
 
@@ -159,9 +163,8 @@ get_chunk_size <- function(datatype, dimensions) {
 #'   of the `.zarray` file. If missing this function will be called
 #'   automatically, but it is probably preferable to pass the meta data rather
 #'   than read it repeatedly for every chunk.
-#' @param s3_provider Character indicating whether the Zarr is store on S3 and
-#'   if so which platform.  Valid entries are "aws" or "other".  Leave as `NULL`
-#'   for a file on local storage.
+#' @param s3_client Object created by [paws.storage::s3()]. Only required for a
+#'   file on S3. Leave as `NULL` for a file on local storage.
 #' @param alt_chunk_dim The dimensions of the array that should be created from
 #'   this chunk.  Normally this will be the same as the chunk shape in
 #'   `metadata`, but when dealing with edge chunks, which may overlap the true
@@ -173,7 +176,6 @@ get_chunk_size <- function(datatype, dimensions) {
 #'   the second is an integer indicating whether there were any overflow
 #'   warnings generated will reading the chunk into an R datatype.
 #'
-#' @importFrom aws.s3 get_object
 #' @keywords Internal
 read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
                        alt_chunk_dim = NULL) {
