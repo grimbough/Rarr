@@ -6,3 +6,4 @@ inst/ext/zarr_docker*
 vignettes/Rarr_cache*
 ^codecov\.yml$
 ^\.github$
+README.Rmd

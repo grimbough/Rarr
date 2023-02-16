@@ -1,0 +1,99 @@
+---
+title: "Zarr arrays with Rarr" 
+author: "Mike L. Smith"
+output:   
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+<!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/grimbough/Rarr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/grimbough/Rarr?branch=main)
+<!-- badges: end -->
+
+# Introduction to Rarr
+
+The Zarr specification defines a format for chunked, compressed, N-dimensional
+arrays.  It's design allows efficient access to subsets of the stored array, and
+supports both local and cloud storage systems. Zarr is experiencing increasing
+adoption in a number of scientific fields, where multi-dimensional data are
+prevalent. 
+
+**Rarr** is intended to be a simple interface to reading and writing individual 
+Zarr arrays. It is developed
+in R and C with no reliance on external libraries or APIs for interfacing with
+the Zarr arrays. Additional compression libraries (e.g. blosc) are bundled with
+**Rarr** to provide support for datasets compressed using these tools.
+
+## Limitations with **Rarr**
+
+If you know about Zarr arrays already, you'll probably be aware they can be
+stored in hierarchical groups, where additional meta data can explain the
+relationship between the arrays.  Currently, **Rarr** is not designed to be
+aware of these hierarchical Zarr array collections. However, the component
+arrays can be read individually by providing the path to them directly.
+
+Currently, there are also limitations on the Zarr datatypes that can be accessed
+using **Rarr**.  For now most numeric types can be read into R, although in some
+instances e.g. 64-bit integers there is potential for loss of information.
+Writing is more limited with support only for datatypes that are supported
+natively in R and only using the column-first representation.
+
+# Quick start guide
+
+```{r, child=c('inst/rmd/quick_start.Rmd')}
+```
+
+
+# Current Status
+
+## Reading and Writing
+
+Reading Zarr arrays is reasonably well supported. Writing is available, but is more limited.  Both aspects are under active development.  
+
+### Data Types
+
+Currently there is only support for reading and writing a subset of the possible datatypes
+that can be found in a Zarr array.  In some instances there are also limitations on the 
+datatypes natively supported by R, requiring conversion from the Zarr datatype.  The table below summarises the current status of
+datatype support.  It will be updated as progress is made.
+
+| Zarr Data Type | Status<br/>(reading / writing) | Notes |
+|-----------|:--------------:|-------|
+|`int8`  | &#x2714; / &#x274C; | |
+|`uint8` | &#x2714; / &#x274C; | |
+|`int16` | &#x2754; / &#x274C; | |
+|`uint16`| &#x2714; / &#x274C; | |
+|`int32` | &#x2714; / &#x274C; | |
+|`uint32`| &#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.| 
+|`int64`|&#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
+|`uint64`|&#x2714; / &#x274C; |Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package.|
+|`half` / `float16`   |&#x2714; / &#x274C; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion.  |
+|`single` / `float32` |&#x2714; / &#x274C; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion. |
+|`double` / `float64` |&#x2714; / &#x2714; | |
+|`complex`            |&#x274C; / &#x274C; | |
+|`timedelta`          | &#x274C; / &#x274C; | |
+|`datetime`           | &#x274C; / &#x274C; | |
+|`string`             | &#x2714; / &#x2714; | |
+|`Unicode`            | &#x274C; / &#x274C; | |
+|`void *`             | &#x274C; / &#x274C; | |
+| Structured data types | &#x274C; / &#x274C; | |
+
+### Compression Tools
+
+| Data Type   | Status<br/>(reading / writing) | Notes |
+|-------------|:-------------------:|-------|
+|`zlib / gzip`| &#x2714; / &#x2714; | Only system default compression level (normally 6) is enabled for writing. |
+|`bzip2`      | &#x2714; / &#x2714; | Only compression level 9 is enabled for writing. |
+|`blosc`      | &#x2714; / &#x2714; | Only `lz4` compression level 5 is enabled for writing. |
+|`LZMA `      | &#x2714; / &#x2754; | |
+|`LZ4`        | &#x2714; / &#x274C; | |
+|`Zstd`       | &#x274C; / &#x274C; | Algorithm is available via blosc for writing, but can't currently be access through the R interface |
+
+Please open an [issue](https://github.com/grimbough/Rarr/issues) if support for a required compression tool is missing.
+
+### Filters
+
+The is currently no support for additional filters.  Please open an [issue](https://github.com/grimbough/Rarr/issues) if you require filter support.
+
+
