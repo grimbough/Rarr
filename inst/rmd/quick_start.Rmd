@@ -28,7 +28,8 @@ To demonstrate reading a local file, we'll pick the example file containing
 32-bit integers arranged in the "column first" ordering.
 
 ```{r, use-example}
-zarr_example <- system.file("extdata", "zarr_examples", "column-first", "int32.zarr",
+zarr_example <- system.file(
+  "extdata", "zarr_examples", "column-first", "int32.zarr",
   package = "Rarr"
 )
 ```

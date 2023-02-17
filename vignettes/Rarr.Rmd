@@ -14,13 +14,14 @@ vignette: >
 output:
   BiocStyle::html_document
 ---
-<style type="text/css">
+
+```{css, echo=FALSE}
 .main-container {
-  max-width: 1800px;
+  max-width: 1600px;
   margin-left: auto;
   margin-right: auto;
 }
-</style>
+```
 
 # Introduction
 
