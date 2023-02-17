@@ -79,10 +79,36 @@ parse_s3_path <- function(path) {
   return(res)
 }
 
+#' This is a modified version of paws.storge:::get_credentials().  It is
+#' included to prevent using the `:::` operator.  Look at that function if
+#' things stop working.
+#' 
+#' @param credentials Content stored at `.internal$config$credentials` in 
+#' an object created by `paws.storage::s3()`.
+#' 
+#' @importFrom methods formalArgs
+#' @keywords Internal
+.get_credentials <- function(credentials) {
+  
+  for (provider in credentials$provider) {
+    args <- formalArgs(provider)
+    if(is.null(args)) { 
+      creds <- provider()
+    } else {
+      creds <- do.call(provider, as.list(credentials)[args])
+    }
+    if (!is.null(creds)) {
+      credentials$creds <- creds
+      break
+    }
+  }
+  return(credentials)
+}
+  
 .check_credentials <- function(s3_client, parsed_url) {
   
   test <- try(
-    paws.common:::get_credentials(s3_client$.internal$config$credentials), 
+    .get_credentials(s3_client$.internal$config$credentials), 
     silent = TRUE
   )
   

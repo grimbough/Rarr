@@ -74,7 +74,7 @@ list.dirs(
 
 # Additional details
 
-## Optaining Zarr metadata
+## Working with Zarr metadata
 By default the `zarr_overview()` function prints a summary of the array to
 screen, so you can get a quick idea of the array properties.  However, there are
 times when it might be useful to compute on that metadata, in which case
@@ -87,7 +87,7 @@ details.
 zarr_overview(zarr_example, as_data_frame = TRUE)
 ```
 
-## Using credentials to access private S3 buckets {#s3-credentials}
+## Using credentials to access S3 buckets {#s3-credentials}
 
 If you're accessing data in a private S3 bucket, you can set the environment
 variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to store your
@@ -108,6 +108,39 @@ Sys.setenv(
   "AWS_SECRET_ACCESS_KEY" = "2jveausI91c8P3c7OCRIOrxdLbp3LNW8"
 )
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
+```
+
+## Creating an S3 client {#s3-client}
+
+```{r, bad-s3, error = TRUE}
+s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
+zarr_overview(s3_address)
+```
+
+If you're accessing a public bucket, the most important step is to provide a
+`credentials` list with `anonymous = TRUE`.  Doing so ensures that no attempts
+to find other credentials are made, and prevents the problems seen above.  If
+you're using files on Amazon AWS storage you'll need to set the `region` to
+whatever is appropriate for your data e.g. `"us-east-2"`, `"eu-west-3"`, etc.
+For other S3 providers that don't have regions use the value `"auto"` as in the
+example below.  Finally the `endpoint` argument is the full hostname of the
+server where your files can be found.  For more information on creating an S3
+client see the [**paws.storage**
+documentation](https://paws-r.github.io/docs/s3/).
+
+```{r, paws-s3-client, eval = TRUE, echo = TRUE}
+s3_client <- paws.storage::s3(
+  config = list(
+    credentials = list(anonymous = TRUE), 
+    region = "auto",
+    endpoint = "https://uk1s3.embassy.ebi.ac.uk")
+  )
+```
+
+We can then pass our s3_client to `zarr_overview()` and it now works successfully.  Most functions in **Rarr** have the `s3_client` argument and it can be applied in the same way.
+
+```{r, works-again, error = TRUE}
+zarr_overview(s3_address, s3_client = s3_client)
 ```
 
 ## Writing subsets of data

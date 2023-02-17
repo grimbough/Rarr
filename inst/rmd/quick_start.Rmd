@@ -87,14 +87,22 @@ zarr_overview(s3_address, s3_client = s3_client)
 
 The output above indicates that the array is stored in 50 chunks, each
 containing a slice of the overall data. In the example below we use the `index`
-argument to extract the first and tenth slices from the array. We then plot
-these on top of one another using the `image()` function.  Choosing to read only
+argument to extract the first and tenth slices from the array. Choosing to read only
 2 of the 50 slices is much faster than if we opted to download the entire array
 before accessing the data.
 
-```{r, plot-raster, echo = 2:9, cache = TRUE, out.width="30%"}
-par(mar = c(0, 0, 0, 0))
+```{r, get-slices-not-run, echo = TRUE, eval = FALSE }
 z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
+```
+
+```{r, get-slices, echo = FALSE, eval = TRUE }
+z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL), s3_client = s3_client)
+```
+
+We then plot our two slices on top of one another using the `image()` function.  
+
+```{r, plot-raster, echo = 2:9, cache = TRUE, out.width="30%", eval = TRUE, comment = ""}
+par(mar = c(0, 0, 0, 0))
 ## plot the first slice in blue
 image(log2(z2[1, , ]),
   col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
@@ -138,6 +146,7 @@ That should be the values `r x[6:10, 10, 1]`, but retaining the 3-dimensional
 array structure of the original array.  The second line below uses `identical()`
 to confirm that reading the whole Zarr returns something equivalent to our
 original input `x`.
+
 ```{r, check-written-array}
 read_zarr_array(zarr_array_path = path_to_new_zarr, index = list(6:10, 10, 1))
 identical(read_zarr_array(zarr_array_path = path_to_new_zarr), x)

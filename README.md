@@ -14,10 +14,6 @@ Mike L. Smith
   - <a href="#reading-a-from-a-local-zarr-array"
     id="toc-reading-a-from-a-local-zarr-array">Reading a from a local Zarr
     array</a>
-    - <a href="#exploring-the-data" id="toc-exploring-the-data">Exploring the
-      data</a>
-    - <a href="#reading-the-zarr-array"
-      id="toc-reading-the-zarr-array">Reading the Zarr array</a>
   - <a href="#reading-from-s3-storage"
     id="toc-reading-from-s3-storage">Reading from S3 storage</a>
   - <a href="#writing-to-a-zarr-array"
@@ -25,10 +21,6 @@ Mike L. Smith
 - <a href="#current-status" id="toc-current-status">Current Status</a>
   - <a href="#reading-and-writing" id="toc-reading-and-writing">Reading and
     Writing</a>
-    - <a href="#data-types" id="toc-data-types">Data Types</a>
-    - <a href="#compression-tools" id="toc-compression-tools">Compression
-      Tools</a>
-    - <a href="#filters" id="toc-filters">Filters</a>
 
 <!-- badges: start -->
 
@@ -112,7 +104,7 @@ zarr_overview(zarr_example)
 ```
 
     ## Type: Array
-    ## Path: /tmp/Rtmp3GWx7E/temp_libpathf35f3c61e797/Rarr/extdata/zarr_examples/column-first/int32.zarr
+    ## Path: /mnt/data/R-lib/4.3-bioc_3.17/Rarr/extdata/zarr_examples/column-first/int32.zarr
     ## Shape: 30 x 20 x 10
     ## Chunk Shape: 10 x 10 x 5
     ## No. of Chunks: 12 (3 x 2 x 2)
@@ -182,7 +174,8 @@ Choosing to read only 2 of the 50 slices is much faster than if we opted
 to download the entire array before accessing the data.
 
 ``` r
-z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
+## z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
+par(mar = c(0, 0, 0, 0))
 ## plot the first slice in blue
 image(log2(z2[1, , ]),
   col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
