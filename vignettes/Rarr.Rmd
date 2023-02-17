@@ -69,7 +69,7 @@ list.dirs(
 
 # Quick start guide
 
-```{r, child=c('../inst/rmd/quick_start.Rmd')}
+```{r, child=normalizePath(file.path("..", "inst", "rmd", "quick_start.Rmd"))}
 ```
 
 # Additional details
