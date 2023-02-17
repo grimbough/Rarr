@@ -65,7 +65,7 @@ We then extract the subset using `read_zarr_array()`:
 read_zarr_array(zarr_example, index = index)
 ```
 
-## Reading from S3 storage
+## Reading from S3 storage {#read-s3}
 
 Reading files in S3 storage works in a very similar fashion to local disk.  This
 time the path needs to be a URL to the Zarr array.
@@ -101,7 +101,7 @@ z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL), s3_client 
 
 We then plot our two slices on top of one another using the `image()` function.  
 
-```{r, plot-raster, echo = 2:9, cache = TRUE, out.width="30%", eval = TRUE, comment = ""}
+```{r, plot-raster, echo = 2:9, cache = TRUE, out.width="30%", eval = TRUE}
 par(mar = c(0, 0, 0, 0))
 ## plot the first slice in blue
 image(log2(z2[1, , ]),
@@ -119,7 +119,7 @@ image(log2(z2[2, , ]),
 `"Error in stop(aws_error(request$error)) : bad error message"` it is likely you
 have some AWS credentials available in to your R session, which are being 
 inappropriately used to access this public bucket.  Please see the section 
-\@ref(s3-credentials) for details on how to set credentials for a specific 
+\@ref(s3-client) for details on how to set credentials for a specific 
 request.
 
 ## Writing to a Zarr array

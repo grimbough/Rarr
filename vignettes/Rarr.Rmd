@@ -98,8 +98,8 @@ zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
 ```
 
 We can see the "Access Denied" message in our output, indicating that we don't
-have permissions to access this resource.  However, if we use the key pair
-below, which give read-only access to the objects in the `rarr-testing` bucket,
+have permission to access this resource as an anonymous user.  However, if we use the key pair
+below, which gives read-only access to the objects in the `rarr-testing` bucket,
 we're now able to interrogate the files with functions in *Rarr*.
 
 ```{r}
@@ -110,11 +110,43 @@ Sys.setenv(
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
 ```
 
+Behind the scenes **Rarr** makes use of the **paws** suite of packages
+(https://paws-r.github.io/) to interact with S3 storage.  A comprehensive
+overview of the multiple ways credentials can be set and used by **paws** can be
+found at https://github.com/paws-r/paws/blob/main/docs/credentials.md.  If 
+setting environment variables as above doesn't work or is inappropriate for 
+your use case please refer to that document for other options.
+
 ## Creating an S3 client {#s3-client}
+
+Although **Rarr** will try its best to find appropriate credentials and settings
+to access a bucket, it is not always successful. Once such example is when you
+have AWS credentials set somewhere and you try to access a public bucket.  We
+can see an example of this below, where we access the same public bucket used in
+\@ref(read-s3), but it now fails because we have set the `AWS_ACCESS_KEY_ID` 
+environment variable in the previous section.
+
 
 ```{r, bad-s3, error = TRUE}
 s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
 zarr_overview(s3_address)
+```
+
+You might encounter similar problems if you're trying to access multiple buckets
+each of which require different credentials.  The solution here is to create an
+"s3_client" using `paws.storage::s3()`, which contains all the required details
+for accessing a particular bucket.  Doing so will prevent **Rarr** from trying
+to determine things on its own, and gives you complete control over the settings
+used to communicate with the S3 bucket. Here's an example that will let us
+access the failing bucket by creating a client with anonymous credentials.
+
+```{r, paws-s3-client, eval = TRUE, echo = TRUE}
+s3_client <- paws.storage::s3(
+  config = list(
+    credentials = list(anonymous = TRUE), 
+    region = "auto",
+    endpoint = "https://uk1s3.embassy.ebi.ac.uk")
+  )
 ```
 
 If you're accessing a public bucket, the most important step is to provide a
@@ -128,20 +160,15 @@ server where your files can be found.  For more information on creating an S3
 client see the [**paws.storage**
 documentation](https://paws-r.github.io/docs/s3/).
 
-```{r, paws-s3-client, eval = TRUE, echo = TRUE}
-s3_client <- paws.storage::s3(
-  config = list(
-    credentials = list(anonymous = TRUE), 
-    region = "auto",
-    endpoint = "https://uk1s3.embassy.ebi.ac.uk")
-  )
-```
-
-We can then pass our s3_client to `zarr_overview()` and it now works successfully.  Most functions in **Rarr** have the `s3_client` argument and it can be applied in the same way.
+We can then pass our s3_client to `zarr_overview()` and it now works
+successfully.  
 
 ```{r, works-again, error = TRUE}
 zarr_overview(s3_address, s3_client = s3_client)
 ```
+
+Most functions in **Rarr** have the `s3_client` argument and it
+can be applied in the same way.
 
 ## Writing subsets of data
 
@@ -198,6 +225,7 @@ table(read_zarr_array(path))
 ```
 
 ### Updating a subset of an existing array
+
 Lets assume we want to update the first row of our array to contain the sequence
 of integers from 1 to 20.  In the code below we create an example vector
 containing the new data.  We then use `update_zarr_array()`, passing the

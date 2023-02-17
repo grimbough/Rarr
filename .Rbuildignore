@@ -7,3 +7,4 @@ vignettes/Rarr_cache*
 ^codecov\.yml$
 ^\.github$
 README.Rmd
+inst/rmd/imgs*

@@ -11,6 +11,10 @@ output:
 [![Codecov test coverage](https://codecov.io/gh/grimbough/Rarr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/grimbough/Rarr?branch=main)
 <!-- badges: end -->
 
+```{r, config, echo = FALSE}
+knitr::opts_chunk$set(fig.path="inst/rmd/imgs/", dev = "jpeg")
+```
+
 # Introduction to Rarr
 
 The Zarr specification defines a format for chunked, compressed, N-dimensional

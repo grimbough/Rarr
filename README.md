@@ -14,8 +14,7 @@ Mike L. Smith
   - <a href="#reading-a-from-a-local-zarr-array"
     id="toc-reading-a-from-a-local-zarr-array">Reading a from a local Zarr
     array</a>
-  - <a href="#reading-from-s3-storage"
-    id="toc-reading-from-s3-storage">Reading from S3 storage</a>
+  - <a href="#read-s3" id="toc-read-s3">Reading from S3 storage</a>
   - <a href="#writing-to-a-zarr-array"
     id="toc-writing-to-a-zarr-array">Writing to a Zarr array</a>
 - <a href="#current-status" id="toc-current-status">Current Status</a>
@@ -169,13 +168,17 @@ zarr_overview(s3_address)
 The output above indicates that the array is stored in 50 chunks, each
 containing a slice of the overall data. In the example below we use the
 `index` argument to extract the first and tenth slices from the array.
-We then plot these on top of one another using the `image()` function.
 Choosing to read only 2 of the 50 slices is much faster than if we opted
 to download the entire array before accessing the data.
 
 ``` r
-## z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
-par(mar = c(0, 0, 0, 0))
+z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
+```
+
+We then plot our two slices on top of one another using the `image()`
+function.
+
+``` r
 ## plot the first slice in blue
 image(log2(z2[1, , ]),
   col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
@@ -188,13 +191,13 @@ image(log2(z2[2, , ]),
 )
 ```
 
-<img src="README_files/figure-gfm/plot-raster-1.png" width="30%" />
+<img src="inst/rmd/imgs/plot-raster-1.jpeg" width="30%" />
 
 **Note:** if you receive the error message
 `"Error in stop(aws_error(request$error)) : bad error message"` it is
 likely you have some AWS credentials available in to your R session,
 which are being inappropriately used to access this public bucket.
-Please see the section @ref(s3-credentials) for details on how to set
+Please see the section @ref(s3-client) for details on how to set
 credentials for a specific request.
 
 ## Writing to a Zarr array
