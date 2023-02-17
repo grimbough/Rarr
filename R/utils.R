@@ -82,12 +82,12 @@ check_index <- function(index, metadata) {
 #' @keywords Internal
 .normalize_array_path <- function(path) {
   ## we strip the protocol because it gets messed up by the slash removal later on
-  if (grepl(x = path, pattern = "^((https?://)|(s3://)).*$")) {
-    protocol <- gsub(x = path, pattern = "^((https?://)|(s3://)).*$", replacement = "\\1")
+  if (grepl(x = path, pattern = "^((https?://)|(s3://)|([a-zA-Z]:/)).*$")) {
+    protocol <- gsub(x = path, pattern = "^((https?://)|(s3://)|([a-zA-Z]:/)).*$", replacement = "\\1")
   } else {
     protocol <- "/"
   }
-  path <- gsub(x = path, pattern = "^((https?://)|(s3://))(.*$)", replacement = "\\4")
+  path <- gsub(x = path, pattern = "^((https?://)|(s3://)|([a-zA-Z]:/))(.*$)", replacement = "\\5")
 
   ## Replace all backward slash characters ("\\") with forward slash characters ("/")
   path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
