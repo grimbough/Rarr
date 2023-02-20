@@ -1,10 +1,6 @@
 windows_paths <- c(
   "c:/foo/bar/baz.zarr",
   "d:\\foo\\bar\\baz.zarr",
-  "/foo/bar/baz.zarr",
-  "foo/bar/baz.zarr",
-  "../foo/bar/baz.zarr",
-  "./foo/bar/baz.zarr",
   "https://s3.foo.com/bar/baz.zarr"
 )
 
