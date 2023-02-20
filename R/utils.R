@@ -87,13 +87,12 @@ check_index <- function(index, metadata) {
     path <- gsub(x = path, pattern = "^((https?://)|(s3://))(.*$)", replacement = "\\4")
   } else {
     ## Replace all backward slash characters ("\\") with forward slash characters ("/")
+    path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
     path <- normalizePath(path, winslash = "/", mustWork = FALSE)
-    root <- sub(x = path, "(^[[:alnum:]:]*/)(.*)", replacement = "\\1")
-    path <- sub(x = path, "(^[[:alnum:]:]*/)(.*)", replacement = "\\2")
+    root <- gsub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\1")
+    path <- gsub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\2")
   }
 
-  ## Replace all backward slash characters ("\\") with forward slash characters ("/")
-  path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
   ## Strip any leading "/" characters
   path <- gsub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
   ## Strip any trailing "/" characters
