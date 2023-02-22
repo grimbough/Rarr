@@ -64,7 +64,8 @@ datatype support.  It will be updated as progress is made.
 
 | Zarr Data Type | Status<br/>(reading / writing) | Notes |
 |-----------|:--------------:|-------|
-|`int8`  | &#x2714; / &#x274C; | |
+|`boolean`  | &#x2714; / &#x274C; | |
+|`int8`     | &#x2714; / &#x274C; | |
 |`uint8` | &#x2714; / &#x274C; | |
 |`int16` | &#x2754; / &#x274C; | |
 |`uint16`| &#x2714; / &#x274C; | |
