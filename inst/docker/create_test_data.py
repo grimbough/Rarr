@@ -109,7 +109,7 @@ z[1, 2, 0] = -5.97e-8
 z[1, 3, 0] = 0.0000039
 
 z = zarr.open('/data/row-first/float16.zarr', mode='w', shape=(30, 20, 10),
-                chunks=(10, 10, 5), dtype='f2', order="C", fill_value = "0.0")
+                chunks=(10, 10, 5), dtype='f2', order="F", fill_value = "0.0")
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
 z[0, 0, 0] = -1
@@ -126,7 +126,7 @@ z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
 
 z = zarr.open('/data/row-first/float32.zarr', mode='w', shape=(30, 20, 10),
-                chunks=(10, 10, 5), dtype='f4', order="C", fill_value = "0.0")
+                chunks=(10, 10, 5), dtype='f4', order="F", fill_value = "0.0")
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
 
@@ -138,7 +138,7 @@ z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
 
 z = zarr.open('/data/row-first/float64.zarr', mode='w', shape=(30, 20, 10),
-                chunks=(10, 10, 5), dtype='f8', order="C", fill_value = "0.0")
+                chunks=(10, 10, 5), dtype='f8', order="F", fill_value = "0.0")
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 10.52
 
@@ -152,14 +152,10 @@ z[0, :] = 1
 
 #####################################
 
+z = zarr.open('/data/column-first/boolean.zarr', mode='w', shape=(20, 10),
+               chunks=(10, 10), dtype='b1', order="C")
+z[0, :] = 1
 
-
-# 
-# z5 = zarr.open('/data/boolean.zarr', mode='w', shape=(100, 250),
-#                chunks=(10, 25), dtype='b1', order="F")
-# z5[:] = 0
-# z5[0, :] = 1
-# z5[:, 0] = 1
 # 
 # 
 # 
@@ -182,12 +178,6 @@ z = zarr.open('/data/compression/lz4.zarr', mode='w', shape=(20, 10),
               chunks=(10, 10), dtype='i4', order="F", compressor=zarr.LZ4())
 z[0, :] = np.arange(start=1, stop=11)
 z[:, 0] = np.arange(start=1, stop=60, step=3)
-# 
-# 
-# z7 = zarr.open('/data/8bit-int.zarr', mode='w', shape=(100, 250),
-#                chunks=(10, 25), dtype='i8', order="F")
-# z7[:] = 0
-# z7[0, :] = pow(2, 32)
-# z7[:, 0] = -10
-# 
+
+
 
