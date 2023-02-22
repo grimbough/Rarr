@@ -22,3 +22,8 @@ for(i in which(grepl("embl", names(paths))) ) {
   expect_equal(parsed$object,   "bz2.zarr/.zarray")
   expect_equal(parsed$region,   "auto")
 }
+
+
+expect_identical(Rarr:::.determine_s3_provider(paths[["aws_host"]]),  "aws")
+expect_identical(Rarr:::.determine_s3_provider(paths[["embl_path"]]), "other")
+expect_identical(Rarr:::.determine_s3_provider("https://foo.bar/baz"), "other")

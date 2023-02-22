@@ -70,14 +70,27 @@ z = zarr.open('/data/row-first/uint8.zarr', mode='w', shape=(30, 20, 10),
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = -1
 
+#######################
+
 z = zarr.open('/data/column-first/int64.zarr', mode='w', shape=(30, 20, 10),
                chunks=(10, 10, 5), dtype='i8', order="C")
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 1
 z[29,19,9] = pow(2,32)
+z[29,19,8] = -pow(2,32)
+
 
 z = zarr.open('/data/row-first/int64.zarr', mode='w', shape=(30, 20, 10),
                chunks=(10, 10, 5), dtype='i8', order="F")
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 1
+z[29,19,9] = pow(2,32)
+z[29,19,8] = -pow(2,32)
+
+#######################
+
+z = zarr.open('/data/column-first/uint64.zarr', mode='w', shape=(30, 20, 10),
+               chunks=(10, 10, 5), dtype='u8', order="C")
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 1
 z[29,19,9] = pow(2,32)
@@ -107,6 +120,10 @@ z[0, 0, 0] = -1
 z[1, 1, 0] = 0.00005693
 z[1, 2, 0] = -5.97e-8
 z[1, 3, 0] = 0.0000039
+## special case values
+z[2, 1, 0] = np.nan
+z[2, 2, 0] = np.inf
+z[2, 3, 0] = np.NINF
 
 z = zarr.open('/data/row-first/float16.zarr', mode='w', shape=(30, 20, 10),
                 chunks=(10, 10, 5), dtype='f2', order="F", fill_value = "0.0")
@@ -117,6 +134,10 @@ z[0, 0, 0] = -1
 z[1, 1, 0] = 0.00005693
 z[1, 2, 0] = -5.97e-8
 z[1, 3, 0] = 0.0000039
+## special case values
+z[2, 1, 0] = np.nan
+z[2, 2, 0] = np.inf
+z[2, 3, 0] = np.NINF
 
 ######################
 

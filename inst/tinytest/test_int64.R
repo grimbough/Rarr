@@ -27,3 +27,9 @@ expect_warning( column_major <- read_zarr_array(zarr_c, index = list(30,20,10)) 
 expect_warning( row_major    <- read_zarr_array(zarr_f, index = list(30,20,10)) )
 expect_true( all(is.na(column_major)) )
 expect_true( all(is.na(row_major)) )
+
+## this data point should be smaller than the range of an int32 and throw a warning 
+expect_warning( column_major <- read_zarr_array(zarr_c, index = list(30,20,9)) )
+expect_warning( row_major    <- read_zarr_array(zarr_f, index = list(30,20,9)) )
+expect_true( all(is.na(column_major)) )
+expect_true( all(is.na(row_major)) )

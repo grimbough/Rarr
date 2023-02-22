@@ -24,6 +24,12 @@ expect_silent(res <- write_zarr_array(x = x, zarr_array_path = path,
                                       compressor = Rarr:::use_blosc()))
 expect_identical(read_zarr_array(path), x)
 
+## testing LZMA compression
+path <- tempfile()
+expect_silent(res <- write_zarr_array(x = x, zarr_array_path = path, 
+                                      chunk_dim = c(2, 5, 1), 
+                                      compressor = Rarr:::use_lzma()))
+expect_identical(read_zarr_array(path), x)
 
 ## testing chunk dimensions that don't align perfectly with the array extent
 path <- tempfile()

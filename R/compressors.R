@@ -10,4 +10,5 @@ use_zlib <- function() {
 
 use_lzma <- function() {
   res <- list(id = "lzma", format = 1, level = "9")
+  return(res)
 }
