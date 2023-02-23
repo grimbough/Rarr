@@ -32,14 +32,14 @@
 #'
 #' \donttest{
 #' ## using a Zarr file hosted on Amazon S3
-#' ## This array has a single dimension with length 128
-#' z2 <- "https://s3.us-west-2.amazonaws.com/cmip6-pds/CMIP3/BCCR/bccr_bcm2_0/piControl/r1i1p1f1/Amon/psl/lon"
+#' ## This array has a single dimension with length 576
+#' z2 <- "https://power-analysis-ready-datastore.s3.amazonaws.com/power_901_constants.zarr/lon/"
 #'
 #' ## read the entire array
 #' read_zarr_array(zarr_array_path = z2)
 #'
 #' ## read alternating elements
-#' read_zarr_array(zarr_array_path = z2, index = list(seq(1, 128, 2)))
+#' read_zarr_array(zarr_array_path = z2, index = list(seq(1, 576, 2)))
 #' }
 #'
 #' @export

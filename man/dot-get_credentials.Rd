@@ -12,6 +12,11 @@ things stop working.}
 \item{credentials}{Content stored at \code{.internal$config$credentials} in
 an object created by \code{paws.storage::s3()}.}
 }
+\value{
+A credentials list to be reinserted into a \code{paw.storage} s3 object.
+If no valid credentials are found this function will error, which is expected
+and is caught by \code{.check_credentials}.
+}
 \description{
 This is a modified version of paws.storge:::get_credentials().  It is
 included to prevent using the \code{:::} operator.  Look at that function if

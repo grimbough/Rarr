@@ -47,6 +47,7 @@ read_zarr_array(zarr_array_path = z1, index = list(1:10, NULL, 1))
 ## using a Zarr file hosted on Amazon S3
 ## This array has a single dimension with length 128
 z2 <- "https://s3.us-west-2.amazonaws.com/cmip6-pds/CMIP3/BCCR/bccr_bcm2_0/piControl/r1i1p1f1/Amon/psl/lon"
+z2 <- "https://mghp.osn.xsede.org/bir190004-bucket01/TMA11/zarr/1.zarr/"
 
 ## read the entire array
 read_zarr_array(zarr_array_path = z2)
