@@ -23,6 +23,10 @@ shape.}
 A list of length 2.  The first element is the formatted chunk data.
 The second is an integer of length 1, indicating if warnings were
 encountered when converting types
+
+If "chunk_data" is larger than the space remaining in destination array
+i.e. it contains the overflowing elements, these will be trimmed when the
+chunk is returned to \code{read_data()}
 }
 \description{
 When a chunk is decompressed it is returned as a vector of raw bytes.  This

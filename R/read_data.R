@@ -133,8 +133,19 @@ find_chunks_needed <- function(metadata, index) {
   return(required_chunks)
 }
 
+#' Determine the size of chunk in bytes
+#' 
+#' @param datatype A list of details for the array datatype.  Expected to be
+#' produced by [.parse_datatype()].
+#' @param dimensions A list containing the dimensions of the chunk.  Expected 
+#' to be found in a list produced by [read_array_metadata()].
+#' 
+#' @returns An integer giving the size of the chunk in bytes
+#'   
+#' @keywords Internal
 get_chunk_size <- function(datatype, dimensions) {
   ## determine the size of the R datatype we're going to return
+  ## TODO: not all datatypes are implemented yet
   sizeof <- switch(datatype$base_type,
     "boolean" = 4L,
     "int"     = 4L,
@@ -175,7 +186,7 @@ get_chunk_size <- function(datatype, dimensions) {
 #'   "warning". The first is an array containing the decompressed chunk values,
 #'   the second is an integer indicating whether there were any overflow
 #'   warnings generated will reading the chunk into an R datatype.
-#'
+#'   
 #' @keywords Internal
 read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
                        alt_chunk_dim = NULL) {
@@ -249,18 +260,35 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
 #' @returns A list of length 2.  The first element is the formatted chunk data.
 #'   The second is an integer of length 1, indicating if warnings were
 #'   encountered when converting types
+#'
+#'   If "chunk_data" is larger than the space remaining in destination array
+#'   i.e. it contains the overflowing elements, these will be trimmed when the
+#'   chunk is returned to `read_data()`
+#'
 #' @keywords Internal
 .format_chunk <- function(decompressed_chunk, metadata, alt_chunk_dim) {
   datatype <- .parse_datatype(metadata$dtype)
-  chunk_dim <- alt_chunk_dim
+  
+  ## It doesn't seem clear if the on disk chunk will contain the overflow 
+  ## values or not, so we try both approaches.
+  actual_chunk_size <- length(decompressed_chunk) / datatype$nbytes
+  if(actual_chunk_size == prod(unlist(metadata$chunks))) {
+    chunk_dim <- unlist(metadata$chunks)
+  } else if (actual_chunk_size == prod(alt_chunk_dim)) {
+    chunk_dim <- alt_chunk_dim
+  } else {
+    stop("Decompresed data doesn't match expected chunk size.")
+  }
+  
   ## reverse dimensions for column first datasets
   if (metadata$order == "C") {
     chunk_dim <- rev(chunk_dim)
   }
 
   if (datatype$base_type == "string") {
-    ## break raw vector into list where is each element is the bytes for 1 string
-    tmp <- split(decompressed_chunk, rep(seq_len(length(decompressed_chunk) / datatype$nbytes),
+    ## break raw vector into list where each element is the bytes for 1 string
+    tmp <- split(x = decompressed_chunk, 
+                 f = rep(seq_len(length(decompressed_chunk) / datatype$nbytes),
       each = datatype$nbytes
     ))
     converted_chunk <- list(

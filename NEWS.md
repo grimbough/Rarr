@@ -1,3 +1,8 @@
+# Rarr 0.99.2
+
+* Catch bug when chunk files contain values outside the array extent.
+* Add manual page issues identified by BBS
+
 # Rarr 0.99.1
 
 * Switch from aws.s3 to paws.storage for S3 data retrieval.
