@@ -8,6 +8,7 @@ write_zarr_array(
   x,
   zarr_array_path,
   chunk_dim,
+  order = "F",
   compressor = use_zlib(),
   fill_value,
   nchar,
@@ -24,8 +25,14 @@ new Zarr array.}
 \item{chunk_dim}{Dimensions of the array chunks. Should be a numeric vector
 with the same length as the \code{dim} argument.}
 
+\item{order}{Define the layout of the bytes within each chunk.  Valid options
+are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify
+"column-major" ordering, which is how R arrays are arranged in memory.
+'row' or 'C' will specify "row-major" order.}
+
 \item{compressor}{What (if any) compression tool should be applied to the
-array chunks.  The default is to use \code{zlib} compression.}
+array chunks.  The default is to use \code{zlib} compression. See \link{compressors}
+for more details.}
 
 \item{fill_value}{The default value for uninitialized portions of the array.
 Does not have to be provided, in which case the default for the specified

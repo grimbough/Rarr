@@ -9,6 +9,7 @@ create_empty_zarr_array(
   dim,
   chunk_dim,
   data_type,
+  order = "F",
   compressor = use_zlib(),
   fill_value,
   nchar,
@@ -16,8 +17,8 @@ create_empty_zarr_array(
 )
 }
 \arguments{
-\item{zarr_array_path}{Character vector of length 1 giving the path to the new Zarr
-array.}
+\item{zarr_array_path}{Character vector of length 1 giving the path to the
+new Zarr array.}
 
 \item{dim}{Dimensions of the new array.  Should be a numeric vector with the
 same length as the number of dimensions.}
@@ -31,8 +32,14 @@ Currently this is limited to standard R data types.  Valid options are:
 formats: "<i4", "<f8", "|S".  If this argument isn't provided the
 \code{fill_value} will be used to determine the datatype.}
 
+\item{order}{Define the layout of the bytes within each chunk.  Valid options
+are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify
+"column-major" ordering, which is how R arrays are arranged in memory.
+'row' or 'C' will specify "row-major" order.}
+
 \item{compressor}{What (if any) compression tool should be applied to the
-array chunks.  The default is to use \code{zlib} compression.}
+array chunks.  The default is to use \code{zlib} compression. See \link{compressors}
+for more details.}
 
 \item{fill_value}{The default value for uninitialized portions of the array.
 Does not have to be provided, in which case the default for the specified

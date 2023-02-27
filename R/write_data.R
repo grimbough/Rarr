@@ -43,10 +43,8 @@
 
 #' Create an (empty) Zarr array
 #'
-#'
-#'
-#' @param zarr_array_path Character vector of length 1 giving the path to the new Zarr
-#'   array.
+#' @param zarr_array_path Character vector of length 1 giving the path to the
+#'   new Zarr array.
 #' @param dim Dimensions of the new array.  Should be a numeric vector with the
 #'   same length as the number of dimensions.
 #' @param chunk_dim Dimensions of the array chunks. Should be a numeric vector
@@ -56,8 +54,13 @@
 #'   "integer", "double", "character".  You can also use the analogous NumpPy
 #'   formats: "<i4", "<f8", "|S".  If this argument isn't provided the
 #'   `fill_value` will be used to determine the datatype.
+#' @param order Define the layout of the bytes within each chunk.  Valid options
+#'   are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify
+#'   "column-major" ordering, which is how R arrays are arranged in memory.
+#'   'row' or 'C' will specify "row-major" order.
 #' @param compressor What (if any) compression tool should be applied to the
-#'   array chunks.  The default is to use `zlib` compression.
+#'   array chunks.  The default is to use `zlib` compression. See [compressors]
+#'   for more details.
 #' @param fill_value The default value for uninitialized portions of the array.
 #'   Does not have to be provided, in which case the default for the specified
 #'   data type will be used.
@@ -114,20 +117,12 @@ create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
 #'   written to the Zarr array.
 #' @param zarr_array_path Character vector of length 1 giving the path to the
 #'   new Zarr array.
-#' @param chunk_dim Dimensions of the array chunks. Should be a numeric vector
-#'   with the same length as the `dim` argument.
-#' @param compressor What (if any) compression tool should be applied to the
-#'   array chunks.  The default is to use `zlib` compression.
-#' @param fill_value The default value for uninitialized portions of the array.
-#'   Does not have to be provided, in which case the default for the specified
-#'   data type will be used.
 #' @param nchar For character arrays this parameter gives the maximum length of
 #'   the stored strings. If this argument is not specified the array provided to
 #'   `x` will be checked and the length of the longest string found will be used
 #'   so no data are truncated. However this may be slow and providing a value to
 #'   `nchar` can provide a modest performance improvement.
-#' @param dimension_separator The character used to to separate the dimensions
-#'   in the names of the chunk files.  Valid options are limited to "." and "/".
+#' @inheritParams create_empty_zarr_array
 #'
 #' @returns The function is primarily called for the side effect of writing to
 #'   disk. Returns (invisibly) `TRUE` if the array is successfully written.
@@ -307,6 +302,17 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   writeBin(compressed_chunk, con = chunk_path)
 }
 
+#' Compress a single chunk
+#'
+#' @param input_chunk Array containing the chunk data to be compressed.  Will be
+#'   converted to a raw vector before compression.
+#' @param compressor A "compressor" function that returns a list giving the
+#'   details of the compression tool to apply.  See [compressors] for more
+#'   details.
+#'   
+#' @returns A raw vector containing the compressed chunk data
+#'
+#' @keywords Internal
 .compress_chunk <- function(input_chunk, compressor = use_zlib()) {
   ## the compression tools need a raw vector
   ## any permuting for "C" ordering needs to happen before this

@@ -40,6 +40,12 @@ check_index <- function(index, metadata) {
   return(x)
 }
 
+#' Parse the data type encoding string
+#' 
+#' @param typestr The datatype encoding string.  This is in the Numpy array
+#' typestr format.
+#' 
+#' @returns A list of length 4 containing the details of the data type.
 .parse_datatype <- function(typestr) {
   datatype <- list()
   datatype_parts <- strsplit(typestr, "")[[1]]
@@ -60,7 +66,7 @@ check_index <- function(index, metadata) {
     "M" = "datetime",
     "S" = "string",
     "U" = "Unicode",
-    "v" = "other"
+    "V" = "other"
   )
 
   datatype$nbytes <- as.integer(datatype_parts[3])
