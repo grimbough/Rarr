@@ -86,6 +86,7 @@
 #'
 #' @export
 create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
+                                    order = "F",
                                     compressor = use_zlib(), fill_value, nchar,
                                     dimension_separator = ".") {
   path <- .normalize_array_path(zarr_array_path)
@@ -104,6 +105,7 @@ create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
     array_shape = dim,
     chunk_shape = chunk_dim,
     data_type = data_type,
+    order = order,
     fill_value = fill_value,
     compressor = compressor
   )
@@ -138,6 +140,7 @@ create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
 #'
 #' @export
 write_zarr_array <- function(x, zarr_array_path, chunk_dim,
+                             order = "F",
                              compressor = use_zlib(), fill_value, nchar,
                              dimension_separator = ".") {
   path <- .normalize_array_path(zarr_array_path)
@@ -149,6 +152,7 @@ write_zarr_array <- function(x, zarr_array_path, chunk_dim,
   create_empty_zarr_array(
     zarr_array_path = path, dim = dim(x), chunk_dim = chunk_dim,
     data_type = storage.mode(x),
+    order = order,
     fill_value = fill_value, compressor = compressor,
     nchar = nchar
   )
@@ -160,7 +164,7 @@ write_zarr_array <- function(x, zarr_array_path, chunk_dim,
   ## TODO: maybe this can be done in parallel is bplapply() ?
   res <- lapply(chunk_ids,
     FUN = .write_chunk, x = x, path = path,
-    chunk_dim = chunk_dim, compressor = compressor
+    chunk_dim = chunk_dim, compressor = compressor, order = order
   )
 
   return(invisible(all(unlist(res))))
@@ -171,7 +175,7 @@ write_zarr_array <- function(x, zarr_array_path, chunk_dim,
   expand.grid(lapply(n_chunks_in_dim, seq_len)) - 1
 }
 
-.write_chunk <- function(chunk_id, x, path, chunk_dim, compressor) {
+.write_chunk <- function(chunk_id, x, path, chunk_dim, order, compressor) {
   chunk_id_split <- as.integer(strsplit(chunk_id, ".", fixed = TRUE)[[1]])
   chunk_path <- paste0(path, chunk_id)
 
@@ -181,6 +185,9 @@ write_zarr_array <- function(x, zarr_array_path, chunk_dim,
   }
 
   chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)
+  if(order == "C") {
+    chunk_in_mem <- aperm(chunk_in_mem)
+  }
   compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = compressor)
   writeBin(compressed_chunk, con = chunk_path)
   return(invisible(TRUE))
