@@ -1,3 +1,7 @@
+# Rarr 0.99.3
+
+* Allow choice between column and row ordering when creating a Zarr array
+
 # Rarr 0.99.2
 
 * Catch bug when chunk files contain values outside the array extent.
