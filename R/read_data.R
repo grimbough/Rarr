@@ -74,8 +74,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 
 #' @importFrom R.utils extract
 read_data <- function(required_chunks, zarr_array_path, s3_client, index, metadata) {
-  ## predefine our array to be populated from the read chunks
-  output <- array(dim = vapply(index, length, integer(1)))
+
   warn <- 0L
 
   ## hopefully we can eventually do this in parallel
@@ -111,16 +110,35 @@ read_data <- function(required_chunks, zarr_array_path, s3_client, index, metada
 
     return(list(selection, index_in_result, warning = warn))
   })
+  
+  ## predefine our array to be populated from the read chunks
+  output <- array(dim = vapply(index, length, integer(1)))
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
     index_in_result <- chunk_selections[[i]][[2]]
-    output <- .extract_and_replace(output, index_in_result,
-      y = chunk_selections[[i]][[1]]
-    )
+    index_in_result <- .coords_to_index(dim(output), chunk_selections[[i]][[2]])
+    #output <- .extract_and_replace(output, index_in_result,
+    #  y = chunk_selections[[i]][[1]]
+    #)
+    output[index_in_result] <- chunk_selections[[i]][[1]]
     warn <- max(warn, chunk_selections[[i]]$warning[1])
   }
   return(list(output = output, warn = warn))
+}
+
+.coords_to_index <- function(dims, coords) {
+  
+  all <- expand.grid(coords)
+  k=cumprod(c(1,dims[-length(dims)]))
+  ndx=1
+  for(i in seq_along(dims)){
+    v=all[,i]
+    if(any(v<1) || any(v>dims[i]))
+      stop("index out of range")
+    ndx=ndx+(v-1)*k[i]
+  }
+  ndx
 }
 
 find_chunks_needed <- function(metadata, index) {
