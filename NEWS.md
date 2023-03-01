@@ -1,3 +1,8 @@
+# Rarr 0.99.4
+
+When writing chunks that overlap the array edge, even the undefined overhang
+region should be written to disk
+
 # Rarr 0.99.3
 
 * Allow choice between column and row ordering when creating a Zarr array
