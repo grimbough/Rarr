@@ -176,21 +176,32 @@ write_zarr_array <- function(x, zarr_array_path, chunk_dim,
 }
 
 .write_chunk <- function(chunk_id, x, path, chunk_dim, order, compressor) {
-  chunk_id_split <- as.integer(strsplit(chunk_id, ".", fixed = TRUE)[[1]])
-  chunk_path <- paste0(path, chunk_id)
+    chunk_id_split <- as.integer(strsplit(chunk_id, ".", fixed = TRUE)[[1]])
+    chunk_path <- paste0(path, chunk_id)
 
-  idx_in_array <- list()
-  for (j in seq_along(dim(x))) {
-    idx_in_array[[j]] <- which((seq_len(dim(x)[j]) - 1) %/% chunk_dim[j] == chunk_id_split[j])
-  }
+    idx_in_array <- list()
+    for (j in seq_along(dim(x))) {
+        idx_in_array[[j]] <- which((seq_len(dim(x)[j]) - 1) %/% chunk_dim[j] == chunk_id_split[j])
+    }
 
-  chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)
-  if(order == "C") {
-    chunk_in_mem <- aperm(chunk_in_mem)
-  }
-  compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = compressor)
-  writeBin(compressed_chunk, con = chunk_path)
-  return(invisible(TRUE))
+    chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)
+
+    ## if a chunk overlaps the edge of the array, most implementations assume we 
+    ## still write the content to disk.  Seems wasteful, but we fail many tests 
+    if (any(dim(chunk_in_mem) != chunk_dim)) {
+        temp_chunk <- array(dim = chunk_dim)
+        chunk_in_mem <- .extract_and_replace(temp_chunk,
+            indices = lapply(dim(chunk_in_mem), seq_len),
+            chunk_in_mem
+        )
+    }
+
+    if (order == "C") {
+        chunk_in_mem <- aperm(chunk_in_mem)
+    }
+    compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = compressor)
+    writeBin(compressed_chunk, con = chunk_path)
+    return(invisible(TRUE))
 }
 
 #' Update (a subset of) an existing Zarr array
