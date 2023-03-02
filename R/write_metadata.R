@@ -1,5 +1,6 @@
 .write_zarray <- function(path, array_shape, chunk_shape, data_type,
-                          fill_value, compressor, order = "C") {
+                          fill_value, compressor, dimension_separator = ".",
+                          order = "C") {
     zarray <- list()
 
     if (!toupper(order) %in% c("C", "F")) {
@@ -11,7 +12,7 @@
     zarray$dtype <- data_type
     zarray$compressor <- compressor
     zarray$fill_value <- fill_value
-    zarray$dimension_separator <- "."
+    zarray$dimension_separator <- dimension_separator
     zarray$order <- toupper(order)
     zarray$zarr_format <- 2
 

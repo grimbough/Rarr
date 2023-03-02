@@ -116,11 +116,7 @@ read_data <- function(required_chunks, zarr_array_path, s3_client, index, metada
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
-    index_in_result <- chunk_selections[[i]][[2]]
     index_in_result <- .coords_to_index(dim(output), chunk_selections[[i]][[2]])
-    #output <- .extract_and_replace(output, index_in_result,
-    #  y = chunk_selections[[i]][[1]]
-    #)
     output[index_in_result] <- chunk_selections[[i]][[1]]
     warn <- max(warn, chunk_selections[[i]]$warning[1])
   }
@@ -134,8 +130,6 @@ read_data <- function(required_chunks, zarr_array_path, s3_client, index, metada
   ndx=1
   for(i in seq_along(dims)){
     v=all[,i]
-    if(any(v<1) || any(v>dims[i]))
-      stop("index out of range")
     ndx=ndx+(v-1)*k[i]
   }
   ndx
