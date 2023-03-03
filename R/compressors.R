@@ -44,3 +44,10 @@ use_lzma <- function() {
   res <- list(id = "lzma", format = 1, level = 9)
   return(res)
 }
+
+#' @rdname compressors
+#' @export
+use_lz4 <- function() {
+  res <- list(id = "lz4", acceleration = 1)
+  return(res)
+}

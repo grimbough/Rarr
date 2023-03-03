@@ -13,15 +13,16 @@ expect_identical(read_zarr_array(path), array(100L, dim = c(100)))
 x <- array(runif(n = 1000, min = -10, max = 10), dim = c(10, 20, 5))
 
 ## Standard writing and reading
-path <- tempfile()
+path <- tempfile(pattern = "zlib_")
 expect_silent(res <- write_zarr_array(
     x = x, zarr_array_path = path,
-    chunk_dim = c(2, 5, 1), order = "F"
+    chunk_dim = c(2, 5, 1), order = "F",
+    compressor = use_zlib()
 ))
 expect_identical(read_zarr_array(path), x)
 
 ## testing blosc compression
-path <- tempfile()
+path <- tempfile(pattern = "blosc_")
 expect_silent(res <- write_zarr_array(
     x = x, zarr_array_path = path,
     chunk_dim = c(2, 5, 1),
@@ -30,11 +31,20 @@ expect_silent(res <- write_zarr_array(
 expect_identical(read_zarr_array(path), x)
 
 ## testing LZMA compression
-path <- tempfile()
+path <- tempfile(pattern = "lzma_")
 expect_silent(res <- write_zarr_array(
     x = x, zarr_array_path = path,
     chunk_dim = c(2, 5, 1),
     compressor = Rarr:::use_lzma()
+))
+expect_identical(read_zarr_array(path), x)
+
+## testing LZ4 compression
+path <- tempfile(pattern = "lz4_")
+expect_silent(res <- write_zarr_array(
+  x = x, zarr_array_path = path,
+  chunk_dim = c(2, 5, 1),
+  compressor = Rarr:::use_lz4()
 ))
 expect_identical(read_zarr_array(path), x)
 

@@ -59,8 +59,8 @@
 #'   "column-major" ordering, which is how R arrays are arranged in memory.
 #'   'row' or 'C' will specify "row-major" order.
 #' @param compressor What (if any) compression tool should be applied to the
-#'   array chunks.  The default is to use `zlib` compression. See [compressors]
-#'   for more details.
+#'   array chunks.  The default is to use `zlib` compression. Supplying `NULL`
+#'   will disable chunk compression. See [compressors] for more details.
 #' @param fill_value The default value for uninitialized portions of the array.
 #'   Does not have to be provided, in which case the default for the specified
 #'   data type will be used.
@@ -100,6 +100,7 @@ create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
 
   .check_chunk_shape(x_dim = dim, chunk_dim = chunk_dim)
 
+  ## create the .zarray metadata file
   .write_zarray(
     path = paste0(path, ".zarray"),
     array_shape = dim,
@@ -162,16 +163,17 @@ write_zarr_array <- function(x,
     nchar = nchar,
     dimension_separator = dimension_separator
   )
+  ## read the metadata we just created
+  metadata <- read_array_metadata(path)
 
   chunk_names <- .generate_chunk_names(x_dim = dim(x), chunk_dim = chunk_dim)
   chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
 
   ## iterate over each chunk
-  ## TODO: maybe this can be done in parallel is bplapply() ?
+  ## TODO: maybe this can be done in parallel with bplapply() ?
   res <- lapply(chunk_ids,
     FUN = .write_chunk, x = x, path = path, 
-    chunk_dim = chunk_dim, compressor = compressor, order = order,
-    dim_sep = dimension_separator
+    metadata = metadata
   )
 
   return(invisible(all(unlist(res))))
@@ -182,7 +184,11 @@ write_zarr_array <- function(x,
   expand.grid(lapply(n_chunks_in_dim, seq_len)) - 1
 }
 
-.write_chunk <- function(chunk_id, x, path, chunk_dim, order, compressor, dim_sep) {
+.write_chunk <- function(chunk_id, x, path, metadata) {
+  
+    chunk_dim <- unlist(metadata$chunks)
+    dim_sep <- metadata$dimension_separator
+
     chunk_id_split <- as.integer(strsplit(chunk_id, dim_sep, fixed = TRUE)[[1]])
     chunk_path <- paste0(path, chunk_id)
 
@@ -203,10 +209,14 @@ write_zarr_array <- function(x,
         )
     }
 
-    if (order == "C") {
+    if (metadata$order == "C") {
         chunk_in_mem <- aperm(chunk_in_mem)
     }
-    compressed_chunk <- .compress_chunk(input_chunk = chunk_in_mem, compressor = compressor)
+    compressed_chunk <- .compress_chunk(
+        input_chunk = chunk_in_mem,
+        compressor = metadata$compressor,
+        data_type_size = .parse_datatype(metadata$dtype)$nbytes
+    )
     
     ## check the chunk path exists, and create if not
     if(isFALSE(dir.exists(dirname(chunk_path)))) {
@@ -344,24 +354,27 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #' @returns A raw vector containing the compressed chunk data
 #'
 #' @keywords Internal
-.compress_chunk <- function(input_chunk, compressor = use_zlib()) {
+.compress_chunk <- function(input_chunk, compressor = use_zlib(), data_type_size) {
   ## the compression tools need a raw vector
   ## any permuting for "C" ordering needs to happen before this
   raw_chunk <- .as_raw(as.vector(input_chunk))
 
-  if (compressor$id == "blosc") {
-    compressed_chunk <- .Call("compress_chunk_BLOSC", raw_chunk, PACKAGE = "Rarr")
+  if(is.null(compressor)) {
+    compressed_chunk <- raw_chunk
+  } else if (compressor$id == "blosc") {
+    compressed_chunk <- .Call("compress_chunk_BLOSC", raw_chunk, 
+                              as.integer(data_type_size), PACKAGE = "Rarr")
   } else if (compressor$id %in% c("zlib")) {
     compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
   } else if (compressor$id == "bz2") {
     compressed_chunk <- memCompress(from = raw_chunk, type = "bzip2")
   } else if (compressor$id == "lzma") {
     compressed_chunk <- memCompress(from = raw_chunk, type = "xz")
-    # } else if (compressor$id == "lz4") {
-    ## TODO: Implement LZ4 compression
+  } else if (compressor$id == "lz4") {
+    compressed_chunk <- .Call("compress_chunk_LZ4", raw_chunk, PACKAGE = "Rarr")
     ## numpy stores the original size of the buffer in the first 4 bytes after
     ## compression. We should do that too for compatibility
-    #  compressed_chunk <- .Call("compress_chunk_LZ4", raw_chunk, PACKAGE = "Rarr")
+    compressed_chunk <- c(.as_raw(length(raw_chunk)), compressed_chunk)
   } else {
     stop("Unsupported compression tool")
   }

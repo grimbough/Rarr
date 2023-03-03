@@ -10,8 +10,8 @@
 \item{compressed_chunk}{Raw vector holding the compressed bytes for this
 chunk.}
 
-\item{metadata}{List produced by \code{read_array_metadata()} with the contents
-of the \code{.zarray} file.}
+\item{metadata}{List produced by \code{read_array_metadata()} with the contents of
+the \code{.zarray} file.}
 }
 \value{
 An array with the number of dimensions specified in the Zarr
@@ -21,6 +21,7 @@ the returned chunk will be smaller.
 }
 \description{
 R has internal decompression tools for zlib, bz2 and lzma compression.  We
-use external libraries bundled with the package for blosc and lz4 decompression.
+use external libraries bundled with the package for blosc and lz4
+decompression.
 }
 \keyword{Internal}
