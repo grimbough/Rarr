@@ -4,7 +4,7 @@
 \alias{.compress_chunk}
 \title{Compress a single chunk}
 \usage{
-.compress_chunk(input_chunk, compressor = use_zlib())
+.compress_chunk(input_chunk, compressor = use_zlib(), data_type_size)
 }
 \arguments{
 \item{input_chunk}{Array containing the chunk data to be compressed.  Will be

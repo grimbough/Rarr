@@ -5,6 +5,7 @@
 \alias{use_blosc}
 \alias{use_zlib}
 \alias{use_lzma}
+\alias{use_lz4}
 \title{Define compression tool and settings}
 \usage{
 use_blosc(cname = "lz4")
@@ -12,6 +13,8 @@ use_blosc(cname = "lz4")
 use_zlib()
 
 use_lzma()
+
+use_lz4()
 }
 \arguments{
 \item{cname}{Blosc is a 'meta-compressor' providing access to several
