@@ -1,11 +1,18 @@
+# Rarr 0.99.6
+
+* Allow reading and writing chunks with no compression.
+* Enable LZ4 compression for writing.
+* Fix bug in blosc compression that could result in larger chunks than necessary.
+* Improve speed of indexing when combining chunks into the final output array.
+
 # Rarr 0.99.5
 
-Fixed bug when specifying nested chunks, where the chunk couldn't be written
+* Fixed bug when specifying nested chunks, where the chunk couldn't be written
 unless the directory already existed.
 
 # Rarr 0.99.4
 
-When writing chunks that overlap the array edge, even the undefined overhang
+* When writing chunks that overlap the array edge, even the undefined overhang
 region should be written to disk.
 
 # Rarr 0.99.3
