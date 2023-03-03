@@ -26,18 +26,25 @@ check_index <- function(index, metadata) {
   return(index)
 }
 
-.extract_and_replace <- function(x, indices, y) {
-  dims <- seq_along(indices)
-  args <- rep("", times = length(indices))
-  for (kk in seq_along(indices)) {
-    dd <- dims[kk]
-    args[dd] <- sprintf("indices[[%d]]", kk)
-  }
-  args <- paste(args, collapse = ",")
-  code <- paste("x[", args, "] <- y", sep = "")
+#' Create a string of the form `x[idx[[1]], idx[[2]]] <- y` for an array `x`
+#' where the number of dimensions is variable.
+#'
+#' @param x_name Name of the object to have items replaced
+#' @param idx_name Name of the list containing the indices
+#' @param idx_length Length of the list specified in `idx_name`
+#' @param y_name Name of the object containing the replacement items
+#'
+#' @returns A character vector of length one containing the replacement
+#'   commands. This is expected to be passed to `parse() |> eval()`.
+#'
+#' @keywords Internal
+.create_replace_call <- function(x_name, idx_name, idx_length, y_name) {
 
-  eval(parse(text = code))
-  return(x)
+  args <- sprintf("%s[[%d]]", idx_name, seq_len(idx_length))
+  args <- paste(args, collapse = ",")
+  cmd <- sprintf("%s[%s] <- %s", x_name, args, y_name)
+  
+  return(cmd)
 }
 
 #' Parse the data type encoding string

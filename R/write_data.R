@@ -202,11 +202,16 @@ write_zarr_array <- function(x,
     ## if a chunk overlaps the edge of the array, most implementations assume we 
     ## still write the content to disk.  Seems wasteful, but we fail many tests 
     if (any(dim(chunk_in_mem) != chunk_dim)) {
+        ## create a new "complete" chunk
         temp_chunk <- array(dim = chunk_dim)
-        chunk_in_mem <- .extract_and_replace(temp_chunk,
-            indices = lapply(dim(chunk_in_mem), seq_len),
-            chunk_in_mem
-        )
+        
+        ## insert our partial chunk into the new one
+        idx_in_chunk <- lapply(dim(chunk_in_mem), seq_len)
+        cmd <- .create_replace_call("temp_chunk", "idx_in_chunk", 
+                                    length(idx_in_chunk), "chunk_in_mem")
+        eval(parse(text = cmd))
+        ## update the output with the new full-sized chunk
+        chunk_in_mem <- temp_chunk
     }
 
     if (metadata$order == "C") {
@@ -330,10 +335,12 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_id = chunk_id_split,
     metadata = metadata
   )[["chunk_data"]]
-  chunk_in_mem <- .extract_and_replace(
-    chunk_in_mem, idx_in_chunk,
-    R.utils::extract(x, indices = idx_in_x)
-  )
+  
+  ## extract the new values from x and insert them into the chunk
+  y <- R.utils::extract(x, indices = idx_in_x)
+  cmd <- .create_replace_call("chunk_in_mem", "idx_in_chunk", 
+                              length(idx_in_chunk), "y")
+  eval(parse(text = cmd))
 
   ## re-compress updated chunk and write back to disk
   compressed_chunk <- .compress_chunk(
@@ -374,6 +381,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     compressed_chunk <- .Call("compress_chunk_LZ4", raw_chunk, PACKAGE = "Rarr")
     ## numpy stores the original size of the buffer in the first 4 bytes after
     ## compression. We should do that too for compatibility
+    ## TODO: probably faster to do this in C and avoid copying the vector
     compressed_chunk <- c(.as_raw(length(raw_chunk)), compressed_chunk)
   } else {
     stop("Unsupported compression tool")

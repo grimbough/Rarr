@@ -112,27 +112,18 @@ read_data <- function(required_chunks, zarr_array_path, s3_client, index, metada
   })
   
   ## predefine our array to be populated from the read chunks
-  output <- array(dim = vapply(index, length, integer(1)))
+  output <- array(metadata$fill_value, dim = vapply(index, length, integer(1)))
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
-    index_in_result <- .coords_to_index(dim(output), chunk_selections[[i]][[2]])
-    output[index_in_result] <- chunk_selections[[i]][[1]]
+    index_in_result <- chunk_selections[[i]][[2]]
+    cmd <- .create_replace_call(x_name = "output", idx_name = "index_in_result",
+                                idx_length = length(index_in_result), 
+                                y_name = "chunk_selections[[i]][[1]]")
+    eval(parse(text = cmd))
     warn <- max(warn, chunk_selections[[i]]$warning[1])
   }
   return(list(output = output, warn = warn))
-}
-
-.coords_to_index <- function(dims, coords) {
-  
-  all <- expand.grid(coords)
-  k=cumprod(c(1,dims[-length(dims)]))
-  ndx=1
-  for(i in seq_along(dims)){
-    v=all[,i]
-    ndx=ndx+(v-1)*k[i]
-  }
-  ndx
 }
 
 find_chunks_needed <- function(metadata, index) {
