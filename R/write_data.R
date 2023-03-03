@@ -357,7 +357,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #' @param compressor A "compressor" function that returns a list giving the
 #'   details of the compression tool to apply.  See [compressors] for more
 #'   details.
-#'   
+#' @param data_type_size An integer giving the size of the original datatype.
+#'   This is passed to the blosc algorithm, which seems to need it to achieve
+#'   any compression.
+#'
 #' @returns A raw vector containing the compressed chunk data
 #'
 #' @keywords Internal

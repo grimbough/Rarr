@@ -13,6 +13,10 @@ converted to a raw vector before compression.}
 \item{compressor}{A "compressor" function that returns a list giving the
 details of the compression tool to apply.  See \link{compressors} for more
 details.}
+
+\item{data_type_size}{An integer giving the size of the original datatype.
+This is passed to the blosc algorithm, which seems to need it to achieve
+any compression.}
 }
 \value{
 A raw vector containing the compressed chunk data
