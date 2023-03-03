@@ -10,15 +10,21 @@
     zarray$shape <- array_shape
     zarray$chunks <- chunk_shape
     zarray$dtype <- data_type
-    zarray$compressor <- compressor
     zarray$fill_value <- fill_value
     zarray$dimension_separator <- dimension_separator
     zarray$order <- toupper(order)
     zarray$zarr_format <- 2
 
-    ## weird hack
+    ## weird hack to insert a named NULL entry in the list
     zarray[length(zarray) + 1] <- list(NULL)
     names(zarray)[length(zarray)] <- "filters"
+    
+    if(is.null(compressor)) {
+      zarray[length(zarray) + 1] <- list(NULL)
+      names(zarray)[length(zarray)] <- "compressor"
+    } else {
+      zarray$compressor <- compressor
+    }
 
     json <- .format_json(toJSON(zarray, auto_unbox = TRUE, pretty = TRUE, null = "null"))
     write(x = json, file = path)
