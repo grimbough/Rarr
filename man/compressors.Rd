@@ -4,6 +4,7 @@
 \alias{compressors}
 \alias{use_blosc}
 \alias{use_zlib}
+\alias{use_gzip}
 \alias{use_lzma}
 \alias{use_lz4}
 \title{Define compression tool and settings}
@@ -11,6 +12,8 @@
 use_blosc(cname = "lz4")
 
 use_zlib()
+
+use_gzip(level = 6L)
 
 use_lzma()
 
