@@ -21,6 +21,15 @@ expect_silent(res <- write_zarr_array(
 ))
 expect_identical(read_zarr_array(path), x)
 
+## Standard writing and reading
+path <- tempfile(pattern = "gzip_")
+expect_silent(res <- write_zarr_array(
+  x = x, zarr_array_path = path,
+  chunk_dim = c(2, 5, 1), order = "F",
+  compressor = use_gzip()
+))
+expect_identical(read_zarr_array(path), x)
+
 ## testing blosc compression
 path <- tempfile(pattern = "blosc_")
 expect_silent(res <- write_zarr_array(

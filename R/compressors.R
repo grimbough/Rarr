@@ -40,6 +40,13 @@ use_zlib <- function() {
 
 #' @rdname compressors
 #' @export
+use_gzip <- function(level = 6L) {
+  res <- list(id = "gzip", level = as.integer(level))
+  return(res)
+}
+
+#' @rdname compressors
+#' @export
 use_lzma <- function() {
   res <- list(id = "lzma", format = 1, level = 9)
   return(res)

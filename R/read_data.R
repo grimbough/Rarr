@@ -352,7 +352,7 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
     decompressed_chunk <- .Call("decompress_chunk_BLOSC", compressed_chunk,
       PACKAGE = "Rarr"
     )
-  } else if (decompressor == "zlib") {
+  } else if (decompressor %in% c("zlib", "gzip")) {
     decompressed_chunk <- memDecompress(
       from = compressed_chunk, type = "gzip",
       asChar = FALSE

@@ -217,18 +217,19 @@ write_zarr_array <- function(x,
     if (metadata$order == "C") {
         chunk_in_mem <- aperm(chunk_in_mem)
     }
-    compressed_chunk <- .compress_chunk(
-        input_chunk = chunk_in_mem,
-        compressor = metadata$compressor,
-        data_type_size = .parse_datatype(metadata$dtype)$nbytes
-    )
     
     ## check the chunk path exists, and create if not
     if(isFALSE(dir.exists(dirname(chunk_path)))) {
       dir.create(dirname(chunk_path), recursive = TRUE, showWarnings = FALSE)
     }
     
-    writeBin(compressed_chunk, con = chunk_path)
+    .compress_and_write_chunk(
+        input_chunk = chunk_in_mem, 
+        chunk_path = chunk_path,
+        compressor = metadata$compressor,
+        data_type_size = .parse_datatype(metadata$dtype)$nbytes
+    )
+
     return(invisible(TRUE))
 }
 
@@ -345,7 +346,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   ## re-compress updated chunk and write back to disk
   compressed_chunk <- .compress_chunk(
     input_chunk = chunk_in_mem,
-    compressor = metadata$compressor
+    compressor = metadata$compressor,
+    data_type_size = .parse_datatype(metadata$dtype)$nbytes
   )
   writeBin(compressed_chunk, con = chunk_path)
 }
@@ -391,6 +393,42 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   return(compressed_chunk)
+}
+
+.compress_and_write_chunk <- function(input_chunk, chunk_path,
+                                      compressor = use_zlib(), 
+                                      data_type_size) {
+  ## the compression tools need a raw vector
+  raw_chunk <- .as_raw(as.vector(input_chunk))
+  
+  if(is.null(compressor)) {
+    compressed_chunk <- raw_chunk
+  } else if (compressor$id == "blosc") {
+    compressed_chunk <- .Call("compress_chunk_BLOSC", raw_chunk, 
+                              as.integer(data_type_size), PACKAGE = "Rarr")
+  } else if (compressor$id %in% c("zlib")) {
+    compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
+  } else if (compressor$id == "gzip") {
+    con <- gzfile(chunk_path, open = "wb", compression = compressor$level)
+    writeBin(raw_chunk, con = con, useBytes = TRUE)
+    close(con)
+  } else if (compressor$id == "bz2") {
+    compressed_chunk <- memCompress(from = raw_chunk, type = "bzip2")
+  } else if (compressor$id == "lzma") {
+    compressed_chunk <- memCompress(from = raw_chunk, type = "xz")
+  } else if (compressor$id == "lz4") {
+    compressed_chunk <- .Call("compress_chunk_LZ4", raw_chunk, PACKAGE = "Rarr")
+    ## numpy stores the original size of the buffer in the first 4 bytes after
+    ## compression. We should do that too for compatibility
+    ## TODO: probably faster to do this in C and avoid copying the vector
+    compressed_chunk <- c(.as_raw(length(raw_chunk)), compressed_chunk)
+  } else {
+    stop("Unsupported compression tool")
+  }
+  
+  if(is.null(compressor) || compressor$id != "gzip") {
+    writeBin(compressed_chunk, con = chunk_path)
+  }
 }
 
 .as_raw <- function(d) {
