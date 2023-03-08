@@ -1,0 +1,414 @@
+commit 9262b29ef348a57608f1cd2ec00f4a14fc53b205
+Author: Mike Smith <grimbough@gmail.com>
+Date:   Wed Mar 8 22:25:49 2023 +0100
+
+    Blosc printing
+
+diff --git a/src/compression_tools/blosc/lib/blosc-1.20.1/blosc.c b/src/compression_tools/blosc/lib/blosc-1.20.1/blosc.c
+index 26f5788..882ff48 100644
+--- a/src/compression_tools/blosc/lib/blosc-1.20.1/blosc.c
++++ b/src/compression_tools/blosc/lib/blosc-1.20.1/blosc.c
+@@ -7,6 +7,7 @@
+   See LICENSES/BLOSC.txt for details about copyright and rights to use.
+ **********************************************************************/
+ 
++#include <R_ext/Print.h>
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -166,7 +167,7 @@ int blosc_release_threadpool(struct blosc_context* context);
+ #define WAIT_INIT(RET_VAL, CONTEXT_PTR)  \
+   rc = pthread_barrier_wait(&CONTEXT_PTR->barr_init); \
+   if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD) { \
+-    printf("Could not wait on barrier (init): %d\n", rc); \
++    Rprintf("Could not wait on barrier (init): %d\n", rc); \
+     return((RET_VAL));                            \
+   }
+ #else
+@@ -187,7 +188,7 @@ int blosc_release_threadpool(struct blosc_context* context);
+ #define WAIT_FINISH(RET_VAL, CONTEXT_PTR)   \
+   rc = pthread_barrier_wait(&CONTEXT_PTR->barr_finish); \
+   if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD) { \
+-    printf("Could not wait on barrier (finish)\n"); \
++    Rprintf("Could not wait on barrier (finish)\n"); \
+     return((RET_VAL));                              \
+   }
+ #else
+@@ -222,7 +223,7 @@ static uint8_t *my_malloc(size_t size)
+ #endif  /* _WIN32 */
+ 
+   if (block == NULL || res != 0) {
+-    printf("Error allocating memory!");
++    Rprintf("Error allocating memory!");
+     return NULL;
+   }
+ 
+@@ -691,8 +692,8 @@ static int blosc_c(const struct blosc_context* context, int32_t blocksize,
+       if (compname == NULL) {
+           compname = "(null)";
+       }
+-      fprintf(stderr, "Blosc has not been compiled with '%s' ", compname);
+-      fprintf(stderr, "compression support.  Please use one having it.");
++      REprintf("Blosc has not been compiled with '%s' ", compname);
++      REprintf("compression support.  Please use one having it.");
+       return -5;    /* signals no compression support */
+     }
+ 
+@@ -958,7 +959,7 @@ static int split_block(int compcode, int typesize, int blocksize) {
+                     (blocksize / typesize) >= MIN_BUFFERSIZE);
+       break;
+     default:
+-      fprintf(stderr, "Split mode %d not supported", g_splitmode);
++      REprintf("Split mode %d not supported", g_splitmode);
+   }
+   return splitblock;
+ }
+@@ -1099,14 +1100,14 @@ static int initialize_context_compression(struct blosc_context* context,
+   /* Check buffer size limits */
+   if (sourcesize > BLOSC_MAX_BUFFERSIZE) {
+     if (warnlvl > 0) {
+-      fprintf(stderr, "Input buffer size cannot exceed %d bytes\n",
++      REprintf("Input buffer size cannot exceed %d bytes\n",
+               BLOSC_MAX_BUFFERSIZE);
+     }
+     return 0;
+   }
+   if (destsize < BLOSC_MAX_OVERHEAD) {
+     if (warnlvl > 0) {
+-      fprintf(stderr, "Output buffer size should be larger than %d bytes\n",
++      REprintf("Output buffer size should be larger than %d bytes\n",
+               BLOSC_MAX_OVERHEAD);
+     }
+     return 0;
+@@ -1114,13 +1115,13 @@ static int initialize_context_compression(struct blosc_context* context,
+ 
+   /* Compression level */
+   if (clevel < 0 || clevel > 9) {
+-    fprintf(stderr, "`clevel` parameter must be between 0 and 9!\n");
++    REprintf("`clevel` parameter must be between 0 and 9!\n");
+     return -10;
+   }
+ 
+   /* Shuffle */
+   if (doshuffle != 0 && doshuffle != 1 && doshuffle != 2) {
+-    fprintf(stderr, "`shuffle` parameter must be either 0, 1 or 2!\n");
++    REprintf("`shuffle` parameter must be either 0, 1 or 2!\n");
+     return -10;
+   }
+ 
+@@ -1198,8 +1199,8 @@ static int write_compression_header(struct blosc_context* context, int clevel, i
+     if (compname == NULL) {
+         compname = "(null)";
+     }
+-    fprintf(stderr, "Blosc has not been compiled with '%s' ", compname);
+-    fprintf(stderr, "compression support.  Please use one having it.");
++    REprintf("Blosc has not been compiled with '%s' ", compname);
++    REprintf("compression support.  Please use one having it.");
+     return -5;    /* signals no compression support */
+     break;
+   }
+@@ -1386,7 +1387,7 @@ int blosc_compress(int clevel, int doshuffle, size_t typesize, size_t nbytes,
+       blosc_set_splitmode(BLOSC_NEVER_SPLIT);
+     }
+     else {
+-      fprintf(stderr, "BLOSC_SPLITMODE environment variable '%s' not recognized\n", envvar);
++      REprintf("BLOSC_SPLITMODE environment variable '%s' not recognized\n", envvar);
+       return -1;
+     }
+   }
+@@ -1635,12 +1636,12 @@ int blosc_getitem(const void* src, int start, int nitems, void* dest) {
+ 
+   /* Check region boundaries */
+   if ((start < 0) || (start*typesize > nbytes)) {
+-    fprintf(stderr, "`start` out of bounds");
++    REprintf("`start` out of bounds");
+     return -1;
+   }
+ 
+   if ((stop < 0) || (stop*typesize > nbytes)) {
+-    fprintf(stderr, "`start`+`nitems` out of bounds");
++    REprintf("`start`+`nitems` out of bounds");
+     return -1;
+   }
+ 
+@@ -1930,8 +1931,8 @@ static int init_threads(struct blosc_context* context)
+     rc2 = pthread_create(&context->threads[tid], NULL, t_blosc, (void *)thread_context);
+ #endif
+     if (rc2) {
+-      fprintf(stderr, "ERROR; return code from pthread_create() is %d\n", rc2);
+-      fprintf(stderr, "\tError detail: %s\n", strerror(rc2));
++      REprintf("ERROR; return code from pthread_create() is %d\n", rc2);
++      REprintf("\tError detail: %s\n", strerror(rc2));
+       return(-1);
+     }
+   }
+@@ -1967,13 +1968,13 @@ int blosc_set_nthreads(int nthreads_new)
+ int blosc_set_nthreads_(struct blosc_context* context)
+ {
+   if (context->numthreads > BLOSC_MAX_THREADS) {
+-    fprintf(stderr,
++    REprintf(
+             "Error.  nthreads cannot be larger than BLOSC_MAX_THREADS (%d)",
+             BLOSC_MAX_THREADS);
+     return -1;
+   }
+   else if (context->numthreads <= 0) {
+-    fprintf(stderr, "Error.  nthreads must be a positive integer");
++    REprintf("Error.  nthreads must be a positive integer");
+     return -1;
+   }
+ 
+@@ -2041,64 +2042,64 @@ const char* blosc_get_version_string(void)
+   return BLOSC_VERSION_STRING;
+ }
+ 
+-int blosc_get_complib_info(const char *compname, char **complib, char **version)
+-{
+-  int clibcode;
+-  const char *clibname;
+-  const char *clibversion = "unknown";
+-
+-#if (defined(HAVE_LZ4) && defined(LZ4_VERSION_MAJOR)) || (defined(HAVE_SNAPPY) && defined(SNAPPY_VERSION)) || defined(ZSTD_VERSION_MAJOR)
+-  char sbuffer[256];
+-#endif
+-
+-  clibcode = compname_to_clibcode(compname);
+-  clibname = clibcode_to_clibname(clibcode);
+-
+-  /* complib version */
+-  if (clibcode == BLOSC_BLOSCLZ_LIB) {
+-    clibversion = BLOSCLZ_VERSION_STRING;
+-  }
+-#if defined(HAVE_LZ4)
+-  else if (clibcode == BLOSC_LZ4_LIB) {
+-#if defined(LZ4_VERSION_MAJOR)
+-    sprintf(sbuffer, "%d.%d.%d",
+-            LZ4_VERSION_MAJOR, LZ4_VERSION_MINOR, LZ4_VERSION_RELEASE);
+-    clibversion = sbuffer;
+-#endif /* LZ4_VERSION_MAJOR */
+-  }
+-#endif /* HAVE_LZ4 */
+-#if defined(HAVE_SNAPPY)
+-  else if (clibcode == BLOSC_SNAPPY_LIB) {
+-#if defined(SNAPPY_VERSION)
+-    sprintf(sbuffer, "%d.%d.%d", SNAPPY_MAJOR, SNAPPY_MINOR, SNAPPY_PATCHLEVEL);
+-    clibversion = sbuffer;
+-#endif /* SNAPPY_VERSION */
+-  }
+-#endif /* HAVE_SNAPPY */
+-#if defined(HAVE_ZLIB)
+-  else if (clibcode == BLOSC_ZLIB_LIB) {
+-    clibversion = ZLIB_VERSION;
+-  }
+-#endif /* HAVE_ZLIB */
+-#if defined(HAVE_ZSTD)
+-  else if (clibcode == BLOSC_ZSTD_LIB) {
+-    sprintf(sbuffer, "%d.%d.%d",
+-            ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR, ZSTD_VERSION_RELEASE);
+-    clibversion = sbuffer;
+-  }
+-#endif /* HAVE_ZSTD */
+-  else {
+-    /* Unsupported library */
+-    if (complib != NULL) *complib = NULL;
+-    if (version != NULL) *version = NULL;
+-    return -1;
+-  }
+-
+-  if (complib != NULL) *complib = strdup(clibname);
+-  if (version != NULL) *version = strdup(clibversion);
+-
+-  return clibcode;
+-}
++// int blosc_get_complib_info(const char *compname, char **complib, char **version)
++// {
++//   int clibcode;
++//   const char *clibname;
++//   const char *clibversion = "unknown";
++// 
++// #if (defined(HAVE_LZ4) && defined(LZ4_VERSION_MAJOR)) || (defined(HAVE_SNAPPY) && defined(SNAPPY_VERSION)) || defined(ZSTD_VERSION_MAJOR)
++//   char sbuffer[256];
++// #endif
++// 
++//   clibcode = compname_to_clibcode(compname);
++//   clibname = clibcode_to_clibname(clibcode);
++// 
++//   /* complib version */
++//   if (clibcode == BLOSC_BLOSCLZ_LIB) {
++//     clibversion = BLOSCLZ_VERSION_STRING;
++//   }
++// #if defined(HAVE_LZ4)
++//   else if (clibcode == BLOSC_LZ4_LIB) {
++// #if defined(LZ4_VERSION_MAJOR)
++//     sprintf(sbuffer, "%d.%d.%d",
++//             LZ4_VERSION_MAJOR, LZ4_VERSION_MINOR, LZ4_VERSION_RELEASE);
++//     clibversion = sbuffer;
++// #endif /* LZ4_VERSION_MAJOR */
++//   }
++// #endif /* HAVE_LZ4 */
++// #if defined(HAVE_SNAPPY)
++//   else if (clibcode == BLOSC_SNAPPY_LIB) {
++// #if defined(SNAPPY_VERSION)
++//     sprintf(sbuffer, "%d.%d.%d", SNAPPY_MAJOR, SNAPPY_MINOR, SNAPPY_PATCHLEVEL);
++//     clibversion = sbuffer;
++// #endif /* SNAPPY_VERSION */
++//   }
++// #endif /* HAVE_SNAPPY */
++// #if defined(HAVE_ZLIB)
++//   else if (clibcode == BLOSC_ZLIB_LIB) {
++//     clibversion = ZLIB_VERSION;
++//   }
++// #endif /* HAVE_ZLIB */
++// #if defined(HAVE_ZSTD)
++//   else if (clibcode == BLOSC_ZSTD_LIB) {
++//     sprintf(sbuffer, "%d.%d.%d",
++//             ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR, ZSTD_VERSION_RELEASE);
++//     clibversion = sbuffer;
++//   }
++// #endif /* HAVE_ZSTD */
++//   else {
++//     /* Unsupported library */
++//     if (complib != NULL) *complib = NULL;
++//     if (version != NULL) *version = NULL;
++//     return -1;
++//   }
++// 
++//   if (complib != NULL) *complib = strdup(clibname);
++//   if (version != NULL) *version = strdup(clibversion);
++// 
++//   return clibcode;
++// }
+ 
+ /* Return `nbytes`, `cbytes` and `blocksize` from a compressed buffer. */
+ void blosc_cbuffer_sizes(const void *cbuffer, size_t *nbytes,
+@@ -2271,8 +2272,8 @@ int blosc_release_threadpool(struct blosc_context* context)
+     for (t=0; t<context->threads_started; t++) {
+       rc2 = pthread_join(context->threads[t], &status);
+       if (rc2) {
+-        fprintf(stderr, "ERROR; return code from pthread_join() is %d\n", rc2);
+-        fprintf(stderr, "\tError detail: %s\n", strerror(rc2));
++        REprintf("ERROR; return code from pthread_join() is %d\n", rc2);
++        REprintf("\tError detail: %s\n", strerror(rc2));
+       }
+     }
+ 
+diff --git a/src/compression_tools/blosc/lib/blosc-1.20.1/blosc.h b/src/compression_tools/blosc/lib/blosc-1.20.1/blosc.h
+index 5e9f41f..e754120 100644
+--- a/src/compression_tools/blosc/lib/blosc-1.20.1/blosc.h
++++ b/src/compression_tools/blosc/lib/blosc-1.20.1/blosc.h
+@@ -402,7 +402,7 @@ BLOSC_EXPORT const char* blosc_get_version_string(void);
+   If the compressor is supported, it returns the code for the library
+   (>=0).  If it is not supported, this function returns -1.
+   */
+-BLOSC_EXPORT int blosc_get_complib_info(const char *compname, char **complib, char **version);
++//BLOSC_EXPORT int blosc_get_complib_info(const char *compname, char **complib, char **version);
+ 
+ 
+ /**
+diff --git a/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle-avx2.c b/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle-avx2.c
+index b987501..a9f263c 100644
+--- a/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle-avx2.c
++++ b/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle-avx2.c
+@@ -6,6 +6,8 @@
+   See LICENSES/BLOSC.txt for details about copyright and rights to use.
+ **********************************************************************/
+ 
++#include <R_ext/Print.h>
++
+ #include "shuffle-generic.h"
+ #include "shuffle-avx2.h"
+ 
+@@ -27,7 +29,7 @@ static void printymm(__m256i ymm0)
+   uint8_t buf[32];
+ 
+   ((__m256i *)buf)[0] = ymm0;
+-  printf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
++  Rprintf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
+           buf[0], buf[1], buf[2], buf[3],
+           buf[4], buf[5], buf[6], buf[7],
+           buf[8], buf[9], buf[10], buf[11],
+diff --git a/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle-sse2.c b/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle-sse2.c
+index 70ee114..7859b27 100644
+--- a/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle-sse2.c
++++ b/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle-sse2.c
+@@ -6,6 +6,8 @@
+   See LICENSES/BLOSC.txt for details about copyright and rights to use.
+ **********************************************************************/
+ 
++#include <R_ext/Print.h>
++
+ #include "shuffle-generic.h"
+ #include "shuffle-sse2.h"
+ 
+@@ -27,7 +29,7 @@ static void printxmm(__m128i xmm0)
+   uint8_t buf[16];
+ 
+   ((__m128i *)buf)[0] = xmm0;
+-  printf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
++  Rprintf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
+           buf[0], buf[1], buf[2], buf[3],
+           buf[4], buf[5], buf[6], buf[7],
+           buf[8], buf[9], buf[10], buf[11],
+diff --git a/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle.c b/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle.c
+index bb08090..dad631e 100644
+--- a/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle.c
++++ b/src/compression_tools/blosc/lib/blosc-1.20.1/shuffle.c
+@@ -14,6 +14,8 @@
+ #include "blosc-comp-features.h"
+ #include <stdio.h>
+ 
++#include <R_ext/Print.h>
++
+ //#if defined(_WIN32)
+ //#include "win32/pthread.h"
+ //#else
+@@ -271,19 +273,19 @@ static blosc_cpu_features blosc_get_cpu_features(void) {
+ 
+   envvar = getenv("BLOSC_PRINT_SHUFFLE_ACCEL");
+   if (envvar != NULL) {
+-    printf("Shuffle CPU Information:\n");
+-    printf("SSE2 available: %s\n", sse2_available ? "True" : "False");
+-    printf("SSE3 available: %s\n", sse3_available ? "True" : "False");
+-    printf("SSSE3 available: %s\n", ssse3_available ? "True" : "False");
+-    printf("SSE4.1 available: %s\n", sse41_available ? "True" : "False");
+-    printf("SSE4.2 available: %s\n", sse42_available ? "True" : "False");
+-    printf("AVX2 available: %s\n", avx2_available ? "True" : "False");
+-    printf("AVX512BW available: %s\n", avx512bw_available ? "True" : "False");
+-    printf("XSAVE available: %s\n", xsave_available ? "True" : "False");
+-    printf("XSAVE enabled: %s\n", xsave_enabled_by_os ? "True" : "False");
+-    printf("XMM state enabled: %s\n", xmm_state_enabled ? "True" : "False");
+-    printf("YMM state enabled: %s\n", ymm_state_enabled ? "True" : "False");
+-    printf("ZMM state enabled: %s\n", zmm_state_enabled ? "True" : "False");
++    Rprintf("Shuffle CPU Information:\n");
++    Rprintf("SSE2 available: %s\n", sse2_available ? "True" : "False");
++    Rprintf("SSE3 available: %s\n", sse3_available ? "True" : "False");
++    Rprintf("SSSE3 available: %s\n", ssse3_available ? "True" : "False");
++    Rprintf("SSE4.1 available: %s\n", sse41_available ? "True" : "False");
++    Rprintf("SSE4.2 available: %s\n", sse42_available ? "True" : "False");
++    Rprintf("AVX2 available: %s\n", avx2_available ? "True" : "False");
++    Rprintf("AVX512BW available: %s\n", avx512bw_available ? "True" : "False");
++    Rprintf("XSAVE available: %s\n", xsave_available ? "True" : "False");
++    Rprintf("XSAVE enabled: %s\n", xsave_enabled_by_os ? "True" : "False");
++    Rprintf("XMM state enabled: %s\n", xmm_state_enabled ? "True" : "False");
++    Rprintf("YMM state enabled: %s\n", ymm_state_enabled ? "True" : "False");
++    Rprintf("ZMM state enabled: %s\n", zmm_state_enabled ? "True" : "False");
+   }
+ 
+   /* Using the gathered CPU information, determine which implementation to use. */
+diff --git a/src/compression_tools/blosc/lib/blosc-1.20.1/win32/pthread.c b/src/compression_tools/blosc/lib/blosc-1.20.1/win32/pthread.c
+index 28c81e0..f4a28e4 100644
+--- a/src/compression_tools/blosc/lib/blosc-1.20.1/win32/pthread.c
++++ b/src/compression_tools/blosc/lib/blosc-1.20.1/win32/pthread.c
+@@ -36,10 +36,11 @@
+ #include <errno.h>
+ #include <limits.h>
+ 
++#include <R_ext/Print.h>
+ 
+ void die(const char *err, ...)
+ {
+-	printf("%s", err);
++	Rprintf("%s", err);
+ 	exit(-1);
+ }
+ 

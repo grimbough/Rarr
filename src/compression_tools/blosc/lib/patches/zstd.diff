@@ -1,0 +1,26 @@
+commit a97038a547f7b356ac3d189097b87a77e614aa97
+Author: Mike Smith <grimbough@gmail.com>
+Date:   Wed Mar 8 22:26:24 2023 +0100
+
+    zstd printing
+
+diff --git a/src/compression_tools/blosc/lib/zstd-1.4.5/common/debug.h b/src/compression_tools/blosc/lib/zstd-1.4.5/common/debug.h
+index ac62248..4db450b 100644
+--- a/src/compression_tools/blosc/lib/zstd-1.4.5/common/debug.h
++++ b/src/compression_tools/blosc/lib/zstd-1.4.5/common/debug.h
+@@ -94,12 +94,12 @@ extern int g_debuglevel; /* the variable is only declared,
+ 
+ #  define RAWLOG(l, ...) {                                      \
+                 if (l<=g_debuglevel) {                          \
+-                    fprintf(stderr, __VA_ARGS__);               \
++                    REprintf(__VA_ARGS__);               \
+             }   }
+ #  define DEBUGLOG(l, ...) {                                    \
+                 if (l<=g_debuglevel) {                          \
+-                    fprintf(stderr, __FILE__ ": " __VA_ARGS__); \
+-                    fprintf(stderr, " \n");                     \
++                    REprintf(__FILE__ ": " __VA_ARGS__); \
++                    REprintf(" \n");                     \
+             }   }
+ #else
+ #  define RAWLOG(l, ...)      {}    /* disabled */
