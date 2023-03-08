@@ -36,10 +36,11 @@
 #include <errno.h>
 #include <limits.h>
 
+#include <R_ext/Print.h>
 
 void die(const char *err, ...)
 {
-	printf("%s", err);
+	Rprintf("%s", err);
 	exit(-1);
 }
 

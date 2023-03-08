@@ -14,6 +14,8 @@
 #include "blosc-comp-features.h"
 #include <stdio.h>
 
+#include <R_ext/Print.h>
+
 //#if defined(_WIN32)
 //#include "win32/pthread.h"
 //#else
@@ -271,19 +273,19 @@ static blosc_cpu_features blosc_get_cpu_features(void) {
 
   envvar = getenv("BLOSC_PRINT_SHUFFLE_ACCEL");
   if (envvar != NULL) {
-    printf("Shuffle CPU Information:\n");
-    printf("SSE2 available: %s\n", sse2_available ? "True" : "False");
-    printf("SSE3 available: %s\n", sse3_available ? "True" : "False");
-    printf("SSSE3 available: %s\n", ssse3_available ? "True" : "False");
-    printf("SSE4.1 available: %s\n", sse41_available ? "True" : "False");
-    printf("SSE4.2 available: %s\n", sse42_available ? "True" : "False");
-    printf("AVX2 available: %s\n", avx2_available ? "True" : "False");
-    printf("AVX512BW available: %s\n", avx512bw_available ? "True" : "False");
-    printf("XSAVE available: %s\n", xsave_available ? "True" : "False");
-    printf("XSAVE enabled: %s\n", xsave_enabled_by_os ? "True" : "False");
-    printf("XMM state enabled: %s\n", xmm_state_enabled ? "True" : "False");
-    printf("YMM state enabled: %s\n", ymm_state_enabled ? "True" : "False");
-    printf("ZMM state enabled: %s\n", zmm_state_enabled ? "True" : "False");
+    Rprintf("Shuffle CPU Information:\n");
+    Rprintf("SSE2 available: %s\n", sse2_available ? "True" : "False");
+    Rprintf("SSE3 available: %s\n", sse3_available ? "True" : "False");
+    Rprintf("SSSE3 available: %s\n", ssse3_available ? "True" : "False");
+    Rprintf("SSE4.1 available: %s\n", sse41_available ? "True" : "False");
+    Rprintf("SSE4.2 available: %s\n", sse42_available ? "True" : "False");
+    Rprintf("AVX2 available: %s\n", avx2_available ? "True" : "False");
+    Rprintf("AVX512BW available: %s\n", avx512bw_available ? "True" : "False");
+    Rprintf("XSAVE available: %s\n", xsave_available ? "True" : "False");
+    Rprintf("XSAVE enabled: %s\n", xsave_enabled_by_os ? "True" : "False");
+    Rprintf("XMM state enabled: %s\n", xmm_state_enabled ? "True" : "False");
+    Rprintf("YMM state enabled: %s\n", ymm_state_enabled ? "True" : "False");
+    Rprintf("ZMM state enabled: %s\n", zmm_state_enabled ? "True" : "False");
   }
 
   /* Using the gathered CPU information, determine which implementation to use. */

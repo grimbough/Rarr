@@ -402,7 +402,7 @@ BLOSC_EXPORT const char* blosc_get_version_string(void);
   If the compressor is supported, it returns the code for the library
   (>=0).  If it is not supported, this function returns -1.
   */
-BLOSC_EXPORT int blosc_get_complib_info(const char *compname, char **complib, char **version);
+//BLOSC_EXPORT int blosc_get_complib_info(const char *compname, char **complib, char **version);
 
 
 /**

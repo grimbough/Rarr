@@ -6,6 +6,8 @@
   See LICENSES/BLOSC.txt for details about copyright and rights to use.
 **********************************************************************/
 
+#include <R_ext/Print.h>
+
 #include "shuffle-generic.h"
 #include "shuffle-sse2.h"
 
@@ -27,7 +29,7 @@ static void printxmm(__m128i xmm0)
   uint8_t buf[16];
 
   ((__m128i *)buf)[0] = xmm0;
-  printf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
+  Rprintf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
           buf[0], buf[1], buf[2], buf[3],
           buf[4], buf[5], buf[6], buf[7],
           buf[8], buf[9], buf[10], buf[11],
