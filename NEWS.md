@@ -1,3 +1,8 @@
+# Rarr 0.99.7
+
+* Allow reading and writing chunks with GZIP compression.
+* Add compression level arguments to several compression tools.
+
 # Rarr 0.99.6
 
 * Allow reading and writing chunks with no compression.
