@@ -1,7 +1,11 @@
 export CC=@CC@
+export CXX=@CXX@
 export PKG_CFLAGS=@CFLAGS@
+export PKG_CXXFLAGS=@CXXFLAGS@
 export PKG_CPICFLAGS=@CPICFLAGS@
 export PKG_CXXPICFLAGS=@CXXPICFLAGS@
+export PKG_CPPFLAGS=@CPPFLAGS@
+export PKG_R_CPPFLAGS=@R_CPPFLAGS@
 
 COMPRESSION_LIBS=compression_tools/blosc/libblosc.a
 

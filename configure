@@ -641,14 +641,17 @@ SSE2
 OBJEXT
 EXEEXT
 ac_ct_CC
-CPPFLAGS
 LDFLAGS
 LTLIBOBJS
 LIBOBJS
 AR
+R_CPPFLAGS
+CPPFLAGS
 CXXPICFLAGS
 CPICFLAGS
+CXXFLAGS
 CFLAGS
+CXX
 CC
 target_alias
 host_alias
@@ -2273,12 +2276,19 @@ fi
 
 CC=`"${R_HOME}/bin/R" CMD config CC`
 
+CXX=`"${R_HOME}/bin/R" CMD config CXX`
+
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
+
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 
 CPICFLAGS=`"${R_HOME}/bin/R" CMD config CPICFLAGS`
 
 CXXPICFLAGS=`"${R_HOME}/bin/R" CMD config CXXPICFLAGS`
 
+CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+
+R_CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
 
 
 AR=`"${R_HOME}/bin/R" CMD config AR`

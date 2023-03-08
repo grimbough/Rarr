@@ -15,10 +15,13 @@ if test -z "${R_HOME}"; then
 fi
 
 AC_SUBST(CC, `"${R_HOME}/bin/R" CMD config CC`)
+AC_SUBST(CXX, `"${R_HOME}/bin/R" CMD config CXX`)
 AC_SUBST(CFLAGS, `"${R_HOME}/bin/R" CMD config CFLAGS`)
+AC_SUBST(CXXFLAGS, `"${R_HOME}/bin/R" CMD config CXXFLAGS`)
 AC_SUBST(CPICFLAGS, `"${R_HOME}/bin/R" CMD config CPICFLAGS`)
 AC_SUBST(CXXPICFLAGS, `"${R_HOME}/bin/R" CMD config CXXPICFLAGS`)
-
+AC_SUBST(CPPFLAGS, `"${R_HOME}/bin/R" CMD config CPPFLAGS`)
+AC_SUBST(R_CPPFLAGS, `"${R_HOME}/bin/R" CMD config --cppflags`)
 
 dnl seems unreliable as to whether this information is available
 AR=`"${R_HOME}/bin/R" CMD config AR`
