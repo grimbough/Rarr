@@ -15,7 +15,8 @@ NULL
 #' @param cname Blosc is a 'meta-compressor' providing access to several
 #'   compression algorithms.  This argument defines which compression tool
 #'   should be used.  Valid options are: 'lz4', 'lz4hc', 'blosclz', 'zstd',
-#'   'zlib', 'snappy'
+#'   'zlib', 'snappy'.
+#' @param level Specify the compression level to use.
 #' 
 #' @export
 use_blosc <- function(cname = "lz4") {
@@ -34,7 +35,7 @@ use_blosc <- function(cname = "lz4") {
 #' @rdname compressors
 #' @export
 use_zlib <- function() {
-  res <- list(id = "zlib", level = 6)
+  res <- list(id = "zlib", level = 6L)
   return(res)
 }
 
@@ -47,8 +48,15 @@ use_gzip <- function(level = 6L) {
 
 #' @rdname compressors
 #' @export
-use_lzma <- function() {
-  res <- list(id = "lzma", format = 1, level = 9)
+use_bz2 <- function(level = 6L) {
+  res <- list(id = "bz2", level = as.integer(level))
+  return(res)
+}
+
+#' @rdname compressors
+#' @export
+use_lzma <- function(level = 9L) {
+  res <- list(id = "lzma", format = 1, level = as.integer(level))
   return(res)
 }
 

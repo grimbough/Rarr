@@ -344,18 +344,21 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   eval(parse(text = cmd))
 
   ## re-compress updated chunk and write back to disk
-  compressed_chunk <- .compress_chunk(
-    input_chunk = chunk_in_mem,
+  .compress_and_write_chunk(
+    input_chunk = chunk_in_mem, 
+    chunk_path = chunk_path,
     compressor = metadata$compressor,
     data_type_size = .parse_datatype(metadata$dtype)$nbytes
   )
-  writeBin(compressed_chunk, con = chunk_path)
+
 }
 
-#' Compress a single chunk
+#' Compress and write a single chunk
 #'
 #' @param input_chunk Array containing the chunk data to be compressed.  Will be
 #'   converted to a raw vector before compression.
+#' @param chunk_path Character string giving the path to the chunk that should
+#'   be written.
 #' @param compressor A "compressor" function that returns a list giving the
 #'   details of the compression tool to apply.  See [compressors] for more
 #'   details.
@@ -363,38 +366,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #'   This is passed to the blosc algorithm, which seems to need it to achieve
 #'   any compression.
 #'
-#' @returns A raw vector containing the compressed chunk data
+#' @returns Returns `TRUE` if writing is successful.  Mostly called for the
+#'   side-effect of writing the compressed chunk to disk.
 #'
 #' @keywords Internal
-.compress_chunk <- function(input_chunk, compressor = use_zlib(), data_type_size) {
-  ## the compression tools need a raw vector
-  ## any permuting for "C" ordering needs to happen before this
-  raw_chunk <- .as_raw(as.vector(input_chunk))
-
-  if(is.null(compressor)) {
-    compressed_chunk <- raw_chunk
-  } else if (compressor$id == "blosc") {
-    compressed_chunk <- .Call("compress_chunk_BLOSC", raw_chunk, 
-                              as.integer(data_type_size), PACKAGE = "Rarr")
-  } else if (compressor$id %in% c("zlib")) {
-    compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
-  } else if (compressor$id == "bz2") {
-    compressed_chunk <- memCompress(from = raw_chunk, type = "bzip2")
-  } else if (compressor$id == "lzma") {
-    compressed_chunk <- memCompress(from = raw_chunk, type = "xz")
-  } else if (compressor$id == "lz4") {
-    compressed_chunk <- .Call("compress_chunk_LZ4", raw_chunk, PACKAGE = "Rarr")
-    ## numpy stores the original size of the buffer in the first 4 bytes after
-    ## compression. We should do that too for compatibility
-    ## TODO: probably faster to do this in C and avoid copying the vector
-    compressed_chunk <- c(.as_raw(length(raw_chunk)), compressed_chunk)
-  } else {
-    stop("Unsupported compression tool")
-  }
-
-  return(compressed_chunk)
-}
-
 .compress_and_write_chunk <- function(input_chunk, chunk_path,
                                       compressor = use_zlib(), 
                                       data_type_size) {
@@ -406,16 +381,14 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   } else if (compressor$id == "blosc") {
     compressed_chunk <- .Call("compress_chunk_BLOSC", raw_chunk, 
                               as.integer(data_type_size), PACKAGE = "Rarr")
-  } else if (compressor$id %in% c("zlib")) {
+  } else if (compressor$id == c("zlib")) {
     compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
   } else if (compressor$id == "gzip") {
     con <- gzfile(chunk_path, open = "wb", compression = compressor$level)
-    writeBin(raw_chunk, con = con, useBytes = TRUE)
-    close(con)
   } else if (compressor$id == "bz2") {
-    compressed_chunk <- memCompress(from = raw_chunk, type = "bzip2")
+    con <- bzfile(chunk_path, open = "wb", compression = compressor$level)
   } else if (compressor$id == "lzma") {
-    compressed_chunk <- memCompress(from = raw_chunk, type = "xz")
+    con <- xzfile(chunk_path, open = "wb", compression = compressor$level)
   } else if (compressor$id == "lz4") {
     compressed_chunk <- .Call("compress_chunk_LZ4", raw_chunk, PACKAGE = "Rarr")
     ## numpy stores the original size of the buffer in the first 4 bytes after
@@ -426,9 +399,15 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     stop("Unsupported compression tool")
   }
   
-  if(is.null(compressor) || compressor$id != "gzip") {
+  if(exists("con")) {
+    on.exit(close(con))
+    writeBin(raw_chunk, con = con, useBytes = TRUE) 
+  } else {
     writeBin(compressed_chunk, con = chunk_path)
   }
+  
+  return(invisible(TRUE))
+  
 }
 
 .as_raw <- function(d) {
