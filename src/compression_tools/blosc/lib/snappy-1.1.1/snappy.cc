@@ -36,6 +36,8 @@
 #include <string>
 #include <vector>
 
+#include <R_ext/Error.h>
+#include <R_ext/Print.h>
 
 namespace snappy {
 
@@ -619,32 +621,29 @@ static void ComputeTable() {
 
   // Check that each entry was initialized exactly once.
   if (assigned != 256) {
-    fprintf(stderr, "ComputeTable: assigned only %d of 256\n", assigned);
-    abort();
+    error("ComputeTable: assigned only %d of 256\n", assigned);
   }
   for (int i = 0; i < 256; i++) {
     if (dst[i] == 0xffff) {
-      fprintf(stderr, "ComputeTable: did not assign byte %d\n", i);
-      abort();
+      error("ComputeTable: did not assign byte %d\n", i);
     }
   }
 
   if (FLAGS_snappy_dump_decompression_table) {
-    printf("static const uint16 char_table[256] = {\n  ");
+    Rprintf("static const uint16 char_table[256] = {\n  ");
     for (int i = 0; i < 256; i++) {
-      printf("0x%04x%s",
+      Rprintf("0x%04x%s",
              dst[i],
              ((i == 255) ? "\n" : (((i%8) == 7) ? ",\n  " : ", ")));
     }
-    printf("};\n");
+    Rprintf("};\n");
   }
 
   // Check that computed table matched recorded table
   for (int i = 0; i < 256; i++) {
     if (dst[i] != char_table[i]) {
-      fprintf(stderr, "ComputeTable: byte %d: computed (%x), expect (%x)\n",
+      error("ComputeTable: byte %d: computed (%x), expect (%x)\n",
               i, static_cast<int>(dst[i]), static_cast<int>(char_table[i]));
-      abort();
     }
   }
 }
