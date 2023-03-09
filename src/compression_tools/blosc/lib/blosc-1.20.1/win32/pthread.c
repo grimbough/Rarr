@@ -36,12 +36,11 @@
 #include <errno.h>
 #include <limits.h>
 
-#include <R_ext/Print.h>
+#include <R_ext/Error.h>
 
 void die(const char *err, ...)
 {
-	Rprintf("%s", err);
-	exit(-1);
+	error("%s", err);
 }
 
 static unsigned __stdcall win32_start_routine(void *arg)
