@@ -396,19 +396,22 @@ index bb08090..dad631e 100644
  
    /* Using the gathered CPU information, determine which implementation to use. */
 diff --git a/src/compression_tools/blosc/lib/blosc-1.20.1/win32/pthread.c b/src/compression_tools/blosc/lib/blosc-1.20.1/win32/pthread.c
-index 28c81e0..f4a28e4 100644
+index 28c81e0..4a40abc 100644
 --- a/src/compression_tools/blosc/lib/blosc-1.20.1/win32/pthread.c
 +++ b/src/compression_tools/blosc/lib/blosc-1.20.1/win32/pthread.c
-@@ -36,10 +36,11 @@
+@@ -36,11 +36,11 @@
  #include <errno.h>
  #include <limits.h>
  
-+#include <R_ext/Print.h>
++#include <R_ext/Error.h>
  
  void die(const char *err, ...)
  {
--	printf("%s", err);
-+	Rprintf("%s", err);
- 	exit(-1);
+-       printf("%s", err);
+-       exit(-1);
++       error("%s", err);
  }
+ 
+ static unsigned __stdcall win32_start_routine(void *arg)
+
  
