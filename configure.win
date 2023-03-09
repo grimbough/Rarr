@@ -25,9 +25,17 @@
              close(out_file);'
 
 CC=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CC`
+CFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CFLAGS`
+CPICFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CPICFLAGS`
+CXX=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CXX`
+CPPFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CPPFLAGS`
 R_CPPFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config --cppflags`
 
 sed \
 -e "s^@CC@^${CC}^" \
+-e "s^@CFLAGS@^${CFLAGS}^" \
+-e "s^@CPICFLAGS@^${CPICFLAGS}^" \
+-e "s^@CXX@^${CXX}^" \
+-e "s^@CPPFLAGS@^${CPPFLAGS}^" \
 -e "s^@R_CPPFLAGS@^${R_CPPFLAGS}^" \
 src/Makevars.win.in > src/Makevars.win
