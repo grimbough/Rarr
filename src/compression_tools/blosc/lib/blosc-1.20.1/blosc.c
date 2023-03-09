@@ -14,7 +14,13 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#include <assert.h>
+#if !defined(R_BLOSC)
+#  include <assert.h>
+#else
+#  ifndef assert
+#    define assert(condition) ((void)0)
+#  endif
+#endif
 
 #include "fastcopy.h"
 

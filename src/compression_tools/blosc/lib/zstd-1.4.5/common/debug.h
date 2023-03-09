@@ -94,12 +94,12 @@ extern int g_debuglevel; /* the variable is only declared,
 
 #  define RAWLOG(l, ...) {                                      \
                 if (l<=g_debuglevel) {                          \
-                    REprintf(__VA_ARGS__);               \
+                    fprintf(stderr, __VA_ARGS__);               \
             }   }
 #  define DEBUGLOG(l, ...) {                                    \
                 if (l<=g_debuglevel) {                          \
-                    REprintf(__FILE__ ": " __VA_ARGS__); \
-                    REprintf(" \n");                     \
+                    fprintf(stderr, __FILE__ ": " __VA_ARGS__); \
+                    fprintf(stderr, " \n");                     \
             }   }
 #else
 #  define RAWLOG(l, ...)      {}    /* disabled */

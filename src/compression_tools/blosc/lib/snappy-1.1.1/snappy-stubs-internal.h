@@ -37,7 +37,14 @@
 
 #include <string>
 
-#include <assert.h>
+#if !defined(R_BLOSC)
+#  include <assert.h>
+#else
+#  ifndef assert
+#    define assert(condition) ((void)0)
+#  endif
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
