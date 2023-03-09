@@ -17,7 +17,13 @@
     * Support for SSE2/AVX2 copy instructions for these routines
 **********************************************************************/
 
-#include <assert.h>
+#if !defined(R_BLOSC)
+#  include <assert.h>
+#else
+#  ifndef assert
+#    define assert(condition) ((void)0)
+#  endif
+#endif
 #include "blosc-common.h"
 
 /*
