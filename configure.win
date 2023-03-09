@@ -23,3 +23,11 @@
              out_file <- file("src/compression_tools/blosc/Makefile", open="wb");
              writeLines(lines, con = out_file, sep = "\n");
              close(out_file);'
+
+CC=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CC`
+R_CPPFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config --cppflags`
+
+sed \
+-e "s^@CC@^${CC}^" \
+-e "s^@R_CPPFLAGS@^${R_CPPFLAGS}^" \
+src/Makevars.win.in > src/Makevars.win
