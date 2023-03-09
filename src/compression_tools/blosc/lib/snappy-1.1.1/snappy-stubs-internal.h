@@ -37,7 +37,7 @@
 
 #include <string>
 
-#if !defined(R_BLOSC)
+#if !defined(USING_R)
 #  include <assert.h>
 #else
 #  ifndef assert
