@@ -60,5 +60,5 @@ jobs:
         with:
           name: ${{runner.os}}-binary
           path: |
-            ${{ steps.build-install-check.outputs.pkg-binary }}
+            ${{ steps.build-install-check.outputs.package-binary }}
           
