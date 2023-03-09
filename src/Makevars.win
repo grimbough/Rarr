@@ -2,8 +2,12 @@ USER_LIB_DIR = ${R_PACKAGE_DIR}/lib${R_ARCH}/
 
 export CC=`R CMD config CC`
 export CFLAGS=`R CMD config CFLAGS`
+export CPICFLAGS=`R CMD config CPICFLAGS`
 export CXX=`R CMD config CXX`
 export CXXFLAGS=`R CMD config CXXFLAGS`
+export CXXPICFLAGS=`R CMD config CXXPICFLAGS`
+export CPPFLAGS=`R CMD config CPPFLAGS`
+export R_CPPFLAGS=`R CMD config --cppflags`
 export AR=`R CMD config AR`
 export RANLIB=`R CMD config RANLIB`
 export MAKE=`R CMD config MAKE`
