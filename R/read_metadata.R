@@ -65,11 +65,11 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       res <- do.call(rbind.data.frame, tmp)
       return(res)
     } else {
-      cat("Type: Group of Arrays\n")
-      cat("Path:", normalizePath(zarr_array_path, mustWork = FALSE), "\n")
-      cat("Arrays:\n")
+      message("Type: Group of Arrays")
+      message("Path: ", normalizePath(zarr_array_path, mustWork = FALSE))
+      message("Arrays:")
       for (a in arrays) {
-        cat("---\n")
+        message("---")
         .print_array_metadata(dirname(a), dot_zarray = dot_zmeta$metadata[[a]], 
                               indent = "  ")
       }
@@ -83,7 +83,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
                                    zarr_array_path = dirname(zarr_array_path))
       return(res)
     } else {
-      cat("Type: Array\n")
+      message("Type: Array")
       .print_array_metadata(zarr_array_path, dot_zarray = dot_zarray)
       invisible(TRUE)
     }
@@ -116,16 +116,16 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   dt <- .parse_datatype(dot_zarray$dtype)
   nchunks <- ceiling(unlist(dot_zarray$shape) / unlist(dot_zarray$chunks))
 
-  cat(indent, "Path: ", normalizePath(zarr_array_path, mustWork = FALSE), "\n", sep = "")
-  cat(indent, "Shape: ", paste(unlist(dot_zarray$shape), collapse = " x "), "\n", sep = "")
-  cat(indent, "Chunk Shape: ", paste(unlist(dot_zarray$chunks), collapse = " x "), "\n", sep = "")
-  cat(indent, "No. of Chunks: ", prod(nchunks), " (", paste(nchunks, collapse = " x "), ")", "\n", sep = "")
-  cat(indent, "Data Type: ", dt$base_type, 8 * dt$nbytes, "\n", sep = "")
-  cat(indent, "Endianness: ", dt$endian, "\n", sep = "")
+  message(indent, "Path: ", normalizePath(zarr_array_path, mustWork = FALSE))
+  message(indent, "Shape: ", paste(unlist(dot_zarray$shape), collapse = " x "))
+  message(indent, "Chunk Shape: ", paste(unlist(dot_zarray$chunks), collapse = " x "))
+  message(indent, "No. of Chunks: ", prod(nchunks), " (", paste(nchunks, collapse = " x "), ")")
+  message(indent, "Data Type: ", dt$base_type, 8 * dt$nbytes)
+  message(indent, "Endianness: ", dt$endian)
   if (is.null(dot_zarray$compressor)) {
-    cat(indent, "Compressor: None\n", sep = "")
+    message(indent, "Compressor: None", )
   } else {
-    cat(indent, "Compressor: ", dot_zarray$compressor$id, "\n", sep = "")
+    message(indent, "Compressor: ", dot_zarray$compressor$id)
   }
 }
 
