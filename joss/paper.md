@@ -34,19 +34,27 @@ current state-of-the-art for working with HDF5 files in Bioconductor.
 
 # Statement of need
 
-
+The Zarr file format has been developed for the storage of large multi-dimensional
+arrays.  It's design is specifically focused to facilitate easy access to datasets
+store in the cloud, and this has led to adoption of the Zarr file format across 
+a wide range of scientific disciplines, including genomics, astrophysics and earth sciences [@geozarr].
 
 # 
 
+
+In order to reduce file sizes and data transfer costs, the Zarr specification allows for
+a variety of compression tools that process chunks on their way to and from disk.
+Rarr uses the built-in compression tools found in R to support using the zlib, gzip,
+bzip2 and LZMA compression protocols.  Rarr is also bundled with a copy of the BLOSC
+meta-compressor, which further provides support for compression using LZ4, snappy and ZSTD.
 
 
 
 # Availability
 
-All four packages can be readily installed from Bioconductor, while developmental
-versions can be found on GitHub. Code contributions, bug reports, fixes and
-feature requests are most welcome by opening issues and pull requests at the
-appropriate GitHub repositories.
+The stable release version of Rarr can be found and installed from Bioconductor, while developmental
+versions can be found on GitHub. We welcome code contributions, bug reports, fixes and
+feature requests by opening issues and pull requests on the GitHub repository
 
 <!--
 # Citations

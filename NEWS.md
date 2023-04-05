@@ -1,4 +1,4 @@
-# Rarr 0.99.7#8
+# Rarr 0.99.8
 
 * Patch compression libraries to remove R CMD check warnings about C functions 
 that might crash R or write to something other than the R console. Working
