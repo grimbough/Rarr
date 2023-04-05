@@ -1,8 +1,8 @@
 #' Read a Zarr array
 #'
-#' @param zarr_array_path Path to a Zarr array. A character vector of length 1. This
-#'   can either be a location on a local file system or the URI to an array in
-#'   S3 storage.
+#' @param zarr_array_path Path to a Zarr array. A character vector of length 1.
+#'   This can either be a location on a local file system or the URI to an array
+#'   in S3 storage.
 #' @param index A list of the same length as the number of dimensions in the
 #'   Zarr array.  Each entry in the list provides the indices in that dimension
 #'   that should be read from the array.  Setting a list entry to `NULL` will
@@ -73,13 +73,14 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 }
 
 #' @importFrom R.utils extract
-read_data <- function(required_chunks, zarr_array_path, s3_client, index, metadata) {
+read_data <- function(required_chunks, zarr_array_path, s3_client, 
+                      index, metadata) {
 
   warn <- 0L
 
   ## hopefully we can eventually do this in parallel
   chunk_selections <- lapply(seq_len(nrow(required_chunks)), FUN = function(i) {
-    ## find which elements to select from the chunk and which in the output we will replace
+    ## find elements to select from the chunk and what in the output we replace
     index_in_result <- index_in_chunk <- list()
     alt_chunk_dim <- unlist(metadata$chunks)
 
@@ -234,7 +235,7 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
     converted_chunk <- .format_chunk(decompressed_chunk, metadata, alt_chunk_dim)
   } else {
     converted_chunk <- list(
-      "chunk_data" = array(data = metadata$fill_value, dim = unlist(metadata$chunks)),
+      "chunk_data" = array(metadata$fill_value, dim = unlist(metadata$chunks)),
       "warning"    = 0L
     )
   }
@@ -368,7 +369,7 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
       asChar = FALSE
     )
   } else if (decompressor == "lz4") {
-    ## numpy codecs stores the original size of the buffer in the first 4 bytes; we exclude those
+    ## numpy codecs stores the original size of the buffer in the first 4 bytes
     decompressed_chunk <- .Call("decompress_chunk_LZ4",
       tail(x = compressed_chunk, n = -4L),
       buffer_size,

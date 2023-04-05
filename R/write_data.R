@@ -299,7 +299,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_needed[i] <- all(lengths(idx_in_zarr) > 0)
   }
   chunk_names <- chunk_names[chunk_needed, , drop = FALSE]
-  chunk_ids <- apply(chunk_names, 1, paste0, collapse = metadata$dimension_separator)
+  chunk_ids <- apply(chunk_names, 1, paste0, 
+                     collapse = metadata$dimension_separator)
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bplapply() ?

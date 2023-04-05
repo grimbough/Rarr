@@ -94,12 +94,14 @@ check_index <- function(index, metadata) {
 #'
 #' @keywords Internal
 .normalize_array_path <- function(path) {
-  ## we strip the protocol because it gets messed up by the slash removal later on
+  ## we strip the protocol because it gets messed up by the slash removal later
   if (grepl(x = path, pattern = "^((https?://)|(s3://)).*$")) {
-    root <- gsub(x = path, pattern = "^((https?://)|(s3://)).*$", replacement = "\\1")
-    path <- gsub(x = path, pattern = "^((https?://)|(s3://))(.*$)", replacement = "\\4")
+    root <- gsub(x = path, pattern = "^((https?://)|(s3://)).*$", 
+                 replacement = "\\1")
+    path <- gsub(x = path, pattern = "^((https?://)|(s3://))(.*$)", 
+                 replacement = "\\4")
   } else {
-    ## Replace all backward slash characters ("\\") with forward slash characters ("/")
+    ## Replace all backward slash ("\\") with forward slash ("/")
     path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
     path <- normalizePath(path, winslash = "/", mustWork = FALSE)
     root <- gsub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\1")
@@ -110,9 +112,10 @@ check_index <- function(index, metadata) {
   path <- gsub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
   ## Strip any trailing "/" characters
   path <- gsub(x = path, pattern = "/$", replacement = "", fixed = FALSE)
-  ## Collapse any sequence of more than one “/” character into a single “/” character
+  ## Collapse any sequence of more than one "/" character into a single "/" 
   path <- gsub(x = path, pattern = "//*", replacement = "/", fixed = FALSE)
-  ## The key prefix is then obtained by appending a single “/” character to the normalized logical path.
+  ## The key prefix is then obtained by appending a single "/" character to 
+  ## the normalized logical path.
   path <- paste0(root, path, "/")
 
   return(path)

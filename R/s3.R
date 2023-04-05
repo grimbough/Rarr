@@ -45,14 +45,21 @@ parse_s3_path <- function(path) {
   
   if (grepl(pattern = "^https?://s3\\.", x = url, ignore.case = TRUE)) {
     ## path style address
-    bucket <- gsub(x = tmp$path, pattern = "^/?([a-z0-9\\.-]*)/.*", replacement = "\\1", ignore.case = TRUE)
-    object <- gsub(x = tmp$path, pattern = "^/?([a-z0-9\\.-]*)/(.*)", replacement = "\\2", ignore.case = TRUE)
-    region <- gsub(x = url, pattern = "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/.*$", replacement = "\\1")
+    bucket <- gsub(x = tmp$path, pattern = "^/?([a-z0-9\\.-]*)/.*", 
+                   replacement = "\\1", ignore.case = TRUE)
+    object <- gsub(x = tmp$path, pattern = "^/?([a-z0-9\\.-]*)/(.*)", 
+                   replacement = "\\2", ignore.case = TRUE)
+    region <- gsub(x = url, 
+                   pattern = "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/.*$", 
+                   replacement = "\\1")
   } else if (grepl(pattern = "^https?://[a-z0-9\\.-]*.s3\\.", x = url, ignore.case = TRUE)) {
     ## virtual-host style address
-    bucket <- gsub(x = tmp$hostname, pattern = "^([a-z0-9\\.-]*)\\.s3.*", replacement = "\\1", ignore.case = TRUE)
+    bucket <- gsub(x = tmp$hostname, pattern = "^([a-z0-9\\.-]*)\\.s3.*", 
+                   replacement = "\\1", ignore.case = TRUE)
     object <- tmp$path
-    region <- gsub(x = tmp$hostname, pattern = "^.*\\.s3\\.([a-z0-9-]*)\\.amazonaws\\.com$", replacement = "\\1", ignore.case = TRUE)
+    region <- gsub(x = tmp$hostname, 
+                   pattern = "^.*\\.s3\\.([a-z0-9-]*)\\.amazonaws\\.com$", 
+                   replacement = "\\1", ignore.case = TRUE)
   } else {
     stop("Unknown AWS path style.  Please report this to the package maintainer.")
   }
@@ -155,7 +162,9 @@ parse_s3_path <- function(path) {
 .s3_object_exists <- function(s3_client, Bucket, Key) {
   
   exists <- tryCatch(
-    expr = { s3_client$head_object(Bucket = Bucket, Key = Key)$ContentLength > 0 }, 
+    expr = { 
+      s3_client$head_object(Bucket = Bucket, Key = Key)$ContentLength > 0 
+    }, 
     error = function(e) { FALSE } 
   )
   

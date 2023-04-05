@@ -70,14 +70,17 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       cat("Arrays:\n")
       for (a in arrays) {
         cat("---\n")
-        .print_array_metadata(dirname(a), dot_zarray = dot_zmeta$metadata[[a]], indent = "  ")
+        .print_array_metadata(dirname(a), dot_zarray = dot_zmeta$metadata[[a]], 
+                              indent = "  ")
       }
     }
     invisible(TRUE)
   } else {
     dot_zarray <- read_array_metadata(path = zarr_array_path, s3_client = s3_client)
     if (as_data_frame) {
-      res <- .rbind_array_metadata(array_name = basename(zarr_array_path), metadata = dot_zarray, dirname(zarr_array_path))
+      res <- .rbind_array_metadata(array_name = basename(zarr_array_path), 
+                                   metadata = dot_zarray, 
+                                   zarr_array_path = dirname(zarr_array_path))
       return(res)
     } else {
       cat("Type: Array\n")
@@ -102,7 +105,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     path       = paste0(.normalize_array_path(zarr_array_path), array_name),
     nchunks    = prod(nchunks),
     data_type  = paste0(dt$base_type, 8 * dt$nbytes),
-    compressor = ifelse(is.null(dot_zarray$compressor), NA, dot_zarray$compressor$id)
+    compressor = if(is.null(dot_zarray$compressor)) NA else dot_zarray$compressor$id
   )
   res$dim <- list(unlist(dot_zarray$shape))
   res$chunk_dim <- list(unlist(dot_zarray$chunks))
