@@ -12,6 +12,8 @@ Description: The Zarr specification defines a format for chunked, compressed,
   Rarr aims to implement this specifcation in R with 
   minimal reliance on an external tools or libraries.
 License: MIT + file LICENSE
+URL: https://github.com/grimbough/Rarr
+BugReports: https://github.com/grimbough/Rarr/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
