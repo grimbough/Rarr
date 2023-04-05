@@ -7,9 +7,9 @@
 read_zarr_array(zarr_array_path, index, s3_client)
 }
 \arguments{
-\item{zarr_array_path}{Path to a Zarr array. A character vector of length 1. This
-can either be a location on a local file system or the URI to an array in
-S3 storage.}
+\item{zarr_array_path}{Path to a Zarr array. A character vector of length 1.
+This can either be a location on a local file system or the URI to an array
+in S3 storage.}
 
 \item{index}{A list of the same length as the number of dimensions in the
 Zarr array.  Each entry in the list provides the indices in that dimension
