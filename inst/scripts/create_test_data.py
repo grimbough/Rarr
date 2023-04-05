@@ -98,7 +98,8 @@ z[29,19,9] = pow(2,32)
 #######################
 
 z = zarr.open('/data/column-first/string.zarr', mode='w', shape=(30, 20, 10),
-               chunks=(10, 10, 5), dtype='|S6', order="C", fill_value = "", dimension_separator = "/")
+               chunks=(10, 10, 5), dtype='|S6', order="C", fill_value = "", 
+               dimension_separator = "/")
 
 z[0, :, 0] = "test"
 z[:, 0, 0] = "ready"
@@ -177,9 +178,6 @@ z = zarr.open('/data/column-first/boolean.zarr', mode='w', shape=(20, 10),
                chunks=(10, 10), dtype='b1', order="C")
 z[0, :] = 1
 
-# 
-# 
-# 
 z = zarr.open('/data/compression/zlib.zarr', mode='w', shape=(20, 10),
               chunks=(10, 10), dtype='i4', order="F", compressor=zarr.Zlib(level=6))
 z[0, :] = np.arange(start=1, stop=11)
