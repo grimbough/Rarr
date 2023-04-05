@@ -56,7 +56,7 @@ docker build -t zarr-tester .
 
 To generate the data you then use the command below.  This will produce the
 example files in the folder `/tmp/zarr` on your local filesystem.  Modify that
-path if it is not appropriate for your system.
+path in the call to `docker run` if it is not appropriate for your system.
 
 ```
 mkdir /tmp/zarr_examples
