@@ -13,7 +13,7 @@ things stop working.}
 an object created by \code{paws.storage::s3()}.}
 }
 \value{
-A credentials list to be reinserted into a \code{paw.storage} s3 object.
+A credentials list to be reinserted into a \code{paws.storage} s3 object.
 If no valid credentials are found this function will error, which is expected
 and is caught by \code{.check_credentials}.
 }
