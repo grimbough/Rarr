@@ -1,3 +1,4 @@
+#' @useDynLib Rarr
 #' @keywords internal
 "_PACKAGE"
 
