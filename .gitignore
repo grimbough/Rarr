@@ -13,3 +13,6 @@
 src/Makevars
 src/compression_tools/blosc/Makefile
 src/compression_tools/blosc/lib/blosc-1.20.1/Makefile
+
+## caches
+vignettes/*_cache
