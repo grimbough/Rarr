@@ -1,3 +1,7 @@
+# Rarr 1.1
+
+* Fixed bug when reading an array if the fill value in `.zarray` was `null`.  
+
 # Rarr 0.99.9
 
 * Response it initial package review (thanks @Kayla-Morrell)
