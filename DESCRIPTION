@@ -1,6 +1,6 @@
 Package: Rarr
 Title: Read Zarr Files in R
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(person("Mike", "Smith", 
                 role=c("aut", "cre"), 
                 email = "grimbough@gmail.com",
