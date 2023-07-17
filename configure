@@ -3504,7 +3504,6 @@ case $machine in #(
     x86_CPU=false
  ;;
 esac
-echo x86_CPU="$x86_CPU"
 
 ## see if -msse2 is a supported flag
 
@@ -4541,8 +4540,14 @@ else $as_nop
   MSSE2=false
 fi
 
-## see if -mavx2 is a supported flag
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -mavx2" >&5
+
+if  "${IS_BIOC_BUILD_MACHINE}" == true ; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Bioc build machine; disabling MAVX2" >&5
+printf "%s\n" "$as_me: Bioc build machine; disabling MAVX2" >&6;}
+  MAVX2=false
+else
+  ## see if -mavx2 is a supported flag
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -mavx2" >&5
 printf %s "checking whether C compiler accepts -mavx2... " >&6; }
 if test ${ax_cv_check_cflags___mavx2+y}
 then :
@@ -4580,6 +4585,7 @@ else $as_nop
   MAVX2=false
 fi
 
+fi
 
 if test "$cross_compiling" = yes
 then :
@@ -4732,6 +4738,7 @@ else $as_nop
 fi
 
 
+    if  "$MAVX2" = true ; then
 
 
    ac_ext=c
@@ -4802,6 +4809,7 @@ else $as_nop
 fi
 
 
+    fi
 else
     SSE2_SUPPORTED=false
     AVX2_SUPPORTED=false

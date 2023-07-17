@@ -37,12 +37,17 @@ AS_CASE([$machine],
   [*86*], [x86_CPU=true],
   [x86_CPU=false]
 )
-echo x86_CPU="$x86_CPU"
 
 ## see if -msse2 is a supported flag
 AX_CHECK_COMPILE_FLAG([-msse2], [MSSE2=true], [MSSE2=false])
-## see if -mavx2 is a supported flag
-AX_CHECK_COMPILE_FLAG([-mavx2], [MAVX2=true], [MAVX2=false])
+
+if [ "${IS_BIOC_BUILD_MACHINE}" == true ]; then
+  AC_MSG_NOTICE(Bioc build machine; disabling MAVX2)
+  MAVX2=false
+else
+  ## see if -mavx2 is a supported flag
+  AX_CHECK_COMPILE_FLAG([-mavx2], [MAVX2=true], [MAVX2=false])
+fi
 
 AC_RUN_IFELSE(
       [AC_LANG_PROGRAM([#include <stdlib.h>],
@@ -54,7 +59,9 @@ AC_RUN_IFELSE(
 ## check CPU supports sse2 and avx2
 if [ "$x86_CPU" == true ] && [ "$ax_cv_gcc_check_x86_cpu_init" == true ]; then
     AX_GCC_X86_CPU_SUPPORTS(sse2, [SSE2_SUPPORTED=true], [SSE2_SUPPORTED=false])
-    AX_GCC_X86_CPU_SUPPORTS(avx2, [AVX2_SUPPORTED=true], [AVX2_SUPPORTED=false])
+    if [ "$MAVX2" = true ]; then
+      AX_GCC_X86_CPU_SUPPORTS(avx2, [AVX2_SUPPORTED=true], [AVX2_SUPPORTED=false])
+    fi
 else
     SSE2_SUPPORTED=false
     AVX2_SUPPORTED=false
