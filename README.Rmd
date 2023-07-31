@@ -8,7 +8,11 @@ output:
 ---
 
 <!-- badges: start -->
-[![Codecov test coverage](https://codecov.io/gh/grimbough/Rarr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/grimbough/Rarr?branch=main)
+[![Codecov test coverage](https://codecov.io/gh/grimbough/Rarr/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/grimbough/Rarr?branch=devel)
+<br>
+Build Status:
+[![Bioconductor Release](https://bioconductor.org/shields/build/release/bioc/Rarr.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/Rarr/)
+[![Bioconductor Devel](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/)
 <!-- badges: end -->
 
 ```{r, config, echo = FALSE}
@@ -67,9 +71,9 @@ datatype support.  It will be updated as progress is made.
 |`boolean`  | &#x2714; / &#x274C; | |
 |`int8`     | &#x2714; / &#x274C; | |
 |`uint8` | &#x2714; / &#x274C; | |
-|`int16` | &#x2754; / &#x274C; | |
+|`int16` | &#x2714; / &#x274C; | |
 |`uint16`| &#x2714; / &#x274C; | |
-|`int32` | &#x2714; / &#x274C; | |
+|`int32` | &#x2714; / &#x2714; | |
 |`uint32`| &#x2714; / &#x274C; | Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. | 
 |`int64`|&#x2714; / &#x274C; | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
 |`uint64`|&#x2714; / &#x274C; | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
@@ -92,7 +96,7 @@ datatype support.  It will be updated as progress is made.
 |`bzip2`      | &#x2714; / &#x2714; | Only compression level 9 is enabled for writing. |
 |`blosc`      | &#x2714; / &#x2714; | Only `lz4` compression level 5 is enabled for writing. |
 |`LZMA `      | &#x2714; / &#x2754; | |
-|`LZ4`        | &#x2714; / &#x274C; | |
+|`LZ4`        | &#x2714; / &#x2714; | |
 |`Zstd`       | &#x274C; / &#x274C; | Algorithm is available via blosc for writing, but can't currently be access through the R interface |
 
 Please open an [issue](https://github.com/grimbough/Rarr/issues) if support for a required compression tool is missing.

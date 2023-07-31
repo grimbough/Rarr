@@ -2,29 +2,25 @@ Zarr arrays with Rarr
 ================
 Mike L. Smith
 
-- <a href="#introduction-to-rarr"
-  id="toc-introduction-to-rarr">Introduction to Rarr</a>
-  - <a href="#limitations-with-rarr"
-    id="toc-limitations-with-rarr">Limitations with
-    <strong>Rarr</strong></a>
-- <a href="#quick-start-guide" id="toc-quick-start-guide">Quick start
-  guide</a>
-  - <a href="#installation-and-setup"
-    id="toc-installation-and-setup">Installation and setup</a>
-  - <a href="#reading-a-from-a-local-zarr-array"
-    id="toc-reading-a-from-a-local-zarr-array">Reading a from a local Zarr
-    array</a>
-  - <a href="#read-s3" id="toc-read-s3">Reading from S3 storage</a>
-  - <a href="#writing-to-a-zarr-array"
-    id="toc-writing-to-a-zarr-array">Writing to a Zarr array</a>
-- <a href="#current-status" id="toc-current-status">Current Status</a>
-  - <a href="#reading-and-writing" id="toc-reading-and-writing">Reading and
-    Writing</a>
+- [Introduction to Rarr](#introduction-to-rarr)
+  - [Limitations with **Rarr**](#limitations-with-rarr)
+- [Quick start guide](#quick-start-guide)
+  - [Installation and setup](#installation-and-setup)
+  - [Reading a from a local Zarr
+    array](#reading-a-from-a-local-zarr-array)
+  - [Reading from S3 storage](#read-s3)
+  - [Writing to a Zarr array](#writing-to-a-zarr-array)
+- [Current Status](#current-status)
+  - [Reading and Writing](#reading-and-writing)
 
 <!-- badges: start -->
 
 [![Codecov test
-coverage](https://codecov.io/gh/grimbough/Rarr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/grimbough/Rarr?branch=main)
+coverage](https://codecov.io/gh/grimbough/Rarr/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/grimbough/Rarr?branch=devel)
+<br> Build Status: [![Bioconductor
+Release](https://bioconductor.org/shields/build/release/bioc/Rarr.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/Rarr/)
+[![Bioconductor
+Devel](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/)
 <!-- badges: end -->
 
 # Introduction to Rarr
@@ -88,7 +84,8 @@ To demonstrate reading a local file, we’ll pick the example file
 containing 32-bit integers arranged in the “column first” ordering.
 
 ``` r
-zarr_example <- system.file("extdata", "zarr_examples", "column-first", "int32.zarr",
+zarr_example <- system.file(
+  "extdata", "zarr_examples", "column-first", "int32.zarr",
   package = "Rarr"
 )
 ```
@@ -103,12 +100,19 @@ zarr_overview(zarr_example)
 ```
 
     ## Type: Array
+
     ## Path: /mnt/data/R-lib/4.3-bioc_3.17/Rarr/extdata/zarr_examples/column-first/int32.zarr
+
     ## Shape: 30 x 20 x 10
+
     ## Chunk Shape: 10 x 10 x 5
+
     ## No. of Chunks: 12 (3 x 2 x 2)
+
     ## Data Type: int32
+
     ## Endianness: little
+
     ## Compressor: blosc
 
 You can use this to check that the location is a valid Zarr array, and
@@ -157,12 +161,19 @@ zarr_overview(s3_address)
 ```
 
     ## Type: Array
+
     ## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0/
+
     ## Shape: 50 x 494 x 464
+
     ## Chunk Shape: 1 x 494 x 464
+
     ## No. of Chunks: 50 (50 x 1 x 1)
+
     ## Data Type: float64
+
     ## Endianness: little
+
     ## Compressor: blosc
 
 The output above indicates that the array is stored in 50 chunks, each
@@ -262,6 +273,7 @@ is made.
 
 | Zarr Data Type        | Status<br/>(reading / writing) | Notes                                                                                                                                                                           |
 |-----------------------|:------------------------------:|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `boolean`             |             ✔ / ❌             |                                                                                                                                                                                 |
 | `int8`                |             ✔ / ❌             |                                                                                                                                                                                 |
 | `uint8`               |             ✔ / ❌             |                                                                                                                                                                                 |
 | `int16`               |            ❔ / ❌             |                                                                                                                                                                                 |
