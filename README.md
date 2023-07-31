@@ -15,12 +15,10 @@ Mike L. Smith
 
 <!-- badges: start -->
 
-[![Codecov test
-coverage](https://codecov.io/gh/grimbough/Rarr/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/grimbough/Rarr?branch=devel)
-<br> Build Status: [![Bioconductor
-Release](https://bioconductor.org/shields/build/release/bioc/Rarr.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/Rarr/)
-[![Bioconductor
-Devel](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/)
+|                                                                      GitHub Actions                                                                       |                                                             Bioconductor Build Sysytem                                                              |                                                                    Test Coverage                                                                     |
+|:---------------------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------:|
+| [![Package Checks](https://github.com/grimbough/Rarr/actions/workflows/main.yml/badge.svg)](https://github.com/grimbough/Rarr/actions/workflows/main.yml) | [![Bioconductor Status](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/) | [![Codecov test coverage](https://codecov.io/gh/grimbough/Rarr/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/grimbough/Rarr?branch=devel) |
+
 <!-- badges: end -->
 
 # Introduction to Rarr
@@ -101,7 +99,7 @@ zarr_overview(zarr_example)
 
     ## Type: Array
 
-    ## Path: /tmp/RtmpQUTCwX/temp_libpath211960dc6958/Rarr/extdata/zarr_examples/column-first/int32.zarr
+    ## Path: /mnt/data/R-lib/4.3-bioc_3.17/Rarr/extdata/zarr_examples/column-first/int32.zarr
 
     ## Shape: 30 x 20 x 10
 
@@ -300,7 +298,7 @@ is made.
 | `zlib / gzip` |             ✔ / ✔              | Only system default compression level (normally 6) is enabled for writing.                          |
 | `bzip2`       |             ✔ / ✔              | Only compression level 9 is enabled for writing.                                                    |
 | `blosc`       |             ✔ / ✔              | Only `lz4` compression level 5 is enabled for writing.                                              |
-| `LZMA`        |             ✔ / ❔             |                                                                                                     |
+| `LZMA`        |             ✔ / ✔              |                                                                                                     |
 | `LZ4`         |             ✔ / ✔              |                                                                                                     |
 | `Zstd`        |            ❌ / ❌             | Algorithm is available via blosc for writing, but can’t currently be access through the R interface |
 
