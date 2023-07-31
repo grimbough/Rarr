@@ -98,19 +98,12 @@ zarr_overview(zarr_example)
 ```
 
     ## Type: Array
-
     ## Path: /mnt/data/R-lib/4.3-bioc_3.17/Rarr/extdata/zarr_examples/column-first/int32.zarr
-
     ## Shape: 30 x 20 x 10
-
     ## Chunk Shape: 10 x 10 x 5
-
     ## No. of Chunks: 12 (3 x 2 x 2)
-
     ## Data Type: int32
-
     ## Endianness: little
-
     ## Compressor: blosc
 
 You can use this to check that the location is a valid Zarr array, and
@@ -159,19 +152,12 @@ zarr_overview(s3_address)
 ```
 
     ## Type: Array
-
     ## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0/
-
     ## Shape: 50 x 494 x 464
-
     ## Chunk Shape: 1 x 494 x 464
-
     ## No. of Chunks: 50 (50 x 1 x 1)
-
     ## Data Type: float64
-
     ## Endianness: little
-
     ## Compressor: blosc
 
 The output above indicates that the array is stored in 50 chunks, each
