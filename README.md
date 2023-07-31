@@ -101,7 +101,7 @@ zarr_overview(zarr_example)
 
     ## Type: Array
 
-    ## Path: /mnt/data/R-lib/4.3-bioc_3.17/Rarr/extdata/zarr_examples/column-first/int32.zarr
+    ## Path: /tmp/RtmpQUTCwX/temp_libpath211960dc6958/Rarr/extdata/zarr_examples/column-first/int32.zarr
 
     ## Shape: 30 x 20 x 10
 
@@ -276,9 +276,9 @@ is made.
 | `boolean`             |             ✔ / ❌             |                                                                                                                                                                                 |
 | `int8`                |             ✔ / ❌             |                                                                                                                                                                                 |
 | `uint8`               |             ✔ / ❌             |                                                                                                                                                                                 |
-| `int16`               |            ❔ / ❌             |                                                                                                                                                                                 |
+| `int16`               |             ✔ / ❌             |                                                                                                                                                                                 |
 | `uint16`              |             ✔ / ❌             |                                                                                                                                                                                 |
-| `int32`               |             ✔ / ❌             |                                                                                                                                                                                 |
+| `int32`               |             ✔ / ✔              |                                                                                                                                                                                 |
 | `uint32`              |             ✔ / ❌             | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
 | `int64`               |             ✔ / ❌             | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
 | `uint64`              |             ✔ / ❌             | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
@@ -301,7 +301,7 @@ is made.
 | `bzip2`       |             ✔ / ✔              | Only compression level 9 is enabled for writing.                                                    |
 | `blosc`       |             ✔ / ✔              | Only `lz4` compression level 5 is enabled for writing.                                              |
 | `LZMA`        |             ✔ / ❔             |                                                                                                     |
-| `LZ4`         |             ✔ / ❌             |                                                                                                     |
+| `LZ4`         |             ✔ / ✔              |                                                                                                     |
 | `Zstd`        |            ❌ / ❌             | Algorithm is available via blosc for writing, but can’t currently be access through the R interface |
 
 Please open an [issue](https://github.com/grimbough/Rarr/issues) if
