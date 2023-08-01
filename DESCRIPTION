@@ -22,7 +22,8 @@ Suggests:
     BiocStyle,
     covr,
     knitr,
-    tinytest
+    tinytest,
+    mockery
 VignetteBuilder: knitr
 SystemRequirements: GNU make
 biocViews: DataImport

@@ -92,3 +92,4 @@ expect_silent(
     )
 )
 expect_identical(read_zarr_array(path), x)
+
