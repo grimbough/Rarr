@@ -58,9 +58,13 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   }
   index <- check_index(index = index, metadata = metadata)
 
-  required_chunks <- as.matrix(find_chunks_needed(metadata, index))
-
-  res <- read_data(required_chunks, zarr_array_path, s3_client, index, metadata)
+  if(metadata$zarr_format == 2) {
+    required_chunks <- as.matrix(find_chunks_needed(metadata, index))
+    res <- read_data(required_chunks, zarr_array_path, s3_client, index, metadata)
+  } else if (metadata$zarr_format == 3) {
+    required_chunks <- as.matrix(find_chunks_needed(metadata, index))
+    res <- read_data_v3(required_chunks, zarr_array_path, s3_client, index, metadata)
+  }
 
   if (isTRUE(res$warn > 0)) {
     warning("Integer overflow detected in at least one chunk.\n",
@@ -152,6 +156,7 @@ get_chunk_size <- function(datatype, dimensions) {
   ## TODO: not all datatypes are implemented yet
   sizeof <- switch(datatype$base_type,
     "boolean" = 4L,
+    "bool"    = 4L,
     "int"     = 4L,
     "uint"    = 4L,
     "float"   = 8L,

@@ -83,6 +83,36 @@ check_index <- function(index, metadata) {
   return(datatype)
 }
 
+#' Parse the data type encoding string
+#'
+#' @param typestr The datatype encoding string.  This must be one of the values
+#'   defined in the Zarr v3 specification
+#'   (https://zarr-specs.readthedocs.io/en/latest/v3/core/v3.0.html#data-types)
+#'
+#' @returns A list of length 3 containing the details of the data type.
+.parse_datatype_v3 <- function(typestr) {
+  datatype <- list()
+
+  datatype$base_type <- sub(x = typestr, pattern = "[0-9]*$", replacement = "")
+  
+  size <- sub(x = typestr, pattern = "^[a-z]*", replacement = "")
+  ## bool is the only datatype that doesn't specify a size
+  if(nchar(size) == 0)
+    size = "1"
+  datatype$nbytes <- as.integer(size) / 8
+  
+  datatype$is_signed <- ifelse(datatype$base_type != "uint", TRUE, FALSE)
+  
+  datatype$r_type <- switch(datatype$base_type,
+                            "int" = "integer",
+                            "uint" = "integer",
+                            "float" = "numeric",
+                            "bool" = "logical",
+                            "raw")
+  
+  return(datatype)
+}
+
 
 #' Normalize a Zarr array path
 #'

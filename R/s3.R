@@ -161,12 +161,19 @@ parse_s3_path <- function(path) {
 
 .s3_object_exists <- function(s3_client, Bucket, Key) {
   
-  exists <- tryCatch(
-    expr = { 
-      s3_client$head_object(Bucket = Bucket, Key = Key)$ContentLength > 0 
-    }, 
-    error = function(e) { FALSE } 
-  )
+  test_one <- function(Key) {
+    tryCatch(
+      expr = { 
+        s3_client$head_object(Bucket = Bucket, Key = Key)$ContentLength > 0 
+      }, 
+      error = function(e) { FALSE } 
+    )
+  }
+  
+  exists <- vapply(X = Key, 
+         FUN = test_one, 
+         FUN.VALUE = logical(1),
+         USE.NAMES = FALSE)
   
   return(exists)
 }

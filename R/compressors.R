@@ -50,14 +50,23 @@ NULL
 #' @export
 use_blosc <- function(cname = "lz4") {
   
-  valid_options <- c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy")
-  if(!tolower(cname) %in% valid_options) {
-    stop("'cname argument must be one of '", 
-         paste(valid_options, collapse = "', '"), "'")
+  valid_cname_options <- c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy")
+  if(!tolower(cname) %in% valid_cname_options) {
+    stop("'cname' argument must be one of '", 
+         paste(valid_cname_options, collapse = "', '"), "'")
   }
   
-  res <- list(id = "blosc", cname = tolower(cname), 
-              clevel = 5, shuffle = as.integer(TRUE))
+  shuffle = "shuffle"
+  valid_shuffle_options <- c("noshuffle", "shuffle", "bitshuffle")
+  if(!tolower(shuffle) %in% valid_shuffle_options) {
+    stop("'shuffle' argument must be one of '", 
+         paste(valid_shuffle_options, collapse = "', '"), "'")
+  }
+  
+  res <- list(id = "blosc", 
+              cname = tolower(cname), 
+              clevel = 5, 
+              shuffle = as.integer(TRUE))
   return(res)
 }
 

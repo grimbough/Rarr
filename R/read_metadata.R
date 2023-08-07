@@ -148,24 +148,59 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #'
 #' @keywords Internal
 read_array_metadata <- function(path, s3_client = NULL) {
+  
   path <- .normalize_array_path(path)
-  zarray_path <- paste0(path, ".zarray")
+  array_metadata_paths <- paste0(path, c(".zarray", "zarr.json"))
 
   if (!is.null(s3_client)) {
-
-    parsed_url <- parse_s3_path(zarray_path)
-    
-    s3_object <- s3_client$get_object(Bucket = parsed_url$bucket, 
-                                      Key = parsed_url$object)
-
-    metadata <- fromJSON(rawToChar(s3_object$Body))
+    metadata <- .read_array_metadata_s3(array_metadata_paths, s3_client)
   } else {
-    metadata <- read_json(zarray_path)
+    metadata <- .read_array_metadata_local(array_metadata_paths)
   }
 
   metadata <- update_fill_value(metadata)
-
+  if(metadata$zarr_format == 3) {
+    metadata <- .translate_chunk_grid(metadata)
+    
+  }
   return(metadata)
+}
+
+.read_array_metadata_s3 <- function(array_metadata_paths, s3_client) {
+  
+  parsed_url <- parse_s3_path(array_metadata_paths[1])
+  
+  ## check if metadata exist
+  exists <- .s3_object_exists(s3_client, 
+                              Bucket = parsed_url$bucket, 
+                              Key = array_metadata_paths)
+  if(all(isFALSE(exists))) {
+    stop("No array metadata found")
+  } else {
+    metadata_path <- array_metadata_paths[exists]
+  }
+  
+  s3_object <- s3_client$get_object(Bucket = parsed_url$bucket, 
+                                    Key = parsed_url$object)
+  
+  metadata <- fromJSON(rawToChar(s3_object$Body))
+  return(metadata)
+  
+}
+
+.read_array_metadata_local <- function(array_metadata_paths) {
+  
+  ## check if metadata exist
+  exists <- file.exists(array_metadata_paths)
+  if(all(isFALSE(exists))) {
+    stop("No array metadata found")
+  } else {
+    metadata_path <- array_metadata_paths[exists]
+  }
+  
+  metadata <- read_json(metadata_path)
+  return(metadata)
+  
 }
 
 #' Convert special fill values from strings to numbers
@@ -201,6 +236,27 @@ update_fill_value <- function(metadata) {
       )
     }
   }
+  return(metadata)
+}
+
+.translate_chunk_grid <- function(metadata) {
+
+  if(metadata$chunk_grid$name != "regular")
+    stop("Rarr currently only supports regular the chunk grid layout")
+  
+  metadata$chunks <- metadata$chunk_grid$configuration$chunk_shape
+  
+  return(metadata)
+}
+
+.translate_chunk_key_encoding <- function(metadata) {
+  
+  metadata$dimension_separator <- ifelse(
+    is.null(metadata$chunk_key_encoding$configuration$separator),
+    yes = "/",
+    no = metadata$chunk_key_encoding$configuration$separator
+  )
+  
   return(metadata)
 }
 
