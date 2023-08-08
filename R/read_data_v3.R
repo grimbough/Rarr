@@ -147,8 +147,12 @@ read_chunk_v3 <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
       transpose_applied <- TRUE
     } else if (codec_name == "gzip") {
       chunk <- gzip_codec(chunk, encoding = FALSE)
+    } else if (codec_name == "blosc") {
+      chunk <- blosc_codec(chunk, cname = config$cname, 
+                           clevel = config$clevel, shuffle = config$shuffle,
+                           encoding = FALSE)
     } else {
-      stop("Unsupported codec:", codec_name)
+      stop("Unsupported codec: ", codec_name)
     }
       
   }

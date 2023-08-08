@@ -1,4 +1,38 @@
-blosc_codec <- function() {}
+.check_blosc_args <- function(cname, clevel, shuffle) {
+  
+  valid_cname_options <- c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy")
+  if(!tolower(cname) %in% valid_cname_options) {
+    stop("'cname' argument must be one of '", 
+         paste(valid_cname_options, collapse = "', '"), "'")
+  }
+  
+  clevel <- as.integer(clevel)
+  if(clevel < 0L || clevel > 9L)
+    stop("'clevel' argument must be between 0 and 9")
+  
+  shuffle = "shuffle"
+  valid_shuffle_options <- c("noshuffle", "shuffle", "bitshuffle")
+  if(!tolower(shuffle) %in% valid_shuffle_options) {
+    stop("'shuffle' argument must be one of '", 
+         paste(valid_shuffle_options, collapse = "', '"), "'")
+  }
+  
+  return(invisible(TRUE))
+  
+}
+
+blosc_codec <- function(chunk, cname, clevel, shuffle, encoding = FALSE) {
+  
+  .check_blosc_args(cname, clevel, shuffle)
+  
+  if(encoding) {
+    
+  } else {
+    output <- .Call("decompress_chunk_BLOSC", chunk, PACKAGE = "Rarr")
+  }
+  
+  return(output)
+}
 
 endian_codec <- function(chunk, endian, data_type, encoding = FALSE) {
   
