@@ -151,6 +151,8 @@ read_chunk_v3 <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
       chunk <- blosc_codec(chunk, cname = config$cname, 
                            clevel = config$clevel, shuffle = config$shuffle,
                            encoding = FALSE)
+    } else if (codec_name == "sharding_indexed") {
+      
     } else {
       stop("Unsupported codec: ", codec_name)
     }

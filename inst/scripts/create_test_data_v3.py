@@ -159,3 +159,29 @@ a = zarrita.Array.create(
         ],
     )
 a[:] = data
+
+###################
+
+shape = (10,)
+dtype = 'int8'
+
+data = np.full(shape, 0, dtype=dtype)
+data[:] = np.arange(start=1, stop=11)
+path = "sharded/1d-sub-chunks.zarr"
+shutil.rmtree(os.path.join(data_store, path), ignore_errors=True)
+a = zarrita.Array.create(
+        store / path,
+        shape=shape,
+        dtype=dtype,
+        chunk_shape=(10,),
+        codecs=[
+            zarrita.codecs.sharding_codec(
+                chunk_shape=(5,),
+                codecs=[
+                    zarrita.codecs.endian_codec(),
+                    zarrita.codecs.gzip_codec()
+                ],
+            )
+        ],
+    )
+a[:] = data
