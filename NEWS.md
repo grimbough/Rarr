@@ -1,6 +1,10 @@
 # Rarr 1.1
 
 * Fixed bug when reading an array if the fill value in `.zarray` was `null`.  
+* Addressed bug in makevars where Rarr.so could be compiled before libblosc.a
+  was ready. Also backported to Rarr 1.0.2.
+  (Thanks to Michael Sumner for reporting this issue:
+  https://github.com/grimbough/Rarr/issues/5)
 
 # Rarr 0.99.9
 
