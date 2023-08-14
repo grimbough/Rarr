@@ -11,7 +11,9 @@ COMPRESSION_LIBS=compression_tools/blosc/libblosc.a
 
 PKG_LIBS=$(COMPRESSION_LIBS)
 
-all: compression_libs $(SHLIB)
+all: $(SHLIB)
+
+$(SHLIB): compression_libs
 
 compression_libs: $(COMPRESSION_LIBS)
 
