@@ -168,23 +168,33 @@ write_zarr_array <- function(x,
 
   chunk_names <- .generate_chunk_names(x_dim = dim(x), chunk_dim = chunk_dim)
   chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
+  array_index_map <- .create_array_index_map(dim(x), metadata)
 
   ## iterate over each chunk
   ## TODO: maybe this can be done in parallel with bplapply() ?
   res <- lapply(chunk_ids,
     FUN = .write_chunk, x = x, path = path, 
-    metadata = metadata
+    metadata = metadata, array_index_map = array_index_map
   )
 
   return(invisible(all(unlist(res))))
 }
+
+.create_array_index_map <- function(dim_x, metadata) {
+  map <- list()
+  for(j in seq_along(dim_x)) {
+    map[[j]] <- (seq_len(dim_x[j]) - 1) %/% metadata$chunks[[j]]
+  }
+  return(map)
+}
+
 
 .generate_chunk_names <- function(x_dim, chunk_dim) {
   n_chunks_in_dim <- (x_dim %/% chunk_dim) + as.logical(x_dim %% chunk_dim)
   expand.grid(lapply(n_chunks_in_dim, seq_len)) - 1
 }
 
-.write_chunk <- function(chunk_id, x, path, metadata) {
+.write_chunk <- function(chunk_id, x, path, metadata, array_index_map) {
   
     chunk_dim <- unlist(metadata$chunks)
     dim_sep <- metadata$dimension_separator
@@ -194,7 +204,7 @@ write_zarr_array <- function(x,
 
     idx_in_array <- list()
     for (j in seq_along(dim(x))) {
-        idx_in_array[[j]] <- which((seq_len(dim(x)[j]) - 1) %/% chunk_dim[j] == chunk_id_split[j])
+        idx_in_array[[j]] <- which(array_index_map[[j]] == chunk_id_split[j])
     }
 
     chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)

@@ -72,11 +72,29 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   return(res$output)
 }
 
+.find_index_in_result <- function(index, shape, chunk_dim, required_chunk) {
+  
+  nchunks <- (shape %/% chunk_dim) + ((shape %% chunk_dim) > 0)
+  breaks <- seq.int(from = 1, length.out = nchunks+1, by = chunk_dim)
+  tmp <- .bincode(index, breaks = breaks, right = FALSE, include.lowest = TRUE)-1
+  which(tmp == required_chunk)
+}
+
+.create_index_map <- function(index, metadata) {
+  
+  map <- list()
+  for(j in seq_along(metadata$shape)) {
+    map[[j]] <- (index[[j]] - 1) %/% metadata$chunks[[j]]
+  }
+  return(map)
+}
+
 #' @importFrom R.utils extract
 read_data <- function(required_chunks, zarr_array_path, s3_client, 
                       index, metadata) {
 
   warn <- 0L
+  index_mapping <- .create_index_map(index, metadata)
 
   ## hopefully we can eventually do this in parallel
   chunk_selections <- lapply(seq_len(nrow(required_chunks)), FUN = function(i) {
@@ -85,7 +103,10 @@ read_data <- function(required_chunks, zarr_array_path, s3_client,
     alt_chunk_dim <- unlist(metadata$chunks)
 
     for (j in seq_len(ncol(required_chunks))) {
-      index_in_result[[j]] <- which((index[[j]] - 1) %/% metadata$chunks[[j]] == required_chunks[i, j])
+      index_in_result[[j]] <- which(index_mapping[[j]] == required_chunks[i,j])
+      #index_in_result[[j]] <- .find_index_in_result(index[[j]], metadata$shape[[j]], 
+      #                                              metadata$chunks[[j]], required_chunks[i,j])
+      #index_in_result[[j]] <- which((index[[j]] - 1) %/% metadata$chunks[[j]] == required_chunks[i, j])
       ## are we requesting values outside the array due to overhanging chunks?
       outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
       if (any(outside_extent))
