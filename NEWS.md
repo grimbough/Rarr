@@ -7,7 +7,7 @@
   https://github.com/grimbough/Rarr/issues/5)
 * Corrected issue where fixed length string datatypes would be written with
   null terminators, resulting in strings that were one byte longer than the
-  dtype value written in the `.zarray` metadata.
+  dtype value written in the `.zarray` metadata. Also backported to Rarr 1.0.3
 
 # Rarr 0.99.9
 
