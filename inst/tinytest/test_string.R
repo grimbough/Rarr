@@ -22,3 +22,27 @@ expect_equal(dim(column_major), sapply(index, length))
 expect_equal(column_major[1,,], c("ready", rep("test", length(index[[2]])-1)))
 ## first column should be all "ready"
 expect_true(all(column_major[,1,] == "ready"))
+
+
+## check read/write produce the same things
+path <- tempfile()
+expect_silent(
+  res <- write_zarr_array(
+    x = column_major, 
+    zarr_array_path = path,
+    chunk_dim = c(2, 5, 1)
+  )
+)
+expect_identical(read_zarr_array(path), column_major)
+
+## check we truncate strings if the exceed the specified length
+path <- tempfile()
+expect_silent(
+  res <- write_zarr_array(
+    x = column_major, 
+    zarr_array_path = path,
+    chunk_dim = c(2, 5, 1),
+    nchar = 1
+  )
+)
+expect_equal(max(nchar(read_zarr_array(path))), 1L)
