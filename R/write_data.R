@@ -152,7 +152,7 @@ write_zarr_array <- function(x,
   path <- .normalize_array_path(zarr_array_path)
 
   if (storage.mode(x) == "character" && missing(nchar)) {
-    nchar <- max(nchar(x))
+    nchar <- max(base::nchar(x))
   }
 
   create_empty_zarr_array(
@@ -375,7 +375,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
                                       compressor = use_zlib(), 
                                       data_type_size) {
   ## the compression tools need a raw vector
-  raw_chunk <- .as_raw(as.vector(input_chunk))
+  raw_chunk <- .as_raw(as.vector(input_chunk), nchar = data_type_size)
   
   if(is.null(compressor)) {
     compressed_chunk <- raw_chunk
@@ -411,8 +411,20 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   
 }
 
-.as_raw <- function(d) {
-  writeBin(d, raw())
+.as_raw <- function(d, nchar) {
+  ## we need to create fixed length strings either via padding or trimming
+  if(is.character(d)) {
+    raw_list <- iconv(d, toRaw = TRUE)
+    unlist(
+      lapply(raw_list, FUN = function(x, nchar) { 
+          if(!is.null(x))
+            length(x) <- nchar 
+          return(x) 
+        }, nchar)
+    )
+  } else {
+    writeBin(d, raw())
+  }
 }
 
 .check_chunk_shape <- function(x_dim, chunk_dim) {
