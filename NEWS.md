@@ -5,6 +5,9 @@
   was ready. Also backported to Rarr 1.0.2.
   (Thanks to Michael Sumner for reporting this issue:
   https://github.com/grimbough/Rarr/issues/5)
+* Corrected issue where fixed length string datatypes would be written with
+  null terminators, resulting in strings that were one byte longer than the
+  dtype value written in the `.zarray` metadata.
 
 # Rarr 0.99.9
 
