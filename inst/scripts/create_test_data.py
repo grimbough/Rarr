@@ -198,5 +198,25 @@ z = zarr.open('/data/compression/lz4.zarr', mode='w', shape=(20, 10),
 z[0, :] = np.arange(start=1, stop=11)
 z[:, 0] = np.arange(start=1, stop=60, step=3)
 
+#####################################
+
+greetings = ['¡Hola mundo!', 'Hej Världen!', 'Servus Woid!', 'Hei maailma!',
+             'Xin chào thế giới', 'Njatjeta Botë!', 'Γεια σου κόσμε!',
+             'こんにちは世界', '世界，你好！', 'Helló, világ!', 'Zdravo svete!',
+             'เฮลโลเวิลด์']
+             
+z = zarr.open('/data/column-first/Unicode.zarr', mode='w', shape=(6, 2),
+              chunks=(6, 1), order="F",
+              dtype='U20',
+              compressor = zarr.Zlib())
+z[:,0] = greetings[0:6]
+z[:,1] = greetings[6:12]
+             
+z = zarr.open('/data/column-first/vlenUTF8.zarr', mode='w', shape=(6, 2),
+              chunks=(6, 1), order="F",
+              dtype=str,
+              compressor = zarr.Zlib())
+z[:,0] = greetings[0:6]
+z[:,1] = greetings[6:12]
 
 
