@@ -281,7 +281,7 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
   } else if (actual_chunk_size == prod(alt_chunk_dim)) {
     chunk_dim <- alt_chunk_dim
   } else {
-    stop("Decompressed data doesn't match expected chunk size.")
+    stop("Decompresed data doesn't match expected chunk size.")
   }
   
   ## reverse dimensions for column first datasets
@@ -300,7 +300,16 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
       0L ## no warning so set the second element to zero
     )
     dim(converted_chunk[[1]]) <- chunk_dim
-  } else {
+   } else if(datatype$base_type == "unicode") {
+     tmp <- split(x = decompressed_chunk,
+                  f = ceiling(seq_along(decompressed_chunk) / datatype$nbytes))
+     converted_chunk <- list(
+        vapply(tmp, FUN = function(x) {
+          intToUtf8(readBin(x, what = "integer", size = 4, n = length(x)/4))
+        }, FUN.VALUE = character(1), USE.NAMES = FALSE),
+        0L
+     )
+   } else {
     output_type <- switch(datatype$base_type,
       "boolean" = 0L,
       "int" = 1L,

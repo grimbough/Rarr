@@ -72,11 +72,17 @@ check_index <- function(index, metadata) {
     "m" = "timedelta",
     "M" = "datetime",
     "S" = "string",
-    "U" = "Unicode",
+    "U" = "unicode",
     "V" = "other"
   )
 
-  datatype$nbytes <- as.integer(datatype_parts[3])
+  #datatype$nbytes <- as.integer(datatype_parts[3])
+  datatype$nbytes <- as.integer(
+    gsub(x = typestr, pattern = "^[<>|][[:alpha:]]", replacement = "")
+  )
+  
+  if(datatype$base_type == 'unicode')
+    datatype$nbytes <- datatype$nbytes * 4
 
   datatype$is_signed <- ifelse(datatype$base_type != "uint", TRUE, FALSE)
 
@@ -119,4 +125,22 @@ check_index <- function(index, metadata) {
   path <- paste0(root, path, "/")
 
   return(path)
+}
+
+.readVlenUTF8 <- function(input) {
+  
+  nvalues <- readBin(input, what = "integer", n = 1, size = 4)
+  output <- character(length = nvalues)
+  input <- tail(input, -4)
+  for(i in seq_len(nvalues)) {
+    
+    nbytes <- readBin(input, what = "integer", n = 1, size = 4)
+    input <- tail(input, -4)
+    output[i] <- rawToChar(input[seq_len(nbytes)])
+    input <- tail(input, -nbytes)
+  }
+  
+  Encoding(output) <- "UTF-8"
+  return(output)
+  
 }
