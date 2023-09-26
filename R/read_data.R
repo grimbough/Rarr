@@ -276,7 +276,7 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
   ## It doesn't seem clear if the on disk chunk will contain the overflow 
   ## values or not, so we try both approaches.
   actual_chunk_size <- length(decompressed_chunk) / datatype$nbytes
-  if(actual_chunk_size == prod(unlist(metadata$chunks))) {
+  if((datatype$base_type == "py_object") || (actual_chunk_size == prod(unlist(metadata$chunks)))) {
     chunk_dim <- unlist(metadata$chunks)
   } else if (actual_chunk_size == prod(alt_chunk_dim)) {
     chunk_dim <- alt_chunk_dim
@@ -288,41 +288,30 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
   if (metadata$order == "C") {
     chunk_dim <- rev(chunk_dim)
   }
-
+  
   if (datatype$base_type == "string") {
-    ## break raw vector into list where each element is the bytes for 1 string
-    tmp <- split(x = decompressed_chunk, 
-                 f = rep(seq_len(length(decompressed_chunk) / datatype$nbytes),
-      each = datatype$nbytes
-    ))
-    converted_chunk <- list(
-      vapply(tmp, rawToChar, character(1), USE.NAMES = FALSE),
-      0L ## no warning so set the second element to zero
-    )
+    converted_chunk <- .format_string(decompressed_chunk, datatype)
     dim(converted_chunk[[1]]) <- chunk_dim
-   } else if(datatype$base_type == "unicode") {
-     tmp <- split(x = decompressed_chunk,
-                  f = ceiling(seq_along(decompressed_chunk) / datatype$nbytes))
-     converted_chunk <- list(
-        vapply(tmp, FUN = function(x) {
-          intToUtf8(readBin(x, what = "integer", size = 4, n = length(x)/4))
-        }, FUN.VALUE = character(1), USE.NAMES = FALSE),
-        0L
-     )
-   } else {
+  } else if(datatype$base_type == "unicode") {
+    converted_chunk <- .format_unicode(decompressed_chunk, datatype)
+    dim(converted_chunk[[1]]) <- chunk_dim
+  } else if(datatype$base_type == "py_object") {
+    converted_chunk <- .format_object(decompressed_chunk, metadata, datatype)
+    dim(converted_chunk[[1]]) <- chunk_dim
+  } else {
     output_type <- switch(datatype$base_type,
-      "boolean" = 0L,
-      "int" = 1L,
-      "uint" = 1L,
-      "float" = 2L
+                          "boolean" = 0L,
+                          "int" = 1L,
+                          "uint" = 1L,
+                          "float" = 2L
     )
     converted_chunk <- .Call("type_convert_chunk", decompressed_chunk,
-      output_type, datatype$nbytes, datatype$is_signed,
-      chunk_dim,
-      PACKAGE = "Rarr"
+                             output_type, datatype$nbytes, datatype$is_signed,
+                             chunk_dim,
+                             PACKAGE = "Rarr"
     )
   }
-
+  
   ## more manipulation to get the correct dimensions.
   ## Surely there's a way to do this in one step rather than two??
   if (metadata$order == "C") {

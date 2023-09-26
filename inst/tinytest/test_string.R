@@ -46,3 +46,28 @@ expect_silent(
   )
 )
 expect_equal(max(nchar(read_zarr_array(path))), 1L)
+
+########################
+
+greetings <- c('¡Hola mundo!', 'Hej Världen!', 'Servus Woid!', 'Hei maailma!',
+               'Xin chào thế giới', 'Njatjeta Botë!', 'Γεια σου κόσμε!',
+               'こんにちは世界', '世界，你好！', 'Helló, világ!', 'Zdravo svete!',
+               'เฮลโลเวิลด์')
+
+unicode_fixed_length <- system.file("extdata", "zarr_examples", "column-first", "Unicode.zarr",
+                      package = "Rarr")
+
+expect_silent(
+  res <- read_zarr_array(unicode_fixed_length)
+)
+expect_equal(res[,1], greetings)
+expect_equal(res[1,], greetings)
+
+unicode_var_length <- system.file("extdata", "zarr_examples", "column-first", "Unicode.zarr",
+                                    package = "Rarr")
+
+expect_silent(
+  res <- read_zarr_array(unicode_var_length)
+)
+expect_equal(res[,1], greetings)
+expect_equal(res[1,], greetings)

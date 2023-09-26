@@ -1,14 +1,14 @@
 {
     "chunks": [
         6,
-        1
+        6
     ],
     "compressor": {
         "id": "zlib",
         "level": 1
     },
     "dtype": "|O",
-    "fill_value": "0",
+    "fill_value": "",
     "filters": [
         {
             "id": "vlen-utf8"
@@ -16,8 +16,8 @@
     ],
     "order": "F",
     "shape": [
-        6,
-        2
+        12,
+        12
     ],
     "zarr_format": 2
 }

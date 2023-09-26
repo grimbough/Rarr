@@ -205,18 +205,18 @@ greetings = ['¡Hola mundo!', 'Hej Världen!', 'Servus Woid!', 'Hei maailma!',
              'こんにちは世界', '世界，你好！', 'Helló, világ!', 'Zdravo svete!',
              'เฮลโลเวิลด์']
              
-z = zarr.open('/data/column-first/Unicode.zarr', mode='w', shape=(6, 2),
-              chunks=(6, 1), order="F",
+z = zarr.open('/data/column-first/Unicode.zarr', mode='w', shape=(12, 12),
+              chunks=(6, 6), order="F", fill_value = "",
               dtype='U20',
               compressor = zarr.Zlib())
-z[:,0] = greetings[0:6]
-z[:,1] = greetings[6:12]
-             
-z = zarr.open('/data/column-first/vlenUTF8.zarr', mode='w', shape=(6, 2),
-              chunks=(6, 1), order="F",
+z[:,0] = greetings
+z[0,:] = greetings
+
+z = zarr.open('/data/column-first/vlenUTF8.zarr', mode='w', shape=(12, 12),
+              chunks=(6, 6), order="F", fill_value = "",
               dtype=str,
               compressor = zarr.Zlib())
-z[:,0] = greetings[0:6]
-z[:,1] = greetings[6:12]
+z[:,0] = greetings
+z[0,:] = greetings
 
 

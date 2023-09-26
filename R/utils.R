@@ -73,7 +73,8 @@ check_index <- function(index, metadata) {
     "M" = "datetime",
     "S" = "string",
     "U" = "unicode",
-    "V" = "other"
+    "V" = "other",
+    "O" = "py_object"
   )
 
   #datatype$nbytes <- as.integer(datatype_parts[3])
