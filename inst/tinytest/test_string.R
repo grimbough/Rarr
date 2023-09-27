@@ -63,7 +63,7 @@ expect_silent(
 expect_equal(res[,1], greetings)
 expect_equal(res[1,], greetings)
 
-unicode_var_length <- system.file("extdata", "zarr_examples", "column-first", "Unicode.zarr",
+unicode_var_length <- system.file("extdata", "zarr_examples", "column-first", "vlenUTF8.zarr",
                                     package = "Rarr")
 
 expect_silent(

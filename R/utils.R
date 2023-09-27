@@ -137,8 +137,10 @@ check_index <- function(index, metadata) {
     
     nbytes <- readBin(input, what = "integer", n = 1, size = 4)
     input <- tail(input, -4)
-    output[i] <- rawToChar(input[seq_len(nbytes)])
-    input <- tail(input, -nbytes)
+    if(nbytes > 0) {
+      output[i] <- rawToChar(input[seq_len(nbytes)])
+      input <- tail(input, -nbytes)
+    } 
   }
   
   Encoding(output) <- "UTF-8"
