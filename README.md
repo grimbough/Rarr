@@ -98,7 +98,7 @@ zarr_overview(zarr_example)
 ```
 
     ## Type: Array
-    ## Path: /mnt/data/R-lib/4.3-bioc_3.17/Rarr/extdata/zarr_examples/column-first/int32.zarr
+    ## Path: /tmp/RtmpF5o9TP/temp_libpath14ca86d0ed64a/Rarr/extdata/zarr_examples/column-first/int32.zarr
     ## Shape: 30 x 20 x 10
     ## Chunk Shape: 10 x 10 x 5
     ## No. of Chunks: 12 (3 x 2 x 2)
@@ -273,20 +273,20 @@ is made.
 | `timedelta`           |            ❌ / ❌             |                                                                                                                                                                                 |
 | `datetime`            |            ❌ / ❌             |                                                                                                                                                                                 |
 | `string`              |             ✔ / ✔              |                                                                                                                                                                                 |
-| `Unicode`             |            ❌ / ❌             |                                                                                                                                                                                 |
+| `Unicode`             |             ✔ / ✔              |                                                                                                                                                                                 |
 | `void *`              |            ❌ / ❌             |                                                                                                                                                                                 |
 | Structured data types |            ❌ / ❌             |                                                                                                                                                                                 |
 
 ### Compression Tools
 
-| Data Type     | Status<br/>(reading / writing) | Notes                                                                                               |
-|---------------|:------------------------------:|-----------------------------------------------------------------------------------------------------|
-| `zlib / gzip` |             ✔ / ✔              | Only system default compression level (normally 6) is enabled for writing.                          |
-| `bzip2`       |             ✔ / ✔              | Only compression level 9 is enabled for writing.                                                    |
-| `blosc`       |             ✔ / ✔              | Only `lz4` compression level 5 is enabled for writing.                                              |
-| `LZMA`        |             ✔ / ✔              |                                                                                                     |
-| `LZ4`         |             ✔ / ✔              |                                                                                                     |
-| `Zstd`        |            ❌ / ❌             | Algorithm is available via blosc for writing, but can’t currently be access through the R interface |
+| Data Type     | Status<br/>(reading / writing) | Notes                                                                                                 |
+|---------------|:------------------------------:|-------------------------------------------------------------------------------------------------------|
+| `zlib / gzip` |             ✔ / ✔              | Only system default compression level (normally 6) is enabled for writing.                            |
+| `bzip2`       |             ✔ / ✔              | Only compression level 9 is enabled for writing.                                                      |
+| `blosc`       |             ✔ / ✔              | Only `lz4` compression level 5 is enabled for writing.                                                |
+| `LZMA`        |             ✔ / ✔              |                                                                                                       |
+| `LZ4`         |             ✔ / ✔              |                                                                                                       |
+| `Zstd`        |            ❌ / ❌             | Algorithm is available via blosc for writing, but can’t currently be accessed through the R interface |
 
 Please open an [issue](https://github.com/grimbough/Rarr/issues) if
 support for a required compression tool is missing.
