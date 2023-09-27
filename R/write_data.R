@@ -7,7 +7,7 @@
   }
 
   ## if data type was supplied directly, always use that
-  if (!data_type %in% c("<i4", "<f8", "|S")) {
+  if (!data_type %in% c("<i4", "<f8", "|S", "<U")) {
     data_type <- switch(data_type,
       "integer" = "<i4",
       "double" = "<f8",
@@ -26,15 +26,16 @@
       "<i4" = 0L,
       "<f8" = 0,
       "|S"  = "",
+      "<U"  = "",
       NULL
     )
   }
 
-  if (data_type == "|S") {
+  if (data_type %in% c("|S", "<U", ">U")) {
     if (missing(nchar) || nchar < 1) {
       stop("The 'nchar' argument must be provided and be a positive integer")
     }
-    data_type <- paste0("|S", as.integer(nchar))
+    data_type <- paste0(data_type, as.integer(nchar))
   }
 
   return(list(data_type = data_type, fill_value = fill_value))
@@ -273,18 +274,23 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   metadata <- read_array_metadata(zarr_array_path)
 
   data_type <- switch(storage.mode(x),
-    "integer" = "<i4",
-    "double" = "<f8",
-    "character" = "|S",
+    "integer" = "<i",
+    "double" = "<f",
+    "character" = c("|S", "<U", ">U"),
     NULL
   )
-  if (data_type != metadata$dtype) {
+  if (!substr(metadata$dtype, 1,2) %in% data_type) {
     stop("New data is not of the same type as the existing array.")
   }
 
   zarr_dim <- unlist(metadata$shape)
   chunk_dim <- unlist(metadata$chunks)
 
+  ## convert strings to Unicode if required
+  if(grepl("<U|>U", x = metadata$dtype, fixed = FALSE)) {
+    x <- .unicode_to_int(input = x, typestr = metadata$dtype)
+  }
+  
   ## coerce x to the same shape as the zarr to be updated
   x <- array(x, dim = vapply(index, length, integer(1)))
 
@@ -349,7 +355,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     input_chunk = chunk_in_mem, 
     chunk_path = chunk_path,
     compressor = metadata$compressor,
-    data_type_size = .parse_datatype(metadata$dtype)$nbytes
+    data_type_size = .parse_datatype(metadata$dtype)$nbytes,
+    is_base64 = (.parse_datatype(metadata$dtype)$base_type == "unicode")
   )
 
 }
@@ -366,6 +373,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #' @param data_type_size An integer giving the size of the original datatype.
 #'   This is passed to the blosc algorithm, which seems to need it to achieve
 #'   any compression.
+#' @param is_base64 When dealing with Py_unicode strings we convert them to 
+#' base64 strings for storage in our intermediate R arrays.  This argument
+#' indicates if base64 is in use, because the conversion to raw in .as_raw
+#' should be done differently for base64 strings vs other types.
 #'
 #' @returns Returns `TRUE` if writing is successful.  Mostly called for the
 #'   side-effect of writing the compressed chunk to disk.
@@ -373,9 +384,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #' @keywords Internal
 .compress_and_write_chunk <- function(input_chunk, chunk_path,
                                       compressor = use_zlib(), 
-                                      data_type_size) {
+                                      data_type_size, is_base64 = FALSE) {
   ## the compression tools need a raw vector
-  raw_chunk <- .as_raw(as.vector(input_chunk), nchar = data_type_size)
+  raw_chunk <- .as_raw(as.vector(input_chunk), nchar = data_type_size, 
+                       is_base64 = is_base64)
   
   if(is.null(compressor)) {
     compressed_chunk <- raw_chunk
@@ -411,10 +423,13 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   
 }
 
-.as_raw <- function(d, nchar) {
+.as_raw <- function(d, nchar, is_base64) {
   ## we need to create fixed length strings either via padding or trimming
   if(is.character(d)) {
-    raw_list <- iconv(d, toRaw = TRUE)
+    if(is_base64)
+      raw_list <- lapply(d, jsonlite::base64_dec)
+    else
+      raw_list <- iconv(d, toRaw = TRUE)
     unlist(
       lapply(raw_list, FUN = function(x, nchar) { 
           if(!is.null(x))

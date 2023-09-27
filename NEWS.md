@@ -8,6 +8,8 @@
 * Corrected issue where fixed length string datatypes would be written with
   null terminators, resulting in strings that were one byte longer than the
   dtype value written in the `.zarray` metadata. Also backported to Rarr 1.0.3
+* Added support for reading and writing the fixed length Unicode datatype, and 
+  for reading variable length UTF-8 datatype.
 
 # Rarr 0.99.9
 

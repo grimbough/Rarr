@@ -5,7 +5,7 @@
     ],
     "compressor": {
         "id": "zlib",
-        "level": 1
+        "level": 6
     },
     "dtype": "<U20",
     "fill_value": "",

@@ -71,3 +71,14 @@ expect_silent(
 )
 expect_equal(res[,1], greetings)
 expect_equal(res[1,], greetings)
+
+
+## writing & reading unicode
+path <- tempfile()
+create_empty_zarr_array(path, dim = c(12,12), chunk_dim = c(6,6), 
+                        data_type = "<U", nchar = 20)
+x <- array("", dim = c(12,12))
+x[1,] <- greetings
+x[,1] <- greetings
+update_zarr_array(zarr_array_path = path, x, index = list(1:12, 1:12))
+expect_identical(read_zarr_array(path), x)

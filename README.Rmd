@@ -82,7 +82,7 @@ datatype support.  It will be updated as progress is made.
 |`timedelta`          | &#x274C; / &#x274C; | |
 |`datetime`           | &#x274C; / &#x274C; | |
 |`string`             | &#x2714; / &#x2714; | |
-|`Unicode`            | &#x274C; / &#x274C; | |
+|`Unicode`            | &#x2714; / &#x2714; | |
 |`void *`             | &#x274C; / &#x274C; | |
 | Structured data types | &#x274C; / &#x274C; | |
 
@@ -95,7 +95,7 @@ datatype support.  It will be updated as progress is made.
 |`blosc`      | &#x2714; / &#x2714; | Only `lz4` compression level 5 is enabled for writing. |
 |`LZMA `      | &#x2714; / &#x2714; | |
 |`LZ4`        | &#x2714; / &#x2714; | |
-|`Zstd`       | &#x274C; / &#x274C; | Algorithm is available via blosc for writing, but can't currently be access through the R interface |
+|`Zstd`       | &#x274C; / &#x274C; | Algorithm is available via blosc for writing, but can't currently be accessed through the R interface |
 
 Please open an [issue](https://github.com/grimbough/Rarr/issues) if support for a required compression tool is missing.
 

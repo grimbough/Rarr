@@ -208,7 +208,7 @@ greetings = ['¡Hola mundo!', 'Hej Världen!', 'Servus Woid!', 'Hei maailma!',
 z = zarr.open('/data/column-first/Unicode.zarr', mode='w', shape=(12, 12),
               chunks=(6, 6), order="F", fill_value = "",
               dtype='U20',
-              compressor = zarr.Zlib())
+              compressor = zarr.Zlib(level = 6))
 z[:,0] = greetings
 z[0,:] = greetings
 

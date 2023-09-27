@@ -8,7 +8,8 @@
   input_chunk,
   chunk_path,
   compressor = use_zlib(),
-  data_type_size
+  data_type_size,
+  is_base64 = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,11 @@ details.}
 \item{data_type_size}{An integer giving the size of the original datatype.
 This is passed to the blosc algorithm, which seems to need it to achieve
 any compression.}
+
+\item{is_base64}{When dealing with Py_unicode strings we convert them to
+base64 strings for storage in our intermediate R arrays.  This argument
+indicates if base64 is in use, because the conversion to raw in .as_raw
+should be done differently for base64 strings vs other types.}
 }
 \value{
 Returns \code{TRUE} if writing is successful.  Mostly called for the
