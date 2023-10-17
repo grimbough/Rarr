@@ -7,15 +7,19 @@ export PKG_CXXPICFLAGS=@CXXPICFLAGS@
 export PKG_CPPFLAGS=@CPPFLAGS@
 export PKG_R_CPPFLAGS=@R_CPPFLAGS@
 
-COMPRESSION_LIBS=compression_tools/blosc/libblosc.a
+ZSTD_LIB=@ZSTD_LIB@
+BLOSC_LIB=@BLOSC_LIB@
 
-PKG_LIBS=$(COMPRESSION_LIBS)
+PKG_LIBS=$(BLOSC_LIB) $(ZSTD_LIB)
 
 all: $(SHLIB)
 
 $(SHLIB): compression_libs
 
-compression_libs: $(COMPRESSION_LIBS)
+compression_libs: @BUILD_ZSTD@ @BUILD_BLOSC@
 
-compression_tools/blosc/libblosc.a:
+libblosc.a: @BUILD_ZSTD@
 	$(MAKE) -C compression_tools/blosc
+
+libzstd.a:
+	$(MAKE) -C compression_tools/zstd

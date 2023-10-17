@@ -17,24 +17,18 @@ SNAPPY_OBJS=lib/snappy-1.1.1/snappy.o \
 			lib/snappy-1.1.1/snappy-sinksource.o \
 			lib/snappy-1.1.1/snappy-stubs-internal.o
 
-ZSTDCOMMON_FILES := $(sort $(wildcard lib/zstd-1.4.5/common/*.c))
-ZSTDCOMP_FILES := $(sort $(wildcard lib/zstd-1.4.5/compress/*.c))
-ZSTDDECOMP_FILES := $(sort $(wildcard lib/zstd-1.4.5/decompress/*.c))
-ZSTD_FILES := $(ZSTDCOMMON_FILES) $(ZSTDCOMP_FILES) $(ZSTDDECOMP_FILES)
-ZSTD_OBJS := $(patsubst %.c,%.o,$(ZSTD_FILES))
-
 
 all: libblosc.a
 
 libblosc.a: blosc
 	rm -f libblosc.a
-	ar cq libblosc.a $(BLOSC_OBJS) $(SNAPPY_OBJS) $(LZ4_OBJS) $(ZSTD_OBJS)
+	ar cq libblosc.a $(BLOSC_OBJS) $(SNAPPY_OBJS) $(LZ4_OBJS)
 	ranlib libblosc.a
 
 blosc: subdirs
 	$(MAKE) -C lib/blosc-1.20.1 all
 
-SUBDIRS=lib/snappy-1.1.1 lib/lz4-1.9.2 lib/zstd-1.4.5
+SUBDIRS=lib/snappy-1.1.1 lib/lz4-1.9.2
 
 .PHONY: subdirs $(SUBDIRS)
 
@@ -48,4 +42,3 @@ clean:
 	rm -f lib/blosc-1.20.1/*.o
 	rm -f lib/snappy-1.1.1/*.o
 	rm -f lib/lz4-1.9.2/*.o
-	$(MAKE) -C lib/zstd-1.4.5/ clean
