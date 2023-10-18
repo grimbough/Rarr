@@ -1,6 +1,6 @@
 #!/bin/sh
 
-## use R to remove SSE2 or AVX2 references from BLOSC Makefiles
+## use R to remove AVX2 references from BLOSC Makefiles
 "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e 'lines <- gsub("@M?AVX2[A-Z_]*@", "", readLines("src/compression_tools/blosc/lib/blosc-1.20.1/Makefile.in"));
              lines <- gsub("@MSSE2@", "-msse2", lines);
              lines <- gsub("@SSE2@", "-DSHUFFLE_SSE2_ENABLED", lines);
@@ -29,6 +29,7 @@ CFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CFLAGS`
 CPICFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CPICFLAGS`
 CXX=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CXX`
 CPPFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CPPFLAGS`
+RANLIB=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config RANLIB`
 R_CPPFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config --cppflags`
 
 sed \
@@ -37,5 +38,6 @@ sed \
 -e "s^@CPICFLAGS@^${CPICFLAGS}^" \
 -e "s^@CXX@^${CXX}^" \
 -e "s^@CPPFLAGS@^${CPPFLAGS}^" \
+-e "s^@RANLIB@^${RANLIB}^" \
 -e "s^@R_CPPFLAGS@^${R_CPPFLAGS}^" \
 src/Makevars.win.in > src/Makevars.win

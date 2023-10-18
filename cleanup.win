@@ -4,10 +4,11 @@ rm -f src/compression_tools/blosc/libblosc.a
 rm -f src/compression_tools/blosc/lib/blosc-*/*.o
 rm -f src/compression_tools/blosc/lib/snappy-*/*.o
 rm -f src/compression_tools/blosc/lib/lz4-*/*.o
-rm -f src/compression_tools/blosc/lib/zstd-*/*.o 
-rm -f src/compression_tools/blosc/lib/zstd-*/common/*.o 
-rm -f src/compression_tools/blosc/lib/zstd-*/compress/*.o 
-rm -f src/compression_tools/blosc/lib/zstd-*/decompress/*.o
+
+rm -f src/compression_tools/zstd/*.o 
+rm -f src/compression_tools/zstd/common/*.o 
+rm -f src/compression_tools/zstd/compress/*.o 
+rm -f src/compression_tools/zstd/decompress/*.o
 
 rm -f src/Makevars
 rm -f src/compression_tools/blosc/Makefile

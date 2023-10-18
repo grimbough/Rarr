@@ -6,8 +6,9 @@ export PKG_CPICFLAGS=@CPICFLAGS@
 export CXX=@CXX@
 export PKG_CPPFLAGS=@CPPFLAGS@
 export PKG_R_CPPFLAGS=@R_CPPFLAGS@
+export RANLIB=@RANLIB@
 
-PKG_LIBS=compression_tools/zstd/libblosc.a compression_tools/zstd/libzstd.a -lz -lstdc++
+PKG_LIBS=compression_tools/blosc/libblosc.a compression_tools/zstd/libzstd.a -lz -lstdc++
 
 all: $(SHLIB)
 
