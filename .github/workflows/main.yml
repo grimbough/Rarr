@@ -21,14 +21,23 @@ jobs:
         config:
         - { os: windows-2022, bioc-version: 'devel'}
         - { os: macOS-latest, bioc-version: 'devel'}
-        - { os: ubuntu-22.04, bioc-version: 'devel'}
-
+        - { os: ubuntu-22.04, bioc-version: 'devel', bioc-mirror: 'https://ftp.gwdg.de/pub/misc/bioconductor', sys-libs: 'false'}
+        - { os: ubuntu-22.04, bioc-version: 'devel', bioc-mirror: 'https://ftp.gwdg.de/pub/misc/bioconductor', sys-libs: 'true'}
+        
     steps:
       - name: Configure git
         run: |
           git config --global core.autocrlf false
 
       - uses: actions/checkout@v4
+      
+      - name: Install system dependencies
+        if: ${{ runner.os == 'linux' && matrix.config.sys-libs == 'true' }}
+        run: sudo apt-get update && sudo apt-get install -y libblosc-dev libzstd-dev
+        
+      - name: Remove system dependencies
+        if: ${{ runner.os == 'linux' && matrix.config.sys-libs == 'false' }}
+        run: sudo apt-get update && sudo apt-get remove -y libblosc-dev libzstd-dev
           
       - name: Setup R and Bioconductor
         uses: grimbough/bioc-actions/setup-bioc@v1
