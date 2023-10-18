@@ -22,8 +22,8 @@ all: libblosc.a
 
 libblosc.a: blosc
 	rm -f libblosc.a
-	ar cq libblosc.a $(BLOSC_OBJS) $(SNAPPY_OBJS) $(LZ4_OBJS)
-	ranlib libblosc.a
+	$(AR) cq libblosc.a $(BLOSC_OBJS) $(SNAPPY_OBJS) $(LZ4_OBJS)
+	$(RANLIB) libblosc.a
 
 blosc: subdirs
 	$(MAKE) -C lib/blosc-1.20.1 all

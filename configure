@@ -676,6 +676,8 @@ ac_ct_CC
 LDFLAGS
 AR
 R_CPPFLAGS
+RANLIB
+MAKE
 CPPFLAGS
 CXXPICFLAGS
 CPICFLAGS
@@ -2412,6 +2414,10 @@ CPICFLAGS=`"${R_HOME}/bin/R" CMD config CPICFLAGS`
 CXXPICFLAGS=`"${R_HOME}/bin/R" CMD config CXXPICFLAGS`
 
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+
+MAKE=`"${R_HOME}/bin/R" CMD config MAKE`
+
+RANLIB=`"${R_HOME}/bin/R" CMD config RANLIB`
 
 R_CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
 

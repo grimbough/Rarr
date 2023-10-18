@@ -1,4 +1,4 @@
-EXTRA_FLAGS+=-I../lz4-1.9.2 -I../snappy-1.1.1 -I../zstd-1.4.5 @MSSE2@ @MAVX2@ -DUSING_R
+EXTRA_FLAGS+=-I../lz4-1.9.2 -I../snappy-1.1.1 -I../../../zstd @MSSE2@ @MAVX2@ -DUSING_R
 FLAGS=$(PKG_CFLAGS) $(PKG_CPICFLAGS) $(PKG_CPPFLAGS) $(PKG_R_CPPFLAGS) $(EXTRA_FLAGS)
 
 BLOSC_FILES := $(sort $(wildcard *.c))

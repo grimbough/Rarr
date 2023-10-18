@@ -4,24 +4,22 @@ export CC=@CC@
 export PKG_CFLAGS=@CFLAGS@
 export PKG_CPICFLAGS=@CPICFLAGS@
 export CXX=@CXX@
-#export PKG_CXXFLAGS=`R CMD config CXXFLAGS`
-#export PKG_CXXPICFLAGS=`R CMD config CXXPICFLAGS`
 export PKG_CPPFLAGS=@CPPFLAGS@
 export PKG_R_CPPFLAGS=@R_CPPFLAGS@
-#export AR=`R CMD config AR`
-#export RANLIB=`R CMD config RANLIB`
-#export MAKE=`R CMD config MAKE`
 
-COMPRESSION_LIBS=compression_tools/blosc/libblosc.a
+PKG_LIBS=compression_tools/zstd/libblosc.a compression_tools/zstd/libzstd.a -lz -lstdc++
 
-PKG_LIBS=$(COMPRESSION_LIBS) -lz -lstdc++
+all: $(SHLIB)
 
-all: compression_libs $(SHLIB)
+$(SHLIB): compression_libs
 
-compression_libs: $(COMPRESSION_LIBS)
+compression_libs: libblosc.a libzstd.a
 
-compression_tools/blosc/libblosc.a:
+libblosc.a: libzstd.a
 	$(MAKE) -C compression_tools/blosc
+
+libzstd.a:
+	$(MAKE) -C compression_tools/zstd
 
 clean:
 	$(MAKE) -C blosc clean

@@ -16,7 +16,7 @@ all: libzstd.a
 libzstd.a: $(ZSTD_OBJ)
 	rm -f libzstd.a
 	$(AR) cq libzstd.a $(ZSTD_OBJ)
-	ranlib libzstd.a
+	$(RANLIB) libzstd.a
 
 common/debug.o: common/debug.c
 	$(CC) $(FLAGS) -c common/debug.c -o common/debug.o

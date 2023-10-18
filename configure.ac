@@ -21,6 +21,8 @@ AC_SUBST(CXXFLAGS, `"${R_HOME}/bin/R" CMD config CXXFLAGS`)
 AC_SUBST(CPICFLAGS, `"${R_HOME}/bin/R" CMD config CPICFLAGS`)
 AC_SUBST(CXXPICFLAGS, `"${R_HOME}/bin/R" CMD config CXXPICFLAGS`)
 AC_SUBST(CPPFLAGS, `"${R_HOME}/bin/R" CMD config CPPFLAGS`)
+AC_SUBST(MAKE, `"${R_HOME}/bin/R" CMD config MAKE`)
+AC_SUBST(RANLIB, `"${R_HOME}/bin/R" CMD config RANLIB`)
 AC_SUBST(R_CPPFLAGS, `"${R_HOME}/bin/R" CMD config --cppflags`)
 
 dnl seems unreliable as to whether this information is available
