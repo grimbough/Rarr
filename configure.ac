@@ -23,12 +23,23 @@ AC_SUBST(CXXPICFLAGS, `"${R_HOME}/bin/R" CMD config CXXPICFLAGS`)
 AC_SUBST(CPPFLAGS, `"${R_HOME}/bin/R" CMD config CPPFLAGS`)
 AC_SUBST(MAKE, `"${R_HOME}/bin/R" CMD config MAKE`)
 AC_SUBST(RANLIB, `"${R_HOME}/bin/R" CMD config RANLIB`)
-AC_SUBST(R_CPPFLAGS, `"${R_HOME}/bin/R" CMD config --cppflags`)
 
 dnl seems unreliable as to whether this information is available
 AR=`"${R_HOME}/bin/R" CMD config AR`
 AS_IF([test "x$AR" = "xERROR: no information for variable 'AR'"], [AC_PATH_PROG([AR], [ar])], [])
 AC_SUBST(AR)
+
+R_CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
+
+if [[ -z "$R_CPPFLAGS" ]]; then
+  R_CPPFLAGS=""
+  NO_RLIB="-DNO_RLIB"
+else
+  NO_RLIB=""
+fi
+
+AC_SUBST(R_CPPFLAGS)
+AC_SUBST(NO_RLIB)
 
 AC_CONFIG_FILES([src/Makevars])
 
@@ -67,17 +78,14 @@ fi
 if test -z "$HAVE_ZSTD"; then
   AC_MSG_NOTICE(compiling bundled Zstd library)
   AC_SUBST(BUILD_ZSTD, libzstd.a)
-  AC_SUBST(ZSTD_INCLUDE, "-I. -Icommon")
   AC_SUBST(ZSTD_LIB, compression_tools/zstd/libzstd.a)
 else
   AC_MSG_NOTICE(Using system Zstd library)
   AC_SUBST(BUILD_ZSTD, "")
-  AC_SUBST(ZSTD_INCLUDE, "")
   AC_SUBST(ZSTD_LIB, -lzstd)
 fi
 
 AC_SUBST(BUILD_ZSTD)
-AC_SUBST(ZSTD_INCLUDE)
 AC_SUBST(ZSTD_LIB)
 
 ##############################
@@ -201,5 +209,5 @@ else
   AC_SUBST(BLOSC_LIB, -lblosc)
 fi
 
-AC_CONFIG_FILES([src/compression_tools/blosc/lib/blosc-1.20.1/Makefile src/compression_tools/blosc/Makefile])
+AC_CONFIG_FILES([src/compression_tools/blosc/lib/blosc-1.20.1/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.1.1/Makefile])
 AC_OUTPUT

@@ -668,14 +668,14 @@ SSE2_BITSHUFFLE
 MSSE2
 SSE2
 ZSTD_LIB
-ZSTD_INCLUDE
 BUILD_ZSTD
 OBJEXT
 EXEEXT
 ac_ct_CC
 LDFLAGS
-AR
+NO_RLIB
 R_CPPFLAGS
+AR
 RANLIB
 MAKE
 CPPFLAGS
@@ -2419,8 +2419,6 @@ MAKE=`"${R_HOME}/bin/R" CMD config MAKE`
 
 RANLIB=`"${R_HOME}/bin/R" CMD config RANLIB`
 
-R_CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
-
 
 AR=`"${R_HOME}/bin/R" CMD config AR`
 if test "x$AR" = "xERROR: no information for variable 'AR'"
@@ -2471,6 +2469,18 @@ fi
 
 
 fi
+
+
+R_CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
+
+if [ -z "$R_CPPFLAGS" ]; then
+  R_CPPFLAGS=""
+  NO_RLIB="-DNO_RLIB"
+else
+  NO_RLIB=""
+fi
+
+
 
 
 ac_config_files="$ac_config_files src/Makevars"
@@ -3607,8 +3617,6 @@ if test -z "$HAVE_ZSTD"; then
 printf "%s\n" "$as_me: compiling bundled Zstd library" >&6;}
   BUILD_ZSTD=libzstd.a
 
-  ZSTD_INCLUDE="-I. -Icommon"
-
   ZSTD_LIB=compression_tools/zstd/libzstd.a
 
 else
@@ -3616,12 +3624,9 @@ else
 printf "%s\n" "$as_me: Using system Zstd library" >&6;}
   BUILD_ZSTD=""
 
-  ZSTD_INCLUDE=""
-
   ZSTD_LIB=-lzstd
 
 fi
-
 
 
 
@@ -4098,7 +4103,7 @@ printf "%s\n" "$as_me: Using system BLOSC library" >&6;}
 
 fi
 
-ac_config_files="$ac_config_files src/compression_tools/blosc/lib/blosc-1.20.1/Makefile src/compression_tools/blosc/Makefile"
+ac_config_files="$ac_config_files src/compression_tools/blosc/lib/blosc-1.20.1/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.1.1/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4803,6 +4808,7 @@ do
     "src/Makevars") CONFIG_FILES="$CONFIG_FILES src/Makevars" ;;
     "src/compression_tools/blosc/lib/blosc-1.20.1/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/lib/blosc-1.20.1/Makefile" ;;
     "src/compression_tools/blosc/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/Makefile" ;;
+    "src/compression_tools/blosc/lib/snappy-1.1.1/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/lib/snappy-1.1.1/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

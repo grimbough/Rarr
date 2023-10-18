@@ -36,8 +36,17 @@
 #include <string>
 #include <vector>
 
-#include <R_ext/Error.h>
-#include <R_ext/Print.h>
+#if !defined(NO_RLIB)
+#  include <R_ext/Error.h>
+#  include <R_ext/Print.h>
+#else
+#  ifndef Rprintf
+#    define Rprintf(x, ...) (printf(x, ...))
+#  endif
+#  ifndef error
+#    define error(x, ...) (fprintf(stderr, x, ...); abort())
+#  endif 
+#endif
 
 namespace snappy {
 
