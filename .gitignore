@@ -4,6 +4,9 @@
 .Ruserdata
 *.Rproj
 
+config.log
+configure~
+
 ## compiled files
 *.o
 *.a
@@ -16,3 +19,4 @@ src/compression_tools/blosc/lib/blosc-1.20.1/Makefile
 
 ## caches
 vignettes/*_cache
+README_cache
