@@ -3749,6 +3749,8 @@ else $as_nop
 fi
 
 
+  IS_BIOC_BUILD_MACHINE=${IS_BIOC_BUILD_MACHINE:-false}
+
   if  "${IS_BIOC_BUILD_MACHINE}" == true ; then
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Bioc build machine; disabling MAVX2" >&5
 printf "%s\n" "$as_me: Bioc build machine; disabling MAVX2" >&6;}

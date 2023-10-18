@@ -107,6 +107,8 @@ if test -z "$HAVE_BLOSC"; then
   ## see if -msse2 is a supported flag
   AX_CHECK_COMPILE_FLAG([-msse2], [MSSE2=true], [MSSE2=false])
   
+  IS_BIOC_BUILD_MACHINE=${IS_BIOC_BUILD_MACHINE:-false}
+  
   if [ "${IS_BIOC_BUILD_MACHINE}" == true ]; then
     AC_MSG_NOTICE(Bioc build machine; disabling MAVX2)
     MAVX2=false
