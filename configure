@@ -2480,6 +2480,9 @@ else
   NO_RLIB=""
 fi
 
+echo "NO_RLIB=${NO_RLIB}"
+echo "R_CPPFLAGS=${R_CPPFLAGS}"
+
 
 
 

@@ -1,5 +1,5 @@
 
-EXTRA_FLAGS=-I. -I./common -DXXH_NAMESPACE=ZSTD_ -DNDEBUG
+EXTRA_FLAGS=-I. -I./common -DXXH_NAMESPACE=ZSTD_ -DNDEBUG -DZSTD_DISABLE_ASM
 FLAGS=$(PKG_CFLAGS) $(PKG_CPICFLAGS) $(EXTRA_FLAGS)
 
 ZSTDCOMMON_FILES := $(sort $(wildcard common/*.c))
@@ -23,7 +23,7 @@ common/debug.o: common/debug.c
 common/error_private.o: common/error_private.c
 	$(CC) $(FLAGS) -c common/error_private.c -o common/error_private.o
 common/pool.o: common/pool.c
-	$(CC) $(FLAGS) -I. -c common/pool.c -o common/pool.o -o common/pool.o
+	$(CC) $(FLAGS) -c common/pool.c -o common/pool.o -o common/pool.o
 common/xxhash.o: common/xxhash.c
 	$(CC) $(FLAGS) -c common/xxhash.c -o common/xxhash.o
 common/entropy_common.o: common/entropy_common.c

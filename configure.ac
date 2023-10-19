@@ -38,6 +38,9 @@ else
   NO_RLIB=""
 fi
 
+echo "NO_RLIB=${NO_RLIB}"
+echo "R_CPPFLAGS=${R_CPPFLAGS}"
+
 AC_SUBST(R_CPPFLAGS)
 AC_SUBST(NO_RLIB)
 
@@ -78,7 +81,7 @@ fi
 if test -z "$HAVE_ZSTD"; then
   AC_MSG_NOTICE(compiling bundled Zstd library)
   AC_SUBST(BUILD_ZSTD, libzstd.a)
-  AC_SUBST(ZSTD_LIB, compression_tools/zstd/libzstd.a)
+  AC_SUBST(ZSTD_LIB, ./compression_tools/zstd/libzstd.a)
 else
   AC_MSG_NOTICE(Using system Zstd library)
   AC_SUBST(BUILD_ZSTD, "")
