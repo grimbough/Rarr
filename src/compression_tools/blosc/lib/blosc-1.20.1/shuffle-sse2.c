@@ -6,8 +6,6 @@
   See LICENSES/BLOSC.txt for details about copyright and rights to use.
 **********************************************************************/
 
-#include <R_ext/Print.h>
-
 #include "shuffle-generic.h"
 #include "shuffle-sse2.h"
 

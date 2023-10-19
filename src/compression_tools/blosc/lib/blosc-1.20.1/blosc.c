@@ -7,8 +7,6 @@
   See LICENSES/BLOSC.txt for details about copyright and rights to use.
 **********************************************************************/
 
-#include <R_ext/Print.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
