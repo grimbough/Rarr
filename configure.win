@@ -41,3 +41,11 @@ sed \
 -e "s^@RANLIB@^${RANLIB}^" \
 -e "s^@R_CPPFLAGS@^${R_CPPFLAGS}^" \
 src/Makevars.win.in > src/Makevars.win
+
+sed \
+-e "s^@NO_RLIB@^^" \
+src/compression_tools/blosc/lib/blosc-1.20.1/Makefile.in > src/compression_tools/blosc/lib/blosc-1.20.1/Makefile
+
+sed \
+-e "s^@NO_RLIB@^^" \
+src/compression_tools/blosc/lib/snappy-1.1.1/Makefile.in > src/compression_tools/blosc/lib/snappy-1.1.1/Makefile
