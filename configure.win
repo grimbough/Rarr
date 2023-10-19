@@ -8,6 +8,7 @@
              lines <- gsub("@SSE2_BITSHUFFLE@", "bitshuffle-sse2.o: bitshuffle-sse2.c\n\t$(CC) $(FLAGS) -c bitshuffle-sse2.c", lines);
              lines <- gsub("@SSE2_SHUFFLE_OBJ@", "shuffle-sse2.o", lines);
              lines <- gsub("@SSE2_SHUFFLE@", "shuffle-sse2.o: shuffle-sse2.c\n\t$(CC) $(FLAGS) -c shuffle-sse2.c", lines);
+             lines <- gsub("@NO_RLIB@", "", lines);
              out_file <- file("src/compression_tools/blosc/lib/blosc-1.20.1/Makefile", open="wb");
              writeLines(lines, con = out_file, sep = "\n");
              close(out_file);'
@@ -23,6 +24,10 @@
              out_file <- file("src/compression_tools/blosc/Makefile", open="wb");
              writeLines(lines, con = out_file, sep = "\n");
              close(out_file);'
+
+sed \
+-e "s^@NO_RLIB@^^" \
+src/compression_tools/blosc/lib/snappy-1.1.1/Makefile.in > src/compression_tools/blosc/lib/snappy-1.1.1/Makefile
 
 CC=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CC`
 CFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CFLAGS`
@@ -42,10 +47,3 @@ sed \
 -e "s^@R_CPPFLAGS@^${R_CPPFLAGS}^" \
 src/Makevars.win.in > src/Makevars.win
 
-sed \
--e "s^@NO_RLIB@^^" \
-src/compression_tools/blosc/lib/blosc-1.20.1/Makefile.in > src/compression_tools/blosc/lib/blosc-1.20.1/Makefile
-
-sed \
--e "s^@NO_RLIB@^^" \
-src/compression_tools/blosc/lib/snappy-1.1.1/Makefile.in > src/compression_tools/blosc/lib/snappy-1.1.1/Makefile
