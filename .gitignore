@@ -4,6 +4,7 @@
 .Ruserdata
 *.Rproj
 
+config.status
 config.log
 configure~
 
