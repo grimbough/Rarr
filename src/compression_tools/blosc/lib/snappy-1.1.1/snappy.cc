@@ -41,10 +41,10 @@
 #  include <R_ext/Print.h>
 #else
 #  ifndef Rprintf
-#    define Rprintf(x, ...) (printf(x, ...))
+#    define Rprintf(...) (printf(__VA_ARGS__))
 #  endif
 #  ifndef error
-#    define error(x, ...) (fprintf(stderr, x, ...); abort())
+#    define error(...) ({fprintf(stderr, __VA_ARGS__); abort();})
 #  endif 
 #endif
 

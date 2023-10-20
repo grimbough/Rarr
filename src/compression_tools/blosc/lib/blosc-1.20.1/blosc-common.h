@@ -12,9 +12,13 @@
 
 #if !defined(NO_RLIB)
 #  include <R_ext/Print.h>
+#  include <R_ext/Error.h>
 #else
 #  ifndef Rprintf
-#    define Rprintf(x, ...) (printf(x, ...))
+#    define Rprintf(...) (printf(__VA_ARGS__))
+#  endif
+#  ifndef REprintf
+#    define REprintf(...) (fprintf(stderr, __VA_ARGS__))
 #  endif
 #endif
 

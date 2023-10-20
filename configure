@@ -3620,7 +3620,7 @@ if test -z "$HAVE_ZSTD"; then
 printf "%s\n" "$as_me: compiling bundled Zstd library" >&6;}
   BUILD_ZSTD=libzstd.a
 
-  ZSTD_LIB=compression_tools/zstd/libzstd.a
+  ZSTD_LIB=./compression_tools/zstd/libzstd.a
 
 else
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Using system Zstd library" >&5
