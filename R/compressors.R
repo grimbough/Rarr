@@ -3,7 +3,10 @@
 #' These functions select a compression tool and its setting when writing a Zarr
 #' file
 #' 
-#' @param level Specify the compression level to use.
+#' @param level Specify the compression level to use.  The range of possible 
+#' values is dependant on the compression tool being used.  For example, for
+#' `use_zlib()` this argument can be between 1 & 9, while for `use_zstd()`the 
+#' valid range is 1 to 22.
 #'
 #' @returns A list containing the details of the selected compression tool. This
 #'   will be written to the .zarray metadata when the Zarr array is created.
@@ -93,5 +96,15 @@ use_lzma <- function(level = 9L) {
 #' @export
 use_lz4 <- function() {
   res <- list(id = "lz4", acceleration = 1)
+  return(res)
+}
+
+#' @rdname compressors
+#' @export
+use_zstd <- function(level = 3) {
+  if(level < 1 | level > 22) {
+    stop('Zstd level must be between 1 and 22.')
+  }
+  res <- list(id = "zstd", level = as.integer(level))
   return(res)
 }

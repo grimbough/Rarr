@@ -13,3 +13,4 @@ rm -f src/compression_tools/zstd/decompress/*.o
 rm -f src/Makevars
 rm -f src/compression_tools/blosc/Makefile
 rm -f src/compression_tools/blosc/lib/blosc-*/Makefile
+rm -f src/compression_tools/blosc/lib/snappy-*/Makefile

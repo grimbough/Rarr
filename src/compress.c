@@ -57,6 +57,39 @@ SEXP compress_chunk_LZ4(SEXP input) {
   return output;
 } 
 
+SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
+  
+  /*! ZSTD_compress() :
+   *  Compresses `src` content as a single zstd compressed frame into already allocated `dst`.
+   *  NOTE: Providing `dstCapacity >= ZSTD_compressBound(srcSize)` guarantees that zstd will have
+   *        enough space to successfully compress the data.
+   *  @return : compressed size written into `dst` (<= `dstCapacity),
+   *            or an error code if it fails (which can be tested using ZSTD_isError()). 
+  ZSTDLIB_API size_t ZSTD_compress( void* dst, size_t dstCapacity,
+                                    const void* src, size_t srcSize,
+                                    int compressionLevel); */
+  
+  void* p_input = (void *)RAW(input);
+  void* p_output; 
+  size_t input_size = (size_t) xlength(input);
+  size_t output_size = (size_t) ZSTD_compressBound(input_size);
+  int compressionLevel = INTEGER(compression_level)[0];
+  
+  SEXP output = PROTECT(allocVector(RAWSXP, output_size));
+  p_output = RAW(output);
+  
+  int dsize = ZSTD_compress(p_output, output_size, p_input, input_size, compressionLevel);
+  
+  if(ZSTD_isError(dsize)) {
+    error("zstd decompression error - error code: %d\n", dsize);
+  }
+  
+  /* shrink our output vector to include only the compressed bytes */
+  SETLENGTH(output, dsize);
+  
+  UNPROTECT(1);
+  return output;
+} 
  
 /* not required as R has a native decompressor for ZLIB */
 // SEXP decompress_chunk_ZLIB(SEXP input, SEXP _outbuffersize) {

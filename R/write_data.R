@@ -408,6 +408,9 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     ## compression. We should do that too for compatibility
     ## TODO: probably faster to do this in C and avoid copying the vector
     compressed_chunk <- c(.as_raw(length(raw_chunk)), compressed_chunk)
+  } else if (compressor$id == "zstd") {
+    compressed_chunk <- .Call("compress_chunk_ZSTD", raw_chunk, 
+                              as.integer(compressor$level), PACKAGE = "Rarr")
   } else {
     stop("Unsupported compression tool")
   }

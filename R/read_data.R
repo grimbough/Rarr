@@ -373,6 +373,12 @@ read_chunk <- function(zarr_array_path, chunk_id, metadata, s3_client = NULL,
       buffer_size,
       PACKAGE = "Rarr"
     )
+  } else if (decompressor == "zstd") {
+    decompressed_chunk <- .Call("decompress_chunk_ZSTD",
+                                compressed_chunk,
+                                buffer_size,
+                                PACKAGE = "Rarr"
+    )
   } else {
     stop("Unsupported compression tool")
   }
