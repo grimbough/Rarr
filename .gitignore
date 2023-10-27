@@ -16,7 +16,8 @@ configure~
 ## generated files
 src/Makevars
 src/compression_tools/blosc/Makefile
-src/compression_tools/blosc/lib/blosc-1.20.1/Makefile
+src/compression_tools/blosc/lib/blosc-*/Makefile
+src/compression_tools/blosc/lib/snappy-*/Makefile
 
 ## caches
 vignettes/*_cache
