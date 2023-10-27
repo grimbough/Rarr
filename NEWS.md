@@ -1,3 +1,7 @@
+# Rarr 1.3
+
+* Added support for using the zstd compression library for reading and writing.
+
 # Rarr 1.1
 
 * Fixed bug when reading an array if the fill value in `.zarray` was `null`.  

@@ -95,12 +95,20 @@ datatype support.  It will be updated as progress is made.
 |`blosc`      | &#x2714; / &#x2714; | Only `lz4` compression level 5 is enabled for writing. |
 |`LZMA `      | &#x2714; / &#x2714; | |
 |`LZ4`        | &#x2714; / &#x2714; | |
-|`Zstd`       | &#x274C; / &#x274C; | Algorithm is available via blosc for writing, but can't currently be accessed through the R interface |
+|`Zstd`       | &#x2714; / &#x2714; | |
 
 Please open an [issue](https://github.com/grimbough/Rarr/issues) if support for a required compression tool is missing.
 
 ### Filters
 
 The is currently no support for additional filters.  Please open an [issue](https://github.com/grimbough/Rarr/issues) if you require filter support.
+
+# Required system libraries
+
+To provide support for BLOSC and zstd compression tools Rarr links against libraries providing these tools.  If you have them installed on your system Rarr will attempt to use those versions.  If they are not detected then Rarr will compile and use versions that are distributed with the package.  Either way the functionality will available, however if you are using the system libraries and then later remove them Rarr may fail to work correctly.   
+
+This only concerns users installing the package from source. If you are using the pre-built binaries for Windows or Mac OSX distributed by Bioconductor then this should not be an issue for you.
+
+
 
 
