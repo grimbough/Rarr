@@ -198,6 +198,11 @@ z = zarr.open('/data/compression/lz4.zarr', mode='w', shape=(20, 10),
 z[0, :] = np.arange(start=1, stop=11)
 z[:, 0] = np.arange(start=1, stop=60, step=3)
 
+z = zarr.open('/data/compression/zstd.zarr', mode='w', shape=(20, 10),
+              chunks=(10, 10), dtype='i4', order="F", compressor=zarr.Zstd())
+z[0, :] = np.arange(start=1, stop=11)
+z[:, 0] = np.arange(start=1, stop=60, step=3)
+
 #####################################
 
 greetings = ['¡Hola mundo!', 'Hej Världen!', 'Servus Woid!', 'Hei maailma!',
