@@ -3,6 +3,8 @@
 export(ZarrArray)
 export(coerce)
 export(create_empty_zarr_array)
+export(create_zarr)
+export(create_zarr_group)
 export(read_zarr_array)
 export(read_zarr_attributes)
 export(update_zarr_array)
