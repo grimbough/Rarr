@@ -74,9 +74,9 @@ parse_s3_path <- function(path) {
 #' @keywords Internal
 .url_parse_other <- function(url) {
   parsed_url <- httr::parse_url(url)
-  bucket <- gsub(x = parsed_url$path, pattern = "^/?([[a-z0-9\\:\\.-]*)/.*", 
+  bucket <- gsub(x = parsed_url$path, pattern = "^/?([[a-z0-9:\\.-]*)/.*",
                  replacement = "\\1", ignore.case = TRUE)
-  object <- gsub(x = parsed_url$path, pattern = "^/?([a-z0-9\\:\\.-]*)/(.*)", 
+  object <- gsub(x = parsed_url$path, pattern = "^/?([a-z0-9:\\.-]*)/(.*)",
                  replacement = "\\2", ignore.case = TRUE)
   hostname <- paste0(parsed_url$scheme, "://", parsed_url$hostname)
 
