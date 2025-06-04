@@ -26,7 +26,7 @@ for(i in which(grepl("embl", names(paths))) ) {
 }
 
 for(i in which(grepl("eopf_path_1", names(paths))) ) {
-  expect_silent(parsed <- .url_parse_other(paths[[ i ]]))
+  expect_silent(parsed <- Rarr:::.url_parse_other(paths[[ i ]]))
   expect_equal(parsed$bucket,   "e05ab01a9d56408d82ac32d69a5aae2a:202505-s02msil2a")
   expect_equal(parsed$hostname, "https://objectstore.eodc.eu:2222")
   expect_equal(parsed$object,   "17/products/cpm_v256/S2A_MSIL2A_20250517T085541_N0511_R064_T35QKA_20250517T112203.zarr/")
@@ -34,7 +34,7 @@ for(i in which(grepl("eopf_path_1", names(paths))) ) {
 }
 
 for(i in which(grepl("eopf_path_2", names(paths))) ) {
-  expect_silent(parsed <- .url_parse_other(paths[[ i ]]))
+  expect_silent(parsed <- Rarr:::.url_parse_other(paths[[ i ]]))
   expect_equal(parsed$bucket,   "e05ab01a9d56408d82ac32d69a5aae2a:202506-s01siwgrh")
   expect_equal(parsed$hostname, "https://objects.eodc.eu:443")
   expect_equal(parsed$object,   "03/products/cpm_v256/S1C_IW_GRDH_1SDV_20250603T053151_20250603T053216_002614_0056AB_EE86.zarr")
