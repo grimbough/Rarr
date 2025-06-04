@@ -2,7 +2,7 @@
 % Please edit documentation in R/s3.R
 \name{.get_credentials}
 \alias{.get_credentials}
-\title{This is a modified version of paws.storge:::get_credentials().  It is
+\title{This is a modified version of paws.storage:::get_credentials().  It is
 included to prevent using the \code{:::} operator.  Look at that function if
 things stop working.}
 \usage{
@@ -18,7 +18,7 @@ If no valid credentials are found this function will error, which is expected
 and is caught by \code{.check_credentials}.
 }
 \description{
-This is a modified version of paws.storge:::get_credentials().  It is
+This is a modified version of paws.storage:::get_credentials().  It is
 included to prevent using the \code{:::} operator.  Look at that function if
 things stop working.
 }
