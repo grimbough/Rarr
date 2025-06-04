@@ -86,7 +86,7 @@ parse_s3_path <- function(path) {
   return(res)
 }
 
-#' This is a modified version of paws.storge:::get_credentials().  It is
+#' This is a modified version of paws.storage:::get_credentials().  It is
 #' included to prevent using the `:::` operator.  Look at that function if
 #' things stop working.
 #' 
