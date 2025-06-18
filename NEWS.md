@@ -1,3 +1,8 @@
+# Rarr 1.9
+
+* Updated `.url_parse_other()` to account for port numbers in host name and 
+  colons in bucket.
+
 # Rarr 1.7
 
 * Added `path()` method for `ZarrArray` class that returns the location of the
