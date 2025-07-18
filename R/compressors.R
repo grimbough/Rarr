@@ -109,7 +109,7 @@ use_lz4 <- function() {
 #' @rdname compressors
 #' @export
 use_zstd <- function(level = 3) {
-  if (level < 1 | level > 22) {
+  if (level < 1 || level > 22) {
     stop("Zstd level must be between 1 and 22.")
   }
   res <- list(id = "zstd", level = as.integer(level))
