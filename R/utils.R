@@ -9,7 +9,7 @@ check_index <- function(index, metadata) {
 
   ## If any dimensions are NULL transform into the entirety of that dimension
   ## Otherwise check provided indices are valid
-  failed <- rep(FALSE, n = length(index))
+  failed <- rep_len(FALSE, length(index))
   for (i in seq_along(index)) {
     if (is.null(index[[i]])) {
       index[[i]] <- seq_len(metadata$shape[[i]])
