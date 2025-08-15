@@ -48,7 +48,6 @@ ZarrArraySeed <- function(zarr_array_path) {
   metadata <- zarr_overview(zarr_array_path, as_data_frame = TRUE)
   dim <- unlist(metadata$dim)
   chunk_dim <- unlist(metadata$chunk_dim)
-  base_type <- unlist(metadata$data_type)
 
   new(
     "ZarrArraySeed",

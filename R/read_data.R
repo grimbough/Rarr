@@ -273,7 +273,6 @@ read_chunk <- function(
   )
   chunk_id <- paste0(chunk_id, collapse = dim_separator)
 
-  datatype <- metadata$datatype
   chunk_file <- paste0(zarr_array_path, chunk_id)
 
   if (nzchar(Sys.getenv("RARR_DEBUG"))) {
