@@ -465,7 +465,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       as.integer(data_type_size),
       PACKAGE = "Rarr"
     )
-  } else if (compressor$id == c("zlib")) {
+  } else if (compressor$id == "zlib") {
     compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
   } else if (compressor$id == "gzip") {
     con <- gzfile(chunk_path, open = "wb", compression = compressor$level)

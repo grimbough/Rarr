@@ -28,6 +28,6 @@ expect_inherits(column_major, "array")
 expect_equal(dim(column_major), c(30, 20, 1))
 
 ## first row should be sequence 1 to 20
-expect_equal(column_major[1, , ], c(1:20))
+expect_equal(column_major[1, , ], 1:20)
 ## first column should be all 1s
 expect_equal(column_major[, 1, ], rep(1, 30))

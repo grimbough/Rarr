@@ -9,7 +9,7 @@ expect_silent(
   )
 )
 expect_true(res)
-expect_identical(read_zarr_array(path), array(100L, dim = c(100)))
+expect_identical(read_zarr_array(path), array(100L, dim = 100))
 
 
 x <- array(runif(n = 1000, min = -10, max = 10), dim = c(10, 20, 5))
