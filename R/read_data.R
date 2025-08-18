@@ -157,7 +157,7 @@ read_data <- function(
   )
 
   ## predefine our array to be populated from the read chunks
-  output <- array(metadata$fill_value, dim = vapply(index, length, integer(1)))
+  output <- array(metadata$fill_value, dim = lengths(index))
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
