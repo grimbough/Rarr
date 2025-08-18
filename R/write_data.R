@@ -325,7 +325,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   ## coerce x to the same shape as the zarr to be updated
-  x <- array(x, dim = vapply(index, length, integer(1)))
+  x <- array(x, dim = lengths(index))
 
   ## create all possible chunk names, then remove those that won't be touched
   chunk_names <- expand.grid(lapply(ceiling(zarr_dim / chunk_dim), seq_len)) - 1
