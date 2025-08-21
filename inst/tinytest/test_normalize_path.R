@@ -1,25 +1,33 @@
 windows_paths <- c(
   "c:/foo/bar/baz.zarr",
   "d:\\foo\\bar\\baz.zarr",
+  "e:\\foo\\bar\\baz.zarr/",
+  "z://foo//bar//baz.zarr",
   "https://s3.foo.com/bar/baz.zarr"
 )
 windows_normalized_paths <- c(
   "c:/foo/bar/baz.zarr/",
   "d:/foo/bar/baz.zarr/",
+  "e:/foo/bar/baz.zarr/",
+  "z:/foo/bar/baz.zarr/",
   "https://s3.foo.com/bar/baz.zarr/"
 )
 
 nix_paths <- c(
   "/foo/bar/baz.zarr",
   "foo/bar/baz.zarr",
+  "foo/bar/baz.zarr/",
   "../foo/bar/baz.zarr",
   "./foo/bar/baz.zarr",
+  ".//foo///bar/baz.zarr",
   "https://s3.foo.com/bar/baz.zarr"
 )
 nix_normalized_paths <- c(
   "/foo/bar/baz.zarr/",
   "foo/bar/baz.zarr/",
+  "foo/bar/baz.zarr/",
   "../foo/bar/baz.zarr/",
+  "./foo/bar/baz.zarr/",
   "./foo/bar/baz.zarr/",
   "https://s3.foo.com/bar/baz.zarr/"
 )
