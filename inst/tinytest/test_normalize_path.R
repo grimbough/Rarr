@@ -12,6 +12,7 @@ paths <- c(
   "./foo/bar/baz.zarr",
   ".//foo///bar/baz.zarr",
   # Actually existing paths
+  "baz.zarr",
   file.path(tempdir(), "foo", "/bar//", "baz.zarr"),
   # URLs
   "https://s3.foo.com/bar/baz.zarr"
@@ -27,6 +28,7 @@ normalized_paths <- c(
   "../foo/bar/baz.zarr/",
   "./foo/bar/baz.zarr/",
   "./foo/bar/baz.zarr/",
+  "baz.zarr/",
   file.path(tempdir(), "foo", "bar", "baz.zarr", ""),
   "https://s3.foo.com/bar/baz.zarr/"
 )
