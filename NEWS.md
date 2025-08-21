@@ -1,3 +1,7 @@
+# Rarr 1.9.3
+
+* Fixed a bug in `writeZarrArray()` when `dim` is not divisible by `chunk_dim`.
+
 # Rarr 1.9.2
 
 * `writeZarrArray()` now allows writing character arrays, and no longer error 
