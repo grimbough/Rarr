@@ -16,3 +16,13 @@ expect_equal(path(z1), Rarr:::.normalize_array_path(tf1))
 # ways to get the array from disk to memory
 expect_equal(extract_array(z1, index = list(NULL, NULL)), m)
 expect_equal(realize(z1, BACKEND = NULL), m)
+
+# create ZarrArray with character data type
+m <- matrix("array", ncol = 10, nrow = 10)
+tf2 <- tempfile(fileext = ".zarr")
+chunk_dim <- c(10,10)
+z2 <- writeZarrArray(m, tf2, chunk_dim = chunk_dim)
+
+expect_inherits(z2, class = "ZarrArray")
+
+expect_equal(type(z2), "character")

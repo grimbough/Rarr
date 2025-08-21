@@ -1,3 +1,14 @@
+# Rarr 1.9.2
+
+* `writeZarrArray()` now allows writing character arrays, and no longer error 
+  complaining about null 'nchar' argument value. Default of 'nchar' is now
+  `NULL`.
+
+# Rarr 1.9
+
+* Updated `.url_parse_other()` to account for port numbers in host name and 
+  colons in bucket.
+
 # Rarr 1.7
 
 * Added `path()` method for `ZarrArray` class that returns the location of the

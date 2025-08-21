@@ -47,6 +47,16 @@ expect_silent(
 )
 expect_equal(max(nchar(read_zarr_array(path))), 1L)
 
+## check if nchar argument is provided when creating empty character zarr arrays
+path <- tempfile()
+expect_error(
+  create_empty_zarr_array(zarr_array_path = path, 
+                          dim = dim(column_major), 
+                          chunk_dim = c(2, 5, 1), 
+                          data_type = storage.mode(column_major)
+  )
+)
+
 ########################
 
 greetings <- c('¡Hola mundo!', 'Hej Världen!', 'Servus Woid!', 'Hei maailma!',

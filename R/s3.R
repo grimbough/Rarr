@@ -74,19 +74,24 @@ parse_s3_path <- function(path) {
 #' @keywords Internal
 .url_parse_other <- function(url) {
   parsed_url <- httr::parse_url(url)
-  bucket <- gsub(x = parsed_url$path, pattern = "^/?([[a-z0-9\\.-]*)/.*", 
+  bucket <- gsub(x = parsed_url$path, pattern = "^/?([[a-z0-9:\\.-]*)/.*",
                  replacement = "\\1", ignore.case = TRUE)
-  object <- gsub(x = parsed_url$path, pattern = "^/?([a-z0-9\\.-]*)/(.*)", 
+  object <- gsub(x = parsed_url$path, pattern = "^/?([a-z0-9:\\.-]*)/(.*)",
                  replacement = "\\2", ignore.case = TRUE)
-  
-  res <- list(bucket = bucket, 
-              object = object, 
-              region = "auto", 
-              hostname = paste0(parsed_url$scheme, "://", parsed_url$hostname))
+  hostname <- paste0(parsed_url$scheme, "://", parsed_url$hostname)
+
+  if (!is.null(parsed_url$port)) {
+    hostname <- paste0(hostname, ":", parsed_url$port)
+  }
+
+  res <- list(bucket = bucket,
+              object = object,
+              region = "auto",
+              hostname = hostname)
   return(res)
 }
 
-#' This is a modified version of paws.storge:::get_credentials().  It is
+#' This is a modified version of paws.storage:::get_credentials().  It is
 #' included to prevent using the `:::` operator.  Look at that function if
 #' things stop working.
 #' 

@@ -54,7 +54,8 @@ setMethod("chunkdim", "ZarrRealizationSink", function(x) x@chunk_dim)
 ZarrRealizationSink <- function(zarr_array_path = NULL, 
                                 dim, 
                                 type="double",
-                                chunkdim = NULL) {
+                                chunkdim = NULL, 
+                                nchar = NULL) {
 
   if (is.null(zarr_array_path)) {
     stop('must provide a path')
@@ -69,7 +70,7 @@ ZarrRealizationSink <- function(zarr_array_path = NULL,
   }
   
   create_empty_zarr_array(zarr_array_path, dim = dim, chunk_dim = chunkdim,
-                          data_type = type)
+                          data_type = type, nchar = nchar)
 
   new("ZarrRealizationSink", 
       dim = dim, 
@@ -90,11 +91,16 @@ setMethod("write_block", "ZarrRealizationSink", function(sink, viewport, block) 
 
 #' @export
 writeZarrArray <- function(x, zarr_array_path,
-                           chunk_dim = NULL) {
+                           chunk_dim = NULL, 
+                           nchar = NULL) {
+  
+  if (storage.mode(x) == "character" && is.null(nchar)) {
+    nchar <- max(base::nchar(x))
+  }
   
   sink <- ZarrRealizationSink(zarr_array_path = zarr_array_path,
                               dim = dim(x), type = type(x),
-                              chunkdim = chunk_dim)
+                              chunkdim = chunk_dim, nchar = nchar)
   sink <- BLOCK_write_to_sink(sink, x)
   as(sink, "ZarrArray")
 }
