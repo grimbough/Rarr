@@ -48,7 +48,8 @@ actual_paths <- c(
 # in any path segment equal to the string “.” or the string “..” then an error
 # MUST be raised.
 for (i in seq_along(actual_paths)) {
-  expect_match(
+  # https://github.com/markvanderloo/tinytest/issues/124
+  tinytest::expect_match(
     Rarr:::.normalize_array_path(actual_paths[i]),
     "/([^(.|..)]+/)*baz.zarr/$"
   )
