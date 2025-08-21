@@ -51,16 +51,26 @@
 #' @export
 zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   zarr_array_path <- .normalize_array_path(zarr_array_path)
-  
-  if(missing(s3_client)) 
-    s3_client <- .create_s3_client(path = zarr_array_path)
 
-  dot_zmeta <- .read_zmetadata(zarr_path = zarr_array_path, s3_client = s3_client)
+  if (missing(s3_client)) {
+    s3_client <- .create_s3_client(path = zarr_array_path)
+  }
+
+  dot_zmeta <- .read_zmetadata(
+    zarr_path = zarr_array_path,
+    s3_client = s3_client
+  )
   if (!is.null(dot_zmeta)) {
-    arrays <- grep(names(dot_zmeta$metadata), pattern = "/.zarray", fixed = TRUE, value = TRUE)
+    arrays <- grep(
+      names(dot_zmeta$metadata),
+      pattern = "/.zarray",
+      fixed = TRUE,
+      value = TRUE
+    )
 
     if (as_data_frame) {
-      tmp <- lapply(arrays,
+      tmp <- lapply(
+        arrays,
         FUN = .rbind_array_metadata,
         metadata = dot_zmeta$metadata,
         zarr_array_path = zarr_array_path
@@ -69,21 +79,34 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       return(res)
     } else {
       cat("Type: Group of Arrays\n")
-      cat("Path: ", normalizePath(zarr_array_path, mustWork = FALSE), "\n", sep = "")
+      cat(
+        "Path: ",
+        normalizePath(zarr_array_path, mustWork = FALSE),
+        "\n",
+        sep = ""
+      )
       cat("Arrays:\n")
       for (a in arrays) {
         cat("---\n")
-        .print_array_metadata(dirname(a), dot_zarray = dot_zmeta$metadata[[a]], 
-                              indent = "  ")
+        .print_array_metadata(
+          dirname(a),
+          dot_zarray = dot_zmeta$metadata[[a]],
+          indent = "  "
+        )
       }
     }
     invisible(TRUE)
   } else {
-    dot_zarray <- read_array_metadata(path = zarr_array_path, s3_client = s3_client)
+    dot_zarray <- read_array_metadata(
+      path = zarr_array_path,
+      s3_client = s3_client
+    )
     if (as_data_frame) {
-      res <- .rbind_array_metadata(array_name = basename(zarr_array_path), 
-                                   metadata = dot_zarray, 
-                                   zarr_array_path = dirname(zarr_array_path))
+      res <- .rbind_array_metadata(
+        array_name = basename(zarr_array_path),
+        metadata = dot_zarray,
+        zarr_array_path = dirname(zarr_array_path)
+      )
       return(res)
     } else {
       cat("Type: Array\n")
@@ -105,10 +128,14 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   nchunks <- ceiling(unlist(dot_zarray$shape) / unlist(dot_zarray$chunks))
 
   res <- data.frame(
-    path       = paste0(.normalize_array_path(zarr_array_path), array_name),
-    nchunks    = prod(nchunks),
-    data_type  = paste0(dt$base_type, 8 * dt$nbytes),
-    compressor = if(is.null(dot_zarray$compressor)) NA else dot_zarray$compressor$id
+    path = paste0(.normalize_array_path(zarr_array_path), array_name),
+    nchunks = prod(nchunks),
+    data_type = paste0(dt$base_type, 8 * dt$nbytes),
+    compressor = if (is.null(dot_zarray$compressor)) {
+      NA
+    } else {
+      dot_zarray$compressor$id
+    }
   )
   res$dim <- list(unlist(dot_zarray$shape))
   res$chunk_dim <- list(unlist(dot_zarray$chunks))
@@ -119,10 +146,36 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   dt <- .parse_datatype(dot_zarray$dtype)
   nchunks <- ceiling(unlist(dot_zarray$shape) / unlist(dot_zarray$chunks))
 
-  cat(indent, "Path: ", normalizePath(zarr_array_path, mustWork = FALSE), "\n", sep = "")
-  cat(indent, "Shape: ", paste(unlist(dot_zarray$shape), collapse = " x "), "\n", sep = "")
-  cat(indent, "Chunk Shape: ", paste(unlist(dot_zarray$chunks), collapse = " x "), "\n", sep = "")
-  cat(indent, "No. of Chunks: ", prod(nchunks), " (", paste(nchunks, collapse = " x "), ")\n", sep = "")
+  cat(
+    indent,
+    "Path: ",
+    normalizePath(zarr_array_path, mustWork = FALSE),
+    "\n",
+    sep = ""
+  )
+  cat(
+    indent,
+    "Shape: ",
+    paste(unlist(dot_zarray$shape), collapse = " x "),
+    "\n",
+    sep = ""
+  )
+  cat(
+    indent,
+    "Chunk Shape: ",
+    paste(unlist(dot_zarray$chunks), collapse = " x "),
+    "\n",
+    sep = ""
+  )
+  cat(
+    indent,
+    "No. of Chunks: ",
+    prod(nchunks),
+    " (",
+    paste(nchunks, collapse = " x "),
+    ")\n",
+    sep = ""
+  )
   cat(indent, "Data Type: ", dt$base_type, 8 * dt$nbytes, "\n", sep = "")
   cat(indent, "Endianness: ", dt$endian, "\n", sep = "")
   if (is.null(dot_zarray$compressor)) {
@@ -134,15 +187,15 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 
 
 #' Read the .zarray metadata file associated with a Zarr array
-#' 
+#'
 #' @param path A character vector of length 1.  This provides the
 #'   path to a Zarr array or group of arrays. This can either be on a local file
 #'   system or on S3 storage.
 #' @param s3_client A list representing an S3 client.  This should be produced
 #' by [paws.storage::s3()].
-#' 
+#'
 #' @returns A list containing the array metadata
-#' 
+#'
 #' @importFrom jsonlite read_json fromJSON
 #' @importFrom stringr str_extract str_remove
 #'
@@ -152,11 +205,12 @@ read_array_metadata <- function(path, s3_client = NULL) {
   zarray_path <- paste0(path, ".zarray")
 
   if (!is.null(s3_client)) {
-
     parsed_url <- parse_s3_path(zarray_path)
-    
-    s3_object <- s3_client$get_object(Bucket = parsed_url$bucket, 
-                                      Key = parsed_url$object)
+
+    s3_object <- s3_client$get_object(
+      Bucket = parsed_url$bucket,
+      Key = parsed_url$object
+    )
 
     metadata <- fromJSON(rawToChar(s3_object$Body))
   } else {
@@ -198,19 +252,21 @@ update_fill_value <- function(metadata) {
     metadata$fill_value <- NA
   } else if (val %in% c("NaN", "Infinity", "-Infinity")) {
     if (datatype$base_type != "string") {
-      metadata$fill_value <- switch(val,
+      metadata$fill_value <- switch(
+        val,
         "NaN" = NaN,
         "Infinity" = Inf,
         "-Infinity" = -Inf
       )
     }
   } else if (is.numeric(metadata$fill_value)) {
-    metadata$fill_value <- switch(datatype$base_type,
-            "float"   = as.double(val),
-            "int"     = as.integer(val),
-            "uint"    = as.integer(val),
-            "complex" = as.complex(val))
-    
+    metadata$fill_value <- switch(
+      datatype$base_type,
+      "float" = as.double(val),
+      "int" = as.integer(val),
+      "uint" = as.integer(val),
+      "complex" = as.complex(val)
+    )
   }
   return(metadata)
 }
@@ -218,16 +274,17 @@ update_fill_value <- function(metadata) {
 #' @import jsonlite
 #' @keywords Internal
 .read_zmetadata <- function(zarr_path, s3_client) {
-  
   zarr_path <- .normalize_array_path(zarr_path)
   zmeta_path <- paste0(zarr_path, ".zmetadata")
   zmeta <- NULL
 
   if (!is.null(s3_client)) {
     parsed_url <- parse_s3_path(zmeta_path)
-    if(.s3_object_exists(s3_client, parsed_url$bucket, parsed_url$object)) {
-      s3_object <- s3_client$get_object(Bucket = parsed_url$bucket, 
-                                        Key = parsed_url$object)
+    if (.s3_object_exists(s3_client, parsed_url$bucket, parsed_url$object)) {
+      s3_object <- s3_client$get_object(
+        Bucket = parsed_url$bucket,
+        Key = parsed_url$object
+      )
 
       zmeta <- fromJSON(rawToChar(s3_object$Body))
     }

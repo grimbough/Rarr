@@ -2,7 +2,9 @@
 check_index <- function(index, metadata) {
   ## check we have the correct number of dimensions
   if (isFALSE(length(index) == length(metadata$shape))) {
-    stop("The number of dimensions provided to 'index' does not match the shape of the array")
+    stop(
+      "The number of dimensions provided to 'index' does not match the shape of the array"
+    )
   }
 
   ## If any dimensions are NULL transform into the entirety of that dimension
@@ -39,31 +41,32 @@ check_index <- function(index, metadata) {
 #'
 #' @keywords Internal
 .create_replace_call <- function(x_name, idx_name, idx_length, y_name) {
-
   args <- sprintf("%s[[%d]]", idx_name, seq_len(idx_length))
   args <- paste0(args, collapse = ",")
   cmd <- sprintf("%s[%s] <- %s", x_name, args, y_name)
-  
+
   return(cmd)
 }
 
 #' Parse the data type encoding string
-#' 
+#'
 #' @param typestr The datatype encoding string.  This is in the Numpy array
 #' typestr format.
-#' 
+#'
 #' @returns A list of length 4 containing the details of the data type.
 .parse_datatype <- function(typestr) {
   datatype <- list()
   datatype_parts <- strsplit(typestr, "")[[1]]
 
-  datatype$endian <- switch(datatype_parts[1],
+  datatype$endian <- switch(
+    datatype_parts[1],
     "<" = "little",
     ">" = "big",
     "|" = NA
   )
 
-  datatype$base_type <- switch(datatype_parts[2],
+  datatype$base_type <- switch(
+    datatype_parts[2],
     "b" = "boolean",
     "i" = "int",
     "u" = "uint",
@@ -81,9 +84,10 @@ check_index <- function(index, metadata) {
   datatype$nbytes <- as.integer(
     gsub(x = typestr, pattern = "^[<>|][[:alpha:]]", replacement = "")
   )
-  
-  if(datatype$base_type == 'unicode')
+
+  if (datatype$base_type == 'unicode') {
     datatype$nbytes <- datatype$nbytes * 4
+  }
 
   datatype$is_signed <- ifelse(datatype$base_type != "uint", TRUE, FALSE)
 
@@ -103,10 +107,16 @@ check_index <- function(index, metadata) {
 .normalize_array_path <- function(path) {
   ## we strip the protocol because it gets messed up by the slash removal later
   if (grepl(x = path, pattern = "^((https?://)|(s3://)).*$")) {
-    root <- gsub(x = path, pattern = "^((https?://)|(s3://)).*$", 
-                 replacement = "\\1")
-    path <- gsub(x = path, pattern = "^((https?://)|(s3://))(.*$)", 
-                 replacement = "\\4")
+    root <- gsub(
+      x = path,
+      pattern = "^((https?://)|(s3://)).*$",
+      replacement = "\\1"
+    )
+    path <- gsub(
+      x = path,
+      pattern = "^((https?://)|(s3://))(.*$)",
+      replacement = "\\4"
+    )
   } else {
     ## Replace all backward slash ("\\") with forward slash ("/")
     path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
@@ -119,9 +129,9 @@ check_index <- function(index, metadata) {
   path <- gsub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
   ## Strip any trailing "/" characters
   path <- gsub(x = path, pattern = "/$", replacement = "", fixed = FALSE)
-  ## Collapse any sequence of more than one "/" character into a single "/" 
+  ## Collapse any sequence of more than one "/" character into a single "/"
   path <- gsub(x = path, pattern = "//*", replacement = "/", fixed = FALSE)
-  ## The key prefix is then obtained by appending a single "/" character to 
+  ## The key prefix is then obtained by appending a single "/" character to
   ## the normalized logical path.
   path <- paste0(root, path, "/")
 
@@ -129,21 +139,18 @@ check_index <- function(index, metadata) {
 }
 
 .readVlenUTF8 <- function(input) {
-  
   nvalues <- readBin(input, what = "integer", n = 1, size = 4)
   output <- character(length = nvalues)
   input <- tail(input, -4)
-  for(i in seq_len(nvalues)) {
-    
+  for (i in seq_len(nvalues)) {
     nbytes <- readBin(input, what = "integer", n = 1, size = 4)
     input <- tail(input, -4)
-    if(nbytes > 0) {
+    if (nbytes > 0) {
       output[i] <- rawToChar(input[seq_len(nbytes)])
       input <- tail(input, -nbytes)
-    } 
+    }
   }
-  
+
   Encoding(output) <- "UTF-8"
   return(output)
-  
 }

@@ -2,39 +2,39 @@
 #'
 #' These functions select a compression tool and its setting when writing a Zarr
 #' file
-#' 
-#' @param level Specify the compression level to use.  The range of possible 
+#'
+#' @param level Specify the compression level to use.  The range of possible
 #' values is dependant on the compression tool being used.  For example, for
-#' `use_zlib()` this argument can be between 1 & 9, while for `use_zstd()`the 
+#' `use_zlib()` this argument can be between 1 & 9, while for `use_zstd()`the
 #' valid range is 1 to 22.
 #'
 #' @returns A list containing the details of the selected compression tool. This
 #'   will be written to the .zarray metadata when the Zarr array is created.
-#'   
+#'
 #' @examples
-#' 
+#'
 #' ## define 2 compression filters for blosc (using snappy) and bzip2 (level 5)
 #' blosc_with_snappy_compression <- use_blosc(cname = "snappy")
 #' bzip2_compression <- use_bz2(level = 5)
-#' 
+#'
 #' ## create an example array to write to a file
 #' x <- array(runif(n = 1000, min = -10, max = 10), dim = c(10, 20, 5))
-#' 
+#'
 #' ## write the array to two files using each compression filter
 #' blosc_path <- tempfile()
 #' bzip2_path <- tempfile()
 #' write_zarr_array(
-#'   x = x, zarr_array_path = blosc_path, chunk_dim = c(2, 5, 1), 
+#'   x = x, zarr_array_path = blosc_path, chunk_dim = c(2, 5, 1),
 #'   compressor = blosc_with_snappy_compression
 #' )
 #' write_zarr_array(
-#'   x = x, zarr_array_path = bzip2_path, chunk_dim = c(2, 5, 1), 
+#'   x = x, zarr_array_path = bzip2_path, chunk_dim = c(2, 5, 1),
 #'   compressor = bzip2_compression
 #' )
-#' 
+#'
 #' ## the contents of the two arrays should be the same
 #' identical(read_zarr_array(blosc_path), read_zarr_array(bzip2_path))
-#' 
+#'
 #' ## the size of the files on disk are not the same
 #' sum(file.size(list.files(blosc_path, full.names = TRUE)))
 #' sum(file.size(list.files(bzip2_path, full.names = TRUE)))
@@ -44,23 +44,29 @@ NULL
 
 
 #' @rdname compressors
-#' 
+#'
 #' @param cname Blosc is a 'meta-compressor' providing access to several
 #'   compression algorithms.  This argument defines which compression tool
 #'   should be used.  Valid options are: 'lz4', 'lz4hc', 'blosclz', 'zstd',
 #'   'zlib', 'snappy'.
-#' 
+#'
 #' @export
 use_blosc <- function(cname = "lz4") {
-  
   valid_options <- c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy")
-  if(!tolower(cname) %in% valid_options) {
-    stop("'cname argument must be one of '", 
-         paste(valid_options, collapse = "', '"), "'")
+  if (!tolower(cname) %in% valid_options) {
+    stop(
+      "'cname argument must be one of '",
+      paste(valid_options, collapse = "', '"),
+      "'"
+    )
   }
-  
-  res <- list(id = "blosc", cname = tolower(cname), 
-              clevel = 5, shuffle = as.integer(TRUE))
+
+  res <- list(
+    id = "blosc",
+    cname = tolower(cname),
+    clevel = 5,
+    shuffle = as.integer(TRUE)
+  )
   return(res)
 }
 
@@ -102,7 +108,7 @@ use_lz4 <- function() {
 #' @rdname compressors
 #' @export
 use_zstd <- function(level = 3) {
-  if(level < 1 | level > 22) {
+  if (level < 1 | level > 22) {
     stop('Zstd level must be between 1 and 22.')
   }
   res <- list(id = "zstd", level = as.integer(level))

@@ -1,6 +1,8 @@
 .check_datatype <- function(data_type, fill_value, nchar = NULL) {
   if (missing(data_type) && missing(fill_value)) {
-    stop("Data type cannot be determined if both 'data_type' and 'fill_value' arguments are missing.")
+    stop(
+      "Data type cannot be determined if both 'data_type' and 'fill_value' arguments are missing."
+    )
   } else if (missing(data_type) && !missing(fill_value)) {
     ## if we only have a fill value, infer the data type from that
     data_type <- storage.mode(fill_value)
@@ -8,7 +10,8 @@
 
   ## if data type was supplied directly, always use that
   if (!data_type %in% c("<i4", "<f8", "|S", "<U")) {
-    data_type <- switch(data_type,
+    data_type <- switch(
+      data_type,
       "integer" = "<i4",
       "double" = "<f8",
       "character" = "|S",
@@ -22,19 +25,22 @@
 
   ## set a default fill value if needed
   if (missing(fill_value)) {
-    fill_value <- switch(data_type,
+    fill_value <- switch(
+      data_type,
       "<i4" = 0L,
       "<f8" = 0,
-      "|S"  = "",
-      "<U"  = "",
+      "|S" = "",
+      "<U" = "",
       NULL
     )
   }
 
   if (data_type %in% c("|S", "<U", ">U")) {
     if (is.null(nchar) || nchar < 1) {
-      stop("The 'nchar' argument must be provided when working with ",
-           "character data types and be a positive integer")
+      stop(
+        "The 'nchar' argument must be provided when working with ",
+        "character data types and be a positive integer"
+      )
     }
     data_type <- paste0(data_type, as.integer(nchar))
   }
@@ -87,17 +93,27 @@
 #' )
 #'
 #' @export
-create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
-                                    order = "F",
-                                    compressor = use_zlib(), fill_value, 
-                                    nchar = NULL,
-                                    dimension_separator = ".") {
+create_empty_zarr_array <- function(
+  zarr_array_path,
+  dim,
+  chunk_dim,
+  data_type,
+  order = "F",
+  compressor = use_zlib(),
+  fill_value,
+  nchar = NULL,
+  dimension_separator = "."
+) {
   path <- .normalize_array_path(zarr_array_path)
   if (!dir.exists(path)) {
     dir.create(path)
   }
 
-  dt <- .check_datatype(data_type = data_type, fill_value = fill_value, nchar = nchar)
+  dt <- .check_datatype(
+    data_type = data_type,
+    fill_value = fill_value,
+    nchar = nchar
+  )
   data_type <- dt$data_type
   fill_value <- dt$fill_value
 
@@ -144,14 +160,16 @@ create_empty_zarr_array <- function(zarr_array_path, dim, chunk_dim, data_type,
 #' )
 #'
 #' @export
-write_zarr_array <- function(x, 
-                             zarr_array_path, 
-                             chunk_dim,
-                             order = "F",
-                             compressor = use_zlib(), 
-                             fill_value, 
-                             nchar,
-                             dimension_separator = ".") {
+write_zarr_array <- function(
+  x,
+  zarr_array_path,
+  chunk_dim,
+  order = "F",
+  compressor = use_zlib(),
+  fill_value,
+  nchar,
+  dimension_separator = "."
+) {
   path <- .normalize_array_path(zarr_array_path)
 
   if (storage.mode(x) == "character" && missing(nchar)) {
@@ -159,10 +177,13 @@ write_zarr_array <- function(x,
   }
 
   create_empty_zarr_array(
-    zarr_array_path = path, dim = dim(x), chunk_dim = chunk_dim,
+    zarr_array_path = path,
+    dim = dim(x),
+    chunk_dim = chunk_dim,
     data_type = storage.mode(x),
     order = order,
-    fill_value = fill_value, compressor = compressor,
+    fill_value = fill_value,
+    compressor = compressor,
     nchar = nchar,
     dimension_separator = dimension_separator
   )
@@ -174,8 +195,11 @@ write_zarr_array <- function(x,
 
   ## iterate over each chunk
   ## TODO: maybe this can be done in parallel with bplapply() ?
-  res <- lapply(chunk_ids,
-    FUN = .write_chunk, x = x, path = path, 
+  res <- lapply(
+    chunk_ids,
+    FUN = .write_chunk,
+    x = x,
+    path = path,
     metadata = metadata
   )
 
@@ -188,52 +212,57 @@ write_zarr_array <- function(x,
 }
 
 .write_chunk <- function(chunk_id, x, path, metadata) {
-  
-    chunk_dim <- unlist(metadata$chunks)
-    dim_sep <- metadata$dimension_separator
+  chunk_dim <- unlist(metadata$chunks)
+  dim_sep <- metadata$dimension_separator
 
-    chunk_id_split <- as.integer(strsplit(chunk_id, dim_sep, fixed = TRUE)[[1]])
-    chunk_path <- paste0(path, chunk_id)
+  chunk_id_split <- as.integer(strsplit(chunk_id, dim_sep, fixed = TRUE)[[1]])
+  chunk_path <- paste0(path, chunk_id)
 
-    idx_in_array <- list()
-    for (j in seq_along(dim(x))) {
-        idx_in_array[[j]] <- which((seq_len(dim(x)[j]) - 1) %/% chunk_dim[j] == chunk_id_split[j])
-    }
-
-    chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)
-
-    ## if a chunk overlaps the edge of the array, most implementations assume we 
-    ## still write the content to disk.  Seems wasteful, but we fail many tests 
-    if (any(dim(chunk_in_mem) != chunk_dim)) {
-        ## create a new "complete" chunk
-        temp_chunk <- array(dim = chunk_dim)
-        
-        ## insert our partial chunk into the new one
-        idx_in_chunk <- lapply(dim(chunk_in_mem), seq_len)
-        cmd <- .create_replace_call("temp_chunk", "idx_in_chunk", 
-                                    length(idx_in_chunk), "chunk_in_mem")
-        eval(parse(text = cmd))
-        ## update the output with the new full-sized chunk
-        chunk_in_mem <- temp_chunk
-    }
-
-    if (metadata$order == "C") {
-        chunk_in_mem <- aperm(chunk_in_mem)
-    }
-    
-    ## check the chunk path exists, and create if not
-    if(isFALSE(dir.exists(dirname(chunk_path)))) {
-      dir.create(dirname(chunk_path), recursive = TRUE, showWarnings = FALSE)
-    }
-    
-    .compress_and_write_chunk(
-        input_chunk = chunk_in_mem, 
-        chunk_path = chunk_path,
-        compressor = metadata$compressor,
-        data_type_size = .parse_datatype(metadata$dtype)$nbytes
+  idx_in_array <- list()
+  for (j in seq_along(dim(x))) {
+    idx_in_array[[j]] <- which(
+      (seq_len(dim(x)[j]) - 1) %/% chunk_dim[j] == chunk_id_split[j]
     )
+  }
 
-    return(invisible(TRUE))
+  chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)
+
+  ## if a chunk overlaps the edge of the array, most implementations assume we
+  ## still write the content to disk.  Seems wasteful, but we fail many tests
+  if (any(dim(chunk_in_mem) != chunk_dim)) {
+    ## create a new "complete" chunk
+    temp_chunk <- array(dim = chunk_dim)
+
+    ## insert our partial chunk into the new one
+    idx_in_chunk <- lapply(dim(chunk_in_mem), seq_len)
+    cmd <- .create_replace_call(
+      "temp_chunk",
+      "idx_in_chunk",
+      length(idx_in_chunk),
+      "chunk_in_mem"
+    )
+    eval(parse(text = cmd))
+    ## update the output with the new full-sized chunk
+    chunk_in_mem <- temp_chunk
+  }
+
+  if (metadata$order == "C") {
+    chunk_in_mem <- aperm(chunk_in_mem)
+  }
+
+  ## check the chunk path exists, and create if not
+  if (isFALSE(dir.exists(dirname(chunk_path)))) {
+    dir.create(dirname(chunk_path), recursive = TRUE, showWarnings = FALSE)
+  }
+
+  .compress_and_write_chunk(
+    input_chunk = chunk_in_mem,
+    chunk_path = chunk_path,
+    compressor = metadata$compressor,
+    data_type_size = .parse_datatype(metadata$dtype)$nbytes
+  )
+
+  return(invisible(TRUE))
 }
 
 #' Update (a subset of) an existing Zarr array
@@ -276,13 +305,14 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   metadata <- read_array_metadata(zarr_array_path)
   index <- check_index(index, metadata = metadata)
 
-  data_type <- switch(storage.mode(x),
+  data_type <- switch(
+    storage.mode(x),
     "integer" = "<i",
     "double" = "<f",
     "character" = c("|S", "<U", ">U"),
     NULL
   )
-  if (!substr(metadata$dtype, 1,2) %in% data_type) {
+  if (!substr(metadata$dtype, 1, 2) %in% data_type) {
     stop("New data is not of the same type as the existing array.")
   }
 
@@ -290,20 +320,26 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_dim <- unlist(metadata$chunks)
 
   ## convert strings to Unicode if required
-  if(grepl("<U|>U", x = metadata$dtype, fixed = FALSE)) {
+  if (grepl("<U|>U", x = metadata$dtype, fixed = FALSE)) {
     x <- .unicode_to_int(input = x, typestr = metadata$dtype)
   }
-  
+
   ## coerce x to the same shape as the zarr to be updated
   x <- array(x, dim = vapply(index, length, integer(1)))
 
   ## create all possible chunk names, then remove those that won't be touched
   chunk_names <- expand.grid(lapply(ceiling(zarr_dim / chunk_dim), seq_len)) - 1
   chunk_needed <- rep(FALSE, nrow(chunk_names))
-  
+
   ## determine which chunk each of the requests indices belongs to
-  chunk_idx <- .mapply(\(x,y) { (x-1) %/% y }, dots = list(index, chunk_dim), MoreArgs = NULL)
-  
+  chunk_idx <- .mapply(
+    \(x, y) {
+      (x - 1) %/% y
+    },
+    dots = list(index, chunk_dim),
+    MoreArgs = NULL
+  )
+
   for (i in seq_len(nrow(chunk_names))) {
     idx_in_zarr <- list()
     for (j in seq_along(zarr_dim)) {
@@ -312,26 +348,40 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_needed[i] <- all(lengths(idx_in_zarr) > 0)
   }
   chunk_names <- chunk_names[chunk_needed, , drop = FALSE]
-  chunk_ids <- apply(chunk_names, 1, paste0, 
-                     collapse = metadata$dimension_separator)
+  chunk_ids <- apply(
+    chunk_names,
+    1,
+    paste0,
+    collapse = metadata$dimension_separator
+  )
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bplapply() ?
-  res <- lapply(chunk_ids,
-    FUN = .update_chunk, x = x, path = zarr_array_path,
-    chunk_dim = chunk_dim, chunk_idx = chunk_idx,
-    index = index, metadata = metadata
+  res <- lapply(
+    chunk_ids,
+    FUN = .update_chunk,
+    x = x,
+    path = zarr_array_path,
+    chunk_dim = chunk_dim,
+    chunk_idx = chunk_idx,
+    index = index,
+    metadata = metadata
   )
 
   return(invisible(all(unlist(res))))
 }
 
-.update_chunk <- function(chunk_id, x, path, chunk_dim,
-                          chunk_idx, index, metadata) {
+.update_chunk <- function(
+  chunk_id,
+  x,
+  path,
+  chunk_dim,
+  chunk_idx,
+  index,
+  metadata
+) {
   chunk_id_split <- as.integer(
-    strsplit(chunk_id, metadata$dimension_separator,
-      fixed = TRUE
-    )[[1]]
+    strsplit(chunk_id, metadata$dimension_separator, fixed = TRUE)[[1]]
   )
   chunk_path <- paste0(path, chunk_id)
 
@@ -341,7 +391,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   idx_in_zarr <- idx_in_x <- idx_in_chunk <- list()
   for (j in seq_along(chunk_dim)) {
     idx_in_x[[j]] <- which(chunk_idx[[j]] == chunk_id_split[j])
-    idx_in_zarr[[j]] <- index[[j]][ idx_in_x[[j]] ]
+    idx_in_zarr[[j]] <- index[[j]][idx_in_x[[j]]]
     idx_in_chunk[[j]] <- ((idx_in_zarr[[j]] - 1) %% chunk_dim[j]) + 1
   }
 
@@ -350,22 +400,25 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_id = chunk_id_split,
     metadata = metadata
   )[["chunk_data"]]
-  
+
   ## extract the new values from x and insert them into the chunk
   y <- R.utils::extract(x, indices = idx_in_x)
-  cmd <- .create_replace_call("chunk_in_mem", "idx_in_chunk", 
-                              length(idx_in_chunk), "y")
+  cmd <- .create_replace_call(
+    "chunk_in_mem",
+    "idx_in_chunk",
+    length(idx_in_chunk),
+    "y"
+  )
   eval(parse(text = cmd))
 
   ## re-compress updated chunk and write back to disk
   .compress_and_write_chunk(
-    input_chunk = chunk_in_mem, 
+    input_chunk = chunk_in_mem,
     chunk_path = chunk_path,
     compressor = metadata$compressor,
     data_type_size = metadata$datatype$nbytes,
     is_base64 = (metadata$datatype$base_type == "unicode")
   )
-
 }
 
 #' Compress and write a single chunk
@@ -380,7 +433,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #' @param data_type_size An integer giving the size of the original datatype.
 #'   This is passed to the blosc algorithm, which seems to need it to achieve
 #'   any compression.
-#' @param is_base64 When dealing with Py_unicode strings we convert them to 
+#' @param is_base64 When dealing with Py_unicode strings we convert them to
 #' base64 strings for storage in our intermediate R arrays.  This argument
 #' indicates if base64 is in use, because the conversion to raw in .as_raw
 #' should be done differently for base64 strings vs other types.
@@ -389,18 +442,29 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #'   side-effect of writing the compressed chunk to disk.
 #'
 #' @keywords Internal
-.compress_and_write_chunk <- function(input_chunk, chunk_path,
-                                      compressor = use_zlib(), 
-                                      data_type_size, is_base64 = FALSE) {
+.compress_and_write_chunk <- function(
+  input_chunk,
+  chunk_path,
+  compressor = use_zlib(),
+  data_type_size,
+  is_base64 = FALSE
+) {
   ## the compression tools need a raw vector
-  raw_chunk <- .as_raw(as.vector(input_chunk), nchar = data_type_size, 
-                       is_base64 = is_base64)
-  
-  if(is.null(compressor)) {
+  raw_chunk <- .as_raw(
+    as.vector(input_chunk),
+    nchar = data_type_size,
+    is_base64 = is_base64
+  )
+
+  if (is.null(compressor)) {
     compressed_chunk <- raw_chunk
   } else if (compressor$id == "blosc") {
-    compressed_chunk <- .Call("compress_chunk_BLOSC", raw_chunk, 
-                              as.integer(data_type_size), PACKAGE = "Rarr")
+    compressed_chunk <- .Call(
+      "compress_chunk_BLOSC",
+      raw_chunk,
+      as.integer(data_type_size),
+      PACKAGE = "Rarr"
+    )
   } else if (compressor$id == c("zlib")) {
     compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
   } else if (compressor$id == "gzip") {
@@ -416,36 +480,45 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     ## TODO: probably faster to do this in C and avoid copying the vector
     compressed_chunk <- c(.as_raw(length(raw_chunk)), compressed_chunk)
   } else if (compressor$id == "zstd") {
-    compressed_chunk <- .Call("compress_chunk_ZSTD", raw_chunk, 
-                              as.integer(compressor$level), PACKAGE = "Rarr")
+    compressed_chunk <- .Call(
+      "compress_chunk_ZSTD",
+      raw_chunk,
+      as.integer(compressor$level),
+      PACKAGE = "Rarr"
+    )
   } else {
     stop("Unsupported compression tool")
   }
-  
-  if(exists("con")) {
+
+  if (exists("con")) {
     on.exit(close(con))
-    writeBin(raw_chunk, con = con, useBytes = TRUE) 
+    writeBin(raw_chunk, con = con, useBytes = TRUE)
   } else {
     writeBin(compressed_chunk, con = chunk_path)
   }
-  
+
   return(invisible(TRUE))
-  
 }
 
 .as_raw <- function(d, nchar, is_base64) {
   ## we need to create fixed length strings either via padding or trimming
-  if(is.character(d)) {
-    if(is_base64)
+  if (is.character(d)) {
+    if (is_base64) {
       raw_list <- lapply(d, jsonlite::base64_dec)
-    else
+    } else {
       raw_list <- iconv(d, toRaw = TRUE)
+    }
     unlist(
-      lapply(raw_list, FUN = function(x, nchar) { 
-          if(!is.null(x))
-            length(x) <- nchar 
-          return(x) 
-        }, nchar)
+      lapply(
+        raw_list,
+        FUN = function(x, nchar) {
+          if (!is.null(x)) {
+            length(x) <- nchar
+          }
+          return(x)
+        },
+        nchar
+      )
     )
   } else {
     writeBin(d, raw())
