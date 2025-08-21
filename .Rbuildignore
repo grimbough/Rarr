@@ -13,3 +13,5 @@ inst/funding_applications/*
 inst/rmd/quick_start_cache/*
 CONTRIBUTING.md
 LICENSE.md
+^[.]?air[.]toml$
+^\.vscode$
