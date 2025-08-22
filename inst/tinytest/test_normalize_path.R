@@ -6,12 +6,7 @@ paths <- c(
   "z://foo//bar//baz.zarr",
   # Unix-like paths
   "/foo/bar/baz.zarr",
-  "foo/bar/baz.zarr",
-  "foo/bar/baz.zarr/",
-  "../foo/bar/baz.zarr",
-  "./foo/bar/baz.zarr",
-  ".//foo///bar/baz.zarr",
-  "baz.zarr",
+  "/foo///bar//baz.zarr",
   # URLs
   "https://s3.foo.com/bar/baz.zarr"
 )
@@ -21,12 +16,7 @@ normalized_paths <- c(
   "e:/foo/bar/baz.zarr/",
   "z:/foo/bar/baz.zarr/",
   "/foo/bar/baz.zarr/",
-  "foo/bar/baz.zarr/",
-  "foo/bar/baz.zarr/",
-  "../foo/bar/baz.zarr/",
-  "./foo/bar/baz.zarr/",
-  "./foo/bar/baz.zarr/",
-  "baz.zarr/",
+  "/foo/bar/baz.zarr/",
   "https://s3.foo.com/bar/baz.zarr/"
 )
 
@@ -39,7 +29,12 @@ for(i in seq_along(paths)) {
 
 # Paths that actually exist on our testing filesystem
 actual_paths <- c(
-  "~/baz.zarr",
+  "~/foo/bar/baz.zarr",
+  "../foo/bar/baz.zarr",
+  "./foo/bar/baz.zarr",
+  "foo/bar/baz.zarr",
+  "foo/bar/baz.zarr/",
+  "baz.zarr",
   file.path(tempdir(), "foo", "/bar//", "baz.zarr")
 )
 
@@ -51,6 +46,6 @@ for (i in seq_along(actual_paths)) {
   # https://github.com/markvanderloo/tinytest/issues/124
   tinytest::expect_match(
     Rarr:::.normalize_array_path(actual_paths[i]),
-    "/([^(.|..)]+/)*baz.zarr/$"
+    "/([^(.|..)]+/)*foo/bar/baz.zarr/$"
   )
 }
