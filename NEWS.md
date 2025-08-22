@@ -1,3 +1,8 @@
+# Rarr 1.9.4
+
+* The object name is no longer repeated (e.g., `name.zarrname.zarr`) when
+  writing a Zarr array to a file in the current working directory.
+
 # Rarr 1.9.3
 
 * Fixed a bug in `writeZarrArray()` when `dim` is not divisible by `chunk_dim`.
