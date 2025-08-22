@@ -44,7 +44,8 @@ actual_normalized_existing_paths <- vapply(
   USE.NAMES = FALSE
 )
 
-expect_match(
+# https://github.com/markvanderloo/tinytest/issues/124
+tinytest::expect_match(
   actual_normalized_existing_paths,
   "/([^(.|..)]+/)*foo/bar/baz.zarr/$"
 )
