@@ -35,7 +35,6 @@ existing_paths <- c(
   "./foo/bar/baz.zarr",
   "foo/bar/baz.zarr",
   "foo/bar/baz.zarr/",
-  "baz.zarr",
   file.path(tempdir(), "foo", "/bar//", "baz.zarr")
 )
 actual_normalized_existing_paths <- vapply(
@@ -48,4 +47,9 @@ actual_normalized_existing_paths <- vapply(
 expect_match(
   actual_normalized_existing_paths,
   "/([^(.|..)]+/)*foo/bar/baz.zarr/$"
+)
+
+expect_identical(
+  Rarr:::.normalize_array_path("baz.zarr"),
+  Rarr:::.normalize_array_path("./baz.zarr")
 )
