@@ -57,11 +57,11 @@ x <- array(runif(n = 1000, min = -10, max = 10), dim = c(10, 20, 5))
 blosc_path <- tempfile()
 bzip2_path <- tempfile()
 write_zarr_array(
-  x = x, zarr_array_path = blosc_path, chunk_dim = c(2, 5, 1), 
+  x = x, zarr_array_path = blosc_path, chunk_dim = c(2, 5, 1),
   compressor = blosc_with_snappy_compression
 )
 write_zarr_array(
-  x = x, zarr_array_path = bzip2_path, chunk_dim = c(2, 5, 1), 
+  x = x, zarr_array_path = bzip2_path, chunk_dim = c(2, 5, 1),
   compressor = bzip2_compression
 )
 

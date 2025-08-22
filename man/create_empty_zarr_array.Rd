@@ -12,7 +12,7 @@ create_empty_zarr_array(
   order = "F",
   compressor = use_zlib(),
   fill_value,
-  nchar,
+  nchar = NULL,
   dimension_separator = "."
 )
 }
