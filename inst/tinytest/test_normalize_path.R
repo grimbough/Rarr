@@ -10,7 +10,7 @@ paths <- c(
   # URLs
   "https://s3.foo.com/bar/baz.zarr"
 )
-normalized_paths <- c(
+expected_normalized_paths <- c(
   "c:/foo/bar/baz.zarr/",
   "d:/foo/bar/baz.zarr/",
   "e:/foo/bar/baz.zarr/",
@@ -19,16 +19,17 @@ normalized_paths <- c(
   "/foo/bar/baz.zarr/",
   "https://s3.foo.com/bar/baz.zarr/"
 )
+actual_normalized_paths <- vapply(
+  paths,
+  Rarr:::.normalize_array_path,
+  character(1),
+  USE.NAMES = FALSE
+)
 
-for(i in seq_along(paths)) {
-  expect_identical(
-    Rarr:::.normalize_array_path(paths[i]),
-    normalized_paths[i]
-  )
-}
+expect_identical(actual_normalized_paths, expected_normalized_paths)
 
 # Paths that actually exist on our testing filesystem
-actual_paths <- c(
+existing_paths <- c(
   "~/foo/bar/baz.zarr",
   "../foo/bar/baz.zarr",
   "./foo/bar/baz.zarr",
@@ -37,15 +38,14 @@ actual_paths <- c(
   "baz.zarr",
   file.path(tempdir(), "foo", "/bar//", "baz.zarr")
 )
+actual_normalized_existing_paths <- vapply(
+  existing_paths,
+  Rarr:::.normalize_array_path,
+  character(1),
+  USE.NAMES = FALSE
+)
 
-# Specification states:
-# After normalization, if splitting a logical path by the “/” character results
-# in any path segment equal to the string “.” or the string “..” then an error
-# MUST be raised.
-for (i in seq_along(actual_paths)) {
-  # https://github.com/markvanderloo/tinytest/issues/124
-  tinytest::expect_match(
-    Rarr:::.normalize_array_path(actual_paths[i]),
-    "/([^(.|..)]+/)*foo/bar/baz.zarr/$"
-  )
-}
+expect_match(
+  actual_normalized_existing_paths,
+  "/([^(.|..)]+/)*foo/bar/baz.zarr/$"
+)
