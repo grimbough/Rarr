@@ -56,7 +56,7 @@ check_index <- function(index, metadata) {
 #' @returns A list of length 4 containing the details of the data type.
 .parse_datatype <- function(typestr) {
   datatype <- list()
-  datatype_parts <- strsplit(typestr, "")[[1]]
+  datatype_parts <- strsplit(typestr, "", fixed = TRUE)[[1]]
 
   datatype$endian <- switch(
     datatype_parts[1],
