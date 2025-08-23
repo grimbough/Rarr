@@ -89,7 +89,7 @@ check_index <- function(index, metadata) {
     datatype$nbytes <- datatype$nbytes * 4
   }
 
-  datatype$is_signed <- ifelse(datatype$base_type != "uint", TRUE, FALSE)
+  datatype$is_signed <- datatype$base_type != "uint"
 
   return(datatype)
 }
