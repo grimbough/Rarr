@@ -8,32 +8,22 @@
   dimension_separator = ".",
   order = "C"
 ) {
-  zarray <- list()
-
   order <- toupper(order)
   if (!order %in% c("C", "F")) {
     stop("The 'order' argument must be either 'C' or 'F'")
   }
 
-  zarray$shape <- array_shape
-  zarray$chunks <- chunk_shape
-  zarray$dtype <- data_type
-  zarray$fill_value <- fill_value
-  zarray$dimension_separator <- dimension_separator
-  zarray$order <- order
-  zarray$zarr_format <- 2
-
-  ## weird hack to insert a named NULL entry in the list
-  zarray[length(zarray) + 1] <- list(NULL)
-  names(zarray)[length(zarray)] <- "filters"
-
-  if (is.null(compressor)) {
-    zarray[length(zarray) + 1] <- list(NULL)
-    names(zarray)[length(zarray)] <- "compressor"
-  } else {
-    zarray$compressor <- compressor
-  }
-
+  zarray <- list(
+    shape = array_shape,
+    chunks = chunk_shape,
+    dtype = data_type,
+    fill_value = fill_value,
+    dimension_separator = dimension_separator,
+    order = order,
+    zarr_format = 2,
+    filters = NULL,
+    compressor = compressor
+  )
   json <- .format_json(toJSON(
     zarray,
     auto_unbox = TRUE,
