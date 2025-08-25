@@ -28,3 +28,13 @@ Object of class \code{ZarrArray}
 \description{
 \code{ZarrayArray}: function to create a new object of class \code{ZarrArray}.
 }
+\examples{
+zarr_example <- system.file(
+  "extdata", "zarr_examples", "column-first", "int32.zarr",
+  package = "Rarr"
+)
+zarr_array <- ZarrArray(zarr_example)
+is(zarr_array)
+dim(zarr_array)
+chunkdim(zarr_array)
+}
