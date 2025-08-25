@@ -1,26 +1,24 @@
-# Rarr 1.9.5
+# Rarr 1.9
 
-* add support for reading, writing and updating Zarr v2 attributes
+## New features
 
-# Rarr 1.9.4
+* New function `write_zattrs()` and `read_zattrs()` provides support for
+  reading, writing and updating Zarr v2 attributes.
 
+## Bug fixes
+
+* `.url_parse_other()` now accounts for port numbers in host name and colons in
+  S3 buckets.
+* `writeZarrArray()` now allows writing character arrays, and no longer errors
+  complaining about null 'nchar' argument value. Default of 'nchar' is now
+  `NULL`.
+* `writeZarrArray()` no longer silently and incorrectly fills the last
+  rows/columns when `dim` is not divisible by `chunk_dim`.
 * The object name is no longer repeated (e.g., `name.zarrname.zarr`) when
   writing a Zarr array to a file in the current working directory.
 
-# Rarr 1.9.3
+## Internal changes
 
-* Fixed a bug in `writeZarrArray()` when `dim` is not divisible by `chunk_dim`.
-
-# Rarr 1.9.2
-
-* `writeZarrArray()` now allows writing character arrays, and no longer error 
-  complaining about null 'nchar' argument value. Default of 'nchar' is now
-  `NULL`.
-
-# Rarr 1.9
-
-* Updated `.url_parse_other()` to account for port numbers in host name and 
-  colons in bucket.
 
 # Rarr 1.7
 
@@ -33,14 +31,14 @@
 # Rarr 1.5
 
 * Fixed bug when creating an empty array with a floating datatype.  The fill
-  value would be interpreted as an integer by `read_metadata()` and create 
+  value would be interpreted as an integer by `read_metadata()` and create
   and array of the wrong type.
 * Fixed bug in `update_zarr_array()` when `NULL` was provided to one or more
-  dimensions in the `index` argument.  This was parsed incorrectly and the 
+  dimensions in the `index` argument.  This was parsed incorrectly and the
   underlying zarr was not modified.
-* Fixed bug in reading 64-bit integer arrays compressed with ZLIB or LZ4.  
-  The calculated decompression buffer size was too small and reading would 
-  fail. (Thanks to Dan Auerbach for the report: 
+* Fixed bug in reading 64-bit integer arrays compressed with ZLIB or LZ4.
+  The calculated decompression buffer size was too small and reading would
+  fail. (Thanks to Dan Auerbach for the report:
   https://github.com/grimbough/Rarr/issues/10)
 * Added support for the ZarrArray S4 class and the DelayedArray framework.
 * Improvements to read and write performance.
@@ -51,7 +49,7 @@
 
 # Rarr 1.1
 
-* Fixed bug when reading an array if the fill value in `.zarray` was `null`.  
+* Fixed bug when reading an array if the fill value in `.zarray` was `null`.
 * Addressed bug in makevars where Rarr.so could be compiled before libblosc.a
   was ready. Also backported to Rarr 1.0.2.
   (Thanks to Michael Sumner for reporting this issue:
@@ -59,7 +57,7 @@
 * Corrected issue where fixed length string datatypes would be written with
   null terminators, resulting in strings that were one byte longer than the
   dtype value written in the `.zarray` metadata. Also backported to Rarr 1.0.3.
-* Added support for reading and writing the fixed length Unicode datatype, and 
+* Added support for reading and writing the fixed length Unicode datatype, and
   for reading variable length UTF-8 datatype.
 
 # Rarr 0.99.9
@@ -71,7 +69,7 @@
 
 # Rarr 0.99.8
 
-* Patch compression libraries to remove R CMD check warnings about C functions 
+* Patch compression libraries to remove R CMD check warnings about C functions
 that might crash R or write to something other than the R console. Working
 in Linux only.
 
