@@ -45,8 +45,8 @@ read_zarr_array(zarr_array_path = z1, index = list(1:10, NULL, 1))
 
 \donttest{
 ## using a Zarr file hosted on Amazon S3
-## This array has a single dimension with length 576
-z2 <- "https://power-analysis-ready-datastore.s3.amazonaws.com/power_901_constants.zarr/lon/"
+## This array has a single dimension with length 2729077
+z2 <- "https://noaa-nwm-retro-v2-zarr-pds.s3.amazonaws.com/feature_id/"
 
 ## read the entire array
 read_zarr_array(zarr_array_path = z2)
