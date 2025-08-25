@@ -15,5 +15,5 @@
 \alias{coerce,ANY,ZarrRealizationSink-method}
 \title{Write arrays to Zarr}
 \description{
-Write array data to a Zarr backend via \pkg{DelayedArray}'s \linkS4class{RealizationSink} machinery.
+Write array data to a Zarr backend via \pkg{DelayedArray}'s \link[DelayedArray:RealizationSink]{RealizationSink} machinery.
 }

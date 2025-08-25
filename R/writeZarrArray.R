@@ -5,7 +5,7 @@
 
 #' Write arrays to Zarr
 #'
-#' Write array data to a Zarr backend via \pkg{DelayedArray}'s \linkS4class{RealizationSink} machinery.
+#' Write array data to a Zarr backend via \pkg{DelayedArray}'s \link[DelayedArray:RealizationSink]{RealizationSink} machinery.
 #'
 #' @aliases
 #' writeZarrArray
