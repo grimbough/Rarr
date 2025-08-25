@@ -1,3 +1,7 @@
+# Rarr 1.9.5
+
+* add support for reading, writing and updating Zarr v2 attributes
+
 # Rarr 1.9.4
 
 * The object name is no longer repeated (e.g., `name.zarrname.zarr`) when
