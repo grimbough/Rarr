@@ -1,19 +1,18 @@
 on:
   push:
+    branches:
+      - devel
   pull_request:
     branches:
       - devel
 
 name: R-CMD-check
 
-env:
-  GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-  R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
-    name: ${{ matrix.config.os }} (${{ matrix.config.bioc-version }})
+
+    name: ${{ matrix.config.os }} (Bioc ${{ matrix.config.bioc-version }})
 
     strategy:
       fail-fast: false
@@ -23,60 +22,58 @@ jobs:
         - { os: macOS-latest, bioc-version: 'devel', bioc-mirror: 'https://bioconductor.posit.co/'}
         - { os: ubuntu-24.04, bioc-version: 'devel', bioc-mirror: 'https://bioconductor.posit.co/', sys-libs: 'false'}
         - { os: ubuntu-24.04, bioc-version: 'devel', bioc-mirror: 'https://bioconductor.posit.co/', sys-libs: 'true'}
-        
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
       - name: Configure git
         run: |
           git config --global core.autocrlf false
+          git config --global user.email "ghau@example.com"
+          git config --global user.name "GitHub Actions User"
 
-      - uses: actions/checkout@v4
-      
-      - name: Install system dependencies
-        if: ${{ runner.os == 'linux' && matrix.config.sys-libs == 'true' }}
-        run: sudo apt-get update && sudo apt-get install -y libblosc-dev libzstd-dev
-        
-      - name: Remove system dependencies
-        if: ${{ runner.os == 'linux' && matrix.config.sys-libs == 'false' }}
-        run: sudo apt-get update && sudo apt-get remove -y libblosc-dev libzstd-dev
-          
+      - uses: actions/checkout@v5
+
       - name: Setup R and Bioconductor
         uses: grimbough/bioc-actions/setup-bioc@v1
         with:
           bioc-version: ${{ matrix.config.bioc-version }}
-          bioc-mirror: ${{ matrix.config.bioc-mirror }}
-          
-      - uses: r-lib/actions/setup-pandoc@v2
+          bioc-mirror: https://ftp.gwdg.de/pub/misc/bioconductor
+
+      - name: Install pandoc
+        uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r-dependencies@v2
-        
-      - name: Bioc - Build, Install, Check
-        id: build-install-check
-        uses: grimbough/bioc-actions/build-install-check@v1
-        
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          error-on: '"warning"'
+          upload-snapshots: true
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+
       - name: Run BiocCheck
         uses: grimbough/bioc-actions/run-BiocCheck@v1
         with:
-          error-on: 'never'
-          arguments: '--no-check-bioc-help' 
-      
-      - name: Session info
+          error-on: 'error'
+          arguments: '--no-check-bioc-help'
+
+      - name: Test coverage
+        if: ${{ matrix.config.os == 'ubuntu-latest' }}
         run: |
-          sessionInfo()
+          install.packages('covr')
+          covr::codecov()
         shell: Rscript {0}
-        
-      - name: Upload built package binary
+
+      ## upload the Rcheck folder if the workflow fails
+      - name: Upload output
         uses: actions/upload-artifact@v4
-        if: ${{ !(runner.os == 'linux' && matrix.config.sys-libs == 'true') }}
+        if: failure()
         with:
-          name: ${{runner.os}}-binary
+          name: ${{ matrix.os }}-bioc-${{ matrix.bioc-version}}
           path: |
-            ${{ steps.build-install-check.outputs.package-binary }}
-            
-      - name: Upload BiocCheck results
-        uses: actions/upload-artifact@v4
-        if: ${{ runner.os == 'linux' && matrix.config.sys-libs == 'false' }}
-        with:
-          name: BiocCheck
-          path: |
-            ~/**/*.BiocCheck
-          
+            ${{ steps.build-install-check.outputs.check-dir }}
