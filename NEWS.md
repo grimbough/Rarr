@@ -2,7 +2,7 @@
 
 ## New features
 
-* New function `write_zattrs()` and `read_zattrs()` provides support for
+* New functions `write_zattrs()` and `read_zattrs()` provide support for
   reading, writing and updating Zarr v2 attributes.
 
 ## Bug fixes
