@@ -266,11 +266,7 @@ read_chunk <- function(
     metadata <- read_array_metadata(zarr_array_path, s3_client = s3_client)
   }
 
-  dim_separator <- ifelse(
-    is.null(metadata$dimension_separator),
-    yes = ".",
-    no = metadata$dimension_separator
-  )
+  dim_separator <- metadata$dimension_separator %||% "."
   chunk_id <- paste0(chunk_id, collapse = dim_separator)
 
   chunk_file <- paste0(zarr_array_path, chunk_id)
