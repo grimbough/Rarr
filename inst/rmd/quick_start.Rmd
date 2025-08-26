@@ -3,7 +3,7 @@
 
 If you want to quickly get started reading an existing Zarr array with the
 package, this section should have the essentials covered.  First, we need to
-install **Rarr**^[you only need to do the installation step once] with the 
+install **Rarr**^[you only need to do the installation step once] with the
 commands below.
 
 ```{r, installation, eval = FALSE}
@@ -20,7 +20,7 @@ Once **Rarr** is installed, we have to load it into our R session:
 library(Rarr)
 ```
 
-**Rarr** can be used to read files either on local disk or on remote S3 storage 
+**Rarr** can be used to read files either on local disk or on remote S3 storage
 systems.  First lets take a look at reading from a local file.
 
 ## Reading a from a local Zarr array
@@ -80,7 +80,7 @@ zarr_overview(s3_address)
 ```{r, read-from-s3, echo = FALSE, eval = TRUE}
 s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
 s3_client <- paws.storage::s3(config = list(
-  credentials = list(anonymous = TRUE), 
+  credentials = list(anonymous = TRUE),
   region = "auto",
   endpoint = "https://uk1s3.embassy.ebi.ac.uk"))
 zarr_overview(s3_address, s3_client = s3_client)
@@ -100,7 +100,7 @@ z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
 z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL), s3_client = s3_client)
 ```
 
-We then plot our two slices on top of one another using the `image()` function.  
+We then plot our two slices on top of one another using the `image()` function.
 
 ```{r, plot-raster, echo = 2:9, cache = TRUE, out.width="30%", eval = TRUE}
 par(mar = c(0, 0, 0, 0))
@@ -116,11 +116,11 @@ image(log2(z2[2, , ]),
 )
 ```
 
-**Note:** if you receive the error message 
+**Note:** if you receive the error message
 `"Error in stop(aws_error(request$error)) : bad error message"` it is likely you
-have some AWS credentials available in to your R session, which are being 
-inappropriately used to access this public bucket.  Please see the section 
-\@ref(s3-client) for details on how to set credentials for a specific 
+have some AWS credentials available in to your R session, which are being
+inappropriately used to access this public bucket.  Please see the section
+\@ref(s3-client) for details on how to set credentials for a specific
 request.
 
 ## Writing to a Zarr array

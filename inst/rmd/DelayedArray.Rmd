@@ -5,8 +5,8 @@
 library(Rarr)
 ```
 
-**Rarr** can make use of the DelayedArray package to provide a more 'array-like' 
-interface to Zarr array, and use delayed operations and block processing to 
+**Rarr** can make use of the DelayedArray package to provide a more 'array-like'
+interface to Zarr array, and use delayed operations and block processing to
 efficiently work with large on-disk data.
 
 ### Working with an existing Zarr array
@@ -16,7 +16,10 @@ To demonstrate using the DelayedArray framework, we'll pick the example file con
 
 ```{r, use-example-2}
 zarr_example <- system.file(
-  "extdata", "zarr_examples", "column-first", "int32.zarr",
+  "extdata",
+  "zarr_examples",
+  "column-first",
+  "int32.zarr",
   package = "Rarr"
 )
 ```
@@ -24,10 +27,10 @@ zarr_example <- system.file(
 We use the function `ZarrArray()` to create a **ZarrArray** object backed by the Zarr file.
 
 ```{r, create-ZarrArray}
-zarr_array <- ZarrArray( zarr_example )
+zarr_array <- ZarrArray(zarr_example)
 ```
 
-We can print this to screen and see a nice visual representation of this 3 dimensional array, 
+We can print this to screen and see a nice visual representation of this 3 dimensional array,
 and confirm that the array is both a **ZarrArray** and **DelayedArray**
 
 ```{r, show-ZarrArray}
@@ -43,8 +46,8 @@ chunkdim(zarr_array)
 ### Realizing an in-memory array to Zarr
 
 ```{r}
-X <- matrix(rnorm(1000), ncol=10)
+X <- matrix(rnorm(1000), ncol = 10)
 zarr_path <- tempfile(fileext = ".zarr")
-zarr_X <- writeZarrArray(X, zarr_array_path = zarr_path, chunk_dim = c(10,10))
+zarr_X <- writeZarrArray(X, zarr_array_path = zarr_path, chunk_dim = c(10, 10))
 zarr_X
 ```
