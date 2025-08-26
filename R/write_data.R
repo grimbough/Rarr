@@ -493,7 +493,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     stop("Unsupported compression tool")
   }
 
-  if (exists("con")) {
+  if (!is.null(compressor) && compressor$id %in% c("gzip", "bz2", "lzma")) {
     writeBin(raw_chunk, con = con, useBytes = TRUE)
   } else {
     writeBin(compressed_chunk, con = chunk_path)
