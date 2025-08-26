@@ -1,0 +1,36 @@
+linters: all_linters(
+    packages = c("lintr"),
+    pipe_consistency_linter(pipe = "|>"),
+    object_name_linter = NULL,
+    implicit_integer_linter = NULL,
+    todo_comment_linter = NULL,
+    library_call_linter = NULL,
+    undesirable_function_linter(
+      modify_defaults(
+        default_undesirable_functions,
+        citEntry = "use the more modern bibentry() function",
+        library = NULL # too many false positive in too many files
+      ),
+      symbol_is_undesirable = FALSE
+    ),
+    function_argument_linter = NULL,
+    indentation_linter = NULL, # unstable as of lintr 3.1.0
+    one_call_pipe_linter = NULL,
+    keyword_quote_linter = NULL,
+    line_length_linter = NULL,
+    object_length_linter = NULL,
+    condition_call_linter = NULL,
+    if_switch_linter = NULL,
+    routine_registration_linter = NULL,
+    return_linter = NULL,
+    object_overwrite_linter = NULL,
+    # Minimum R version support, as described in the blueprints.
+    # Waiting on the better solution here:
+    backport_linter("oldrel-4")
+  )
+exclusions: list(
+    "inst",
+    "vignettes" = list(
+      undesirable_function_linter = Inf
+    )
+  )
