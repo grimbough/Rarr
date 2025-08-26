@@ -136,6 +136,15 @@ setMethod(
 #' @aliases ZarrArray-method
 #' @rdname ZarrArray-classes
 #' @export
+#' @examples
+#' zarr_example <- system.file(
+#'   "extdata", "zarr_examples", "column-first", "int32.zarr",
+#'   package = "Rarr"
+#' )
+#' zarr_array <- ZarrArray(zarr_example)
+#' is(zarr_array)
+#' dim(zarr_array)
+#' chunkdim(zarr_array)
 ZarrArray <- function(zarr_array_path) {
   if (is(zarr_array_path, "ZarrArraySeed")) {
     seed <- zarr_array_path

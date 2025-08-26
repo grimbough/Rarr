@@ -16,12 +16,17 @@
   rows/columns when `dim` is not divisible by `chunk_dim`.
 * The object name is no longer repeated (e.g., `name.zarrname.zarr`) when
   writing a Zarr array to a file in the current working directory.
+* Invalid URLs for examples with S3 storage in `read_zarr_array()` and
+  `zarr_overview()` have been updated.
 
 ## Internal changes
 
 * Coding style throughout the package has been harmonized using the air tool.
   Contributors using RStudio, Positron or VS Code should have their code styled
   automatically on save.
+* Continuous integration checks have been made stricter by setting `biocCheck()`
+  error level to "error" rather than "never", and R CMD check error level to
+  "warning" rather than "error".
 
 # Rarr 1.7
 

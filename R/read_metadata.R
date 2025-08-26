@@ -42,11 +42,9 @@
 #' zarr_overview(zarr_array_path = z1)
 #'
 #' ## using a file on S3 storage
-#' ## don't run this on the BioC Linux build - it's very slow there
-#' is_BBS_linux <- nzchar(Sys.getenv("IS_BIOC_BUILD_MACHINE")) && Sys.info()["sysname"] == "Linux"
-#' if (!is_BBS_linux) {
-#'   z2 <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0101A/13457539.zarr/1"
-#'   zarr_overview(z2)
+#' \donttest{
+#' z2 <- "https://noaa-nwm-retro-v2-zarr-pds.s3.amazonaws.com/feature_id/"
+#' zarr_overview(z2)
 #' }
 #' @export
 zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
