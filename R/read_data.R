@@ -355,7 +355,7 @@ read_chunk <- function(
   } else if (actual_chunk_size == prod(alt_chunk_dim)) {
     chunk_dim <- alt_chunk_dim
   } else {
-    stop("Decompresed data doesn't match expected chunk size.")
+    stop("Decompressed data doesn't match expected chunk size.")
   }
 
   ## reverse dimensions for column first datasets
