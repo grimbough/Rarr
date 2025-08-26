@@ -30,6 +30,9 @@
 * Static analysis via the lintr package is now performed on each push and PR.
   It should mostly be invisible to users but might result in slightly increased
   performance in some cases.
+* The superseded httr dependency has been replaced with the lighter curl
+  package, thus reducing the total number of dependencies for the package from
+  43 to 41.
 
 # Rarr 1.7
 
