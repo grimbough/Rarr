@@ -14,25 +14,25 @@ parse_s3_path <- function(path) {
 
 .determine_s3_provider <- function(path) {
   if (!grepl(pattern = "(^https?://)|(^s3://)", x = path)) {
-    provider <- NULL
-  } else {
-    matches <- regmatches(
-      x = path,
-      m = regexpr(
-        pattern = "(amazonaws\\.com)|(embl\\.de)",
-        text = path
-      )
-    )
-    if (!length(matches)) {
-      matches <- "other"
-    }
-    provider <- switch(
-      matches,
-      "amazonaws.com" = "aws",
-      "embl.de" = "other",
-      "other"
-    )
+    return(NULL)
   }
+
+  matches <- regmatches(
+    x = path,
+    m = regexpr(
+      pattern = "(amazonaws\\.com)|(embl\\.de)",
+      text = path
+    )
+  )
+  if (!length(matches)) {
+    matches <- "other"
+  }
+  provider <- switch(
+    matches,
+    "amazonaws.com" = "aws",
+    "embl.de" = "other",
+    "other"
+  )
   return(provider)
 }
 
