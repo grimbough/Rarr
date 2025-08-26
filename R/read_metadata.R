@@ -75,23 +75,22 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       )
       res <- do.call(rbind.data.frame, tmp)
       return(res)
-    } else {
-      cat("Type: Group of Arrays\n")
-      cat(
-        "Path: ",
-        normalizePath(zarr_array_path, mustWork = FALSE),
-        "\n",
-        sep = ""
+    }
+    cat("Type: Group of Arrays\n")
+    cat(
+      "Path: ",
+      normalizePath(zarr_array_path, mustWork = FALSE),
+      "\n",
+      sep = ""
+    )
+    cat("Arrays:\n")
+    for (a in arrays) {
+      cat("---\n")
+      .print_array_metadata(
+        dirname(a),
+        dot_zarray = dot_zmeta$metadata[[a]],
+        indent = "  "
       )
-      cat("Arrays:\n")
-      for (a in arrays) {
-        cat("---\n")
-        .print_array_metadata(
-          dirname(a),
-          dot_zarray = dot_zmeta$metadata[[a]],
-          indent = "  "
-        )
-      }
     }
     invisible(TRUE)
   } else {
@@ -106,11 +105,10 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
         zarr_array_path = dirname(zarr_array_path)
       )
       return(res)
-    } else {
-      cat("Type: Array\n")
-      .print_array_metadata(zarr_array_path, dot_zarray = dot_zarray)
-      invisible(TRUE)
     }
+    cat("Type: Array\n")
+    .print_array_metadata(zarr_array_path, dot_zarray = dot_zarray)
+    invisible(TRUE)
   }
 }
 
@@ -286,10 +284,8 @@ update_fill_value <- function(metadata) {
 
       zmeta <- fromJSON(rawToChar(s3_object$Body))
     }
-  } else {
-    if (file.exists(zmeta_path)) {
-      zmeta <- read_json(zmeta_path)
-    }
+  } else if (file.exists(zmeta_path)) {
+    zmeta <- read_json(zmeta_path)
   }
 
   return(zmeta)
