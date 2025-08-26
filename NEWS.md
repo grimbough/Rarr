@@ -19,6 +19,9 @@
 
 ## Internal changes
 
+* Coding style throughout the package has been harmonized using the air tool.
+  Contributors using RStudio, Positron or VS Code should have their code styled
+  automatically on save.
 
 # Rarr 1.7
 
