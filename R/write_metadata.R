@@ -10,7 +10,8 @@
 ) {
   zarray <- list()
 
-  if (!toupper(order) %in% c("C", "F")) {
+  order <- toupper(order)
+  if (!order %in% c("C", "F")) {
     stop("The 'order' argument must be either 'C' or 'F'")
   }
 
@@ -19,7 +20,7 @@
   zarray$dtype <- data_type
   zarray$fill_value <- fill_value
   zarray$dimension_separator <- dimension_separator
-  zarray$order <- toupper(order)
+  zarray$order <- order
   zarray$zarr_format <- 2
 
   ## weird hack to insert a named NULL entry in the list
