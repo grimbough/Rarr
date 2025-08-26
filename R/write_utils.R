@@ -10,7 +10,7 @@
     raw_list,
     function(x) {
       if (length(x) < nchar * 4) {
-        x <- c(x, as.raw(rep(0, (nchar * 4) - length(x))))
+        x <- c(x, raw((nchar * 4) - length(x)))
       }
       jsonlite::base64_enc(x)
     },
