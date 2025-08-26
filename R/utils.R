@@ -80,7 +80,6 @@ check_index <- function(index, metadata) {
     "O" = "py_object"
   )
 
-  # datatype$nbytes <- as.integer(datatype_parts[3])
   datatype$nbytes <- as.integer(
     gsub(x = typestr, pattern = "^[<>|][[:alpha:]]", replacement = "")
   )
