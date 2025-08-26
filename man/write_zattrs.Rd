@@ -17,3 +17,8 @@ path to a Zarr array or group.}
 \description{
 Read the .zattrs file associated with a Zarr array or group
 }
+\examples{
+z1 <- withr::local_tempdir(fileext = ".zarr")
+write_zattrs(z1, list(date = "2025-01-01", author = "Jane Doe"))
+
+}

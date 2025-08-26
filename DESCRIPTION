@@ -34,7 +34,8 @@ Suggests:
   covr,
   knitr,
   tinytest,
-  mockery
+  mockery,
+  withr
 VignetteBuilder: knitr
 SystemRequirements: GNU make
 biocViews: DataImport

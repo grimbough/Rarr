@@ -53,6 +53,10 @@
 #'
 #' @importFrom utils modifyList
 #' @export
+#' @examples
+#' z1 <- withr::local_tempdir(fileext = ".zarr")
+#' write_zattrs(z1, list(date = "2025-01-01", author = "Jane Doe"))
+#'
 write_zattrs <- function(path, new.zattrs = list(), overwrite = TRUE) {
   path <- .normalize_array_path(path)
   zattrs_path <- paste0(path, ".zattrs")
