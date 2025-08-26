@@ -267,7 +267,7 @@ read_chunk <- function(
   }
 
   dim_separator <- metadata$dimension_separator %||% "."
-  chunk_id <- paste0(chunk_id, collapse = dim_separator)
+  chunk_id <- paste(chunk_id, collapse = dim_separator)
 
   chunk_file <- paste0(zarr_array_path, chunk_id)
 
