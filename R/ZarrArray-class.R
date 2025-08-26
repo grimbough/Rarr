@@ -16,7 +16,7 @@ setClass(
 )
 
 ### ---------------------------
-### extract_array()
+### extract_array
 ### ---------------------------
 
 .extract_array_from_ZarrArraySeed <- function(x, index) {
@@ -56,25 +56,6 @@ ZarrArraySeed <- function(zarr_array_path) {
     chunk_dim = chunk_dim
   )
 }
-
-# .validate_ZarrArraySeed <- function(x) {
-#
-#   ## 'dim' slot.
-#   msg <- S4Arrays:::validate_dim_slot(x, "dim")
-#   if (!isTRUE(msg))
-#     return(msg)
-#
-#   ## 'chunkdim' slot.
-#   x_chunkdim <- x@chunk_dim
-#   if (!is.null(x_chunkdim)) {
-#     msg <- S4Arrays:::validate_dim_slot(x, "chunk_dim")
-#     if (!isTRUE(msg))
-#       return(msg)
-#   }
-#
-# }
-#
-# setValidity2("ZarrArraySeed", .validate_ZarrArraySeed)
 
 ### --------------------------------
 ### ZarrArray and ZarrMatrix objects
