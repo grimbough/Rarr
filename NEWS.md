@@ -27,6 +27,9 @@
 * Continuous integration checks have been made stricter by setting `biocCheck()`
   error level to "error" rather than "never", and R CMD check error level to
   "warning" rather than "error".
+* Static analysis via the lintr package is now performed on each push and PR.
+  It should mostly be invisible to users but might result in slightly increased
+  performance in some cases.
 
 # Rarr 1.7
 
