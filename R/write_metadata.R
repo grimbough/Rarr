@@ -1,3 +1,4 @@
+#' @importFrom jsonlite write_json
 .write_zarray <- function(
   path,
   array_shape,
