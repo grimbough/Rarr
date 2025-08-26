@@ -469,10 +469,13 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
   } else if (compressor$id == "gzip") {
     con <- gzfile(chunk_path, open = "wb", compression = compressor$level)
+    on.exit(close(con))
   } else if (compressor$id == "bz2") {
     con <- bzfile(chunk_path, open = "wb", compression = compressor$level)
+    on.exit(close(con))
   } else if (compressor$id == "lzma") {
     con <- xzfile(chunk_path, open = "wb", compression = compressor$level)
+    on.exit(close(con))
   } else if (compressor$id == "lz4") {
     compressed_chunk <- .Call("compress_chunk_LZ4", raw_chunk, PACKAGE = "Rarr")
     ## numpy stores the original size of the buffer in the first 4 bytes after
@@ -491,7 +494,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   if (exists("con")) {
-    on.exit(close(con))
     writeBin(raw_chunk, con = con, useBytes = TRUE)
   } else {
     writeBin(compressed_chunk, con = chunk_path)
