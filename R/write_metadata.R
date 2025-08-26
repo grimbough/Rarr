@@ -24,13 +24,7 @@
     filters = NULL,
     compressor = compressor
   )
-  json <- .format_json(toJSON(
-    zarray,
-    auto_unbox = TRUE,
-    pretty = TRUE,
-    null = "null"
-  ))
-  write(x = json, file = path)
+  write_json(zarray, path, auto_unbox = TRUE, pretty = TRUE, null = "null")
 }
 
 #' Read the .zattrs file associated with a Zarr array or group
@@ -40,7 +34,7 @@
 #' @param new.zattrs a list inserted to .zattrs at the \code{path}.
 #' @param overwrite if \code{TRUE} (the default), existing .zattrs elements will be overwritten by \code{new.zattrs}.
 #'
-#' @importFrom jsonlite toJSON
+#' @importFrom jsonlite write_json
 #'
 #' @importFrom utils modifyList
 #' @export
@@ -70,18 +64,11 @@ write_zattrs <- function(path, new.zattrs = list(), overwrite = TRUE) {
     }
   }
 
-  json <- .format_json(toJSON(
+  write_json(
     new.zattrs,
+    zattrs_path,
     auto_unbox = TRUE,
     pretty = TRUE,
     null = "null"
-  ))
-  write(x = json, file = zattrs_path)
-}
-
-.format_json <- function(json) {
-  json <- gsub(x = json, pattern = "[", replacement = "[\n    ", fixed = TRUE)
-  json <- gsub(x = json, pattern = "],", replacement = "\n  ],", fixed = TRUE)
-  json <- gsub(x = json, pattern = ", ", replacement = ",\n    ", fixed = TRUE)
-  return(json)
+  )
 }
