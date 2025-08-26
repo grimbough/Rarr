@@ -267,7 +267,7 @@ update_fill_value <- function(metadata) {
   return(metadata)
 }
 
-#' @import jsonlite
+#' @importFrom jsonlite read_json fromJSON
 #' @keywords Internal
 .read_zmetadata <- function(zarr_path, s3_client) {
   zarr_path <- .normalize_array_path(zarr_path)
