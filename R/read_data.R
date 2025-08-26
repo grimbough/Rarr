@@ -135,6 +135,7 @@ read_data <- function(
   warn <- 0L
 
   ## determine which chunk each of the requests indices belongs to
+  # nolint next: undesirable_function_linter.
   chunk_idx <- mapply(
     \(x, y) {
       (x - 1) %/% y
