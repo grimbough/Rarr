@@ -18,6 +18,8 @@
   writing a Zarr array to a file in the current working directory.
 * Invalid URLs for examples with S3 storage in `read_zarr_array()` and
   `zarr_overview()` have been updated.
+* `read_zarr_array()` no longer errors on arrays with numeric values other than
+  float, int, uint and complex.
 
 ## Internal changes
 
