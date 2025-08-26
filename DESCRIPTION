@@ -22,8 +22,8 @@ Depends:
   DelayedArray,
   BiocGenerics
 Imports:
+  curl,
   jsonlite,
-  httr,
   stringr,
   R.utils,
   utils,

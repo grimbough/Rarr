@@ -36,10 +36,9 @@ parse_s3_path <- function(path) {
   return(provider)
 }
 
-#' @importFrom httr parse_url
 #' @keywords Internal
 .url_parse_aws <- function(url) {
-  tmp <- parse_url(url)
+  tmp <- curl::curl_parse_url(url)
 
   if (grepl(pattern = "^https?://s3\\.", x = url, ignore.case = TRUE)) {
     ## path style address
@@ -69,14 +68,14 @@ parse_s3_path <- function(path) {
   ) {
     ## virtual-host style address
     bucket <- gsub(
-      x = tmp$hostname,
+      x = tmp$host,
       pattern = "^([a-z0-9\\.-]*)\\.s3.*",
       replacement = "\\1",
       ignore.case = TRUE
     )
-    object <- tmp$path
+    object <- gsub("^/?(.*)", "\\1", tmp$path)
     region <- gsub(
-      x = tmp$hostname,
+      x = tmp$host,
       pattern = "^.*\\.s3\\.([a-z0-9-]*)\\.amazonaws\\.com$",
       replacement = "\\1",
       ignore.case = TRUE
@@ -96,11 +95,9 @@ parse_s3_path <- function(path) {
   return(res)
 }
 
-#' @importFrom httr parse_url
-#'
 #' @keywords Internal
 .url_parse_other <- function(url) {
-  parsed_url <- httr::parse_url(url)
+  parsed_url <- curl::curl_parse_url(url)
   bucket <- gsub(
     x = parsed_url$path,
     pattern = "^/?([[a-z0-9:\\.-]*)/.*",
@@ -113,7 +110,7 @@ parse_s3_path <- function(path) {
     replacement = "\\2",
     ignore.case = TRUE
   )
-  hostname <- paste0(parsed_url$scheme, "://", parsed_url$hostname)
+  hostname <- paste0(parsed_url$scheme, "://", parsed_url$host)
 
   if (!is.null(parsed_url$port)) {
     hostname <- paste0(hostname, ":", parsed_url$port)
