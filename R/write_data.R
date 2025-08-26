@@ -402,7 +402,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   )[["chunk_data"]]
 
   ## extract the new values from x and insert them into the chunk
-  y <- R.utils::extract(x, indices = idx_in_x)
+  y <- R.utils::extract(x, indices = idx_in_x) # nolint: object_usage_linter.
   cmd <- .create_replace_call(
     "chunk_in_mem",
     "idx_in_chunk",
