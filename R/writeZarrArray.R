@@ -61,15 +61,13 @@ ZarrRealizationSink <- function(
 ) {
   if (is.null(zarr_array_path)) {
     stop("must provide a path")
-  } else {
-    zarr_array_path <- .normalize_array_path(zarr_array_path)
   }
-
   if (is.null(chunkdim)) {
     stop("must provide chunk dimensions")
-  } else {
-    chunkdim <- as.integer(chunkdim)
   }
+
+  zarr_array_path <- .normalize_array_path(zarr_array_path)
+  chunkdim <- as.integer(chunkdim)
 
   create_empty_zarr_array(
     zarr_array_path,
