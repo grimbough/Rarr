@@ -144,9 +144,7 @@ check_index <- function(index, metadata) {
   output <- character(length = nvalues)
   for (i in seq_len(nvalues)) {
     nbytes <- readBin(con, what = "integer", n = 1, size = 4)
-    if (nbytes > 0) {
-      output[i] <- readChar(con, nchars = nbytes, useBytes = TRUE)
-    }
+    output[i] <- readChar(con, nchars = nbytes, useBytes = TRUE)
   }
 
   Encoding(output) <- "UTF-8"
