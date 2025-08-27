@@ -24,7 +24,6 @@ Depends:
 Imports:
   curl,
   jsonlite,
-  stringr,
   R.utils,
   utils,
   paws.storage,
