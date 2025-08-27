@@ -34,7 +34,9 @@
   performance in some cases.
 * The superseded httr dependency has been replaced with the lighter curl
   package, thus reducing the total number of dependencies for the package from
-  43 to 41.
+  42 to 40.
+* The unused stringr dependency has been removed, reducing the total number of
+  dependencies for the package from 40 to 38.
 
 # Rarr 1.7
 

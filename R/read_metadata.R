@@ -193,7 +193,6 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' @returns A list containing the array metadata
 #'
 #' @importFrom jsonlite read_json fromJSON
-#' @importFrom stringr str_extract str_remove
 #'
 #' @keywords Internal
 read_array_metadata <- function(path, s3_client = NULL) {
@@ -303,7 +302,6 @@ update_fill_value <- function(metadata) {
 #' @returns A list containing the .zattrs elements
 #'
 #' @importFrom jsonlite read_json fromJSON
-#' @importFrom stringr str_extract str_remove
 #'
 #' @export
 read_zattrs <- function(path, s3_client = NULL) {
