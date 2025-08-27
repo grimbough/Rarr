@@ -255,13 +255,14 @@ update_fill_value <- function(metadata) {
         "-Infinity" = -Inf
       )
     }
-  } else if (is.numeric(metadata$fill_value)) {
+  } else if (is.numeric(val)) {
     metadata$fill_value <- switch(
       datatype$base_type,
       "float" = as.double(val),
       "int" = as.integer(val),
       "uint" = as.integer(val),
-      "complex" = as.complex(val)
+      "complex" = as.complex(val),
+      val
     )
   }
   return(metadata)
