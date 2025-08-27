@@ -25,7 +25,7 @@
     filters = NULL,
     compressor = compressor
   )
-  write_json(zarray, path, auto_unbox = TRUE, pretty = TRUE, null = "null")
+  write_json(zarray, path, auto_unbox = TRUE, pretty = 4, null = "null")
 }
 
 #' Read the .zattrs file associated with a Zarr array or group
@@ -69,7 +69,7 @@ write_zattrs <- function(path, new.zattrs = list(), overwrite = TRUE) {
     new.zattrs,
     zattrs_path,
     auto_unbox = TRUE,
-    pretty = TRUE,
+    pretty = 4,
     null = "null"
   )
 }
