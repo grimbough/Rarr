@@ -138,16 +138,13 @@ check_index <- function(index, metadata) {
 }
 
 .readVlenUTF8 <- function(input) {
-  nvalues <- readBin(input, what = "integer", n = 1, size = 4)
+  con <- rawConnection(input)
+  on.exit(close(con))
+  nvalues <- readBin(con, what = "integer", n = 1, size = 4)
   output <- character(length = nvalues)
-  input <- tail(input, -4)
   for (i in seq_len(nvalues)) {
-    nbytes <- readBin(input, what = "integer", n = 1, size = 4)
-    input <- tail(input, -4)
-    if (nbytes > 0) {
-      output[i] <- rawToChar(input[seq_len(nbytes)])
-      input <- tail(input, -nbytes)
-    }
+    nbytes <- readBin(con, what = "integer", n = 1, size = 4)
+    output[i] <- readChar(con, nchars = nbytes, useBytes = TRUE)
   }
 
   Encoding(output) <- "UTF-8"
