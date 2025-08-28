@@ -220,6 +220,12 @@ read_array_metadata <- function(path, s3_client = NULL) {
 
     metadata <- fromJSON(rawToChar(s3_object$Body))
   } else {
+    zarray_exists <- file.exists(zarray_path)
+
+    if (!zarray_exists) {
+      stop("The array does not have an associated .zarray metadata file")
+    }
+
     metadata <- read_json(zarray_path)
   }
 
