@@ -202,16 +202,20 @@ read_array_metadata <- function(path, s3_client = NULL) {
   if (!is.null(s3_client)) {
     parsed_url <- parse_s3_path(zarray_path)
 
-    s3_object <- try(
-      s3_client$get_object(
-        Bucket = parsed_url$bucket,
-        Key = parsed_url$object
-      ),
-      silent = TRUE
+    s3_object_listing <- s3_client$list_objects_v2(
+      Bucket = parsed_url$bucket,
+      Prefix = parsed_url$object
     )
 
-    if (inherits(s3_object, "try-error")) {
+    s3_object_exists <- s3_object_listing$KeyCount > 0
+
+    if (!s3_object_exists) {
       stop("The array does not have an associated .zarray metadata file")
+    } else {
+      s3_object <- s3_client$get_object(
+        Bucket = parsed_url$bucket,
+        Key = parsed_url$object
+      )
     }
 
     metadata <- fromJSON(rawToChar(s3_object$Body))
