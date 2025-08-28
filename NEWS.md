@@ -37,6 +37,9 @@
   42 to 40.
 * The unused stringr dependency has been removed, reducing the total number of
   dependencies for the package from 40 to 38.
+* A minor PROTECT()/UNPROTECT() imbalance in the C code, exposed by rchk, has
+  been fixed. It is not likely to cause problems in real-world situations but
+  it could theoretically lead to crashes in some cases.
 
 # Rarr 1.7
 
