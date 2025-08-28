@@ -38,6 +38,12 @@ to provide support for datasets compressed using these tools.
 
 ## Limitations with **Rarr**
 
+**Rarr currently only works with [Zarr specification version
+2](https://zarr-specs.readthedocs.io/en/latest/v2/v2.0.html). Support
+for [version
+3](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html) is
+actively being worked on.**
+
 If you know about Zarr arrays already, you’ll probably be aware they can
 be stored in hierarchical groups, where additional meta data can explain
 the relationship between the arrays. Currently, **Rarr** is not designed
@@ -99,7 +105,7 @@ zarr_overview(zarr_example)
 ```
 
     ## Type: Array
-    ## Path: /mnt/data/R-lib/4.5-bioc_3.21/Rarr/extdata/zarr_examples/column-first/int32.zarr
+    ## Path: /tmp/RtmpF7Gmri/temp_libpath200434430aca/Rarr/extdata/zarr_examples/column-first/int32.zarr
     ## Shape: 30 x 20 x 10
     ## Chunk Shape: 10 x 10 x 5
     ## No. of Chunks: 12 (3 x 2 x 2)
@@ -134,7 +140,7 @@ read_zarr_array(zarr_example, index = index)
 ```
 
     ## , , 1
-    ## 
+    ##
     ##      [,1] [,2]
     ## [1,]    1    2
     ## [2,]    1    0
@@ -226,7 +232,7 @@ read_zarr_array(zarr_array_path = path_to_new_zarr, index = list(6:10, 10, 1))
 ```
 
     ## , , 1
-    ## 
+    ##
     ##      [,1]
     ## [1,]   96
     ## [2,]   97
