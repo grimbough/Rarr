@@ -20,6 +20,8 @@
   `zarr_overview()` have been updated.
 * `read_zarr_array()` no longer errors on arrays with numeric values other than
   float, int, uint and complex.
+* `zarr_overview()` now returns an explicit error message when the .zarray file 
+  is absent
 
 ## Internal changes
 
