@@ -10,7 +10,7 @@
 \item{decompressed_chunk}{Raw vector holding the decompressed bytes for this
 chunk.}
 
-\item{metadata}{List produced by \code{read_array_metadata()} holding the contents
+\item{metadata}{List produced by \code{.read_array_metadata()} holding the contents
 of the \code{.zarray} file.}
 
 \item{alt_chunk_dim}{The dimensions of the array that should be created from

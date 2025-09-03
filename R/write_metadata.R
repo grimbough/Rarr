@@ -30,7 +30,7 @@
 
 #' Read the .zattrs file associated with a Zarr array or group
 #'
-#' @param path A character vector of length 1. This provides the
+#' @param zarr_path A character vector of length 1. This provides the
 #'   path to a Zarr array or group.
 #' @param new.zattrs a list inserted to .zattrs at the \code{path}.
 #' @param overwrite if \code{TRUE} (the default), existing .zattrs elements will be overwritten by \code{new.zattrs}.
@@ -43,9 +43,9 @@
 #' z1 <- withr::local_tempdir(fileext = ".zarr")
 #' write_zattrs(z1, list(date = "2025-01-01", author = "Jane Doe"))
 #'
-write_zattrs <- function(path, new.zattrs = list(), overwrite = TRUE) {
-  path <- .normalize_array_path(path)
-  zattrs_path <- paste0(path, ".zattrs")
+write_zattrs <- function(zarr_path, new.zattrs = list(), overwrite = TRUE) {
+  zarr_path <- .normalize_array_path(zarr_path)
+  zattrs_path <- paste0(zarr_path, ".zattrs")
 
   if (is.null(names(new.zattrs))) {
     stop("list elements should be named")

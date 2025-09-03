@@ -11,7 +11,7 @@ get_chunk_size(datatype, dimensions)
 produced by \code{\link[=.parse_datatype]{.parse_datatype()}}.}
 
 \item{dimensions}{A list containing the dimensions of the chunk.  Expected
-to be found in a list produced by \code{\link[=read_array_metadata]{read_array_metadata()}}.}
+to be found in a list produced by \code{\link[=.read_array_metadata]{.read_array_metadata()}}.}
 }
 \value{
 An integer giving the size of the chunk in bytes

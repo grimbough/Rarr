@@ -19,7 +19,7 @@ Zarr array}
 \item{chunk_id}{A numeric vector or single data.frame row with length equal
 to the number of dimensions of a chunk.}
 
-\item{metadata}{List produced by \code{read_array_metadata()} holding the contents
+\item{metadata}{List produced by \code{.read_array_metadata()} holding the contents
 of the \code{.zarray} file. If missing this function will be called
 automatically, but it is probably preferable to pass the meta data rather
 than read it repeatedly for every chunk.}

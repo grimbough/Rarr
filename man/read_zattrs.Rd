@@ -4,11 +4,11 @@
 \alias{read_zattrs}
 \title{Read the .zattrs file associated with a Zarr array or group}
 \usage{
-read_zattrs(path, s3_client = NULL)
+read_zattrs(zarr_path, s3_client = NULL)
 }
 \arguments{
-\item{path}{A character vector of length 1. This provides the
-path to a Zarr array or group. This can either be on a local file
+\item{zarr_path}{A character vector of length 1.  This provides the
+path to a Zarr array or group of arrays. This can either be on a local file
 system or on S3 storage.}
 
 \item{s3_client}{A list representing an S3 client.  This should be produced
