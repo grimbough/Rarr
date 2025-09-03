@@ -94,7 +94,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     }
     invisible(TRUE)
   } else {
-    dot_zarray <- read_array_metadata(
+    dot_zarray <- .read_array_metadata(
       path = zarr_array_path,
       s3_client = s3_client
     )
@@ -195,7 +195,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' @importFrom jsonlite read_json fromJSON
 #'
 #' @keywords Internal
-read_array_metadata <- function(path, s3_client = NULL) {
+.read_array_metadata <- function(path, s3_client = NULL) {
   path <- .normalize_array_path(path)
   zarray_path <- paste0(path, ".zarray")
 
@@ -203,7 +203,9 @@ read_array_metadata <- function(path, s3_client = NULL) {
     parsed_url <- parse_s3_path(zarray_path)
 
     s3_object_exists <- .s3_object_exists(
-      s3_client, parsed_url$bucket, parsed_url$object
+      s3_client,
+      parsed_url$bucket,
+      parsed_url$object
     )
 
     if (!s3_object_exists) {
@@ -226,7 +228,7 @@ read_array_metadata <- function(path, s3_client = NULL) {
     metadata <- read_json(zarray_path)
   }
 
-  metadata <- update_fill_value(metadata)
+  metadata <- .update_fill_value(metadata)
   ## if we do this here, we save many repeated calls to .parse_datatype
   ## the parsed version is used each time a chunk is read
   metadata$datatype <- .parse_datatype(metadata$dtype)
@@ -252,7 +254,7 @@ read_array_metadata <- function(path, s3_client = NULL) {
 #'   of: NULL, "NaN", "Infinity" or "-Infinity".
 #'
 #' @keywords Internal
-update_fill_value <- function(metadata) {
+.update_fill_value <- function(metadata) {
   val <- metadata$fill_value
   datatype <- .parse_datatype(metadata$dtype)
   ## a null fill value implies no missing values.
@@ -298,7 +300,7 @@ update_fill_value <- function(metadata) {
 #' <https://zarr.readthedocs.io/en/latest/user-guide/consolidated_metadata.html>
 #'
 #'
-#' @inheritParams read_array_metadata
+#' @inheritParams .read_array_metadata
 #'
 #' @importFrom jsonlite read_json fromJSON
 #' @keywords Internal

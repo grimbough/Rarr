@@ -48,7 +48,7 @@ expect_error(
 if (require(mockery)) {
   # Ensures that .s3_object_exists() just automatically returns FALSE
   stub(
-    where = Rarr:::read_array_metadata,
+    where = Rarr:::.read_array_metadata,
     what = ".s3_object_exists",
     how = FALSE
   )
