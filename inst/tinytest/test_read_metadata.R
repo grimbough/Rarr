@@ -14,6 +14,22 @@ expect_equal(dim(df), c(1, 6))
 ## write details to screen
 expect_stdout(zarr_overview(zarr_c, as_data_frame = FALSE))
 
+zarr_store_consolidated <- system.file(
+  "extdata",
+  "zarr_examples",
+  "metadata",
+  "consolidated.zarr",
+  package = "Rarr"
+)
+
+df <- zarr_overview(zarr_store_consolidated, as_data_frame = TRUE)
+expect_inherits(df, "data.frame")
+expect_equal(dim(df), c(3, 6))
+expect_identical(
+  colnames(df),
+  c("path", "nchunks", "data_type", "compressor", "dim", "chunk_dim")
+)
+
 ## error when metadata file is not found (local zarr array)
 zarr_c <- system.file(
   "extdata",

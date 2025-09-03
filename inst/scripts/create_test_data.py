@@ -224,4 +224,14 @@ z = zarr.open('/data/column-first/vlenUTF8.zarr', mode='w', shape=(12, 12),
 z[:,0] = greetings
 z[0,:] = greetings
 
+#####################################
 
+# Store with consolidated metadata
+group = zarr.create_group(
+    "inst/extdata/zarr_examples/metadata/consolidated.zarr",
+    zarr_format=2
+)
+group.create_array(shape=(1,), name="a", dtype="float64")
+group.create_array(shape=(2, 2), name="b", dtype="float64")
+group.create_array(shape=(3, 3, 3), name="c", dtype="float64")
+zarr.consolidate_metadata(group.store)
