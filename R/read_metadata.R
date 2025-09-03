@@ -281,6 +281,25 @@ update_fill_value <- function(metadata) {
   return(metadata)
 }
 
+#' Read consolidated metadata file
+#'
+#' @details
+#' This is stored in the `.zmetadata` file at the root of a Zarr store.
+#' Note that it is not documented in the official Zarr specification, because
+#' it is not (yet?) part of the standard.
+#'
+#' It is implemented in zarr-python and discussed under the
+#' "consolidated metadata" phrase.
+#'
+#' In particular, it lists the location of all the metadata files for arrays in
+#' the current group, so it is not necessary to crawl to discover them.
+#'
+#' @references
+#' <https://zarr.readthedocs.io/en/latest/user-guide/consolidated_metadata.html>
+#'
+#'
+#' @inheritParams read_array_metadata
+#'
 #' @importFrom jsonlite read_json fromJSON
 #' @keywords Internal
 .read_zmetadata <- function(zarr_path, s3_client) {
