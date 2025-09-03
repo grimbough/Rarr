@@ -7,6 +7,10 @@
 .read_zmetadata(zarr_path, s3_client)
 }
 \arguments{
+\item{zarr_path}{A character vector of length 1.  This provides the
+path to a Zarr array or group of arrays. This can either be on a local file
+system or on S3 storage.}
+
 \item{s3_client}{A list representing an S3 client.  This should be produced
 by \code{\link[paws.storage:s3]{paws.storage::s3()}}.}
 }

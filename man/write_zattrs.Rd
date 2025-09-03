@@ -4,10 +4,10 @@
 \alias{write_zattrs}
 \title{Read the .zattrs file associated with a Zarr array or group}
 \usage{
-write_zattrs(path, new.zattrs = list(), overwrite = TRUE)
+write_zattrs(zarr_path, new.zattrs = list(), overwrite = TRUE)
 }
 \arguments{
-\item{path}{A character vector of length 1. This provides the
+\item{zarr_path}{A character vector of length 1. This provides the
 path to a Zarr array or group.}
 
 \item{new.zattrs}{a list inserted to .zattrs at the \code{path}.}
