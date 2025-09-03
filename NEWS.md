@@ -20,7 +20,7 @@
   `zarr_overview()` have been updated.
 * `read_zarr_array()` no longer errors on arrays with numeric values other than
   float, int, uint and complex.
-* `zarr_overview()` now returns an explicit error message when the .zarray file 
+* `zarr_overview()` now returns an explicit error message when the .zarray file
   is absent
 
 ## Internal changes
@@ -42,6 +42,10 @@
 * A minor PROTECT()/UNPROTECT() imbalance in the C code, exposed by rchk, has
   been fixed. It is not likely to cause problems in real-world situations but
   it could theoretically lead to crashes in some cases.
+* Argument `path` in internal function `read_array_metadata()` has been renamed
+  to `zarr_path` for consistency with other internal functions
+* Some internal functions have been renamed with a leading dot, in line with
+  the officially recommended style for Bioconductor packages.
 
 # Rarr 1.7
 
