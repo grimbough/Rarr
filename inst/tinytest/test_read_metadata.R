@@ -34,8 +34,8 @@ expect_identical(
 zarr_c <- system.file(
   "extdata",
   "zarr_examples",
-  "missing-metadata",
-  "int64.zarr",
+  "metadata",
+  "missing.zarr",
   package = "Rarr"
 )
 
@@ -54,7 +54,8 @@ if (require(mockery)) {
   )
 
   expect_error(
-    zarr_overview("http://s3.example.com/bucket/example.zarr/",
+    zarr_overview(
+      "http://s3.example.com/bucket/example.zarr/",
       s3_client = list()
     ),
     "The array does not have an associated .zarray metadata file"
