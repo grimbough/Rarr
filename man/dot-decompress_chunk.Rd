@@ -10,7 +10,7 @@
 \item{compressed_chunk}{Raw vector holding the compressed bytes for this
 chunk.}
 
-\item{metadata}{List produced by \code{read_array_metadata()} with the contents of
+\item{metadata}{List produced by \code{.read_array_metadata()} with the contents of
 the \code{.zarray} file.}
 }
 \value{

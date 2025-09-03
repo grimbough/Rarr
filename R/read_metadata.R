@@ -95,7 +95,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     invisible(TRUE)
   } else {
     dot_zarray <- .read_array_metadata(
-      path = zarr_array_path,
+      zarr_path = zarr_array_path,
       s3_client = s3_client
     )
     if (as_data_frame) {
@@ -184,7 +184,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 
 #' Read the .zarray metadata file associated with a Zarr array
 #'
-#' @param path A character vector of length 1.  This provides the
+#' @param zarr_path A character vector of length 1.  This provides the
 #'   path to a Zarr array or group of arrays. This can either be on a local file
 #'   system or on S3 storage.
 #' @param s3_client A list representing an S3 client.  This should be produced
@@ -195,9 +195,9 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' @importFrom jsonlite read_json fromJSON
 #'
 #' @keywords Internal
-.read_array_metadata <- function(path, s3_client = NULL) {
-  path <- .normalize_array_path(path)
-  zarray_path <- paste0(path, ".zarray")
+.read_array_metadata <- function(zarr_path, s3_client = NULL) {
+  zarr_path <- .normalize_array_path(zarr_path)
+  zarray_path <- paste0(zarr_path, ".zarray")
 
   if (!is.null(s3_client)) {
     parsed_url <- parse_s3_path(zarray_path)
@@ -328,20 +328,16 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 
 #' Read the .zattrs file associated with a Zarr array or group
 #'
-#' @param path A character vector of length 1. This provides the
-#'   path to a Zarr array or group. This can either be on a local file
-#'   system or on S3 storage.
-#' @param s3_client A list representing an S3 client.  This should be produced
-#' by [paws.storage::s3()].
+#' @inheritParams .read_array_metadata
 #'
 #' @returns A list containing the .zattrs elements
 #'
 #' @importFrom jsonlite read_json fromJSON
 #'
 #' @export
-read_zattrs <- function(path, s3_client = NULL) {
-  path <- .normalize_array_path(path)
-  zattrs_path <- paste0(path, ".zattrs")
+read_zattrs <- function(zarr_path, s3_client = NULL) {
+  zarr_path <- .normalize_array_path(zarr_path)
+  zattrs_path <- paste0(zarr_path, ".zattrs")
 
   if (!file.exists(zattrs_path)) {
     stop("The group or array does not contain attributes (.zattrs)")
