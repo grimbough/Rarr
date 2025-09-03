@@ -50,7 +50,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     s3_client <- .create_s3_client(path = zarr_array_path)
   }
 
-  metadata <- read_array_metadata(zarr_array_path, s3_client = s3_client)
+  metadata <- .read_array_metadata(zarr_array_path, s3_client = s3_client)
 
   ## if no index provided we will return everything
   if (missing(index)) {
@@ -190,7 +190,7 @@ find_chunks_needed <- function(metadata, index) {
 #' @param datatype A list of details for the array datatype.  Expected to be
 #' produced by [.parse_datatype()].
 #' @param dimensions A list containing the dimensions of the chunk.  Expected
-#' to be found in a list produced by [read_array_metadata()].
+#' to be found in a list produced by [.read_array_metadata()].
 #'
 #' @returns An integer giving the size of the chunk in bytes
 #'
@@ -222,7 +222,7 @@ get_chunk_size <- function(datatype, dimensions) {
 #' @param datatype A list of details for the array datatype.  Expected to be
 #' produced by [.parse_datatype()].
 #' @param dimensions A list containing the dimensions of the chunk.  Expected
-#' to be found in a list produced by [read_array_metadata()].
+#' to be found in a list produced by [.read_array_metadata()].
 #'
 #' @returns An integer giving the size of the chunk in bytes
 #'
@@ -238,7 +238,7 @@ get_decompressed_chunk_size <- function(datatype, dimensions) {
 #'   Zarr array
 #' @param chunk_id A numeric vector or single data.frame row with length equal
 #'   to the number of dimensions of a chunk.
-#' @param metadata List produced by `read_array_metadata()` holding the contents
+#' @param metadata List produced by `.read_array_metadata()` holding the contents
 #'   of the `.zarray` file. If missing this function will be called
 #'   automatically, but it is probably preferable to pass the meta data rather
 #'   than read it repeatedly for every chunk.
@@ -264,7 +264,7 @@ read_chunk <- function(
   alt_chunk_dim = NULL
 ) {
   if (missing(metadata)) {
-    metadata <- read_array_metadata(zarr_array_path, s3_client = s3_client)
+    metadata <- .read_array_metadata(zarr_array_path, s3_client = s3_client)
   }
 
   dim_separator <- metadata$dimension_separator %||% "."
@@ -325,7 +325,7 @@ read_chunk <- function(
 #'
 #' @param decompressed_chunk Raw vector holding the decompressed bytes for this
 #'   chunk.
-#' @param metadata List produced by `read_array_metadata()` holding the contents
+#' @param metadata List produced by `.read_array_metadata()` holding the contents
 #'   of the `.zarray` file.
 #' @param alt_chunk_dim The dimensions of the array that should be created from
 #'   this chunk.  Normally this will be the same as the chunk shape in
@@ -410,7 +410,7 @@ read_chunk <- function(
 #'
 #' @param compressed_chunk Raw vector holding the compressed bytes for this
 #'   chunk.
-#' @param metadata List produced by `read_array_metadata()` with the contents of
+#' @param metadata List produced by `.read_array_metadata()` with the contents of
 #'   the `.zarray` file.
 #'
 #' @returns An array with the number of dimensions specified in the Zarr
