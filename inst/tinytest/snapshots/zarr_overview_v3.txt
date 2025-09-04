@@ -1,0 +1,8 @@
+Type: Array
+Path: /Rarr/inst/extdata/zarr_examples/metadata/v3.zarr
+Shape: 3 x 4 x 5
+Chunk Shape: 3 x 4 x 5
+No. of Chunks: 1 (1 x 1 x 1)
+Data Type: int64
+Endianness: little
+Compressor: zstd
