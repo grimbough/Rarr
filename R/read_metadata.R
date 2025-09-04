@@ -165,24 +165,31 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   } else {
     array_metadata <- metadata
   }
-
-  dt <- .parse_datatype(array_metadata$dtype)
+  chunk_shape <- unlist(array_metadata$chunk_grid$configuration$chunk_shape)
+  data_shape <- unlist(array_metadata$shape)
   nchunks <- ceiling(
-    unlist(array_metadata$shape) / unlist(array_metadata$chunks)
+    data_shape / chunk_shape
   )
+
+  codecs <- array_metadata$codecs
+  names(codecs) <- vapply(
+    codecs,
+    FUN = function(x) x$name,
+    FUN.VALUE = character(1)
+  )
+  compressor <- names(codecs)[match(
+    TRUE,
+    names(codecs) %in% c("zstd", "blosc", "gzip")
+  )]
 
   res <- data.frame(
     path = paste0(.normalize_array_path(zarr_array_path), array_name),
     nchunks = prod(nchunks),
-    data_type = paste0(dt$base_type, 8 * dt$nbytes),
-    compressor = if (is.null(array_metadata$compressor)) {
-      NA
-    } else {
-      array_metadata$compressor$id
-    }
+    data_type = array_metadata$data_type,
+    compressor = compressor
   )
-  res$dim <- list(unlist(array_metadata$shape))
-  res$chunk_dim <- list(unlist(array_metadata$chunks))
+  res$dim <- list(data_shape)
+  res$chunk_dim <- list(chunk_shape)
   return(res)
 }
 
