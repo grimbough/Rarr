@@ -41,7 +41,7 @@ zarr_c <- system.file(
 
 expect_error(
   zarr_overview(zarr_c),
-  "The array does not have an associated .zarray metadata file"
+  "The path does not contain any metadata files."
 )
 
 ## error when metadata file is not found (zarr array on s3)
@@ -58,6 +58,6 @@ if (require(mockery)) {
       "http://s3.example.com/bucket/example.zarr/",
       s3_client = list()
     ),
-    "The array does not have an associated .zarray metadata file"
+    "The path does not contain any metadata files."
   )
 }
