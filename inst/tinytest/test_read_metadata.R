@@ -67,6 +67,20 @@ withr::with_tempfile("zarr_overview_store", {
   )
 })
 
+## v3 metadata
+zarr_v3 <- system.file(
+  "extdata",
+  "zarr_examples",
+  "metadata",
+  "v3.zarr",
+  package = "Rarr"
+)
+df <- zarr_overview(zarr_v3, as_data_frame = TRUE)
+expect_inherits(df, "data.frame")
+expect_equal(dim(df), c(1, 6))
+
+expect_stdout(zarr_overview(zarr_v3, as_data_frame = FALSE))
+
 ## error when metadata file is not found (local zarr array)
 zarr_c <- system.file(
   "extdata",
