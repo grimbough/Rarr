@@ -164,6 +164,17 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   } else {
     array_metadata <- metadata
   }
+
+  # FIXME: once the data reading/writing code has been updated to use v3, this
+  # should move to .read_array_metadata()
+  if (array_metadata$zarr_format == 2) {
+    array_metadata <- .convert_metadata_version(
+      array_metadata,
+      version_from = 2,
+      version_to = 3
+    )
+  }
+
   chunk_shape <- unlist(array_metadata$chunk_grid$configuration$chunk_shape)
   data_shape <- unlist(array_metadata$shape)
   nchunks <- ceiling(
@@ -197,6 +208,16 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   array_metadata,
   indent = ""
 ) {
+  # FIXME: once the data reading/writing code has been updated to use v3, this
+  # should move to .read_array_metadata()
+  if (array_metadata$zarr_format == 2) {
+    array_metadata <- .convert_metadata_version(
+      array_metadata,
+      version_from = 2,
+      version_to = 3
+    )
+  }
+
   # FIXME: why is this a list at this stage?
   chunk_shape <- unlist(array_metadata$chunk_grid$configuration$chunk_shape)
   data_shape <- unlist(array_metadata$shape)
@@ -316,16 +337,11 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     metadata <- read_json(metadata_path)
   }
 
-  ## if we do this here, we save many repeated calls to .parse_datatype
-  ## the parsed version is used each time a chunk is read
   if (metadata$zarr_format == 2) {
+    ## if we do this here, we save many repeated calls to .parse_datatype
+    ## the parsed version is used each time a chunk is read
     metadata$datatype <- .parse_datatype(metadata$dtype)
     metadata <- .update_fill_value(metadata, metadata$datatype)
-    metadata <- .convert_metadata_version(
-      metadata,
-      version_from = 2,
-      version_to = 3
-    )
   }
 
   return(metadata)
