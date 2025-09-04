@@ -200,7 +200,7 @@ get_chunk_size <- function(datatype, dimensions) {
   ## TODO: not all datatypes are implemented yet
   sizeof <- switch(
     datatype$base_type,
-    "boolean" = 4L,
+    "bool" = 4L,
     "int" = 4L,
     "uint" = 4L,
     "float" = 8L,
@@ -376,7 +376,7 @@ read_chunk <- function(
   } else {
     output_type <- switch(
       datatype$base_type,
-      "boolean" = 0L,
+      "bool" = 0L,
       "int" = 1L,
       "uint" = 1L,
       "float" = 2L

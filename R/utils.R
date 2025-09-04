@@ -69,7 +69,7 @@ check_index <- function(index, metadata) {
 
   datatype$base_type <- switch(
     datatype_parts[2],
-    "b" = "boolean",
+    "b" = "bool",
     "i" = "int",
     "u" = "uint",
     "f" = "float",
