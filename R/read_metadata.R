@@ -252,8 +252,15 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       parsed_url$object
     )
 
+    # We already checked this in zarr_overview(), but in the case of a terribly
+    # broken Zarr store, a non-existent .zarray file could be listed in the
+    # .zmetadata file.
     if (!s3_object_exists) {
-      stop("The array does not have an associated .zarray metadata file")
+      stop(
+        "The requested `.zarray` metadata file (possibly listed in ",
+        "`.zmetadata`) does not exist.",
+        call. = FALSE
+      )
     }
 
     s3_object <- s3_client$get_object(
@@ -265,8 +272,15 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   } else {
     zarray_exists <- file.exists(zarray_path)
 
+    # We already checked this in zarr_overview(), but in the case of a terribly
+    # broken Zarr store, a non-existent .zarray file could be listed in the
+    # .zmetadata file.
     if (!zarray_exists) {
-      stop("The array does not have an associated .zarray metadata file")
+      stop(
+        "The requested `.zarray` metadata file (possibly listed in ",
+        "`.zmetadata`) does not exist.",
+        call. = FALSE
+      )
     }
 
     metadata <- read_json(zarray_path)
