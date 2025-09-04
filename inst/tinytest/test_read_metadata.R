@@ -79,7 +79,24 @@ df <- zarr_overview(zarr_v3, as_data_frame = TRUE)
 expect_inherits(df, "data.frame")
 expect_equal(dim(df), c(1, 6))
 
-expect_stdout(zarr_overview(zarr_v3, as_data_frame = FALSE))
+withr::with_tempfile("zarr_overview_v3", {
+  withr::with_output_sink(
+    zarr_overview_v3,
+    zarr_overview(zarr_v3, as_data_frame = FALSE)
+  )
+  actual <- readLines(zarr_overview_v3)
+  expected <- readLines(system.file(
+    "tinytest",
+    "snapshots",
+    "zarr_overview_v3.txt",
+    package = "Rarr"
+  ))
+  expect_identical(
+    # "Path" is absolute path so will differ between systems
+    actual[!startsWith(actual, "Path: ")],
+    expected[!startsWith(expected, "Path: ")]
+  )
+})
 
 ## error when metadata file is not found (local zarr array)
 zarr_c <- system.file(

@@ -132,59 +132,83 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       cat("---\n")
       .print_array_metadata(
         dirname(a),
-        dot_zarray = dot_zmeta$metadata[[a]],
+        array_metadata = dot_zmeta$metadata[[a]],
         indent = "  "
       )
     }
     invisible(TRUE)
   } else {
-    dot_zarray <- .read_array_metadata(
+    metadata_files <- metadata_files[-1]
+    array_metadata <- .read_array_metadata(
       zarr_path = zarr_array_path,
+      metadata_file = names(metadata_files)[metadata_files],
       s3_client = s3_client
     )
     if (as_data_frame) {
       res <- .rbind_array_metadata(
         array_name = basename(zarr_array_path),
-        metadata = dot_zarray,
+        metadata = array_metadata,
         zarr_array_path = dirname(zarr_array_path)
       )
       return(res)
     }
     cat("Type: Array\n")
-    .print_array_metadata(zarr_array_path, dot_zarray = dot_zarray)
+    .print_array_metadata(zarr_array_path, array_metadata = array_metadata)
     invisible(TRUE)
   }
 }
 
 .rbind_array_metadata <- function(array_name, metadata, zarr_array_path) {
   if (array_name %in% names(metadata)) {
-    dot_zarray <- metadata[[array_name]]
+    array_metadata <- metadata[[array_name]]
     array_name <- dirname(array_name)
   } else {
-    dot_zarray <- metadata
+    array_metadata <- metadata
   }
 
-  dt <- .parse_datatype(dot_zarray$dtype)
-  nchunks <- ceiling(unlist(dot_zarray$shape) / unlist(dot_zarray$chunks))
+  dt <- .parse_datatype(array_metadata$dtype)
+  nchunks <- ceiling(
+    unlist(array_metadata$shape) / unlist(array_metadata$chunks)
+  )
 
   res <- data.frame(
     path = paste0(.normalize_array_path(zarr_array_path), array_name),
     nchunks = prod(nchunks),
     data_type = paste0(dt$base_type, 8 * dt$nbytes),
-    compressor = if (is.null(dot_zarray$compressor)) {
+    compressor = if (is.null(array_metadata$compressor)) {
       NA
     } else {
-      dot_zarray$compressor$id
+      array_metadata$compressor$id
     }
   )
-  res$dim <- list(unlist(dot_zarray$shape))
-  res$chunk_dim <- list(unlist(dot_zarray$chunks))
+  res$dim <- list(unlist(array_metadata$shape))
+  res$chunk_dim <- list(unlist(array_metadata$chunks))
   return(res)
 }
 
-.print_array_metadata <- function(zarr_array_path, dot_zarray, indent = "") {
-  dt <- .parse_datatype(dot_zarray$dtype)
-  nchunks <- ceiling(unlist(dot_zarray$shape) / unlist(dot_zarray$chunks))
+.print_array_metadata <- function(
+  zarr_array_path,
+  array_metadata,
+  indent = ""
+) {
+  # FIXME: why is this a list at this stage?
+  chunk_shape <- unlist(array_metadata$chunk_grid$configuration$chunk_shape)
+  data_shape <- unlist(array_metadata$shape)
+  nchunks <- ceiling(
+    data_shape / chunk_shape
+  )
+
+  codecs <- array_metadata$codecs
+  names(codecs) <- vapply(
+    codecs,
+    FUN = function(x) x$name,
+    FUN.VALUE = character(1)
+  )
+  endianness <- codecs[["bytes"]][["configuration"]][["endian"]]
+  compressor <- names(codecs)[match(
+    TRUE,
+    names(codecs) %in% c("zstd", "blosc", "gzip")
+  )]
 
   cat(
     indent,
@@ -196,14 +220,14 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   cat(
     indent,
     "Shape: ",
-    paste(unlist(dot_zarray$shape), collapse = " x "),
+    paste(data_shape, collapse = " x "),
     "\n",
     sep = ""
   )
   cat(
     indent,
     "Chunk Shape: ",
-    paste(unlist(dot_zarray$chunks), collapse = " x "),
+    paste(chunk_shape, collapse = " x "),
     "\n",
     sep = ""
   )
@@ -216,12 +240,12 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     ")\n",
     sep = ""
   )
-  cat(indent, "Data Type: ", dt$base_type, 8 * dt$nbytes, "\n", sep = "")
-  cat(indent, "Endianness: ", dt$endian, "\n", sep = "")
-  if (is.null(dot_zarray$compressor)) {
+  cat(indent, "Data Type: ", array_metadata$data_type, "\n", sep = "")
+  cat(indent, "Endianness: ", endianness, "\n", sep = "")
+  if (is.na(compressor)) {
     cat(indent, "Compressor: None\n", sep = "")
   } else {
-    cat(indent, "Compressor: ", dot_zarray$compressor$id, "\n", sep = "")
+    cat(indent, "Compressor: ", compressor, "\n", sep = "")
   }
 }
 
@@ -239,12 +263,12 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' @importFrom jsonlite read_json fromJSON
 #'
 #' @keywords internal
-.read_array_metadata <- function(zarr_path, s3_client = NULL) {
+.read_array_metadata <- function(zarr_path, metadata_file, s3_client = NULL) {
   zarr_path <- .normalize_array_path(zarr_path)
-  zarray_path <- paste0(zarr_path, ".zarray")
+  metadata_path <- paste0(zarr_path, metadata_file)
 
   if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(zarray_path)
+    parsed_url <- parse_s3_path(metadata_path)
 
     s3_object_exists <- .s3_object_exists(
       s3_client,
@@ -270,7 +294,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 
     metadata <- fromJSON(rawToChar(s3_object$Body))
   } else {
-    zarray_exists <- file.exists(zarray_path)
+    zarray_exists <- file.exists(metadata_path)
 
     # We already checked this in zarr_overview(), but in the case of a terribly
     # broken Zarr store, a non-existent .zarray file could be listed in the
@@ -283,14 +307,20 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       )
     }
 
-    metadata <- read_json(zarray_path)
+    metadata <- read_json(metadata_path)
   }
 
   ## if we do this here, we save many repeated calls to .parse_datatype
   ## the parsed version is used each time a chunk is read
-  metadata$datatype <- .parse_datatype(metadata$dtype)
-
-  metadata <- .update_fill_value(metadata, metadata$datatype)
+  if (metadata$zarr_format == 2) {
+    metadata$datatype <- .parse_datatype(metadata$dtype)
+    metadata <- .update_fill_value(metadata, metadata$datatype)
+    metadata <- .convert_metadata_version(
+      metadata,
+      version_from = 2,
+      version_to = 3
+    )
+  }
 
   return(metadata)
 }
