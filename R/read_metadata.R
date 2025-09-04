@@ -109,14 +109,14 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       value = TRUE
     )
 
+    tmp <- lapply(
+      arrays,
+      FUN = .rbind_array_metadata,
+      metadata = dot_zmeta$metadata,
+      zarr_array_path = zarr_array_path
+    )
+    res <- do.call(rbind.data.frame, tmp)
     if (as_data_frame) {
-      tmp <- lapply(
-        arrays,
-        FUN = .rbind_array_metadata,
-        metadata = dot_zmeta$metadata,
-        zarr_array_path = zarr_array_path
-      )
-      res <- do.call(rbind.data.frame, tmp)
       return(res)
     }
     cat("Type: Group of Arrays\n")
@@ -126,15 +126,8 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       "\n",
       sep = ""
     )
-    cat("Arrays:\n")
-    for (a in arrays) {
-      cat("---\n")
-      .print_array_metadata(
-        dirname(a),
-        array_metadata = dot_zmeta$metadata[[a]],
-        indent = "  "
-      )
-    }
+    cat("Arrays:\n---\n")
+    .print_array_metadata(res, indent = "  ")
     invisible(TRUE)
   } else {
     metadata_files <- metadata_files[-1]
@@ -143,16 +136,16 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       metadata_file = names(metadata_files)[metadata_files],
       s3_client = s3_client
     )
+    res <- .rbind_array_metadata(
+      array_name = basename(zarr_array_path),
+      metadata = array_metadata,
+      zarr_array_path = dirname(zarr_array_path)
+    )
     if (as_data_frame) {
-      res <- .rbind_array_metadata(
-        array_name = basename(zarr_array_path),
-        metadata = array_metadata,
-        zarr_array_path = dirname(zarr_array_path)
-      )
       return(res)
     }
     cat("Type: Array\n")
-    .print_array_metadata(zarr_array_path, array_metadata = array_metadata)
+    .print_array_metadata(res)
     invisible(TRUE)
   }
 }
@@ -191,89 +184,65 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     TRUE,
     names(codecs) %in% c("zstd", "blosc", "gzip")
   )]
+  endianness <- codecs[["bytes"]][["configuration"]][["endian"]]
 
   res <- data.frame(
     path = paste0(.normalize_array_path(zarr_array_path), array_name),
-    nchunks = prod(nchunks),
     data_type = array_metadata$data_type,
+    endianness = endianness,
     compressor = compressor
   )
   res$dim <- list(data_shape)
   res$chunk_dim <- list(chunk_shape)
+  res$nchunks <- list(nchunks)
   return(res)
 }
 
-.print_array_metadata <- function(
-  zarr_array_path,
-  array_metadata,
-  indent = ""
-) {
-  # FIXME: once the data reading/writing code has been updated to use v3, this
-  # should move to .read_array_metadata()
-  if (array_metadata$zarr_format == 2) {
-    array_metadata <- .convert_metadata_version(
-      array_metadata,
-      version_from = 2,
-      version_to = 3
+.print_array_metadata <- function(array_metadata_df, indent = "") {
+  fields <- c(
+    "Path",
+    "Shape",
+    "Chunk Shape",
+    "No. of Chunks",
+    "Data Type",
+    "Endianness",
+    "Compressor"
+  )
+  fields <- paste0(indent, fields, ": %s")
+  formatted <- sprintf(
+    paste(fields, collapse = "\n"),
+    array_metadata_df$path,
+    vapply(
+      array_metadata_df$dim,
+      function(x) {
+        paste(unlist(x), collapse = " x ")
+      },
+      character(1)
+    ),
+    vapply(
+      array_metadata_df$chunk_dim,
+      function(x) {
+        paste(unlist(x), collapse = " x ")
+      },
+      character(1)
+    ),
+    vapply(
+      array_metadata_df$nchunks,
+      function(x) {
+        chunks <- unlist(x)
+        paste0(prod(chunks), " (", paste(chunks, collapse = " x "), ")")
+      },
+      character(1)
+    ),
+    array_metadata_df$data_type,
+    array_metadata_df$endianness,
+    ifelse(
+      is.na(array_metadata_df$compressor),
+      "None",
+      array_metadata_df$compressor
     )
-  }
-
-  # FIXME: why is this a list at this stage?
-  chunk_shape <- unlist(array_metadata$chunk_grid$configuration$chunk_shape)
-  data_shape <- unlist(array_metadata$shape)
-  nchunks <- ceiling(
-    data_shape / chunk_shape
   )
-
-  codecs <- array_metadata$codecs
-  names(codecs) <- vapply(
-    codecs,
-    FUN = function(x) x$name,
-    FUN.VALUE = character(1)
-  )
-  endianness <- codecs[["bytes"]][["configuration"]][["endian"]]
-  compressor <- names(codecs)[match(
-    TRUE,
-    names(codecs) %in% c("zstd", "blosc", "gzip")
-  )]
-
-  cat(
-    indent,
-    "Path: ",
-    normalizePath(zarr_array_path, mustWork = FALSE),
-    "\n",
-    sep = ""
-  )
-  cat(
-    indent,
-    "Shape: ",
-    paste(data_shape, collapse = " x "),
-    "\n",
-    sep = ""
-  )
-  cat(
-    indent,
-    "Chunk Shape: ",
-    paste(chunk_shape, collapse = " x "),
-    "\n",
-    sep = ""
-  )
-  cat(
-    indent,
-    "No. of Chunks: ",
-    prod(nchunks),
-    " (",
-    paste(nchunks, collapse = " x "),
-    ")\n",
-    sep = ""
-  )
-  cat(indent, "Data Type: ", array_metadata$data_type, "\n", sep = "")
-  cat(indent, "Endianness: ", endianness, "\n", sep = "")
-  if (is.na(compressor)) {
-    cat(indent, "Compressor: None\n", sep = "")
-  } else {
-    cat(indent, "Compressor: ", compressor, "\n", sep = "")
-  }
+  cat(formatted, sep = "\n---\n")
 }
 
 

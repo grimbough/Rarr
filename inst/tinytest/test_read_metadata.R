@@ -9,7 +9,7 @@ zarr_c <- system.file(
 ## return results as a data.frame
 df <- zarr_overview(zarr_c, as_data_frame = TRUE)
 expect_inherits(df, "data.frame")
-expect_equal(dim(df), c(1, 6))
+expect_equal(dim(df), c(1, 7))
 
 ## write details to screen
 withr::with_tempfile("zarr_overview_array", {
@@ -31,7 +31,6 @@ withr::with_tempfile("zarr_overview_array", {
   )
 })
 
-
 zarr_store_consolidated <- system.file(
   "extdata",
   "zarr_examples",
@@ -42,10 +41,18 @@ zarr_store_consolidated <- system.file(
 
 df <- zarr_overview(zarr_store_consolidated, as_data_frame = TRUE)
 expect_inherits(df, "data.frame")
-expect_equal(dim(df), c(3, 6))
+expect_equal(dim(df), c(3, 7))
 expect_identical(
   colnames(df),
-  c("path", "nchunks", "data_type", "compressor", "dim", "chunk_dim")
+  c(
+    "path",
+    "data_type",
+    "endianness",
+    "compressor",
+    "dim",
+    "chunk_dim",
+    "nchunks"
+  )
 )
 
 withr::with_tempfile("zarr_overview_store", {
@@ -77,7 +84,7 @@ zarr_v3 <- system.file(
 )
 df <- zarr_overview(zarr_v3, as_data_frame = TRUE)
 expect_inherits(df, "data.frame")
-expect_equal(dim(df), c(1, 6))
+expect_equal(dim(df), c(1, 7))
 
 withr::with_tempfile("zarr_overview_v3", {
   withr::with_output_sink(
