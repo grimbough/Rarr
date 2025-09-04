@@ -188,7 +188,7 @@ write_zarr_array <- function(
     dimension_separator = dimension_separator
   )
   ## read the metadata we just created
-  metadata <- .read_array_metadata(path)
+  metadata <- .read_array_metadata(path, ".zarray")
 
   chunk_names <- .generate_chunk_names(x_dim = dim(x), chunk_dim = chunk_dim)
   chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
@@ -302,7 +302,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   stopifnot(is.list(index))
 
   zarr_array_path <- .normalize_array_path(zarr_array_path)
-  metadata <- .read_array_metadata(zarr_array_path)
+  metadata <- .read_array_metadata(zarr_array_path, ".zarray")
   index <- check_index(index, metadata = metadata)
 
   data_type <- switch(

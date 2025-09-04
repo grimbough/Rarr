@@ -50,11 +50,11 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     s3_client <- .create_s3_client(path = zarr_array_path)
   }
 
-  metadata <- .read_array_metadata(zarr_array_path, s3_client = s3_client)
-
-  if (metadata$zarr_format != 2) {
-    stop("Only Zarr format version 2 is currently supported.", call. = FALSE)
-  }
+  metadata <- .read_array_metadata(
+    zarr_array_path,
+    ".zarray",
+    s3_client = s3_client
+  )
 
   ## if no index provided we will return everything
   if (missing(index)) {
@@ -268,7 +268,11 @@ read_chunk <- function(
   alt_chunk_dim = NULL
 ) {
   if (missing(metadata)) {
-    metadata <- .read_array_metadata(zarr_array_path, s3_client = s3_client)
+    metadata <- .read_array_metadata(
+      zarr_array_path,
+      ".zarray",
+      s3_client = s3_client
+    )
   }
 
   dim_separator <- metadata$dimension_separator %||% "."

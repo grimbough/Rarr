@@ -105,8 +105,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   if (!is.null(dot_zmeta)) {
     arrays <- grep(
       names(dot_zmeta$metadata),
-      pattern = "/.zarray",
-      fixed = TRUE,
+      pattern = "/(\\.zarray|zarr\\.json)$",
       value = TRUE
     )
 
