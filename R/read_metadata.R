@@ -277,8 +277,11 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     # .zmetadata file.
     if (!s3_object_exists) {
       stop(
-        "The requested `.zarray` metadata file (possibly listed in ",
-        "`.zmetadata`) does not exist.",
+        sprintf(
+          "The requested `%s` metadata file (%s) does not exist.",
+          metadata_file,
+          "possibly listed in `.zmetadata`"
+        ),
         call. = FALSE
       )
     }
@@ -297,8 +300,11 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     # .zmetadata file.
     if (!zarray_exists) {
       stop(
-        "The requested `.zarray` metadata file (possibly listed in ",
-        "`.zmetadata`) does not exist.",
+        sprintf(
+          "The requested `%s` metadata file (%s) does not exist.",
+          metadata_file,
+          "possibly listed in `.zmetadata`"
+        ),
         call. = FALSE
       )
     }
