@@ -6,6 +6,17 @@
   support for reading, writing and updating Zarr v2 attributes.
 * This package now has a pkgdown website, available at
   <https://huber-group-embl.github.io/Rarr/>.
+* Zarr v3 arrays are now supported for reading metadata via `zarr_overview()`.
+
+## Breaking changes
+
+* `zarr_overview(as_data_frame = TRUE)` now returns information more in line with the
+  output of `zarr_overview(as_data_frame = FALSE)`. In particular:
+  - a new `endianness` column has been added to indicate the byte order of the
+    array data.
+  - the `nchunks` column is now a list column specifying the number of chunks in
+    each dimension, rather than a single integer giving the total number of
+    chunks.
 
 ## Bug fixes
 
