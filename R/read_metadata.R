@@ -2,8 +2,8 @@
 #'
 #' When reading a Zarr array using [read_zarr_array()] it is necessary to know
 #' it's shape and size. `zarr_overview()` can be used to get a quick overview of
-#' the array shape and contents, based on the .zarray metadata file each array
-#' contains.
+#' the array shape and contents, based on the `.zarray` (Zarr v2) or `zarr.json`
+#' (Zarr v3) metadata file each array contains.
 #'
 #' The function currently prints the following information to the R console:
 #'  - array path
@@ -251,6 +251,8 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' @param zarr_path A character vector of length 1.  This provides the
 #'   path to a Zarr array or group of arrays. This can either be on a local file
 #'   system or on S3 storage.
+#' @param metadata_file One of `".zarray"` (Zarr v2) or `"zarr.json"` (Zarr v3)
+#'   specifying which metadata file to read.
 #' @param s3_client A list representing an S3 client.  This should be produced
 #' by [paws.storage::s3()].
 #'

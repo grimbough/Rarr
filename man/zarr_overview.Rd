@@ -27,8 +27,8 @@ a \code{data.frame} containing details of the array is returned.
 \description{
 When reading a Zarr array using \code{\link[=read_zarr_array]{read_zarr_array()}} it is necessary to know
 it's shape and size. \code{zarr_overview()} can be used to get a quick overview of
-the array shape and contents, based on the .zarray metadata file each array
-contains.
+the array shape and contents, based on the \code{.zarray} (Zarr v2) or \code{zarr.json}
+(Zarr v3) metadata file each array contains.
 }
 \details{
 The function currently prints the following information to the R console:
