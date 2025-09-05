@@ -20,10 +20,11 @@ expect_identical(
   zarr_overview(test_file_s3_url, as_data_frame = TRUE),
   list2DF(list(
     path = test_file_s3_url,
-    nchunks = 1,
     data_type = "int32",
+    endianness = "little",
     compressor = "blosc",
     dim = list(2729077L),
-    chunk_dim = list(2729077L)
+    chunk_dim = list(2729077L),
+    nchunks = list(1)
   ))
 )
