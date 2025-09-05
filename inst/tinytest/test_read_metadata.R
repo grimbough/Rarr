@@ -12,7 +12,25 @@ expect_inherits(df, "data.frame")
 expect_equal(dim(df), c(1, 6))
 
 ## write details to screen
-expect_stdout(zarr_overview(zarr_c, as_data_frame = FALSE))
+withr::with_tempfile("zarr_overview_array", {
+  withr::with_output_sink(
+    zarr_overview_array,
+    zarr_overview(zarr_c, as_data_frame = FALSE)
+  )
+  actual <- readLines(zarr_overview_array)
+  expected <- readLines(system.file(
+    "tinytest",
+    "snapshots",
+    "zarr_overview_array.txt",
+    package = "Rarr"
+  ))
+  expect_identical(
+    # "Path" is absolute path so will differ between systems
+    actual[!startsWith(actual, "Path: ")],
+    expected[!startsWith(expected, "Path: ")]
+  )
+})
+
 
 zarr_store_consolidated <- system.file(
   "extdata",
@@ -29,6 +47,25 @@ expect_identical(
   colnames(df),
   c("path", "nchunks", "data_type", "compressor", "dim", "chunk_dim")
 )
+
+withr::with_tempfile("zarr_overview_store", {
+  withr::with_output_sink(
+    zarr_overview_store,
+    zarr_overview(zarr_store_consolidated, as_data_frame = FALSE)
+  )
+  actual <- readLines(zarr_overview_store)
+  expected <- readLines(system.file(
+    "tinytest",
+    "snapshots",
+    "zarr_overview_store.txt",
+    package = "Rarr"
+  ))
+  expect_identical(
+    # "Path" is absolute path so will differ between systems
+    actual[!grepl("^\\s*Path: ", actual)],
+    expected[!grepl("^\\s*Path: ", actual)]
+  )
+})
 
 ## error when metadata file is not found (local zarr array)
 zarr_c <- system.file(

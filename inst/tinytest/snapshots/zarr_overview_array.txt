@@ -1,0 +1,8 @@
+Type: Array
+Path: /Rarr/inst/extdata/zarr_examples/column-first/int64.zarr
+Shape: 30 x 20 x 10
+Chunk Shape: 10 x 10 x 5
+No. of Chunks: 12 (3 x 2 x 2)
+Data Type: int64
+Endianness: little
+Compressor: blosc
