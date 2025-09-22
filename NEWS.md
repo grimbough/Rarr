@@ -4,6 +4,8 @@
 
 * New functions `write_zattrs()` and `read_zattrs()` provide support for
   reading, writing and updating Zarr v2 attributes.
+* This package now has a pkgdown website, available at
+  <https://huber-group-embl.github.io/Rarr/>.
 
 ## Bug fixes
 
