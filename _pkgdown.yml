@@ -7,12 +7,12 @@ reference:
     contents:
       - read_zarr_array
       - zarr_overview
-      - read_zattrs
+      - read_zarr_attributes
   - title: "Write Zarr data"
     contents:
       - write_zarr_array
       - writeZarrArray
-      - write_zattrs
+      - write_zarr_attributes
       - update_zarr_array
       - create_empty_zarr_array
   - title: "Custom classes"

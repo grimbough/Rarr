@@ -335,7 +335,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' @importFrom jsonlite read_json fromJSON
 #'
 #' @export
-read_zattrs <- function(zarr_path, s3_client = NULL) {
+read_zarr_attributes <- function(zarr_path, s3_client = NULL) {
   zarr_path <- .normalize_array_path(zarr_path)
   zattrs_path <- paste0(zarr_path, ".zattrs")
 
