@@ -54,6 +54,8 @@ check_index <- function(index, metadata) {
 #' typestr format.
 #'
 #' @returns A list of length 4 containing the details of the data type.
+#'
+#' @keywords internal
 .parse_datatype <- function(typestr) {
   datatype <- list()
   datatype_parts <- strsplit(typestr, "", fixed = TRUE)[[1]]
