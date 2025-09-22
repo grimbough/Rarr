@@ -31,4 +31,4 @@ the current group, so it is not necessary to crawl to discover them.
 \references{
 \url{https://zarr.readthedocs.io/en/latest/user-guide/consolidated_metadata.html}
 }
-\keyword{Internal}
+\keyword{internal}

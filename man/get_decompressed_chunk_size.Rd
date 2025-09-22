@@ -19,4 +19,4 @@ An integer giving the size of the chunk in bytes
 \description{
 Determine the size of chunk in bytes after decompression
 }
-\keyword{Internal}
+\keyword{internal}

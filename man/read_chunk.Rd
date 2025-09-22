@@ -42,4 +42,4 @@ warnings generated will reading the chunk into an R datatype.
 \description{
 Read a single Zarr chunk
 }
-\keyword{Internal}
+\keyword{internal}

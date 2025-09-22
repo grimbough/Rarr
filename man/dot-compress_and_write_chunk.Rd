@@ -39,4 +39,4 @@ side-effect of writing the compressed chunk to disk.
 \description{
 Compress and write a single chunk
 }
-\keyword{Internal}
+\keyword{internal}

@@ -24,4 +24,4 @@ commands. This is expected to be passed to \code{parse() |> eval()}.
 Create a string of the form \code{x[idx[[1]], idx[[2]]] <- y} for an array \code{x}
 where the number of dimensions is variable.
 }
-\keyword{Internal}
+\keyword{internal}

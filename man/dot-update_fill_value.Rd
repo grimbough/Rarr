@@ -24,4 +24,4 @@ R's representation of these special values, so numeric arrays are created. A
 create an array of type NULL in R. It should have no impact if there are
 really no missing values.
 }
-\keyword{Internal}
+\keyword{internal}
