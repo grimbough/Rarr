@@ -35,4 +35,4 @@ final datatype and then converts the resulting output into an array of the
 appropriate dimensions, including re-ordering if the original data is in
 row-major order.
 }
-\keyword{Internal}
+\keyword{internal}

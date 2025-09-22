@@ -20,4 +20,4 @@ A list containing the array metadata
 \description{
 Read the .zarray metadata file associated with a Zarr array
 }
-\keyword{Internal}
+\keyword{internal}

@@ -22,4 +22,4 @@ This is a modified version of paws.storage:::get_credentials().  It is
 included to prevent using the \code{:::} operator.  Look at that function if
 things stop working.
 }
-\keyword{Internal}
+\keyword{internal}

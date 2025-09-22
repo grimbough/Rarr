@@ -24,4 +24,4 @@ R has internal decompression tools for zlib, bz2 and lzma compression.  We
 use external libraries bundled with the package for blosc and lz4
 decompression.
 }
-\keyword{Internal}
+\keyword{internal}
