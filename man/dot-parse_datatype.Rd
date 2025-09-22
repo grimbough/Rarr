@@ -16,3 +16,4 @@ A list of length 4 containing the details of the data type.
 \description{
 Parse the data type encoding string
 }
+\keyword{internal}
