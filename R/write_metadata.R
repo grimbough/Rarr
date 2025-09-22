@@ -41,9 +41,13 @@
 #' @export
 #' @examples
 #' z1 <- withr::local_tempdir(fileext = ".zarr")
-#' write_zattrs(z1, list(date = "2025-01-01", author = "Jane Doe"))
+#' write_zarr_attributes(z1, list(date = "2025-01-01", author = "Jane Doe"))
 #'
-write_zattrs <- function(zarr_path, new.zattrs = list(), overwrite = TRUE) {
+write_zarr_attributes <- function(
+  zarr_path,
+  new.zattrs = list(),
+  overwrite = TRUE
+) {
   zarr_path <- .normalize_array_path(zarr_path)
   zattrs_path <- paste0(zarr_path, ".zattrs")
 
