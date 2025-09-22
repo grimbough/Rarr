@@ -17,3 +17,6 @@ LICENSE.md
 ^\.vscode$
 ^\.git-blame-ignore-revs$
 ^\.venv$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
