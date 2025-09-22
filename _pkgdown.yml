@@ -1,3 +1,23 @@
 url: https://huber-group-embl.github.io/Rarr/
 template:
   bootstrap: 5
+
+reference:
+  - title: "Read Zarr data"
+    contents:
+      - read_zarr_array
+      - zarr_overview
+      - read_zattrs
+  - title: "Write Zarr data"
+    contents:
+      - write_zarr_array
+      - writeZarrArray
+      - write_zattrs
+      - update_zarr_array
+      - create_empty_zarr_array
+  - title: "Custom classes"
+    contents:
+      - ZarrArray-class
+  - title: "Compression helpers"
+    contents:
+      - starts_with("use_")
