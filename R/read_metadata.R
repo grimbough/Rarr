@@ -194,7 +194,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #'
 #' @importFrom jsonlite read_json fromJSON
 #'
-#' @keywords Internal
+#' @keywords internal
 .read_array_metadata <- function(zarr_path, s3_client = NULL) {
   zarr_path <- .normalize_array_path(zarr_path)
   zarray_path <- paste0(zarr_path, ".zarray")
@@ -253,7 +253,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #'   list will be identical to the input, unless the `fill_value` entry was on
 #'   of: NULL, "NaN", "Infinity" or "-Infinity".
 #'
-#' @keywords Internal
+#' @keywords internal
 .update_fill_value <- function(metadata) {
   val <- metadata$fill_value
   datatype <- .parse_datatype(metadata$dtype)
@@ -303,7 +303,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' @inheritParams .read_array_metadata
 #'
 #' @importFrom jsonlite read_json fromJSON
-#' @keywords Internal
+#' @keywords internal
 .read_zmetadata <- function(zarr_path, s3_client) {
   zarr_path <- .normalize_array_path(zarr_path)
   zmeta_path <- paste0(zarr_path, ".zmetadata")

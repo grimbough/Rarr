@@ -1,4 +1,4 @@
-#' @keywords Internal
+#' @keywords internal
 check_index <- function(index, metadata) {
   ## check we have the correct number of dimensions
   if (isFALSE(length(index) == length(metadata$shape))) {
@@ -39,7 +39,7 @@ check_index <- function(index, metadata) {
 #' @returns A character vector of length one containing the replacement
 #'   commands. This is expected to be passed to `parse() |> eval()`.
 #'
-#' @keywords Internal
+#' @keywords internal
 .create_replace_call <- function(x_name, idx_name, idx_length, y_name) {
   args <- sprintf("%s[[%d]]", idx_name, seq_len(idx_length))
   args <- paste(args, collapse = ",")
@@ -102,7 +102,7 @@ check_index <- function(index, metadata) {
 #'
 #' @returns A character vector of length 1 containing the normalised path.
 #'
-#' @keywords Internal
+#' @keywords internal
 .normalize_array_path <- function(path) {
   ## we strip the protocol because it gets messed up by the slash removal later
   if (grepl(x = path, pattern = "^((https?://)|(s3://)).*$")) {
