@@ -36,7 +36,7 @@ parse_s3_path <- function(path) {
   return(provider)
 }
 
-#' @keywords Internal
+#' @keywords internal
 .url_parse_aws <- function(url) {
   tmp <- curl::curl_parse_url(url)
 
@@ -95,7 +95,7 @@ parse_s3_path <- function(path) {
   return(res)
 }
 
-#' @keywords Internal
+#' @keywords internal
 .url_parse_other <- function(url) {
   parsed_url <- curl::curl_parse_url(url)
   bucket <- gsub(
@@ -137,7 +137,7 @@ parse_s3_path <- function(path) {
 #' and is caught by `.check_credentials`.
 #'
 #' @importFrom methods formalArgs
-#' @keywords Internal
+#' @keywords internal
 .get_credentials <- function(credentials) {
   for (provider in credentials$provider) {
     args <- formalArgs(provider)

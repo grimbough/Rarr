@@ -194,7 +194,7 @@ find_chunks_needed <- function(metadata, index) {
 #'
 #' @returns An integer giving the size of the chunk in bytes
 #'
-#' @keywords Internal
+#' @keywords internal
 get_chunk_size <- function(datatype, dimensions) {
   ## determine the size of the R datatype we're going to return
   ## TODO: not all datatypes are implemented yet
@@ -226,7 +226,7 @@ get_chunk_size <- function(datatype, dimensions) {
 #'
 #' @returns An integer giving the size of the chunk in bytes
 #'
-#' @keywords Internal
+#' @keywords internal
 get_decompressed_chunk_size <- function(datatype, dimensions) {
   buffer_size <- prod(unlist(dimensions), datatype$nbytes)
   return(as.integer(buffer_size))
@@ -255,7 +255,7 @@ get_decompressed_chunk_size <- function(datatype, dimensions) {
 #'   the second is an integer indicating whether there were any overflow
 #'   warnings generated will reading the chunk into an R datatype.
 #'
-#' @keywords Internal
+#' @keywords internal
 read_chunk <- function(
   zarr_array_path,
   chunk_id,
@@ -341,7 +341,7 @@ read_chunk <- function(
 #'   i.e. it contains the overflowing elements, these will be trimmed when the
 #'   chunk is returned to `read_data()`
 #'
-#' @keywords Internal
+#' @keywords internal
 .format_chunk <- function(decompressed_chunk, metadata, alt_chunk_dim) {
   datatype <- metadata$datatype
 
@@ -419,7 +419,7 @@ read_chunk <- function(
 #'   the returned chunk will be smaller.
 #'
 #' @importFrom utils tail
-#' @keywords Internal
+#' @keywords internal
 .decompress_chunk <- function(compressed_chunk, metadata) {
   decompressor <- metadata$compressor$id
   datatype <- metadata$datatype

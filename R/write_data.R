@@ -441,7 +441,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #' @returns Returns `TRUE` if writing is successful.  Mostly called for the
 #'   side-effect of writing the compressed chunk to disk.
 #'
-#' @keywords Internal
+#' @keywords internal
 .compress_and_write_chunk <- function(
   input_chunk,
   chunk_path,
