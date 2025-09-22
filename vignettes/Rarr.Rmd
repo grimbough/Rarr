@@ -70,7 +70,7 @@ list.dirs(
 
 # Quick start guide
 
-```{r, child=normalizePath(file.path("..", "inst", "rmd", "quick_start.Rmd"))}
+```{r, child=system.file("rmd", "quick_start.Rmd", package="Rarr")}
 ```
 
 # Additional details
@@ -262,7 +262,7 @@ be realized on disk.  We use `read_zarr_array()` to confirm visually that the
 first row contains our sequence of values, whilst the second row is still all 7.
 We use `table()` to confirm that the total contents is as expected.
 
-```{r, child=normalizePath(file.path("..", "inst", "rmd", "DelayedArray.Rmd"))}
+```{r, child=system.file("rmd", "DelayedArray.Rmd", package="Rarr")}
 ```
 
 # Appendix
