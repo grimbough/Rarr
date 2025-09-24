@@ -28,10 +28,10 @@
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/index.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/read_chunk.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.html</loc></url>
-<url><loc>https://huber-group-embl.github.io/Rarr/reference/read_zattrs.html</loc></url>
+<url><loc>https://huber-group-embl.github.io/Rarr/reference/read_zarr_attributes.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/update_zarr_array.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.html</loc></url>
-<url><loc>https://huber-group-embl.github.io/Rarr/reference/write_zattrs.html</loc></url>
+<url><loc>https://huber-group-embl.github.io/Rarr/reference/write_zarr_attributes.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/zarr_overview.html</loc></url>
 </urlset>
 
