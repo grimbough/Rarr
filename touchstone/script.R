@@ -8,23 +8,31 @@
 # installs branches to benchmark
 touchstone::branch_install()
 
-# benchmark a function call from your package (two calls per branch)
 touchstone::benchmark_run(
-  # expr_before_benchmark = source("dir/data.R"), #<-- TODO OTPIONAL setup before benchmark
-  random_test = yourpkg::f(), #<- TODO put the call you want to benchmark here
-  n = 2
+  {
+    library(Rarr)
+  },
+  write_zstd = write_zarr_array(
+    array(1:1e6, dim = c(100, 100, 100)),
+    "zstd.zarr",
+    chunk_dim = c(10, 10, 10),
+    compressor = use_zstd(level = 22)
+  ),
+  n = 50
 )
 
-# TODO OPTIONAL benchmark any R expression (six calls per branch)
-# touchstone::benchmark_run(
-#   more = {
-#     if (TRUE) {
-#       y <- yourpkg::f2(x = 3)
-#     }
-#   }, #<- TODO put the call you want to benchmark here
-#   n = 6
-# )
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    write_zarr_array(
+      array(1:1e6, dim = c(100, 100, 100)),
+      "zstd.zarr",
+      chunk_dim = c(10, 10, 10),
+      compressor = use_zstd(level = 22)
+    )
+  },
+  read_zstd = read_zarr_array("zstd.zarr"),
+  n = 50
+)
 
-
-# create artifacts used downstream in the GitHub Action
 touchstone::benchmark_analyze()
