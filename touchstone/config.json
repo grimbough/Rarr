@@ -1,0 +1,6 @@
+{
+    "os": "ubuntu-latest",
+    "r": "release",
+    "rspm": "https://packagemanager.rstudio.com/cran/__linux__/noble/latest",
+    "touchstone_ref": "@c470b4489d6b553800657abcef5c28a46f1b49f5"
+}
