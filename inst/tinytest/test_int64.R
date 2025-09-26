@@ -45,3 +45,15 @@ expect_warning(column_major <- read_zarr_array(zarr_c, index = list(30, 20, 9)))
 expect_warning(row_major <- read_zarr_array(zarr_f, index = list(30, 20, 9)))
 expect_true(all(is.na(column_major)))
 expect_true(all(is.na(row_major)))
+
+zarr_v3 <- system.file(
+  "extdata",
+  "zarr_examples",
+  "column-first",
+  "int64_v3.zarr",
+  package = "Rarr"
+)
+expect_error(
+  read_zarr_array(zarr_v3),
+  "Zarr v3 arrays"
+)
