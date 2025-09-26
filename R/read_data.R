@@ -19,10 +19,7 @@
 #'
 #' ## Using a local file provided with the package
 #' ## This array has 3 dimensions
-#' z1 <- system.file("extdata", "zarr_examples", "row-first",
-#'   "int32.zarr",
-#'   package = "Rarr"
-#' )
+#' z1 <- system.file("extdata", "zarr_examples", "row-first", "int32.zarr", package = "Rarr")
 #'
 #' ## read the entire array
 #' read_zarr_array(zarr_array_path = z1)
@@ -48,6 +45,15 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   ## determine if this is a local or S3 array
   if (missing(s3_client)) {
     s3_client <- .create_s3_client(path = zarr_array_path)
+  }
+
+  metadata_file <- .find_metadata_file(
+    zarr_array_path,
+    s3_client
+  )
+
+  if (metadata_file["zarr.json"]) {
+    stop("Reading Zarr v3 arrays is not currently supported", call. = FALSE)
   }
 
   metadata <- .read_array_metadata(
