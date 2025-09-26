@@ -18,7 +18,7 @@ touchstone::benchmark_run(
     chunk_dim = c(10, 10, 10),
     compressor = use_zstd(level = 22)
   ),
-  n = 50
+  n = 25
 )
 
 touchstone::benchmark_run(
@@ -32,7 +32,7 @@ touchstone::benchmark_run(
     )
   },
   read_zstd = read_zarr_array("zstd.zarr"),
-  n = 50
+  n = 25
 )
 
 touchstone::benchmark_analyze()
