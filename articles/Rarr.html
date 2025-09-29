@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Mike L.
 Smith</h4>
                         
-            <h4 data-toc-skip class="date">26 September 2025</h4>
+            <h4 data-toc-skip class="date">29 September 2025</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/grimbough/Rarr/blob/devel/vignettes/Rarr.Rmd" class="external-link"><code>vignettes/Rarr.Rmd</code></a></small>
       <div class="d-none name"><code>Rarr.Rmd</code></div>
@@ -209,7 +209,7 @@ metadata.</p>
 <code class="sourceCode R"><span><span class="va">s3_address</span> <span class="op">&lt;-</span> <span class="st">"https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"</span></span>
 <span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">s3_address</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Type: Array</span></span>
-<span><span class="co">## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0/</span></span>
+<span><span class="co">## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0</span></span>
 <span><span class="co">## Shape: 50 x 494 x 464</span></span>
 <span><span class="co">## Chunk Shape: 1 x 494 x 464</span></span>
 <span><span class="co">## No. of Chunks: 50 (50 x 1 x 1)</span></span>
@@ -299,8 +299,8 @@ containing the array details.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">zarr_example</span>, as_data_frame <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                                                                 path</span></span>
 <span><span class="co">## 1 /home/runner/work/_temp/Library/Rarr/extdata/zarr_examples/column-first/int32.zarr</span></span>
-<span><span class="co">##   nchunks data_type compressor        dim chunk_dim</span></span>
-<span><span class="co">## 1      12     int32      blosc 30, 20, 10 10, 10, 5</span></span></code></pre>
+<span><span class="co">##   data_type endianness compressor        dim chunk_dim nchunks</span></span>
+<span><span class="co">## 1     int32     little      blosc 30, 20, 10 10, 10, 5 3, 2, 2</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="s3-credentials">Using credentials to access S3 buckets<a class="anchor" aria-label="anchor" href="#s3-credentials"></a>
@@ -311,7 +311,9 @@ environment variables <code>AWS_ACCESS_KEY_ID</code> and
 example, lets try reading a file in a private S3 bucket:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="st">"https://s3.embl.de/rarr-testing/bzip2.zarr"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Error in .read_array_metadata(zarr_path = zarr_array_path, s3_client = s3_client): The array does not have an associated .zarray metadata file</span></span></code></pre>
+<pre><code><span><span class="co">## Error: The path does not contain any metadata files. It must contain one of:   - `.zmetadata` (consolidated metadata)</span></span>
+<span><span class="co">##   - `.zarray` (Zarr V2 specification)</span></span>
+<span><span class="co">##   - `zarr.json` (Zarr V3 specification)</span></span></code></pre>
 <p>We can see the “Access Denied” message in our output, indicating that
 we don’t have permission to access this resource as an anonymous user.
 However, if we use the key pair below, which gives read-only access to
@@ -324,13 +326,13 @@ interrogate the files with functions in <em>Rarr</em>.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="st">"https://s3.embl.de/rarr-testing/bzip2.zarr"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Type: Array</span></span>
-<span><span class="co">## Path: https://s3.embl.de/rarr-testing/bzip2.zarr/</span></span>
+<span><span class="co">## Path: https://s3.embl.de/rarr-testing/bzip2.zarr</span></span>
 <span><span class="co">## Shape: 20 x 10</span></span>
 <span><span class="co">## Chunk Shape: 10 x 10</span></span>
 <span><span class="co">## No. of Chunks: 2 (2 x 1)</span></span>
 <span><span class="co">## Data Type: int32</span></span>
 <span><span class="co">## Endianness: little</span></span>
-<span><span class="co">## Compressor: bz2</span></span></code></pre>
+<span><span class="co">## Compressor: None</span></span></code></pre>
 <p>Behind the scenes <strong>Rarr</strong> makes use of the
 <strong>paws</strong> suite of packages (<a href="https://paws-r.github.io/" class="external-link uri">https://paws-r.github.io/</a>) to interact with S3 storage.
 A comprehensive overview of the multiple ways credentials can be set and
@@ -353,7 +355,9 @@ section.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s3_address</span> <span class="op">&lt;-</span> <span class="st">"https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"</span></span>
 <span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">s3_address</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Error in .read_array_metadata(zarr_path = zarr_array_path, s3_client = s3_client): The array does not have an associated .zarray metadata file</span></span></code></pre>
+<pre><code><span><span class="co">## Error: The path does not contain any metadata files. It must contain one of:   - `.zmetadata` (consolidated metadata)</span></span>
+<span><span class="co">##   - `.zarray` (Zarr V2 specification)</span></span>
+<span><span class="co">##   - `zarr.json` (Zarr V3 specification)</span></span></code></pre>
 <p>You might encounter similar problems if you’re trying to access
 multiple buckets each of which require different credentials. The
 solution here is to create an “s3_client” using
@@ -388,7 +392,7 @@ now works successfully.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">s3_address</span>, s3_client <span class="op">=</span> <span class="va">s3_client</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Type: Array</span></span>
-<span><span class="co">## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0/</span></span>
+<span><span class="co">## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0</span></span>
 <span><span class="co">## Shape: 50 x 494 x 464</span></span>
 <span><span class="co">## Chunk Shape: 1 x 494 x 464</span></span>
 <span><span class="co">## No. of Chunks: 50 (50 x 1 x 1)</span></span>
@@ -617,7 +621,7 @@ this 3 dimensional array, and confirm that the array is both a
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] Rarr_1.9.12           DelayedArray_0.34.1   SparseArray_1.8.1    </span></span>
+<span><span class="co">##  [1] Rarr_1.9.13           DelayedArray_0.34.1   SparseArray_1.8.1    </span></span>
 <span><span class="co">##  [4] S4Arrays_1.8.1        abind_1.4-8           IRanges_2.42.0       </span></span>
 <span><span class="co">##  [7] S4Vectors_0.46.0      MatrixGenerics_1.20.0 matrixStats_1.5.0    </span></span>
 <span><span class="co">## [10] BiocGenerics_0.54.0   generics_0.1.4        Matrix_1.7-3         </span></span>
@@ -637,7 +641,7 @@ this 3 dimensional array, and confirm that the array is both a
 <span><span class="co">## [31] digest_0.6.37       grid_4.5.1          rappdirs_0.3.3     </span></span>
 <span><span class="co">## [34] lifecycle_1.0.4     R.oo_1.27.1         R.methodsS3_1.8.2  </span></span>
 <span><span class="co">## [37] glue_1.8.0          evaluate_1.0.5      codetools_0.2-20   </span></span>
-<span><span class="co">## [40] ragg_1.5.0          rmarkdown_2.29      tools_4.5.1        </span></span>
+<span><span class="co">## [40] ragg_1.5.0          rmarkdown_2.30      tools_4.5.1        </span></span>
 <span><span class="co">## [43] htmltools_0.5.8.1</span></span></code></pre>
 </div>
 </div>
