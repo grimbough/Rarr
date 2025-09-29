@@ -18,6 +18,11 @@
     each dimension, rather than a single integer giving the total number of
     chunks.
 
+## Minor improvements
+
+* An explicit error message is now given when attempting to read a Zarr array
+  version 3. This version will be supported in a future release of Rarr.
+
 ## Bug fixes
 
 * `.url_parse_other()` now accounts for port numbers in host name and colons in
