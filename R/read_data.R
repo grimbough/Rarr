@@ -47,9 +47,10 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     s3_client <- .create_s3_client(path = zarr_array_path)
   }
 
-  metadata_file <- .find_metadata_file(
+  metadata_file <- .file_or_blob_exists(
     zarr_array_path,
-    s3_client
+    s3_client,
+    c(".zarray", "zarr.json")
   )
 
   if (metadata_file["zarr.json"]) {
