@@ -152,3 +152,28 @@ check_index <- function(index, metadata) {
   Encoding(output) <- "UTF-8"
   return(output)
 }
+
+.file_or_blob_exists <- function(
+  zarr_array_path,
+  s3_client,
+  files
+) {
+  if (is.null(s3_client)) {
+    is_present <- setNames(
+      file.exists(paste0(zarr_array_path, files)),
+      files
+    )
+  } else {
+    parse_url <- parse_s3_path(zarr_array_path)
+    is_present <- vapply(
+      files,
+      FUN = function(f) {
+        key <- paste0(parse_url$object, f)
+        .s3_object_exists(s3_client, parse_url$bucket, key)
+      },
+      FUN.VALUE = logical(1)
+    )
+  }
+
+  return(is_present)
+}

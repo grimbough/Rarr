@@ -54,10 +54,31 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     s3_client <- .create_s3_client(path = zarr_array_path)
   }
 
-  metadata_file <- .find_metadata_file(
+  metadata_files <- .file_or_blob_exists(
     zarr_array_path,
-    s3_client
+    s3_client,
+    c(".zmetadata", ".zarray", "zarr.json")
   )
+
+  if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
+    stop(
+      "The path contains both `.zarray` (Zarr V2 specification) and ",
+      "`zarr.json` (Zarr V3 specification) metadata files.\n",
+      "An array or group must conform to either the Zarr V2 or V3 ",
+      "specification.",
+      call. = FALSE
+    )
+  }
+  if (!any(metadata_files)) {
+    stop(
+      "The path does not contain any metadata files. ",
+      "It must contain one of: ",
+      "  - `.zmetadata` (consolidated metadata)\n",
+      "  - `.zarray` (Zarr V2 specification)\n",
+      "  - `zarr.json` (Zarr V3 specification)",
+      call. = FALSE
+    )
+  }
 
   # FIXME: let's not even try to read it if we know it doesn't exist
   dot_zmeta <- .read_zmetadata(
@@ -92,10 +113,10 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     .print_array_metadata(res, indent = "  ")
     invisible(TRUE)
   } else {
-    metadata_file <- metadata_file[-1]
+    metadata_files <- metadata_files[-1]
     array_metadata <- .read_array_metadata(
       zarr_path = zarr_array_path,
-      metadata_file = names(metadata_file)[metadata_file],
+      metadata_file = names(metadata_files)[metadata_files],
       s3_client = s3_client
     )
     res <- .rbind_array_metadata(
@@ -205,54 +226,6 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     )
   )
   cat(formatted, sep = "\n---\n")
-}
-
-.find_metadata_file <- function(zarr_array_path, s3_client) {
-
-  possible_metadata_files <- c(
-    ".zmetadata", # consolidated metadata
-    ".zarray", # v2 array metadata
-    "zarr.json" # v3 array or group metadata
-  )
-
-  if (is.null(s3_client)) {
-    metadata_files <- setNames(
-      file.exists(paste0(zarr_array_path, possible_metadata_files)),
-      possible_metadata_files
-    )
-  } else {
-    parse_url <- parse_s3_path(zarr_array_path)
-    metadata_files <- vapply(
-      possible_metadata_files,
-      FUN = function(f) {
-        key <- paste0(parse_url$object, f)
-        .s3_object_exists(s3_client, parse_url$bucket, key)
-      },
-      FUN.VALUE = logical(1)
-    )
-  }
-
-  if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
-    stop(
-      "The path contains both `.zarray` (Zarr V2 specification) and ",
-      "`zarr.json` (Zarr V3 specification) metadata files.\n",
-      "An array or group must conform to either the Zarr V2 or V3 ",
-      "specification.",
-      call. = FALSE
-    )
-  }
-  if (!any(metadata_files)) {
-    stop(
-      "The path does not contain any metadata files. ",
-      "It must contain one of: ",
-      "  - `.zmetadata` (consolidated metadata)\n",
-      "  - `.zarray` (Zarr V2 specification)\n",
-      "  - `zarr.json` (Zarr V3 specification)",
-      call. = FALSE
-    )
-  }
-
-  return(metadata_files)
 }
 
 #' Read the .zarray metadata file associated with a Zarr array
@@ -424,25 +397,48 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   return(zmeta)
 }
 
-#' Read the .zattrs file associated with a Zarr array or group
+#' Read the attributes associated with a Zarr array or group
 #'
 #' @inheritParams .read_array_metadata
 #'
-#' @returns A list containing the .zattrs elements
+#' @returns A list containing the attributes. If the file containing attributes
+#' (`.zattrs` for Zarr v2 or `zarr.json` for Zarr v3) exists but no attributes
+#' are provided, an empty list is returned.
 #'
 #' @importFrom jsonlite read_json fromJSON
 #'
 #' @export
 read_zarr_attributes <- function(zarr_path, s3_client = NULL) {
   zarr_path <- .normalize_array_path(zarr_path)
-  zattrs_path <- paste0(zarr_path, ".zattrs")
 
-  if (!file.exists(zattrs_path)) {
-    stop("The group or array does not contain attributes (.zattrs)")
+  exists_attribute_files <- .file_or_blob_exists(
+    zarr_path,
+    s3_client,
+    c(".zattrs", "zarr.json")
+  )
+
+  if (!any(exists_attribute_files)) {
+    stop(
+      "No file that could contain attributes (either `.zattrs` for v2 ",
+      "or `zarr.json` for v3) was found in the path.",
+      call. = FALSE
+    )
   }
+  if (all(exists_attribute_files)) {
+    stop(
+      "The path contains both `.zattrs` (v2 Zarr specification) ",
+      "and `zarr.json` (v3 Zarr specification) files, which is not allowed.",
+      call. = FALSE
+    )
+  }
+  attribute_file <- names(exists_attribute_files)[exists_attribute_files]
+  attribute_path <- paste0(
+    zarr_path,
+    attribute_file
+  )
 
   if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(zattrs_path)
+    parsed_url <- parse_s3_path(attribute_path)
 
     s3_object <- s3_client$get_object(
       Bucket = parsed_url$bucket,
@@ -451,7 +447,17 @@ read_zarr_attributes <- function(zarr_path, s3_client = NULL) {
 
     zattrs <- fromJSON(rawToChar(s3_object$Body))
   } else {
-    zattrs <- read_json(zattrs_path)
+    zattrs <- read_json(attribute_path)
   }
+
+  if (attribute_file == "zarr.json") {
+    zattrs <- zattrs[["attributes"]]
+  }
+
+  # Normalize cases of empty named list vs empty list vs NULL
+  if (length(zattrs) == 0) {
+    return(list())
+  }
+
   return(zattrs)
 }
