@@ -33,7 +33,11 @@ expect_equal(read.zattrs, c(zattrs))
 # overwrite = FALSE
 # TODO: should we control for the order of elements when overwritten
 zattrs.new.elem <- list(foo2 = "foo")
-write_zarr_attributes(zarr_path = path, new.zattrs = zattrs.new.elem, overwrite = FALSE)
+write_zarr_attributes(
+  zarr_path = path,
+  new.zattrs = zattrs.new.elem,
+  overwrite = FALSE
+)
 read.zattrs <- read_zarr_attributes(path)
 zattrs[names(zattrs.new.elem)] <- "foo2"
 expect_true(all(names(read.zattrs) %in% names(zattrs)))
@@ -41,8 +45,39 @@ expect_true(all(read.zattrs %in% zattrs))
 
 # test lists with empty names
 zattrs.new.elem <- list("empty", full = "full")
-expect_message(write_zarr_attributes(zarr_path = path, new.zattrs = zattrs.new.elem))
+expect_message(write_zarr_attributes(
+  zarr_path = path,
+  new.zattrs = zattrs.new.elem
+))
 read.zattrs <- read_zarr_attributes(path)
 zattrs[["full"]] <- "full"
 expect_true(all(names(read.zattrs) %in% names(zattrs)))
 expect_true(all(read.zattrs %in% zattrs))
+
+# v3
+v3_attrs <- read_zarr_attributes(
+  system.file(
+    "extdata",
+    "zarr_examples",
+    "metadata",
+    "v3_attr.zarr",
+    package = "Rarr"
+  )
+)
+expect_identical(
+  v3_attrs,
+  list(custom = "Hello, Zarr!")
+)
+
+expect_identical(
+  read_zarr_attributes(
+    system.file(
+      "extdata",
+      "zarr_examples",
+      "metadata",
+      "v3.zarr",
+      package = "Rarr"
+    )
+  ),
+  list()
+)
