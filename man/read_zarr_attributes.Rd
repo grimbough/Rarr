@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_metadata.R
 \name{read_zarr_attributes}
 \alias{read_zarr_attributes}
-\title{Read the .zattrs file associated with a Zarr array or group}
+\title{Read the attributes associated with a Zarr array or group}
 \usage{
 read_zarr_attributes(zarr_path, s3_client = NULL)
 }
@@ -15,8 +15,10 @@ system or on S3 storage.}
 by \code{\link[paws.storage:s3]{paws.storage::s3()}}.}
 }
 \value{
-A list containing the .zattrs elements
+A list containing the attributes. If the file containing attributes
+(\code{.zattrs} for Zarr v2 or \code{zarr.json} for Zarr v3) exists but no attributes
+are provided, an empty list is returned.
 }
 \description{
-Read the .zattrs file associated with a Zarr array or group
+Read the attributes associated with a Zarr array or group
 }
