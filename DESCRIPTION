@@ -7,7 +7,8 @@ Authors@R: c(
     person("Hugo", "Gruson", , "hugo.gruson@embl.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4094-1476")),
     person("Artür", "Manukyan", role = "ctb"),
-    person("Sharla", "Gelfand", role = "ctb")
+    person("Sharla", "Gelfand", role = "ctb"),
+    person("German Network for Bioinformatics Infrastructure - de.NBI", role = "fnd")
   )
 Description: The Zarr specification defines a format for chunked,
     compressed, N-dimensional arrays.  It's design allows efficient access
