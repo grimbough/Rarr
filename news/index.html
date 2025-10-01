@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.15</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,12 @@
 <h2 class="pkg-version" data-toc-text="1.9" id="rarr-19">Rarr 1.9<a class="anchor" aria-label="anchor" href="#rarr-19"></a></h2>
 <div class="section level3">
 <h3 id="new-features-1-9">New features<a class="anchor" aria-label="anchor" href="#new-features-1-9"></a></h3>
-<ul><li>New functions <code><a href="../reference/write_zarr_attributes.html">write_zarr_attributes()</a></code> and <code><a href="../reference/read_zarr_attributes.html">read_zarr_attributes()</a></code> provide support for reading, writing and updating Zarr v2 attributes.</li>
+<ul><li>New functions to work with Zarr attributes have been added:
+<ul><li>
+<code><a href="../reference/read_zarr_attributes.html">read_zarr_attributes()</a></code> reads Zarr v2 and v3 attributes</li>
+<li>
+<code><a href="../reference/write_zarr_attributes.html">write_zarr_attributes()</a></code> only supports writing Zarr v2 attributes for now.</li>
+</ul></li>
 <li>This package now has a pkgdown website, available at <a href="https://huber-group-embl.github.io/Rarr/" class="uri">https://huber-group-embl.github.io/Rarr/</a>.</li>
 <li>Zarr v3 arrays are now supported for reading metadata via <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code>.</li>
 </ul></div>
