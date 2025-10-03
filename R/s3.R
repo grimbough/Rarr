@@ -196,14 +196,10 @@ parse_s3_path <- function(path) {
 }
 
 .s3_object_exists <- function(s3_client, Bucket, Key) {
-  exists <- tryCatch(
-    expr = {
-      s3_client$head_object(Bucket = Bucket, Key = Key)$ContentLength > 0
-    },
-    error = function(e) {
-      FALSE
-    }
-  )
+  exists <- s3_client$list_objects_v2(
+    Bucket = Bucket,
+    Prefix = Key
+  )$KeyCount > 0
 
   return(exists)
 }
