@@ -1,5 +1,5 @@
 test_that("update_zarr_array replaces chunks for 1D arrays", {
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   res <- create_empty_zarr_array(
     zarr_array_path = path,
     dim = 100,
@@ -20,7 +20,7 @@ test_that("update_zarr_array replaces chunks for 1D arrays", {
 
 
 test_that("update_zarr_array can update non-contiguous indices and creates additional chunks", {
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   res <- create_empty_zarr_array(
     zarr_array_path = path,
     dim = 100,
@@ -45,7 +45,7 @@ test_that("update_zarr_array can update non-contiguous indices and creates addit
 
 
 test_that("update_zarr_array handles NULL in index for some dimensions (2D case)", {
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   res <- create_empty_zarr_array(
     zarr_array_path = path,
     dim = c(20, 20),

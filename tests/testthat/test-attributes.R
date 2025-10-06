@@ -1,7 +1,6 @@
 test_that("zarr attributes can be written and read", {
   # create zarr array
-  dir.create(td <- tempfile())
-  path <- file.path(td, "test.zarr")
+  path <- withr::local_tempdir(fileext = ".zarr")
   x <- array(runif(n = 10), dim = c(2, 5))
   res <- write_zarr_array(
     x = x,
@@ -21,15 +20,14 @@ test_that("zarr attributes can be written and read", {
 
 test_that("zarr attributes can be updated with new elements", {
   # create zarr array
-  dir.create(td <- tempfile())
-  path <- file.path(td, "test.zarr")
+  path <- withr::local_tempdir(fileext = ".zarr")
   x <- array(runif(n = 10), dim = c(2, 5))
   res <- write_zarr_array(
     x = x,
     zarr_array_path = path,
     chunk_dim = c(2, 5)
   )
-  
+
   zattrs <- list(foo = "foo", bar = "bar")
   write_zarr_attributes(zarr_path = path, new.zattrs = zattrs)
 
@@ -42,15 +40,14 @@ test_that("zarr attributes can be updated with new elements", {
 
 test_that("zarr attributes can be overwritten", {
   # create zarr array
-  dir.create(td <- tempfile())
-  path <- file.path(td, "test.zarr")
+  path <- withr::local_tempdir(fileext = ".zarr")
   x <- array(runif(n = 10), dim = c(2, 5))
   res <- write_zarr_array(
     x = x,
     zarr_array_path = path,
     chunk_dim = c(2, 5)
   )
-  
+
   zattrs <- list(foo = "foo", bar = "bar")
   write_zarr_attributes(zarr_path = path, new.zattrs = zattrs)
 
@@ -64,15 +61,14 @@ test_that("zarr attributes can be overwritten", {
 
 test_that("zarr attributes overwrite parameter works correctly", {
   # create zarr array
-  dir.create(td <- tempfile())
-  path <- file.path(td, "test.zarr")
+  path <- withr::local_tempdir(fileext = ".zarr")
   x <- array(runif(n = 10), dim = c(2, 5))
   res <- write_zarr_array(
     x = x,
     zarr_array_path = path,
     chunk_dim = c(2, 5)
   )
-  
+
   zattrs <- list(foo = "foo", bar = "bar", foo2 = "foo2")
   write_zarr_attributes(zarr_path = path, new.zattrs = zattrs)
 
@@ -91,15 +87,14 @@ test_that("zarr attributes overwrite parameter works correctly", {
 
 test_that("zarr attributes handles lists with empty names", {
   # create zarr array
-  dir.create(td <- tempfile())
-  path <- file.path(td, "test.zarr")
+  path <- withr::local_tempdir(fileext = ".zarr")
   x <- array(runif(n = 10), dim = c(2, 5))
   res <- write_zarr_array(
     x = x,
     zarr_array_path = path,
     chunk_dim = c(2, 5)
   )
-  
+
   zattrs <- list(foo = "foo", bar = "bar")
   write_zarr_attributes(zarr_path = path, new.zattrs = zattrs)
 
