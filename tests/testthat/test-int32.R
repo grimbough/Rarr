@@ -23,14 +23,14 @@ test_that("int32 zarr arrays can be read correctly", {
   expect_identical(column_major, row_major)
 
   # We return an array
-  expect_s3_class(column_major, "array")
+  expect_true(is.array(column_major))
 
   # Dimensions equal to the index
   expect_equal(dim(column_major), c(30, 20, 1))
 
   # First row should be sequence 1 to 20
   expect_equal(column_major[1, , ], 1:20)
-  
+
   # First column should be all 1s
   expect_equal(column_major[, 1, ], rep(1, 30))
 })

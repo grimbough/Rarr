@@ -12,7 +12,7 @@ test_that("uint16 zarr arrays can be read correctly", {
   expect_silent(column_major <- read_zarr_array(zarr_c, index = index))
 
   ## we return an array
-  expect_inherits(column_major, "array")
+  expect_true(is.array(column_major))
 
   ## dimensions equal to the index
   expect_equal(dim(column_major), c(30, 20, 1))
