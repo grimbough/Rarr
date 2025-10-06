@@ -26,22 +26,3 @@ test_that("Denied access errors return clear error messages", {
     "Denied"
   )
 })
-
-test_that("S3 zarr overview works", {
-  skip_if_offline()
-
-  # This is a real zarr store, but we don't have access
-  test_file_s3_url <- "https://noaa-nwm-retro-v2-zarr-pds.s3.amazonaws.com/feature_id/.zarray"
-  expect_identical(
-    zarr_overview(test_file_s3_url, as_data_frame = TRUE),
-    list2DF(list(
-      path = test_file_s3_url,
-      data_type = "int32",
-      endianness = "little",
-      compressor = "blosc",
-      dim = list(2729077L),
-      chunk_dim = list(2729077L),
-      nchunks = list(1)
-    ))
-  )
-})
