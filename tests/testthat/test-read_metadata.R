@@ -116,23 +116,14 @@ test_that("zarr_overview throws error for missing metadata files", {
   )
 })
 
-# NOTE: S3 error test is commented out pending switch to testthat and mocking capabilities
-# test_that("zarr_overview throws error for missing S3 metadata files", {
-#   if (require(mockery)) {
-#     # Ensures that .s3_object_exists() just automatically returns FALSE
-#     stub(
-#       where = .file_or_blob_exists,
-#       what = ".s3_object_exists",
-#       how = FALSE,
-#       depth = 2
-#     )
-#
-#     expect_error(
-#       zarr_overview(
-#         "http://s3.example.com/bucket/example.zarr/",
-#         s3_client = list()
-#       ),
-#       "The path does not contain any metadata files."
-#     )
-#   }
-# })
+test_that("missing metadata on S3 results in a clear error", {
+  with_mocked_bindings(
+    expect_error(
+      zarr_overview(
+        "http://s3.example.com/bucket/example.zarr/"
+      ),
+      "The path does not contain any metadata files."
+    ),
+    .s3_object_exists = function(...) FALSE
+  )
+})
