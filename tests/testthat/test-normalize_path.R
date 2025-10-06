@@ -11,7 +11,7 @@ test_that("normalize_array_path works with various path formats", {
     # URLs
     "https://s3.foo.com/bar/baz.zarr"
   )
-  
+
   expected_normalized_paths <- c(
     "c:/foo/bar/baz.zarr/",
     "d:/foo/bar/baz.zarr/",
@@ -21,10 +21,10 @@ test_that("normalize_array_path works with various path formats", {
     "/foo/bar/baz.zarr/",
     "https://s3.foo.com/bar/baz.zarr/"
   )
-  
+
   actual_normalized_paths <- vapply(
     paths,
-    Rarr:::.normalize_array_path,
+    .normalize_array_path,
     character(1),
     USE.NAMES = FALSE
   )
@@ -41,10 +41,10 @@ test_that("normalize_array_path works with existing filesystem paths", {
     "foo/bar/baz.zarr/",
     file.path(tempdir(), "foo", "/bar//", "baz.zarr")
   )
-  
+
   actual_normalized_existing_paths <- vapply(
     existing_paths,
-    Rarr:::.normalize_array_path,
+    .normalize_array_path,
     character(1),
     USE.NAMES = FALSE
   )
@@ -58,7 +58,7 @@ test_that("normalize_array_path works with existing filesystem paths", {
 
 test_that("normalize_array_path treats relative paths consistently", {
   expect_identical(
-    Rarr:::.normalize_array_path("baz.zarr"),
-    Rarr:::.normalize_array_path("./baz.zarr")
+    .normalize_array_path("baz.zarr"),
+    .normalize_array_path("./baz.zarr")
   )
 })

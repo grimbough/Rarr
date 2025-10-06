@@ -106,7 +106,7 @@ test_that("zarr_overview works with v3 metadata", {
     "v3.zarr",
     package = "Rarr"
   )
-  
+
   df <- zarr_overview(zarr_v3, as_data_frame = TRUE)
   expect_s3_class(df, "data.frame")
   expect_equal(dim(df), c(1, 7))
@@ -161,12 +161,12 @@ test_that("zarr_overview throws error for missing metadata files", {
 #   if (require(mockery)) {
 #     # Ensures that .s3_object_exists() just automatically returns FALSE
 #     stub(
-#       where = Rarr:::.file_or_blob_exists,
+#       where = .file_or_blob_exists,
 #       what = ".s3_object_exists",
 #       how = FALSE,
 #       depth = 2
 #     )
-# 
+#
 #     expect_error(
 #       zarr_overview(
 #         "http://s3.example.com/bucket/example.zarr/",
