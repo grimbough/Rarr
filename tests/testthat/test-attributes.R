@@ -15,7 +15,7 @@ test_that("zarr attributes can be written and read", {
 
   # check .zattrs
   read.zattrs <- read_zarr_attributes(path)
-  expect_equal(read.zattrs, zattrs)
+  expect_identical(read.zattrs, zattrs)
 })
 
 test_that("zarr attributes can be updated with new elements", {
@@ -35,7 +35,7 @@ test_that("zarr attributes can be updated with new elements", {
   zattrs.new.elem <- list(foo2 = "foo")
   write_zarr_attributes(zarr_path = path, new.zattrs = zattrs.new.elem)
   read.zattrs <- read_zarr_attributes(path)
-  expect_equal(read.zattrs, c(zattrs, zattrs.new.elem))
+  expect_identical(read.zattrs, c(zattrs, zattrs.new.elem))
 })
 
 test_that("zarr attributes can be overwritten", {
@@ -56,7 +56,7 @@ test_that("zarr attributes can be overwritten", {
   write_zarr_attributes(zarr_path = path, new.zattrs = zattrs.new.elem)
   read.zattrs <- read_zarr_attributes(path)
   zattrs[names(zattrs.new.elem)] <- zattrs.new.elem
-  expect_equal(read.zattrs, c(zattrs))
+  expect_identical(read.zattrs, c(zattrs))
 })
 
 test_that("zarr attributes overwrite parameter works correctly", {

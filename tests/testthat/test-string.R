@@ -26,10 +26,10 @@ test_that("string zarr arrays can be read correctly", {
   expect_true(is.array(column_major))
 
   ## dimensions equal to the index
-  expect_equal(dim(column_major), sapply(index, length))
+  expect_identical(dim(column_major), sapply(index, length))
 
   ## first row should be all "test" except the first element which is "ready"
-  expect_equal(
+  expect_identical(
     column_major[1, , ],
     c("ready", rep("test", length(index[[2]]) - 1))
   )
@@ -57,7 +57,7 @@ test_that("string zarr arrays can be read correctly", {
       nchar = 1
     )
   )
-  expect_equal(max(nchar(read_zarr_array(path))), 1L)
+  expect_identical(max(nchar(read_zarr_array(path))), 1L)
 
   ## check if nchar argument is provided when creating empty character zarr arrays
   path <- withr::local_tempfile(fileext = ".zarr")
@@ -98,8 +98,8 @@ test_that("string zarr arrays can be read correctly", {
   expect_silent(
     res <- read_zarr_array(unicode_fixed_length)
   )
-  expect_equal(res[, 1], greetings)
-  expect_equal(res[1, ], greetings)
+  expect_identical(res[, 1], greetings)
+  expect_identical(res[1, ], greetings)
 
   unicode_var_length <- system.file(
     "extdata",
@@ -112,8 +112,8 @@ test_that("string zarr arrays can be read correctly", {
   expect_silent(
     res <- read_zarr_array(unicode_var_length)
   )
-  expect_equal(res[, 1], greetings)
-  expect_equal(res[1, ], greetings)
+  expect_identical(res[, 1], greetings)
+  expect_identical(res[1, ], greetings)
 
   ## writing & reading unicode
   path <- withr::local_tempfile(fileext = ".zarr")

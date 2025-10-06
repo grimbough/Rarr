@@ -26,11 +26,11 @@ test_that("float64 zarr arrays can be read correctly", {
   expect_true(is.array(column_major))
 
   # Dimensions equal to the index
-  expect_equal(dim(column_major), sapply(index, length))
+  expect_identical(dim(column_major), sapply(index, length))
 
   # First row should be 2 to 20 except the first element which is 10.52
-  expect_equal(column_major[1, , ], c(10.52, 2:20))
+  expect_identical(column_major[1, , ], c(10.52, 2:20))
 
   # First column should be all 10.52
-  expect_equal(column_major[, 1, ], rep(10.52, 30))
+  expect_identical(column_major[, 1, ], rep(10.52, 30))
 })
