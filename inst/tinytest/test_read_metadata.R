@@ -120,20 +120,21 @@ expect_error(
 )
 
 ## error when metadata file is not found (zarr array on s3)
-if (require(mockery)) {
-  # Ensures that .s3_object_exists() just automatically returns FALSE
-  stub(
-    where = Rarr:::.file_or_blob_exists,
-    what = ".s3_object_exists",
-    how = FALSE,
-    depth = 2
-  )
+# FIXME: re-enable once we can mock s3 calls, potentially after switch to testthat
+# if (require(mockery)) {
+#   # Ensures that .s3_object_exists() just automatically returns FALSE
+#   stub(
+#     where = Rarr:::.file_or_blob_exists,
+#     what = ".s3_object_exists",
+#     how = FALSE,
+#     depth = 2
+#   )
 
-  expect_error(
-    zarr_overview(
-      "http://s3.example.com/bucket/example.zarr/",
-      s3_client = list()
-    ),
-    "The path does not contain any metadata files."
-  )
-}
+#   expect_error(
+#     zarr_overview(
+#       "http://s3.example.com/bucket/example.zarr/",
+#       s3_client = list()
+#     ),
+#     "The path does not contain any metadata files."
+#   )
+# }
