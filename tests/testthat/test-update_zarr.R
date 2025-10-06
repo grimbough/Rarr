@@ -16,18 +16,6 @@ test_that("update_zarr_array replaces chunks for 1D arrays", {
   )
   # only a single chunk file should have been created
   expect_identical(list.files(path), "0")
-})
-
-
-test_that("update_zarr_array can update non-contiguous indices and creates additional chunks", {
-  path <- withr::local_tempfile(fileext = ".zarr")
-  res <- create_empty_zarr_array(
-    zarr_array_path = path,
-    dim = 100,
-    chunk_dim = 10,
-    data_type = "integer",
-    fill_value = 100L
-  )
 
   x <- rep(20L, 5)
   expect_true(update_zarr_array(
@@ -42,7 +30,6 @@ test_that("update_zarr_array can update non-contiguous indices and creates addit
   # expect two chunk files were created
   expect_length(list.files(path), 2)
 })
-
 
 test_that("update_zarr_array handles NULL in index for some dimensions (2D case)", {
   path <- withr::local_tempfile(fileext = ".zarr")
