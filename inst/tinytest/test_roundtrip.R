@@ -47,7 +47,7 @@ expect_silent(
     x = x,
     zarr_array_path = path,
     chunk_dim = c(2, 5, 1),
-    compressor = Rarr:::use_blosc()
+    compressor = use_blosc()
   )
 )
 expect_identical(read_zarr_array(path), x)
@@ -59,7 +59,7 @@ expect_silent(
     x = x,
     zarr_array_path = path,
     chunk_dim = c(2, 5, 1),
-    compressor = Rarr:::use_lzma()
+    compressor = use_lzma()
   )
 )
 expect_identical(read_zarr_array(path), x)
@@ -71,7 +71,7 @@ expect_silent(
     x = x,
     zarr_array_path = path,
     chunk_dim = c(2, 5, 1),
-    compressor = Rarr:::use_lz4()
+    compressor = use_lz4()
   )
 )
 expect_identical(read_zarr_array(path), x)
@@ -83,7 +83,7 @@ expect_silent(
     x = x,
     zarr_array_path = path,
     chunk_dim = c(2, 5, 1),
-    compressor = Rarr:::use_bz2()
+    compressor = use_bz2()
   )
 )
 expect_identical(read_zarr_array(path), x)
@@ -95,7 +95,7 @@ expect_silent(
     x = x,
     zarr_array_path = path,
     chunk_dim = c(2, 5, 1),
-    compressor = Rarr:::use_zstd()
+    compressor = use_zstd()
   )
 )
 expect_identical(read_zarr_array(path), x)

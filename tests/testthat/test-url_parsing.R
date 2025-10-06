@@ -5,7 +5,7 @@ test_that("AWS S3 URLs parse correctly", {
   )
 
   for (i in which(grepl("aws", names(paths)))) {
-    expect_silent(parsed <- Rarr:::.url_parse_aws(paths[[i]]))
+    expect_silent(parsed <- .url_parse_aws(paths[[i]]))
     expect_equal(parsed$bucket, "DOC-EXAMPLE-BUCKET1")
     expect_equal(parsed$hostname, "https://s3.amazonaws.com")
     expect_equal(parsed$object, "puppy.png")
@@ -22,14 +22,14 @@ test_that("Other S3-like URLs parse correctly (EMBL and EO paths)", {
   )
 
   # EMBL
-  expect_silent(parsed <- Rarr:::.url_parse_other(paths$embl_path))
+  expect_silent(parsed <- .url_parse_other(paths$embl_path))
   expect_equal(parsed$bucket, "rarr-testing")
   expect_equal(parsed$hostname, "https://s3.embl.de")
   expect_equal(parsed$object, "bz2.zarr/.zarray")
   expect_equal(parsed$region, "auto")
 
   # EOPF style path 1
-  expect_silent(parsed <- Rarr:::.url_parse_other(paths$eopf_path_1))
+  expect_silent(parsed <- .url_parse_other(paths$eopf_path_1))
   expect_equal(
     parsed$bucket,
     "e05ab01a9d56408d82ac32d69a5aae2a:202505-s02msil2a"
@@ -42,7 +42,7 @@ test_that("Other S3-like URLs parse correctly (EMBL and EO paths)", {
   expect_equal(parsed$region, "auto")
 
   # EOPF style path 2
-  expect_silent(parsed <- Rarr:::.url_parse_other(paths$eopf_path_2))
+  expect_silent(parsed <- .url_parse_other(paths$eopf_path_2))
   expect_equal(
     parsed$bucket,
     "e05ab01a9d56408d82ac32d69a5aae2a:202506-s01siwgrh"
@@ -54,9 +54,9 @@ test_that("Other S3-like URLs parse correctly (EMBL and EO paths)", {
   )
   expect_equal(parsed$region, "auto")
 
-  expect_identical(Rarr:::.determine_s3_provider(paths[["aws_host"]]), "aws")
-  expect_identical(Rarr:::.determine_s3_provider(paths[["embl_path"]]), "other")
-  expect_identical(Rarr:::.determine_s3_provider("https://foo.bar/baz"), "other")
-  expect_identical(Rarr:::.determine_s3_provider(paths[["eopf_path_1"]]), "other")
-  expect_identical(Rarr:::.determine_s3_provider(paths[["eopf_path_2"]]), "other")
+  expect_identical(.determine_s3_provider(paths[["aws_host"]]), "aws")
+  expect_identical(.determine_s3_provider(paths[["embl_path"]]), "other")
+  expect_identical(.determine_s3_provider("https://foo.bar/baz"), "other")
+  expect_identical(.determine_s3_provider(paths[["eopf_path_1"]]), "other")
+  expect_identical(.determine_s3_provider(paths[["eopf_path_2"]]), "other")
 })

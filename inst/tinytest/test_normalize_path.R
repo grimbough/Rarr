@@ -21,7 +21,7 @@ expected_normalized_paths <- c(
 )
 actual_normalized_paths <- vapply(
   paths,
-  Rarr:::.normalize_array_path,
+  .normalize_array_path,
   character(1),
   USE.NAMES = FALSE
 )
@@ -39,7 +39,7 @@ existing_paths <- c(
 )
 actual_normalized_existing_paths <- vapply(
   existing_paths,
-  Rarr:::.normalize_array_path,
+  .normalize_array_path,
   character(1),
   USE.NAMES = FALSE
 )
@@ -51,6 +51,6 @@ tinytest::expect_match(
 )
 
 expect_identical(
-  Rarr:::.normalize_array_path("baz.zarr"),
-  Rarr:::.normalize_array_path("./baz.zarr")
+  .normalize_array_path("baz.zarr"),
+  .normalize_array_path("./baz.zarr")
 )
