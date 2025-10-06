@@ -29,15 +29,15 @@ Imports:
     methods,
     paws.storage,
     R.utils,
-    utils
+    utils,
+    withr
 Suggests:
     BiocStyle,
     covr,
     knitr,
     mockery,
     testthat (>= 3.0.0),
-    tinytest,
-    withr
+    tinytest
 VignetteBuilder:
     knitr
 biocViews: DataImport
@@ -46,3 +46,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 SystemRequirements: GNU make
 Config/testthat/edition: 3
+Config/testthat/parallel: true
