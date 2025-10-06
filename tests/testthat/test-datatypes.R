@@ -59,14 +59,14 @@ test_that("check_datatype throws errors for invalid inputs", {
 test_that("check_datatype requires nchar for character types", {
   expect_error(
     .check_datatype(data_type = "|S"),
-    pattern = "The 'nchar' argument must be provided"
+    "The 'nchar' argument must be provided"
   )
   expect_error(
     .check_datatype(fill_value = "Testing"),
-    pattern = "The 'nchar' argument must be provided"
+    "The 'nchar' argument must be provided"
   )
   expect_error(
     .check_datatype(fill_value = "Testing", nchar = -4),
-    pattern = "The 'nchar' argument must be provided"
+    "The 'nchar' argument must be provided"
   )
 })
