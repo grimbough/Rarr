@@ -103,7 +103,7 @@ have permission to access this resource as an anonymous user.  However, if we us
 below, which gives read-only access to the objects in the `rarr-testing` bucket,
 we're now able to interrogate the files with functions in *Rarr*.
 
-```{r}
+```{r, eval = FALSE}
 Sys.setenv(
   "AWS_ACCESS_KEY_ID" = "V352gmotks4ZyhfU",
   "AWS_SECRET_ACCESS_KEY" = "2jveausI91c8P3c7OCRIOrxdLbp3LNW8"
