@@ -18,7 +18,19 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Mike Smith \email{grimbough@gmail.com} (\href{https://orcid.org/0000-0002-7800-3848}{ORCID})
+\strong{Maintainer}: Hugo Gruson \email{hugo.gruson@embl.de} (\href{https://orcid.org/0000-0002-4094-1476}{ORCID})
+
+Authors:
+\itemize{
+  \item Mike Smith (\href{https://orcid.org/0000-0002-7800-3848}{ORCID}) (Maintainer from 2022 to 2025.) [conceptor]
+}
+
+Other contributors:
+\itemize{
+  \item Artür Manukyan [contributor]
+  \item Sharla Gelfand [contributor]
+  \item German Network for Bioinformatics Infrastructure - de.NBI [funder]
+}
 
 }
 \keyword{internal}
