@@ -1,6 +1,11 @@
 path <- "https://www.test.com/bucket/file1"
 s3_client <- Rarr:::.create_s3_client(path)
 
+expect_error(
+  zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr"),
+  "Denied"
+)
+
 if (require(mockery)) {
   ## This ensures .get_credentials always returns an error, even if the
   ## host machine has credentials available
