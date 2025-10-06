@@ -37,7 +37,7 @@ test_that("string zarr arrays can be read correctly", {
   expect_true(all(column_major[, 1, ] == "ready"))
 
   ## check read/write produce the same things
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = column_major,
@@ -48,7 +48,7 @@ test_that("string zarr arrays can be read correctly", {
   expect_identical(read_zarr_array(path), column_major)
 
   ## check we truncate strings if the exceed the specified length
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = column_major,
@@ -60,7 +60,7 @@ test_that("string zarr arrays can be read correctly", {
   expect_equal(max(nchar(read_zarr_array(path))), 1L)
 
   ## check if nchar argument is provided when creating empty character zarr arrays
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   expect_error(
     create_empty_zarr_array(
       zarr_array_path = path,
@@ -116,7 +116,7 @@ test_that("string zarr arrays can be read correctly", {
   expect_equal(res[1, ], greetings)
 
   ## writing & reading unicode
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   create_empty_zarr_array(
     path,
     dim = c(12, 12),

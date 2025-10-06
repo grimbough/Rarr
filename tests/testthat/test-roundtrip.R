@@ -1,5 +1,5 @@
 test_that("empty zarr arrays can be created and read correctly", {
-  path <- file.path(tempdir(), "empty_100.zarr")
+  path <- withr::local_tempdir(fileext = ".zarr")
 
   expect_silent(
     res <- create_empty_zarr_array(
@@ -19,7 +19,7 @@ test_that("zarr arrays can be written and read with various compression methods"
   x <- array(runif(n = 1000, min = -10, max = 10), dim = c(10, 20, 5))
 
   # Standard writing and reading with zlib compression
-  path <- tempfile(pattern = "zlib_")
+  path <- withr::local_tempfile(pattern = "zlib_", fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
@@ -32,7 +32,7 @@ test_that("zarr arrays can be written and read with various compression methods"
   expect_identical(read_zarr_array(path), x)
 
   # Standard writing and reading with gzip compression
-  path <- tempfile(pattern = "gzip_")
+  path <- withr::local_tempfile(pattern = "gzip_", fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
@@ -45,7 +45,7 @@ test_that("zarr arrays can be written and read with various compression methods"
   expect_identical(read_zarr_array(path), x)
 
   # Testing blosc compression
-  path <- tempfile(pattern = "blosc_")
+  path <- withr::local_tempfile(pattern = "blosc_", fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
@@ -57,7 +57,7 @@ test_that("zarr arrays can be written and read with various compression methods"
   expect_identical(read_zarr_array(path), x)
 
   # Testing LZMA compression
-  path <- tempfile(pattern = "lzma_")
+  path <- withr::local_tempfile(pattern = "lzma_", fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
@@ -69,7 +69,7 @@ test_that("zarr arrays can be written and read with various compression methods"
   expect_identical(read_zarr_array(path), x)
 
   # Testing LZ4 compression
-  path <- tempfile(pattern = "lz4_")
+  path <- withr::local_tempfile(pattern = "lz4_", fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
@@ -81,7 +81,7 @@ test_that("zarr arrays can be written and read with various compression methods"
   expect_identical(read_zarr_array(path), x)
 
   # Testing BZIP2 compression
-  path <- tempfile(pattern = "bz2_")
+  path <- withr::local_tempfile(pattern = "bz2_", fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
@@ -93,7 +93,7 @@ test_that("zarr arrays can be written and read with various compression methods"
   expect_identical(read_zarr_array(path), x)
 
   # Testing ZSTD compression
-  path <- tempfile(pattern = "zstd_")
+  path <- withr::local_tempfile(pattern = "zstd_", fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
@@ -105,7 +105,7 @@ test_that("zarr arrays can be written and read with various compression methods"
   expect_identical(read_zarr_array(path), x)
 
   # Testing no compression
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
@@ -121,7 +121,7 @@ test_that("zarr arrays work with non-aligned chunk dimensions", {
   x <- array(runif(n = 1000, min = -10, max = 10), dim = c(10, 20, 5))
 
   # Testing chunk dimensions that don't align perfectly with the array extent
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
@@ -136,7 +136,7 @@ test_that("zarr arrays work with row-major ordering", {
   x <- array(runif(n = 1000, min = -10, max = 10), dim = c(10, 20, 5))
 
   # Row-major ordering
-  path <- tempfile()
+  path <- withr::local_tempfile(fileext = ".zarr")
   expect_silent(
     res <- write_zarr_array(
       x = x,
