@@ -10,7 +10,7 @@ test_that("zarr_overview returns data.frame for single array", {
   # Return results as a data.frame
   df <- zarr_overview(zarr_c, as_data_frame = TRUE)
   expect_s3_class(df, "data.frame")
-  expect_equal(dim(df), c(1, 7))
+  expect_identical(dim(df), c(1L, 7L))
 })
 
 test_that("zarr_overview console output matches snapshot for single array", {
@@ -54,7 +54,7 @@ test_that("zarr_overview works with consolidated metadata store", {
 
   df <- zarr_overview(zarr_store_consolidated, as_data_frame = TRUE)
   expect_s3_class(df, "data.frame")
-  expect_equal(dim(df), c(3, 7))
+  expect_identical(dim(df), c(3L, 7L))
   expect_identical(
     colnames(df),
     c(
@@ -109,7 +109,7 @@ test_that("zarr_overview works with v3 metadata", {
 
   df <- zarr_overview(zarr_v3, as_data_frame = TRUE)
   expect_s3_class(df, "data.frame")
-  expect_equal(dim(df), c(1, 7))
+  expect_identical(dim(df), c(1L, 7L))
 })
 
 test_that("zarr_overview console output matches snapshot for v3 metadata", {

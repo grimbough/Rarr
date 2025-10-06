@@ -15,7 +15,7 @@ test_that("boolean zarr array can be read correctly", {
   expect_true(is.array(column_major))
 
   # dimensions equal to the index
-  expect_equal(dim(column_major), c(5, 10))
+  expect_identical(dim(column_major), c(5L, 10L))
 
   # first row should be TRUE
   expect_true(all(column_major[1, ]))

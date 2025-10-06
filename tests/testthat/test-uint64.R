@@ -15,12 +15,12 @@ test_that("uint64 zarr arrays can be read correctly", {
   expect_true(is.array(column_major))
 
   # dimensions equal to the index
-  expect_equal(dim(column_major), c(30, 20, 1))
+  expect_identical(dim(column_major), c(30L, 20L, 1L))
 
   # first row should be sequence 1 to 20
-  expect_equal(column_major[1, , ], 1:20)
+  expect_identical(column_major[1, , ], 1:20)
   # first column should be all 1s
-  expect_equal(column_major[, 1, ], rep(1, 30))
+  expect_identical(column_major[, 1, ], rep(1L, 30))
 })
 
 
@@ -35,7 +35,7 @@ test_that("uint64 zarr arrays produce NA for out-of-range values", {
 
   # this data point should be outside the range of an int32 and throw a warning
   expect_warning(
-    column_major <- read_zarr_array(zarr_c, index = list(30, 20, 10))
+    column_major <- read_zarr_array(zarr_c, index = list(30L, 20L, 10L))
   )
   expect_true(all(is.na(column_major)))
 })

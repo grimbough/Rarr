@@ -26,11 +26,11 @@ test_that("int16 zarr arrays can be read correctly", {
   expect_true(is.array(column_major))
 
   # Dimensions equal to the index
-  expect_equal(dim(column_major), c(30, 20, 1))
+  expect_identical(dim(column_major), c(30L, 20L, 1L))
 
   # First row should be sequence 1 to 20
-  expect_equal(column_major[1, , ], c(1:20))
+  expect_identical(column_major[1, , ], 1:20)
 
   # First column should be all 1s
-  expect_equal(column_major[, 1, ], rep(1, 30))
+  expect_identical(column_major[, 1, ], rep(1L, 30))
 })
