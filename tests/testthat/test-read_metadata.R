@@ -22,25 +22,11 @@ test_that("zarr_overview console output matches snapshot for single array", {
     package = "Rarr"
   )
 
-  # Write details to screen
-  withr::with_tempfile("zarr_overview_array", {
-    withr::with_output_sink(
-      zarr_overview_array,
-      zarr_overview(zarr_c, as_data_frame = FALSE)
-    )
-    actual <- readLines(zarr_overview_array)
-    expected <- readLines(system.file(
-      "tinytest",
-      "snapshots",
-      "zarr_overview_array.txt",
-      package = "Rarr"
-    ))
-    expect_identical(
-      # "Path" is absolute path so will differ between systems
-      actual[!startsWith(actual, "Path: ")],
-      expected[!startsWith(expected, "Path: ")]
-    )
-  })
+  expect_snapshot(
+    zarr_overview(zarr_c, as_data_frame = FALSE),
+    # "Path" is absolute path so will differ between systems
+    transform = function(x) gsub("^Path: .*", "Path: <path>", x)
+  )
 })
 
 test_that("zarr_overview works with consolidated metadata store", {
@@ -78,24 +64,11 @@ test_that("zarr_overview console output matches snapshot for consolidated store"
     package = "Rarr"
   )
 
-  withr::with_tempfile("zarr_overview_store", {
-    withr::with_output_sink(
-      zarr_overview_store,
-      zarr_overview(zarr_store_consolidated, as_data_frame = FALSE)
-    )
-    actual <- readLines(zarr_overview_store)
-    expected <- readLines(system.file(
-      "tinytest",
-      "snapshots",
-      "zarr_overview_store.txt",
-      package = "Rarr"
-    ))
-    expect_identical(
-      # "Path" is absolute path so will differ between systems
-      actual[!grepl("^\\s*Path: ", actual)],
-      expected[!grepl("^\\s*Path: ", actual)]
-    )
-  })
+  expect_snapshot(
+    zarr_overview(zarr_store_consolidated, as_data_frame = FALSE),
+    # "Path" is absolute path so will differ between systems
+    transform = function(x) gsub("^(  )?Path: .*", "Path: <path>", x)
+  )
 })
 
 test_that("zarr_overview works with v3 metadata", {
@@ -121,24 +94,11 @@ test_that("zarr_overview console output matches snapshot for v3 metadata", {
     package = "Rarr"
   )
 
-  withr::with_tempfile("zarr_overview_v3", {
-    withr::with_output_sink(
-      zarr_overview_v3,
-      zarr_overview(zarr_v3, as_data_frame = FALSE)
-    )
-    actual <- readLines(zarr_overview_v3)
-    expected <- readLines(system.file(
-      "tinytest",
-      "snapshots",
-      "zarr_overview_v3.txt",
-      package = "Rarr"
-    ))
-    expect_identical(
-      # "Path" is absolute path so will differ between systems
-      actual[!startsWith(actual, "Path: ")],
-      expected[!startsWith(expected, "Path: ")]
-    )
-  })
+  expect_snapshot(
+    zarr_overview(zarr_v3, as_data_frame = FALSE),
+    # "Path" is absolute path so will differ between systems
+    transform = function(x) gsub("^Path: .*", "Path: <path>", x)
+  )
 })
 
 test_that("zarr_overview throws error for missing metadata files", {
