@@ -12,7 +12,7 @@ test_that("boolean zarr array can be read correctly", {
   expect_silent(column_major <- read_zarr_array(zarr_c, index = index))
 
   # we return an array
-  expect_s3_class(column_major, "array")
+  expect_true(is.array(column_major))
 
   # dimensions equal to the index
   expect_equal(dim(column_major), c(5, 10))

@@ -23,7 +23,7 @@ test_that("string zarr arrays can be read correctly", {
   expect_identical(column_major, row_major)
 
   ## we return an array
-  expect_inherits(column_major, "array")
+  expect_true(is.array(column_major))
 
   ## dimensions equal to the index
   expect_equal(dim(column_major), sapply(index, length))
