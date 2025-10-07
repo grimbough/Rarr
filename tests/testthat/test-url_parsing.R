@@ -4,8 +4,8 @@ test_that("AWS S3 URLs parse correctly", {
     aws_path = "https://s3.us-west-2.amazonaws.com/DOC-EXAMPLE-BUCKET1/puppy.png"
   )
 
-  for (i in which(grepl("aws", names(paths)))) {
-    expect_silent(parsed <- .url_parse_aws(paths[[i]]))
+  for (u in grepv("aws", names(paths), fixed = TRUE)) {
+    expect_silent(parsed <- .url_parse_aws(u))
     expect_identical(parsed$bucket, "DOC-EXAMPLE-BUCKET1")
     expect_identical(parsed$hostname, "https://s3.amazonaws.com")
     expect_identical(parsed$object, "puppy.png")

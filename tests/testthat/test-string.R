@@ -26,7 +26,7 @@ test_that("string zarr arrays can be read correctly", {
   expect_true(is.array(column_major))
 
   ## dimensions equal to the index
-  expect_identical(dim(column_major), sapply(index, length))
+  expect_identical(dim(column_major), lengths(index))
 
   ## first row should be all "test" except the first element which is "ready"
   expect_identical(
