@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,6 +83,7 @@
 <li>A minor PROTECT()/UNPROTECT() imbalance in the C code, exposed by rchk, has been fixed. It is not likely to cause problems in real-world situations but it could theoretically lead to crashes in some cases.</li>
 <li>Argument <code>path</code> in internal function <code>read_array_metadata()</code> has been renamed to <code>zarr_path</code> for consistency with other internal functions</li>
 <li>Some internal functions have been renamed with a leading dot, in line with the officially recommended style for Bioconductor packages.</li>
+<li>This package now uses testthat instead of tinytest as a testing framework. This comes with more utilities to handle snapshot tests and mocked tests.</li>
 </ul></div>
 </div>
     <div class="section level2">

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,8 +38,7 @@
 <p>This document outlines how to propose a change to Rarr.</p>
 <div class="section level2">
 <h2 id="fixing-typos">Fixing typos<a class="anchor" aria-label="anchor" href="#fixing-typos"></a></h2>
-<p>You can fix typos, spelling mistakes, or grammatical errors in the documentation directly using the GitHub web interface.<br>
-You can do this by clicking on the pen icon, which will then fork the project to your account and allow you to propose the changes. Please note we use <a href="https://roxygen2.r-lib.org/articles/roxygen2.html" class="external-link">roxygen2 comments</a> to generate the manual pages, meaning you’ll need to edit the <code>.R</code>, not the <code>.Rd</code> file. You can find the <code>.R</code> file that generates the <code>.Rd</code> by reading the comment in the first line. Part of the vignette is used in multiple places, and can be found in the non-standard <code>/inst/rmd</code> location, rather than the <code>/vignettes</code> folder.</p>
+<p>You can fix typos, spelling mistakes, or grammatical errors in the documentation directly using the GitHub web interface. You can do this by clicking on the pen icon, which will then fork the project to your account and allow you to propose the changes. Please note we use <a href="https://roxygen2.r-lib.org/articles/roxygen2.html" class="external-link">roxygen2 comments</a> to generate the manual pages, meaning you’ll need to edit the <code>.R</code>, not the <code>.Rd</code> file. You can find the <code>.R</code> file that generates the <code>.Rd</code> by reading the comment in the first line. Part of the vignette is used in multiple places, and can be found in the non-standard <code>/inst/rmd</code> location, rather than the <code>/vignettes</code> folder.</p>
 </div>
 <div class="section level2">
 <h2 id="bigger-changes">Bigger changes<a class="anchor" aria-label="anchor" href="#bigger-changes"></a></h2>
@@ -55,7 +54,7 @@ You can do this by clicking on the pen icon, which will then fork the project to
 <div class="section level3">
 <h3 id="code-style">Code style<a class="anchor" aria-label="anchor" href="#code-style"></a></h3>
 <ul><li><p>We use <a href="https://cran.r-project.org/package=roxygen2" class="external-link">roxygen2</a>, with <a href="https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html" class="external-link">Markdown syntax</a>, for documentation.</p></li>
-<li><p>We use <a href="https://cran.r-project.org/package=tinytest" class="external-link">tinytest</a> for unit tests. Contributions with test cases included are easier to accept. Test files can be found in <code>/inst/extdata/zarr_examples</code>. If you do not find a file with the features you need for your test look in the folder <code>/inst/scripts/</code> to find the Dockerfile and Python script used to create the test files.</p></li>
+<li><p>We use <a href="https://cran.r-project.org/package=testthat" class="external-link">testthat</a> for unit tests. Contributions with test cases included are easier to accept. Test files can be found in <code>/inst/extdata/zarr_examples</code>. If you do not find a file with the features you need for your test look in the folder <code>/inst/scripts/</code> to find the Dockerfile and Python script used to create the test files.</p></li>
 </ul></div>
 </div>
 <div class="section level2">
