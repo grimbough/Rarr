@@ -65,6 +65,8 @@
   to `zarr_path` for consistency with other internal functions
 * Some internal functions have been renamed with a leading dot, in line with
   the officially recommended style for Bioconductor packages.
+* This package now uses testthat instead of tinytest as a testing framework.
+  This comes with more utilities to handle snapshot tests and mocked tests.
 
 # Rarr 1.7
 
