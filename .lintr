@@ -32,5 +32,10 @@ exclusions: list(
     "inst",
     "vignettes" = list(
       undesirable_function_linter = Inf
+    ),
+    "tests" = list(
+      implicit_assignment_linter = Inf,
+      nonportable_path_linter = Inf,
+      absolute_path_linter = Inf
     )
   )
