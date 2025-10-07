@@ -120,7 +120,8 @@ test_that("missing metadata on S3 results in a clear error", {
   with_mocked_bindings(
     expect_error(
       zarr_overview(
-        "http://s3.example.com/bucket/example.zarr/"
+        "http://s3.example.com/bucket/example.zarr/",
+        list()
       ),
       "The path does not contain any metadata files."
     ),
