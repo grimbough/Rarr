@@ -18,8 +18,7 @@ Mike L. Smith
 
 | GitHub Actions | Bioconductor Build Sysytem | Test Coverage |
 |:--:|:--:|:--:|
-| [![Package Checks](https://github.com/grimbough/Rarr/actions/workflows/main.yml/badge.svg)](https://github.com/grimbough/Rarr/actions/workflows/main.yml) | [![Bioconductor Status](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/) |
-[![Codecov test coverage](https://codecov.io/gh/Huber-group-EMBL/Rarr/graph/badge.svg)](https://app.codecov.io/gh/Huber-group-EMBL/Rarr) |
+| [![Package Checks](https://github.com/grimbough/Rarr/actions/workflows/main.yml/badge.svg)](https://github.com/grimbough/Rarr/actions/workflows/main.yml) | [![Bioconductor Status](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/) | [![Codecov test coverage](https://codecov.io/gh/Huber-group-EMBL/Rarr/graph/badge.svg)](https://app.codecov.io/gh/Huber-group-EMBL/Rarr) |
 
 <!-- badges: end -->
 
