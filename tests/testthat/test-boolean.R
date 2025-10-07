@@ -18,6 +18,7 @@ test_that("boolean zarr array can be read correctly", {
   expect_identical(dim(column_major), c(5L, 10L))
 
   # first row should be TRUE
+  # second row should be FALSE
   expect_true(all(column_major[1, ]))
-  expect_true(!any(column_major[2, ]))
+  expect_false(any(column_major[2, ]))
 })

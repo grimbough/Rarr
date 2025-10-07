@@ -72,7 +72,6 @@ test_that("zarr attributes overwrite parameter works correctly", {
   zattrs <- list(foo = "foo", bar = "bar", foo2 = "foo2")
   write_zarr_attributes(zarr_path = path, new.zattrs = zattrs)
 
-  # overwrite = FALSE
   zattrs.new.elem <- list(foo2 = "foo")
   write_zarr_attributes(
     zarr_path = path,
