@@ -35,9 +35,7 @@ Suggests:
     BiocStyle,
     covr,
     knitr,
-    mockery,
-    testthat (>= 3.0.0),
-    tinytest
+    testthat (>= 3.0.0)
 VignetteBuilder:
     knitr
 biocViews: DataImport
