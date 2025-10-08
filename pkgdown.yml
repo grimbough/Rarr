@@ -3,7 +3,7 @@ pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   Rarr: Rarr.html
-last_built: 2025-10-07T14:03Z
+last_built: 2025-10-08T15:44Z
 urls:
   reference: https://huber-group-embl.github.io/Rarr/reference
   article: https://huber-group-embl.github.io/Rarr/articles
