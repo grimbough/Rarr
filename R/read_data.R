@@ -196,38 +196,6 @@ find_chunks_needed <- function(metadata, index) {
   return(required_chunks)
 }
 
-#' Determine the size of chunk in bytes
-#'
-#' @param datatype A list of details for the array datatype.  Expected to be
-#' produced by [.parse_datatype()].
-#' @param dimensions A list containing the dimensions of the chunk.  Expected
-#' to be found in a list produced by [.read_array_metadata()].
-#'
-#' @returns An integer giving the size of the chunk in bytes
-#'
-#' @keywords internal
-get_chunk_size <- function(datatype, dimensions) {
-  ## determine the size of the R datatype we're going to return
-  ## TODO: not all datatypes are implemented yet
-  sizeof <- switch(
-    datatype$base_type,
-    "bool" = 4L,
-    "int" = 4L,
-    "uint" = 4L,
-    "float" = 8L,
-    # "complex",
-    # "timedelta",
-    # "datetime",
-    "string" = as.integer(datatype$nbytes),
-    # "unicode",
-    "other" = 1L
-  )
-
-  buffer_size <- prod(unlist(dimensions), sizeof)
-
-  return(as.integer(buffer_size))
-}
-
 #' Determine the size of chunk in bytes after decompression
 #'
 #' @param datatype A list of details for the array datatype.  Expected to be
