@@ -137,3 +137,17 @@ test_that("v3 zarr attributes work correctly", {
     list()
   )
 })
+
+test_that("read_zarr_attributes errors clearly for invalid mixed arrays", {
+  invalid_zarr <- system.file(
+    "extdata",
+    "zarr_examples",
+    "metadata",
+    "invalid_mixed.zarr",
+    package = "Rarr"
+  )
+
+  expect_snapshot_error(
+    read_zarr_attributes(invalid_zarr)
+  )
+})

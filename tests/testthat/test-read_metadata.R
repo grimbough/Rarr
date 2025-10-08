@@ -116,6 +116,20 @@ test_that("zarr_overview throws error for missing metadata files", {
   )
 })
 
+test_that("zarr_overview throws error for mixed v2/v3 zarr", {
+   invalid_zarr <- system.file(
+    "extdata",
+    "zarr_examples",
+    "metadata",
+    "invalid_mixed.zarr",
+    package = "Rarr"
+   )
+
+  expect_snapshot_error(
+    zarr_overview(invalid_zarr)
+  )
+})
+
 test_that("missing metadata on S3 results in a clear error", {
   with_mocked_bindings(
     expect_error(

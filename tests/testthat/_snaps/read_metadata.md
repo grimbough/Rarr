@@ -59,3 +59,8 @@
       Endianness: little
       Compressor: zstd
 
+# zarr_overview throws error for mixed v2/v3 zarr
+
+    The path contains both `.zarray` (Zarr V2 specification) and `zarr.json` (Zarr V3 specification) metadata files.
+    An array or group must conform to either the Zarr V2 or V3 specification.
+
