@@ -11,6 +11,8 @@ on:
       - "R/**"
       - "touchstone/**"
       - "src/**"
+    types:
+      - ready_for_review
 
 permissions:
   contents: read
@@ -19,7 +21,7 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     if:
-      true &&
+      github.event.pull_request.draft == false &&
       (
         github.event.pull_request.author_association == 'OWNER' ||
         github.event.pull_request.author_association == 'MEMBER' ||
