@@ -62,7 +62,7 @@
 #'   with the same length as the `dim` argument.
 #' @param data_type Character vector giving the data type of the new array.
 #'   Currently this is limited to standard R data types.  Valid options are:
-#'   "integer", "double", "character", "logical".  You can also use the analogous NumpPy
+#'   "integer", "double", "character", "logical".  You can also use the analogous Numpy
 #'   formats: "<i4", "<f8", "|S", "|b1".  If this argument isn't provided the
 #'   `fill_value` will be used to determine the datatype.
 #' @param order Define the layout of the bytes within each chunk.  Valid options
@@ -500,7 +500,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     ## numpy stores the original size of the buffer in the first 4 bytes after
     ## compression. We should do that too for compatibility
     ## TODO: probably faster to do this in C and avoid copying the vector
-    compressed_chunk <- c(.as_raw(length(raw_chunk), nchar = 4), compressed_chunk)
+    compressed_chunk <- c(
+      .as_raw(length(raw_chunk), nchar = 4),
+      compressed_chunk
+    )
   } else if (compressor$id == "zstd") {
     compressed_chunk <- .Call(
       "compress_chunk_ZSTD",
