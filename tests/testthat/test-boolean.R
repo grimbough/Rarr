@@ -22,3 +22,23 @@ test_that("boolean zarr array can be read correctly", {
   expect_true(all(column_major[1, ]))
   expect_false(any(column_major[2, ]))
 })
+
+test_that("boolean zarr array can be written", {
+  bool_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_bool_array <- matrix(c(TRUE, FALSE, TRUE, FALSE), nrow = 2)
+  write_zarr_array(
+    content_bool_array,
+    bool_zarr,
+    chunk_dim = c(2, 2),
+    compressor = NULL
+  )
+
+  roundtrip_bool_array <- read_zarr_array(bool_zarr)
+
+  expect_identical(
+    content_bool_array,
+    roundtrip_bool_array
+  )
+
+})

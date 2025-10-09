@@ -142,7 +142,7 @@ read_zarr_array(zarr_example, index = index)
 ```
 
     ## , , 1
-    ## 
+    ##
     ##      [,1] [,2]
     ## [1,]    1    2
     ## [2,]    1    0
@@ -234,7 +234,7 @@ read_zarr_array(zarr_array_path = path_to_new_zarr, index = list(6:10, 10, 1))
 ```
 
     ## , , 1
-    ## 
+    ##
     ##      [,1]
     ## [1,]   96
     ## [2,]   97

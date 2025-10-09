@@ -9,18 +9,21 @@
   }
 
   ## if data type was supplied directly, always use that
-  if (!data_type %in% c("<i4", "<f8", "|S", "<U")) {
+  if (!data_type %in% c("<i4", "<f8", "|S", "<U", "|b1")) {
     data_type <- switch(
       data_type,
       "integer" = "<i4",
       "double" = "<f8",
       "character" = "|S",
+      "logical" = "|b1",
       NULL
     )
   }
 
   if (is.null(data_type)) {
-    stop("Currently only able to write integer, double, and character arrays")
+    stop(
+      "Currently only able to write integer, double, character and logical arrays"
+    )
   }
 
   ## set a default fill value if needed
@@ -31,6 +34,7 @@
       "<f8" = 0,
       "|S" = "",
       "<U" = "",
+      "|b1" = FALSE,
       NULL
     )
   }
@@ -48,7 +52,6 @@
   return(list(data_type = data_type, fill_value = fill_value))
 }
 
-
 #' Create an (empty) Zarr array
 #'
 #' @param zarr_array_path Character vector of length 1 giving the path to the
@@ -59,8 +62,8 @@
 #'   with the same length as the `dim` argument.
 #' @param data_type Character vector giving the data type of the new array.
 #'   Currently this is limited to standard R data types.  Valid options are:
-#'   "integer", "double", "character".  You can also use the analogous NumpPy
-#'   formats: "<i4", "<f8", "|S".  If this argument isn't provided the
+#'   "integer", "double", "character", "logical".  You can also use the analogous NumpPy
+#'   formats: "<i4", "<f8", "|S", "|b1".  If this argument isn't provided the
 #'   `fill_value` will be used to determine the datatype.
 #' @param order Define the layout of the bytes within each chunk.  Valid options
 #'   are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify
@@ -307,6 +310,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     "integer" = "<i",
     "double" = "<f",
     "character" = c("|S", "<U", ">U"),
+    "logical" = "|b",
     NULL
   )
   if (!substr(metadata$dtype, 1, 2) %in% data_type) {
@@ -496,7 +500,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     ## numpy stores the original size of the buffer in the first 4 bytes after
     ## compression. We should do that too for compatibility
     ## TODO: probably faster to do this in C and avoid copying the vector
-    compressed_chunk <- c(.as_raw(length(raw_chunk)), compressed_chunk)
+    compressed_chunk <- c(.as_raw(length(raw_chunk), nchar = 4), compressed_chunk)
   } else if (compressor$id == "zstd") {
     compressed_chunk <- .Call(
       "compress_chunk_ZSTD",
@@ -538,7 +542,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       )
     )
   } else {
-    writeBin(d, raw())
+    writeBin(d, raw(), size = nchar)
   }
 }
 
