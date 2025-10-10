@@ -27,10 +27,11 @@ same length as the number of dimensions.}
 with the same length as the \code{dim} argument.}
 
 \item{data_type}{Character vector giving the data type of the new array.
-Currently this is limited to standard R data types.  Valid options are:
-"integer", "double", "character".  You can also use the analogous NumpPy
-formats: "<i4", "<f8", "|S".  If this argument isn't provided the
-\code{fill_value} will be used to determine the datatype.}
+Valid options are: "integer", "double", "character", "logical", which are
+based on standard R data types. You can also use the analogous Numpy
+formats: "|i1", "<i2", "<i4", "<f4", "<f8", "|S", "|b1".
+If this argument isn't provided the \code{fill_value} will be used to determine
+the datatype.}
 
 \item{order}{Define the layout of the bytes within each chunk.  Valid options
 are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify

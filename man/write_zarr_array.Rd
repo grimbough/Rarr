@@ -8,6 +8,7 @@ write_zarr_array(
   x,
   zarr_array_path,
   chunk_dim,
+  data_type = storage.mode(x),
   order = "F",
   compressor = use_zlib(),
   fill_value,
@@ -24,6 +25,13 @@ new Zarr array.}
 
 \item{chunk_dim}{Dimensions of the array chunks. Should be a numeric vector
 with the same length as the \code{dim} argument.}
+
+\item{data_type}{Character vector giving the data type of the new array.
+Valid options are: "integer", "double", "character", "logical", which are
+based on standard R data types. You can also use the analogous Numpy
+formats: "|i1", "<i2", "<i4", "<f4", "<f8", "|S", "|b1".
+If this argument isn't provided the \code{fill_value} will be used to determine
+the datatype.}
 
 \item{order}{Define the layout of the bytes within each chunk.  Valid options
 are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify
