@@ -545,7 +545,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       )
     )
   } else {
-    writeBin(d, raw(), size = nchar)
+    writeBin(d, raw(), size = nchar, endian = "little")
   }
 }
 
