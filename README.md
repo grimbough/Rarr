@@ -107,7 +107,7 @@ zarr_overview(zarr_example)
 ```
 
     ## Type: Array
-    ## Path: /tmp/RtmpD8R4Xh/temp_libpath182f36cf721d9/Rarr/extdata/zarr_examples/column-first/int32.zarr
+    ## Path: /tmp/RtmpF7Gmri/temp_libpath200434430aca/Rarr/extdata/zarr_examples/column-first/int32.zarr
     ## Shape: 30 x 20 x 10
     ## Chunk Shape: 10 x 10 x 5
     ## No. of Chunks: 12 (3 x 2 x 2)

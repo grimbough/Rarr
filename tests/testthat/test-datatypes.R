@@ -51,7 +51,7 @@ test_that("data_type has precedence over fill_value when incompatible", {
 
 test_that("check_datatype throws errors for invalid inputs", {
   expect_error(.check_datatype(data_type = "not-a-data-type"))
-  expect_error(.check_datatype(data_type = "<i2"))
+  expect_error(.check_datatype(data_type = "<f2"))
   expect_error(.check_datatype(data_type = list(1:10)))
   expect_error(.check_datatype(data_type = raw(10)))
 })

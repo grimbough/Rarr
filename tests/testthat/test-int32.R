@@ -34,3 +34,24 @@ test_that("int32 zarr arrays can be read correctly", {
   # First column should be all 1s
   expect_identical(column_major[, 1, ], rep(1L, 30))
 })
+
+test_that("i32 zarr array can be written", {
+  i32_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_i32_array <- array(1:24, dim = c(4, 3, 2))
+
+  write_zarr_array(
+    content_i32_array,
+    i32_zarr,
+    data_type = "<i4",
+    chunk_dim = c(2, 2, 1),
+    compressor = NULL
+  )
+
+  roundtrip_i32_array <- read_zarr_array(i32_zarr)
+
+  expect_identical(
+    content_i32_array,
+    roundtrip_i32_array
+  )
+})

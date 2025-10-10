@@ -34,3 +34,24 @@ test_that("int16 zarr arrays can be read correctly", {
   # First column should be all 1s
   expect_identical(column_major[, 1, ], rep(1L, 30))
 })
+
+test_that("i16 zarr array can be written", {
+  i16_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_i16_array <- array(1:24, dim = c(4, 3, 2))
+
+  write_zarr_array(
+    content_i16_array,
+    i16_zarr,
+    data_type = "<i2",
+    chunk_dim = c(2, 2, 1),
+    compressor = NULL
+  )
+
+  roundtrip_i16_array <- read_zarr_array(i16_zarr)
+
+  expect_identical(
+    content_i16_array,
+    roundtrip_i16_array
+  )
+})

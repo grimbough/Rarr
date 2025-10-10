@@ -34,3 +34,24 @@ test_that("int8 zarr arrays can be read correctly", {
   # First column should be all 1s
   expect_identical(column_major[, 1, ], rep(1L, 30))
 })
+
+test_that("i8 zarr array can be written", {
+  i8_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_i8_array <- array(1:24, dim = c(4, 3, 2))
+
+  write_zarr_array(
+    content_i8_array,
+    i8_zarr,
+    data_type = "|i1",
+    chunk_dim = c(2, 2, 1),
+    compressor = NULL
+  )
+
+  roundtrip_i8_array <- read_zarr_array(i8_zarr)
+
+  expect_identical(
+    content_i8_array,
+    roundtrip_i8_array
+  )
+})
