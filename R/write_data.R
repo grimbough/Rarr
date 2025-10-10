@@ -201,6 +201,10 @@ write_zarr_array <- function(
   chunk_names <- .generate_chunk_names(x_dim = dim(x), chunk_dim = chunk_dim)
   chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
 
+  if (is.numeric(x)) {
+    x <- .truncate_overflow(x, metadata$dtype)
+  }
+
   ## iterate over each chunk
   ## TODO: maybe this can be done in parallel with bplapply() ?
   res <- lapply(
