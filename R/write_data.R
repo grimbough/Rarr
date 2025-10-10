@@ -9,7 +9,7 @@
   }
 
   ## if data type was supplied directly, always use that
-  if (!data_type %in% c("<i4", "<f8", "|S", "<U", "|b1")) {
+  if (!data_type %in% c("|i1", "<i2", "<i4", "<f4", "<f8", "|S", "<U", "|b1")) {
     data_type <- switch(
       data_type,
       "integer" = "<i4",
@@ -30,7 +30,10 @@
   if (missing(fill_value)) {
     fill_value <- switch(
       data_type,
+      "|i1" = 0L,
+      "<i2" = 0L,
       "<i4" = 0L,
+      "<f4" = 0,
       "<f8" = 0,
       "|S" = "",
       "<U" = "",
@@ -61,10 +64,11 @@
 #' @param chunk_dim Dimensions of the array chunks. Should be a numeric vector
 #'   with the same length as the `dim` argument.
 #' @param data_type Character vector giving the data type of the new array.
-#'   Currently this is limited to standard R data types.  Valid options are:
-#'   "integer", "double", "character", "logical".  You can also use the analogous Numpy
-#'   formats: "<i4", "<f8", "|S", "|b1".  If this argument isn't provided the
-#'   `fill_value` will be used to determine the datatype.
+#'   Valid options are: "integer", "double", "character", "logical", which are
+#'   based on standard R data types. You can also use the analogous Numpy
+#'   formats: "|i1", "<i2", "<i4", "<f4", "<f8", "|S", "|b1".
+#'   If this argument isn't provided the `fill_value` will be used to determine
+#'   the datatype.
 #' @param order Define the layout of the bytes within each chunk.  Valid options
 #'   are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify
 #'   "column-major" ordering, which is how R arrays are arranged in memory.
@@ -167,6 +171,7 @@ write_zarr_array <- function(
   x,
   zarr_array_path,
   chunk_dim,
+  data_type = storage.mode(x),
   order = "F",
   compressor = use_zlib(),
   fill_value,
@@ -183,7 +188,7 @@ write_zarr_array <- function(
     zarr_array_path = path,
     dim = dim(x),
     chunk_dim = chunk_dim,
-    data_type = storage.mode(x),
+    data_type = data_type,
     order = order,
     fill_value = fill_value,
     compressor = compressor,
