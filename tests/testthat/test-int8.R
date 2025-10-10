@@ -55,3 +55,63 @@ test_that("i8 zarr array can be written", {
     roundtrip_i8_array
   )
 })
+
+test_that("overflow when writing cause warning", {
+  overflowing_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_overflowing_array <- array(128L, c(3, 3, 3))
+
+  expect_warning(
+    write_zarr_array(
+      content_overflowing_array,
+      overflowing_zarr,
+      data_type = "|i1",
+      chunk_dim = c(3, 3, 3),
+      compressor = NULL
+    ),
+    "truncate"
+  )
+
+  expect_identical(
+    read_zarr_array(overflowing_zarr),
+    array(127L, c(3, 3, 3))
+  )
+
+  overflowing_zarr2 <- withr::local_tempfile(fileext = ".zarr")
+  content_overflowing_array2 <- array(1000L, c(3, 3, 3))
+
+  expect_warning(
+    write_zarr_array(
+      content_overflowing_array2,
+      overflowing_zarr2,
+      data_type = "|i1",
+      chunk_dim = c(3, 3, 3),
+      compressor = NULL
+    ),
+    "truncate"
+  )
+
+  expect_identical(
+    read_zarr_array(overflowing_zarr2),
+    array(127L, c(3, 3, 3))
+  )
+
+  negative_overflowing_zarr <- withr::local_tempfile(fileext = ".zarr")
+  content_negative_overflowing_array <- array(-1000L, c(3, 3, 3))
+
+  expect_warning(
+    write_zarr_array(
+      content_negative_overflowing_array,
+      negative_overflowing_zarr,
+      data_type = "|i1",
+      chunk_dim = c(3, 3, 3),
+      compressor = NULL
+    ),
+    "truncate"
+  )
+
+  expect_identical(
+    read_zarr_array(negative_overflowing_zarr),
+    array(-128L, c(3, 3, 3))
+  )
+})
