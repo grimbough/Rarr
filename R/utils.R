@@ -153,6 +153,7 @@ check_index <- function(index, metadata) {
   return(output)
 }
 
+#' @importFrom stats setNames
 .file_or_blob_exists <- function(
   zarr_array_path,
   s3_client,
