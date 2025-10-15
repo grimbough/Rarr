@@ -1,16 +1,20 @@
-test_that("AWS S3 URLs parse correctly", {
-  paths <- list(
-    aws_host = "https://DOC-EXAMPLE-BUCKET1.s3.us-west-2.amazonaws.com/puppy.png",
-    aws_path = "https://s3.us-west-2.amazonaws.com/DOC-EXAMPLE-BUCKET1/puppy.png"
-  )
+test_that("AWS host URL parses correctly (aws_host)", {
+  url <- "https://DOC-EXAMPLE-BUCKET1.s3.us-west-2.amazonaws.com/puppy.png"
+  expect_silent(parsed <- Rarr:::.url_parse_aws(url))
+  expect_identical(parsed$bucket, "DOC-EXAMPLE-BUCKET1")
+  expect_identical(parsed$hostname, "https://s3.amazonaws.com")
+  expect_identical(parsed$object, "puppy.png")
+  expect_identical(parsed$region, "us-west-2")
+})
 
-  for (i in grep("aws", names(paths), fixed = TRUE)) {
-    expect_silent(parsed <- .url_parse_aws(paths[[i]]))
-    expect_identical(parsed$bucket, "DOC-EXAMPLE-BUCKET1")
-    expect_identical(parsed$hostname, "https://s3.amazonaws.com")
-    expect_identical(parsed$object, "puppy.png")
-    expect_identical(parsed$region, "us-west-2")
-  }
+
+test_that("AWS path URL parses correctly (aws_path)", {
+  url <- "https://s3.us-west-2.amazonaws.com/DOC-EXAMPLE-BUCKET1/puppy.png"
+  expect_silent(parsed <- .url_parse_aws(url))
+  expect_identical(parsed$bucket, "DOC-EXAMPLE-BUCKET1")
+  expect_identical(parsed$hostname, "https://s3.amazonaws.com")
+  expect_identical(parsed$object, "puppy.png")
+  expect_identical(parsed$region, "us-west-2")
 })
 
 test_that("Other S3-like URLs parse correctly (EMBL and EO paths)", {
@@ -21,7 +25,7 @@ test_that("Other S3-like URLs parse correctly (EMBL and EO paths)", {
   )
 
   # EMBL
-  expect_silent(parsed <- .url_parse_other(paths$embl_path))
+  expect_silent(parsed <- Rarr:::.url_parse_other(paths$embl_path))
   expect_identical(parsed$bucket, "rarr-testing")
   expect_identical(parsed$hostname, "https://s3.embl.de")
   expect_identical(parsed$object, "bz2.zarr/.zarray")
