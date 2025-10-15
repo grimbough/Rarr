@@ -8,6 +8,176 @@
 # installs branches to benchmark
 touchstone::branch_install()
 
+# Types ----------
+
+## Read/Write ----------
+
+# int32 (R integer)
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    x_int32 <- array(1:1e3, dim = c(10, 10, 10))
+  },
+  write_int32 = write_zarr_array(
+    x = x_int32,
+    zarr_array_path = "int32.zarr",
+    chunk_dim = c(2, 2, 5),
+    compressor = NULL
+  ),
+  n = 25
+)
+
+# double (float64)
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    x_double <- array(runif(1e3), dim = c(10, 10, 10))
+  },
+  write_double = write_zarr_array(
+    x = x_double,
+    zarr_array_path = "double.zarr",
+    chunk_dim = c(2, 2, 5),
+    compressor = NULL
+  ),
+  n = 25
+)
+
+# character
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    x_string <- matrix(
+      sprintf("str_%06d", 1:100),
+      nrow = 10,
+      ncol = 10
+    )
+  },
+  write_string = write_zarr_array(
+    x = x_string,
+    zarr_array_path = "string.zarr",
+    chunk_dim = c(5, 5),
+    compressor = NULL
+  ),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    x_int32 <- array(1:1e3, dim = c(10, 10, 10))
+    write_int32 = write_zarr_array(
+      x = x_int32,
+      zarr_array_path = "int32.zarr",
+      chunk_dim = c(2, 2, 5),
+      compressor = NULL
+    )
+  },
+  read_int32 = read_zarr_array("int32.zarr"),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    x_double <- array(runif(1e3), dim = c(10, 10, 10))
+    write_double = write_zarr_array(
+      x = x_double,
+      zarr_array_path = "double.zarr",
+      chunk_dim = c(2, 2, 5),
+      compressor = NULL
+    )
+  },
+  read_double = read_zarr_array("double.zarr"),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    x_string <- matrix(
+      sprintf("str_%06d", 1:100),
+      nrow = 10,
+      ncol = 10
+    )
+    write_string = write_zarr_array(
+      x = x_string,
+      zarr_array_path = "string.zarr",
+      chunk_dim = c(5, 5),
+      compressor = NULL
+    )
+  },
+  read_unicode = read_zarr_array("string.zarr"),
+  n = 25
+)
+
+## Read only ----------
+
+touchstone::benchmark_run(
+  { library(Rarr) },
+  read_boolean = read_zarr_array(
+    system.file("extdata", "zarr_examples", "column-first", "boolean.zarr", package = "Rarr")
+  ),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  { library(Rarr) },
+  read_int8 = read_zarr_array(
+    system.file("extdata", "zarr_examples", "column-first", "int8.zarr", package = "Rarr")
+  ),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  { library(Rarr) },
+  read_int16 = read_zarr_array(
+    system.file("extdata", "zarr_examples", "column-first", "int16.zarr", package = "Rarr")
+  ),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  { library(Rarr) },
+  read_int64 = read_zarr_array(
+    system.file("extdata", "zarr_examples", "column-first", "int64.zarr", package = "Rarr")
+  ),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  { library(Rarr) },
+  read_uint32 = read_zarr_array(
+    system.file("extdata", "zarr_examples", "column-first", "uint32.zarr", package = "Rarr")
+  ),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  { library(Rarr) },
+  read_uint64 = read_zarr_array(
+    system.file("extdata", "zarr_examples", "column-first", "uint64.zarr", package = "Rarr")
+  ),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  { library(Rarr) },
+  read_float16 = read_zarr_array(
+    system.file("extdata", "zarr_examples", "column-first", "float16.zarr", package = "Rarr")
+  ),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  { library(Rarr) },
+  read_float32 = read_zarr_array(
+    system.file("extdata", "zarr_examples", "column-first", "float32.zarr", package = "Rarr")
+  ),
+  n = 25
+)
+
+## Compression ----------
+
 touchstone::benchmark_run(
   {
     library(Rarr)
