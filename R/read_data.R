@@ -251,6 +251,12 @@ read_chunk <- function(
   }
 
   dim_separator <- metadata$dimension_separator %||% "."
+  endian <- metadata$datatype$endian
+  if (is.na(endian)) {
+    # Fallback for cases where we don't care about endian-ness
+    endian <- .Platform$endian
+  }
+
   chunk_id <- paste(chunk_id, collapse = dim_separator)
 
   chunk_file <- paste0(zarr_array_path, chunk_id)
@@ -262,7 +268,12 @@ read_chunk <- function(
   if (is.null(s3_client)) {
     size <- file.size(chunk_file)
     if (file.exists(chunk_file)) {
-      compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
+      compressed_chunk <- readBin(
+        con = chunk_file,
+        what = "raw",
+        n = size,
+        endian = endian
+      )
     } else {
       compressed_chunk <- NULL
     }
