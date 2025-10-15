@@ -28,13 +28,13 @@ Imports:
     methods,
     paws.storage,
     R.utils,
-    utils,
-    withr
+    utils
 Suggests:
     BiocStyle,
     covr,
     knitr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    withr
 VignetteBuilder:
     knitr
 biocViews: DataImport
