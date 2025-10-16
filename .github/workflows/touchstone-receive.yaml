@@ -11,8 +11,6 @@ on:
       - "R/**"
       - "touchstone/**"
       - "src/**"
-    types:
-      - ready_for_review
 
 permissions:
   contents: read
