@@ -11,9 +11,9 @@ The Zarr specification defines a format for chunked, compressed, N-dimensional a
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/grimbough/Rarr}
   \item \url{https://huber-group-embl.github.io/Rarr/}
-  \item Report bugs at \url{https://github.com/grimbough/Rarr/issues}
+  \item \url{https://github.com/Huber-group-EMBL/Rarr}
+  \item Report bugs at \url{https://github.com/Huber-group-EMBL/Rarr/issues}
 }
 
 }
