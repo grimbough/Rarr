@@ -23,6 +23,7 @@ Depends:
     DelayedArray,
     R (>= 4.1.0)
 Imports:
+    ctypesio,
     curl,
     jsonlite,
     methods,
@@ -43,4 +44,3 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 SystemRequirements: GNU make
 Config/testthat/edition: 3
-Config/testthat/parallel: true
