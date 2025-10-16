@@ -357,21 +357,65 @@ read_chunk <- function(
     converted_chunk <- .format_object(decompressed_chunk, metadata, datatype)
     dim(converted_chunk[[1]]) <- chunk_dim
   } else {
-    output_type <- switch(
-      datatype$base_type,
-      "bool" = 0L,
-      "int" = 1L,
-      "uint" = 1L,
-      "float" = 2L
-    )
-    converted_chunk <- .Call(
-      "type_convert_chunk",
-      decompressed_chunk,
-      output_type,
-      datatype$nbytes,
-      datatype$is_signed,
-      chunk_dim,
-      PACKAGE = "Rarr"
+        # Use ctypesio readers for primitive numeric and boolean types
+    warning_flag <- 0L
+
+    n_elems <- as.integer(length(decompressed_chunk) / datatype$nbytes)
+
+    if (datatype$base_type == "bool") {
+      chunk_data <- as.logical(ctypesio::read_uint8(decompressed_chunk, n = n_elems))
+    } else if (datatype$base_type == "int") {
+      if (datatype$nbytes == 1) {
+        chunk_data <- ctypesio::read_int8(decompressed_chunk, n = n_elems)
+      } else if (datatype$nbytes == 2) {
+        chunk_data <- ctypesio::read_int16(decompressed_chunk, n = n_elems)
+      } else if (datatype$nbytes == 4) {
+        chunk_data <- ctypesio::read_int32(decompressed_chunk, n = n_elems)
+      } else if (datatype$nbytes == 8) {
+        tmp64 <- ctypesio::read_int64(decompressed_chunk, n = n_elems)
+        tmp64_num <- as.double(tmp64)
+        out_of_range <- (tmp64_num > .Machine$integer.max) | (tmp64_num < -(.Machine$integer.max) - 1)
+        chunk_data <- as.integer(ifelse(out_of_range, NA_integer_, as.integer(tmp64_num)))
+        if (any(out_of_range, na.rm = TRUE)) warning_flag <- 1L
+      }
+    } else if (datatype$base_type == "uint") {
+      if (datatype$nbytes == 1) {
+        chunk_data <- ctypesio::read_uint8(decompressed_chunk, n = n_elems)
+      } else if (datatype$nbytes == 2) {
+        chunk_data <- ctypesio::read_uint16(decompressed_chunk, n = n_elems)
+      } else if (datatype$nbytes == 4) {
+        tmpu32 <- ctypesio::read_uint32(decompressed_chunk, n = n_elems)
+        tmpu32_num <- as.double(tmpu32)
+        out_of_range <- tmpu32_num > .Machine$integer.max
+        chunk_data <- as.integer(ifelse(out_of_range, NA_integer_, as.integer(tmpu32_num)))
+        if (any(out_of_range, na.rm = TRUE)) warning_flag <- 1L
+      } else if (datatype$nbytes == 8) {
+        tmpu64 <- ctypesio::read_uint64(decompressed_chunk, n = n_elems)
+        tmpu64_num <- as.double(tmpu64)
+        out_of_range <- tmpu64_num > .Machine$integer.max
+        chunk_data <- as.integer(ifelse(out_of_range, NA_integer_, as.integer(tmpu64_num)))
+        if (any(out_of_range, na.rm = TRUE)) warning_flag <- 1L
+      }
+    } else if (datatype$base_type == "float") {
+      if (datatype$nbytes == 2) {
+        chunk_data <- ctypesio::read_f16(decompressed_chunk, n = n_elems)
+      } else if (datatype$nbytes == 4) {
+        chunk_data <- ctypesio::read_f32(decompressed_chunk, n = n_elems)
+      } else if (datatype$nbytes == 8) {
+        chunk_data <- ctypesio::read_f64(decompressed_chunk, n = n_elems)
+      }
+    } else {
+      stop(
+        "Unsupported base_type for ctypesio conversion: ",
+        datatype$base_type,
+        call. = FALSE
+      )
+    }
+
+    dim(chunk_data) <- chunk_dim
+    converted_chunk <- list(
+      chunk_data = chunk_data,
+      warning = as.integer(warning_flag)
     )
   }
 
