@@ -342,11 +342,6 @@ read_chunk <- function(
     stop("Decompressed data doesn't match expected chunk size.")
   }
 
-  ## reverse dimensions for column first datasets
-  if (metadata$order == "C") {
-    chunk_dim <- rev(chunk_dim)
-  }
-
   if (datatype$base_type == "string") {
     converted_chunk <- .format_string(decompressed_chunk, datatype)
     dim(converted_chunk[[1]]) <- chunk_dim
@@ -375,10 +370,11 @@ read_chunk <- function(
     )
   }
 
-  ## more manipulation to get the correct dimensions.
-  ## Surely there's a way to do this in one step rather than two??
   if (metadata$order == "C") {
-    converted_chunk[[1]] <- aperm(converted_chunk[[1]])
+    converted_chunk[[1]] <- codec_transpose_encode(
+      converted_chunk[[1]],
+      rev(seq_along(chunk_dim))
+    )
   }
 
   names(converted_chunk) <- c("chunk_data", "warning")
