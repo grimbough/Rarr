@@ -46,3 +46,21 @@ test_that("update_zarr_array handles NULL in index for some dimensions (2D case)
   expect_true(update_zarr_array(path, x = x, index = index))
   expect_identical(read_zarr_array(path, index = index), x)
 })
+
+test_that("update_zarr_array on C-order arrays", {
+  path <- withr::local_tempfile(fileext = ".zarr")
+  res <- create_empty_zarr_array(
+    zarr_array_path = path,
+    dim = c(20, 20),
+    chunk_dim = c(10, 10),
+    data_type = "integer",
+    fill_value = 0L,
+    order = "C",
+    compressor = NULL
+  )
+
+  x <- matrix(1:400, ncol = 20)
+
+  expect_true(update_zarr_array(path, x, index = list(NULL, NULL)))
+  expect_identical(read_zarr_array(path), x)
+})
