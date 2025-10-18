@@ -246,10 +246,6 @@ write_zarr_array <- function(
     chunk_in_mem <- temp_chunk
   }
 
-  if (metadata$order == "C") {
-    chunk_in_mem <- aperm(chunk_in_mem)
-  }
-
   ## check the chunk path exists, and create if not
   if (isFALSE(dir.exists(dirname(chunk_path)))) {
     dir.create(dirname(chunk_path), recursive = TRUE, showWarnings = FALSE)
@@ -258,6 +254,7 @@ write_zarr_array <- function(
   .compress_and_write_chunk(
     input_chunk = chunk_in_mem,
     chunk_path = chunk_path,
+    metadata,
     compressor = metadata$compressor,
     data_type_size = .parse_datatype(metadata$dtype)$nbytes
   )
@@ -415,6 +412,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   .compress_and_write_chunk(
     input_chunk = chunk_in_mem,
     chunk_path = chunk_path,
+    metadata,
     compressor = metadata$compressor,
     data_type_size = metadata$datatype$nbytes,
     is_base64 = (metadata$datatype$base_type == "unicode")
@@ -445,10 +443,18 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 .compress_and_write_chunk <- function(
   input_chunk,
   chunk_path,
+  metadata,
   compressor = use_zlib(),
   data_type_size,
   is_base64 = FALSE
 ) {
+  if (metadata$order == "C") {
+    input_chunk <- codec_transpose_decode(
+      input_chunk,
+      indices = rev(seq_along(dim(input_chunk)))
+    )
+  }
+
   ## the compression tools need a raw vector
   raw_chunk <- .as_raw(
     as.vector(input_chunk),
