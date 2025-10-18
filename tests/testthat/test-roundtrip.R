@@ -133,17 +133,28 @@ test_that("zarr arrays work with non-aligned chunk dimensions", {
 })
 
 test_that("zarr arrays work with row-major ordering", {
-  x <- array(runif(n = 1000, min = -10, max = 10), dim = c(10, 20, 5))
-
-  # Row-major ordering
-  path <- withr::local_tempfile(fileext = ".zarr")
+  x2d <- array(1:8, dim = c(2, 4))
+  path2d <- withr::local_tempfile(fileext = ".zarr")
   expect_silent(
-    res <- write_zarr_array(
-      x = x,
-      zarr_array_path = path,
+    write_zarr_array(
+      x = x2d,
+      zarr_array_path = path2d,
+      chunk_dim = c(1, 2),
+      order = "C"
+    )
+  )
+  expect_identical(read_zarr_array(path2d), x2d)
+
+  x3d <- array(seq_len(300), dim = c(6, 10, 5))
+
+  path3d <- withr::local_tempfile(fileext = ".zarr")
+  expect_silent(
+    write_zarr_array(
+      x = x3d,
+      zarr_array_path = path3d,
       chunk_dim = c(2, 5, 1),
       order = "C"
     )
   )
-  expect_identical(read_zarr_array(path), x)
+  expect_identical(read_zarr_array(path3d), x3d)
 })
