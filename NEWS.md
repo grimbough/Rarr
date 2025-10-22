@@ -67,6 +67,8 @@
   the officially recommended style for Bioconductor packages.
 * This package now uses testthat instead of tinytest as a testing framework.
   This comes with more utilities to handle snapshot tests and mocked tests.
+* Function calls are now counted in tests to ensure we don't repeatedly perform
+  a task (in particular, an expensive I/O task) more often than necessary.
 
 # Rarr 1.7
 
