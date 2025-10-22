@@ -3,8 +3,8 @@
 ## New features
 
 * New functions to work with Zarr attributes have been added:
-  - `read_zarr_attributes()` reads Zarr v2 and v3 attributes
-  - `write_zarr_attributes()` only supports writing Zarr v2 attributes for now.
+  * `read_zarr_attributes()` reads Zarr v2 and v3 attributes
+  * `write_zarr_attributes()` only supports writing Zarr v2 attributes for now.
 * This package now has a pkgdown website, available at
   <https://huber-group-embl.github.io/Rarr/>.
 * Zarr v3 arrays are now supported for reading metadata via `zarr_overview()`.
@@ -13,9 +13,9 @@
 
 * `zarr_overview(as_data_frame = TRUE)` now returns information more in line with the
   output of `zarr_overview(as_data_frame = FALSE)`. In particular:
-  - a new `endianness` column has been added to indicate the byte order of the
+  * a new `endianness` column has been added to indicate the byte order of the
     array data.
-  - the `nchunks` column is now a list column specifying the number of chunks in
+  * the `nchunks` column is now a list column specifying the number of chunks in
     each dimension, rather than a single integer giving the total number of
     chunks.
 
@@ -103,7 +103,7 @@
 * Addressed bug in makevars where Rarr.so could be compiled before libblosc.a
   was ready. Also backported to Rarr 1.0.2.
   (Thanks to Michael Sumner for reporting this issue:
-  https://github.com/grimbough/Rarr/issues/5)
+  <https://github.com/grimbough/Rarr/issues/5>)
 * Corrected issue where fixed length string datatypes would be written with
   null terminators, resulting in strings that were one byte longer than the
   dtype value written in the `.zarray` metadata. Also backported to Rarr 1.0.3.
