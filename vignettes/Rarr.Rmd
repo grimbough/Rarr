@@ -1,5 +1,5 @@
 ---
-title: "Reading Zarr arrays with Rarr"
+title: "Working with Zarr arrays in R"
 date: "`r BiocStyle::doc_date()`"
 author:
   - name: Mike L. Smith

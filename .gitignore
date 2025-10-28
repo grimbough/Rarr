@@ -27,3 +27,4 @@ README_cache
 ## html
 inst/**/*.html
 docs
+inst/doc

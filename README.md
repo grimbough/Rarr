@@ -10,8 +10,6 @@ Mike L. Smith
     array](#reading-a-from-a-local-zarr-array)
   - [Reading from S3 storage](#read-s3)
   - [Writing to a Zarr array](#writing-to-a-zarr-array)
-- [Current Status](#current-status)
-  - [Reading and Writing](#reading-and-writing)
 - [Required system libraries](#required-system-libraries)
 
 <!-- badges: start -->
@@ -57,6 +55,10 @@ although in some instances e.g. 64-bit integers there is potential for
 loss of information. Writing is more limited with support only for
 datatypes that are supported natively in R and only using the
 column-first representation.
+
+See the dedicated [“Supported Zarr features”
+vignette](https://huber-group-embl.github.io/Rarr/articles/features.html)
+for more information.
 
 # Quick start guide
 
@@ -105,7 +107,7 @@ zarr_overview(zarr_example)
 ```
 
     ## Type: Array
-    ## Path: /tmp/RtmpF7Gmri/temp_libpath200434430aca/Rarr/extdata/zarr_examples/column-first/int32.zarr
+    ## Path: /tmp/RtmpD8R4Xh/temp_libpath182f36cf721d9/Rarr/extdata/zarr_examples/column-first/int32.zarr
     ## Shape: 30 x 20 x 10
     ## Chunk Shape: 10 x 10 x 5
     ## No. of Chunks: 12 (3 x 2 x 2)
@@ -140,7 +142,7 @@ read_zarr_array(zarr_example, index = index)
 ```
 
     ## , , 1
-    ##
+    ## 
     ##      [,1] [,2]
     ## [1,]    1    2
     ## [2,]    1    0
@@ -159,7 +161,7 @@ zarr_overview(s3_address)
 ```
 
     ## Type: Array
-    ## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0/
+    ## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0
     ## Shape: 50 x 494 x 464
     ## Chunk Shape: 1 x 494 x 464
     ## No. of Chunks: 50 (50 x 1 x 1)
@@ -232,7 +234,7 @@ read_zarr_array(zarr_array_path = path_to_new_zarr, index = list(6:10, 10, 1))
 ```
 
     ## , , 1
-    ##
+    ## 
     ##      [,1]
     ## [1,]   96
     ## [2,]   97
@@ -245,64 +247,6 @@ identical(read_zarr_array(zarr_array_path = path_to_new_zarr), x)
 ```
 
     ## [1] TRUE
-
-# Current Status
-
-## Reading and Writing
-
-Reading Zarr arrays is reasonably well supported. Writing is available,
-but is more limited. Both aspects are under active development.
-
-### Data Types
-
-Currently there is only support for reading and writing a subset of the
-possible datatypes that can be found in a Zarr array. In some instances
-there are also limitations on the datatypes natively supported by R,
-requiring conversion from the Zarr datatype. The table below summarises
-the current status of datatype support. It will be updated as progress
-is made.
-
-| Zarr Data Type | Status<br/>(reading / writing) | Notes |
-|----|:--:|----|
-| `boolean` | ✔ / ❌ |  |
-| `int8` | ✔ / ❌ |  |
-| `uint8` | ✔ / ❌ |  |
-| `int16` | ✔ / ❌ |  |
-| `uint16` | ✔ / ❌ |  |
-| `int32` | ✔ / ✔ |  |
-| `uint32` | ✔ / ❌ | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
-| `int64` | ✔ / ❌ | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
-| `uint64` | ✔ / ❌ | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
-| `half` / `float16` | ✔ / ❌ | Converted to `double` in R. No effort is made to assess loss of precision due to conversion. |
-| `single` / `float32` | ✔ / ❌ | Converted to `double` in R. No effort is made to assess loss of precision due to conversion. |
-| `double` / `float64` | ✔ / ✔ |  |
-| `complex` | ❌ / ❌ |  |
-| `timedelta` | ❌ / ❌ |  |
-| `datetime` | ❌ / ❌ |  |
-| `string` | ✔ / ✔ |  |
-| `Unicode` | ✔ / ✔ |  |
-| `void *` | ❌ / ❌ |  |
-| Structured data types | ❌ / ❌ |  |
-
-### Compression Tools
-
-| Data Type | Status<br/>(reading / writing) | Notes |
-|----|:--:|----|
-| `zlib / gzip` | ✔ / ✔ | Only system default compression level (normally 6) is enabled for writing. |
-| `bzip2` | ✔ / ✔ | Only compression level 9 is enabled for writing. |
-| `blosc` | ✔ / ✔ | Only `lz4` compression level 5 is enabled for writing. |
-| `LZMA` | ✔ / ✔ |  |
-| `LZ4` | ✔ / ✔ |  |
-| `Zstd` | ✔ / ✔ |  |
-
-Please open an [issue](https://github.com/grimbough/Rarr/issues) if
-support for a required compression tool is missing.
-
-### Filters
-
-The is currently no support for additional filters. Please open an
-[issue](https://github.com/grimbough/Rarr/issues) if you require filter
-support.
 
 # Required system libraries
 
