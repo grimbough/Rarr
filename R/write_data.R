@@ -461,6 +461,11 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     nchar = data_type_size,
     is_base64 = is_base64
   )
+  raw_chunk <- codec_endian_encode(
+    raw_chunk,
+    endian = metadata$datatype$endian,
+    bytesize = data_type_size
+  )
 
   if (is.null(compressor)) {
     compressed_chunk <- raw_chunk
