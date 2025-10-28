@@ -283,11 +283,17 @@ read_chunk <- function(
   ## or create a new chunk based on the fill value
   if (!is.null(compressed_chunk)) {
     decompressed_chunk <- .decompress_chunk(compressed_chunk, metadata)
+    decompressed_chunk <- codec_endian_decode(
+      decompressed_chunk,
+      metadata$datatype$endian,
+      metadata$datatype$nbytes
+    )
     converted_chunk <- .format_chunk(
       decompressed_chunk,
       metadata,
       alt_chunk_dim
     )
+    # FIXME: run array -> array codecs here
   } else {
     converted_chunk <- list(
       "chunk_data" = array(metadata$fill_value, dim = unlist(metadata$chunks)),
