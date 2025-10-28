@@ -1,4 +1,9 @@
 test_that("", {
+  skip_if(
+    !identical(.Platform$endian, "little"),
+    "Delayed arrays only supported on little-endian platforms"
+  )
+
   m <- matrix(runif(1e5), ncol = 100)
   tf1 <- withr::local_tempfile(fileext = ".zarr")
 
