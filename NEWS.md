@@ -1,3 +1,12 @@
+# Rarr 1.11
+
+## Minor improvements
+
+* There is now a dedicated vignette describing the supported Zarr features
+  in Rarr, available at
+  <https://huber-group-embl.github.io/Rarr/articles/features.html>.
+  This makes it more easily discoverable on the Bioconductor landing page.
+
 # Rarr 1.9
 
 ## New features
