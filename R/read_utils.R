@@ -50,10 +50,12 @@
 .readVlenUTF8 <- function(input) {
   con <- rawConnection(input)
   on.exit(close(con))
-  nvalues <- readBin(con, what = "integer", n = 1, size = 4)
+  # Looking at numcodecs source code, this is by definition/convention
+  # always little-endian
+  nvalues <- readBin(con, what = "integer", n = 1, size = 4, endian = "little")
   output <- character(length = nvalues)
   for (i in seq_len(nvalues)) {
-    nbytes <- readBin(con, what = "integer", n = 1, size = 4)
+    nbytes <- readBin(con, what = "integer", n = 1, size = 4, endian = "little")
     output[i] <- readChar(con, nchars = nbytes, useBytes = TRUE)
   }
 
