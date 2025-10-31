@@ -286,7 +286,12 @@ read_chunk <- function(
     decompressed_chunk <- codec_endian_decode(
       decompressed_chunk,
       metadata$datatype$endian,
-      metadata$datatype$nbytes
+      ifelse(
+        # For unicode, nbytes actually is sizeof(int) * nchar
+        metadata$datatype$base_type == "unicode",
+        4L,
+        metadata$datatype$nbytes
+      )
     )
     converted_chunk <- .format_chunk(
       decompressed_chunk,
