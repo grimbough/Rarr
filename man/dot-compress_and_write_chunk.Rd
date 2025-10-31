@@ -7,6 +7,7 @@
 .compress_and_write_chunk(
   input_chunk,
   chunk_path,
+  metadata,
   compressor = use_zlib(),
   data_type_size,
   is_base64 = FALSE
