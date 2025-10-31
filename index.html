@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,12 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/Rarr.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/features.html">Supported Zarr features in Rarr</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -67,12 +73,6 @@
 <li><a href="#writing-to-a-zarr-array">Writing to a Zarr array</a></li>
 </ul>
 </li>
-<li>
-<a href="#current-status">Current Status</a>
-<ul>
-<li><a href="#reading-and-writing">Reading and Writing</a></li>
-</ul>
-</li>
 <li><a href="#required-system-libraries">Required system libraries</a></li>
 </ul>
 <!-- badges: start --><!-- badges: end -->
@@ -89,6 +89,7 @@
 <p><strong>Rarr currently only works with <a href="https://zarr-specs.readthedocs.io/en/latest/v2/v2.0.html" class="external-link">Zarr specification version 2</a>. Support for <a href="https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html" class="external-link">version 3</a> is actively being worked on.</strong></p>
 <p>If you know about Zarr arrays already, you’ll probably be aware they can be stored in hierarchical groups, where additional meta data can explain the relationship between the arrays. Currently, <strong>Rarr</strong> is not designed to be aware of these hierarchical Zarr array collections. However, the component arrays can be read individually by providing the path to them directly.</p>
 <p>Currently, there are also limitations on the Zarr datatypes that can be accessed using <strong>Rarr</strong>. For now most numeric types can be read into R, although in some instances e.g. 64-bit integers there is potential for loss of information. Writing is more limited with support only for datatypes that are supported natively in R and only using the column-first representation.</p>
+<p>See the dedicated <a href="https://huber-group-embl.github.io/Rarr/articles/features.html">“Supported Zarr features” vignette</a> for more information.</p>
 </div>
 </div>
 <div class="section level1">
@@ -125,7 +126,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">zarr_example</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="do">## Type: Array</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="do">## Path: /tmp/RtmpF7Gmri/temp_libpath200434430aca/Rarr/extdata/zarr_examples/column-first/int32.zarr</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="do">## Path: /tmp/RtmpD8R4Xh/temp_libpath182f36cf721d9/Rarr/extdata/zarr_examples/column-first/int32.zarr</span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="do">## Shape: 30 x 20 x 10</span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="do">## Chunk Shape: 10 x 10 x 5</span></span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="do">## No. of Chunks: 12 (3 x 2 x 2)</span></span>
@@ -144,7 +145,7 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/read_zarr_array.html">read_zarr_array</a></span><span class="op">(</span><span class="va">zarr_example</span>, index <span class="op">=</span> <span class="va">index</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="do">## , , 1</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="do">##</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="do">## </span></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="do">##      [,1] [,2]</span></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="do">## [1,]    1    2</span></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="do">## [2,]    1    0</span></span>
@@ -160,7 +161,7 @@
 <code class="sourceCode R"><span><span class="va">s3_address</span> <span class="op">&lt;-</span> <span class="st">"https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"</span></span>
 <span><span class="fu"><a href="reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">s3_address</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="do">## Type: Array</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="do">## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0/</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="do">## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0</span></span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="do">## Shape: 50 x 494 x 464</span></span>
 <span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="do">## Chunk Shape: 1 x 494 x 464</span></span>
 <span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="do">## No. of Chunks: 50 (50 x 1 x 1)</span></span>
@@ -198,7 +199,7 @@
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/read_zarr_array.html">read_zarr_array</a></span><span class="op">(</span>zarr_array_path <span class="op">=</span> <span class="va">path_to_new_zarr</span>, index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">6</span><span class="op">:</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="do">## , , 1</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="do">##</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="do">## </span></span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="do">##      [,1]</span></span>
 <span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="do">## [1,]   96</span></span>
 <span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="do">## [2,]   97</span></span>
@@ -208,189 +209,6 @@
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="reference/read_zarr_array.html">read_zarr_array</a></span><span class="op">(</span>zarr_array_path <span class="op">=</span> <span class="va">path_to_new_zarr</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="do">## [1] TRUE</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level1">
-<h1 id="current-status">Current Status<a class="anchor" aria-label="anchor" href="#current-status"></a>
-</h1>
-<div class="section level2">
-<h2 id="reading-and-writing">Reading and Writing<a class="anchor" aria-label="anchor" href="#reading-and-writing"></a>
-</h2>
-<p>Reading Zarr arrays is reasonably well supported. Writing is available, but is more limited. Both aspects are under active development.</p>
-<div class="section level3">
-<h3 id="data-types">Data Types<a class="anchor" aria-label="anchor" href="#data-types"></a>
-</h3>
-<p>Currently there is only support for reading and writing a subset of the possible datatypes that can be found in a Zarr array. In some instances there are also limitations on the datatypes natively supported by R, requiring conversion from the Zarr datatype. The table below summarises the current status of datatype support. It will be updated as progress is made.</p>
-<table class="table">
-<colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
-</colgroup>
-<thead><tr class="header">
-<th>Zarr Data Type</th>
-<th align="center">Status<br>(reading / writing)</th>
-<th>Notes</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code>boolean</code></td>
-<td align="center">✔ / ❌</td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>int8</code></td>
-<td align="center">✔ / ❌</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><code>uint8</code></td>
-<td align="center">✔ / ❌</td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>int16</code></td>
-<td align="center">✔ / ❌</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><code>uint16</code></td>
-<td align="center">✔ / ❌</td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>int32</code></td>
-<td align="center">✔ / ✔</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><code>uint32</code></td>
-<td align="center">✔ / ❌</td>
-<td>Values outside the range of <code>int32</code> are converted to <code>NA</code>. Future plan is to allow conversion to <code>double</code> or use the <a href="https://cran.r-project.org/package=bit64" class="external-link">bit64</a> package.</td>
-</tr>
-<tr class="even">
-<td><code>int64</code></td>
-<td align="center">✔ / ❌</td>
-<td>Values outside the range of <code>int32</code> are converted to <code>NA</code>. Future plan is to allow conversion to <code>double</code> or use the <a href="https://cran.r-project.org/package=bit64" class="external-link">bit64</a> package.</td>
-</tr>
-<tr class="odd">
-<td><code>uint64</code></td>
-<td align="center">✔ / ❌</td>
-<td>Values outside the range of <code>int32</code> are converted to <code>NA</code>. Future plan is to allow conversion to <code>double</code> or use the <a href="https://cran.r-project.org/package=bit64" class="external-link">bit64</a> package.</td>
-</tr>
-<tr class="even">
-<td>
-<code>half</code> / <code>float16</code>
-</td>
-<td align="center">✔ / ❌</td>
-<td>Converted to <code>double</code> in R. No effort is made to assess loss of precision due to conversion.</td>
-</tr>
-<tr class="odd">
-<td>
-<code>single</code> / <code>float32</code>
-</td>
-<td align="center">✔ / ❌</td>
-<td>Converted to <code>double</code> in R. No effort is made to assess loss of precision due to conversion.</td>
-</tr>
-<tr class="even">
-<td>
-<code>double</code> / <code>float64</code>
-</td>
-<td align="center">✔ / ✔</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><code>complex</code></td>
-<td align="center">❌ / ❌</td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>timedelta</code></td>
-<td align="center">❌ / ❌</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><code>datetime</code></td>
-<td align="center">❌ / ❌</td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>string</code></td>
-<td align="center">✔ / ✔</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><code>Unicode</code></td>
-<td align="center">✔ / ✔</td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>void *</code></td>
-<td align="center">❌ / ❌</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>Structured data types</td>
-<td align="center">❌ / ❌</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="compression-tools">Compression Tools<a class="anchor" aria-label="anchor" href="#compression-tools"></a>
-</h3>
-<table class="table">
-<colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
-</colgroup>
-<thead><tr class="header">
-<th>Data Type</th>
-<th align="center">Status<br>(reading / writing)</th>
-<th>Notes</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code>zlib / gzip</code></td>
-<td align="center">✔ / ✔</td>
-<td>Only system default compression level (normally 6) is enabled for writing.</td>
-</tr>
-<tr class="even">
-<td><code>bzip2</code></td>
-<td align="center">✔ / ✔</td>
-<td>Only compression level 9 is enabled for writing.</td>
-</tr>
-<tr class="odd">
-<td><code>blosc</code></td>
-<td align="center">✔ / ✔</td>
-<td>Only <code>lz4</code> compression level 5 is enabled for writing.</td>
-</tr>
-<tr class="even">
-<td><code>LZMA</code></td>
-<td align="center">✔ / ✔</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><code>LZ4</code></td>
-<td align="center">✔ / ✔</td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>Zstd</code></td>
-<td align="center">✔ / ✔</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>Please open an <a href="https://github.com/grimbough/Rarr/issues" class="external-link">issue</a> if support for a required compression tool is missing.</p>
-</div>
-<div class="section level3">
-<h3 id="filters">Filters<a class="anchor" aria-label="anchor" href="#filters"></a>
-</h3>
-<p>The is currently no support for additional filters. Please open an <a href="https://github.com/grimbough/Rarr/issues" class="external-link">issue</a> if you require filter support.</p>
-</div>
 </div>
 </div>
 <div class="section level1">
