@@ -7,11 +7,18 @@
   <https://huber-group-embl.github.io/Rarr/articles/features.html>.
   This makes it more easily discoverable on the Bioconductor landing page.
 
+## Bug fixes
+
+* Rarr is now fully compatible with big endian platforms.
+
 ## Internal changes
 
 * Some internal changes are preparing the transition to support Zarr v3:
   * "C" and "F" fill orders are now handled via a codec mechanism, which also
     supports a wider range of transpose operations.
+  * The endian configuration is now handled via a codec.
+* A GitHub Actions workflow has been added to occasionally test this package on
+  a big endian platform.
 
 # Rarr 1.9
 
