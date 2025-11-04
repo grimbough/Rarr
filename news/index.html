@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,10 +44,16 @@
 <ul><li>There is now a dedicated vignette describing the supported Zarr features in Rarr, available at <a href="https://huber-group-embl.github.io/Rarr/articles/features.html" class="uri">https://huber-group-embl.github.io/Rarr/articles/features.html</a>. This makes it more easily discoverable on the Bioconductor landing page.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="bug-fixes-1-11">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-11"></a></h3>
+<ul><li>Rarr is now fully compatible with big endian platforms.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="internal-changes-1-11">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-1-11"></a></h3>
 <ul><li>Some internal changes are preparing the transition to support Zarr v3:
 <ul><li>“C” and “F” fill orders are now handled via a codec mechanism, which also supports a wider range of transpose operations.</li>
+<li>The endian configuration is now handled via a codec.</li>
 </ul></li>
+<li>A GitHub Actions workflow has been added to occasionally test this package on a big endian platform.</li>
 </ul></div>
 </div>
     <div class="section level2">
