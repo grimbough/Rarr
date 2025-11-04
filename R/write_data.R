@@ -350,11 +350,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   zarr_dim <- unlist(metadata$shape)
   chunk_dim <- unlist(metadata$chunks)
 
-  ## convert strings to Unicode if required
-  if (grepl("<U|>U", x = metadata$dtype, fixed = FALSE)) {
-    x <- .unicode_to_int(input = x, typestr = metadata$dtype)
-  }
-
   ## coerce x to the same shape as the zarr to be updated
   x <- array(x, dim = lengths(index))
 
@@ -483,10 +478,20 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   data_type_size,
   is_base64 = FALSE
 ) {
+  # Array to array codecs
   if (metadata$order == "C") {
     input_chunk <- codec_transpose_decode(
       input_chunk,
       indices = rev(seq_along(dim(input_chunk)))
+    )
+  }
+
+  # Array to bytes codecs
+  ## convert strings to Unicode if required
+  if (grepl("<U|>U", x = metadata$dtype, fixed = FALSE)) {
+    input_chunk <- .unicode_to_int(
+      input = input_chunk,
+      typestr = metadata$dtype
     )
   }
 
@@ -506,6 +511,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     )
   }
 
+  # Bytes to bytes codecs
   if (is.null(compressor)) {
     compressed_chunk <- raw_chunk
   } else if (compressor$id == "blosc") {
