@@ -34,3 +34,26 @@ test_that("float32 zarr arrays can be read correctly", {
   # First column should be all 10.52
   expect_identical(column_major[, 1, ], rep(10.52, 30), tolerance = 1e-7)
 })
+
+test_that("float32 zarr arrays can be written", {
+  f32_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_f32_array <- array(runif(24), dim = c(4, 3, 2))
+
+  write_zarr_array(
+    content_f32_array,
+    f32_zarr,
+    data_type = "<f4",
+    chunk_dim = c(2, 2, 1),
+    compressor = NULL
+  )
+
+  roundtrip_f32_array <- read_zarr_array(f32_zarr)
+
+  # Conversion to float32 leads to loss of precision
+  expect_equal(
+    content_f32_array,
+    roundtrip_f32_array,
+    tolerance = 1e-7
+  )
+})
