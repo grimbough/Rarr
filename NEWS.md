@@ -6,6 +6,11 @@
   in Rarr, available at
   <https://huber-group-embl.github.io/Rarr/articles/features.html>.
   This makes it more easily discoverable on the Bioconductor landing page.
+* More data types are available when writing Zarr arrays:
+  * boolean / logical
+  * int8
+  * int16
+  * float32 / single
 
 ## Bug fixes
 
