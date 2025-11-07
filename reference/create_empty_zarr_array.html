@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,10 +78,11 @@ with the same length as the <code>dim</code> argument.</p></dd>
 
 <dt id="arg-data-type">data_type<a class="anchor" aria-label="anchor" href="#arg-data-type"></a></dt>
 <dd><p>Character vector giving the data type of the new array.
-Currently this is limited to standard R data types.  Valid options are:
-"integer", "double", "character".  You can also use the analogous NumpPy
-formats: "&lt;i4", "&lt;f8", "|S".  If this argument isn't provided the
-<code>fill_value</code> will be used to determine the datatype.</p></dd>
+Valid options are: "integer", "double", "character", "logical", which are
+based on standard R data types. You can also use the analogous Numpy
+formats: "|i1", "&lt;i2", "&lt;i4", "&lt;f4", "&lt;f8", "|S", "|b1".
+If this argument isn't provided the <code>fill_value</code> will be used to determine
+the datatype.</p></dd>
 
 
 <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>

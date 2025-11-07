@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,7 @@
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">zarr_array_path</span>,</span>
 <span>  <span class="va">chunk_dim</span>,</span>
+<span>  data_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mode.html" class="external-link">storage.mode</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
 <span>  order <span class="op">=</span> <span class="st">"F"</span>,</span>
 <span>  compressor <span class="op">=</span> <span class="fu"><a href="compressors.html">use_zlib</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">fill_value</span>,</span>
@@ -73,6 +74,15 @@ new Zarr array.</p></dd>
 <dt id="arg-chunk-dim">chunk_dim<a class="anchor" aria-label="anchor" href="#arg-chunk-dim"></a></dt>
 <dd><p>Dimensions of the array chunks. Should be a numeric vector
 with the same length as the <code>dim</code> argument.</p></dd>
+
+
+<dt id="arg-data-type">data_type<a class="anchor" aria-label="anchor" href="#arg-data-type"></a></dt>
+<dd><p>Character vector giving the data type of the new array.
+Valid options are: "integer", "double", "character", "logical", which are
+based on standard R data types. You can also use the analogous Numpy
+formats: "|i1", "&lt;i2", "&lt;i4", "&lt;f4", "&lt;f8", "|S", "|b1".
+If this argument isn't provided the <code>fill_value</code> will be used to determine
+the datatype.</p></dd>
 
 
 <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>
