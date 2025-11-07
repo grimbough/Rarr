@@ -60,8 +60,16 @@ SEXP decompress_chunk_ZSTD(SEXP input, SEXP _outbuffersize) {
   size_t compressed_size = (size_t) xlength(input);
   SEXP output;
   int dsize;
-  
+
+  /* It's better to use the buffer size when we know it. 
+  But if we don't, we can guess it. */
   outbuf_size = INTEGER(_outbuffersize)[0];
+  if (outbuf_size == NA_INTEGER) {
+    outbuf_size = ZSTD_getFrameContentSize(p_input, compressed_size);
+    if (outbuf_size == ZSTD_CONTENTSIZE_UNKNOWN || outbuf_size == ZSTD_CONTENTSIZE_ERROR) {
+      error("Unable to determine decompressed buffer size for zstd frame; ensure metadata provides nbytes\n");
+    }
+  }
   output = PROTECT(allocVector(RAWSXP, outbuf_size));
   p_output = RAW(output);
   
