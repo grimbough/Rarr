@@ -201,7 +201,12 @@ write_zarr_array <- function(
   chunk_names <- .generate_chunk_names(x_dim = dim(x), chunk_dim = chunk_dim)
   chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
 
-  if (is.numeric(x)) {
+  same_type_lower_bytesize <- metadata$dtype %in% c("|i1", "<i2", "<f4")
+  lower_bytesize_type <- storage.mode(x) == "double" &&
+    metadata$dtype == "<i4"
+
+  can_overflow <- same_type_lower_bytesize || lower_bytesize_type
+  if (can_overflow) {
     x <- .truncate_overflow(x, metadata$dtype)
   }
 
