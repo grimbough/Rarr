@@ -71,4 +71,18 @@ test_that("compressed zarr arrays (zstd) can be read correctly", {
 
   expect_identical(data[1, ], 1:10)
   expect_true(all(data[, 1] == seq(1, 60, 3)))
+
+  # Decompression of unknown buffer size
+  # https://github.com/Huber-group-EMBL/Rarr/issues/20
+  zarr_zstd_vlen <- system.file(
+    "extdata",
+    "zarr_examples",
+    "compression",
+    "zstd_vlen.zarr",
+    package = "Rarr"
+  )
+
+  expect_silent(data_vlen <- read_zarr_array(zarr_zstd_vlen))
+
+  expect_identical(data_vlen, array(as.character(0:5), dim = 6))
 })
