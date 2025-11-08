@@ -21,3 +21,4 @@ LICENSE.md
 ^docs$
 ^pkgdown$
 ^touchstone$
+^\.lintr$
