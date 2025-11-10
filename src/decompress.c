@@ -1,4 +1,5 @@
 #include "decompress.h"
+#include <limits.h>
 
 SEXP decompress_chunk_BLOSC(SEXP input) {
   
@@ -59,33 +60,46 @@ SEXP decompress_chunk_ZSTD(SEXP input, SEXP _outbuffersize) {
   size_t outbuf_size;
   size_t compressed_size = (size_t) xlength(input);
   SEXP output;
-  int dsize;
+  size_t dsize;
+  int provided;
 
   /* It's better to use the buffer size when we know it. 
   But if we don't, we can guess it. */
-  outbuf_size = INTEGER(_outbuffersize)[0];
-  if (outbuf_size == NA_INTEGER) {
-    outbuf_size = ZSTD_getFrameContentSize(p_input, compressed_size);
-    if (outbuf_size == ZSTD_CONTENTSIZE_UNKNOWN || outbuf_size == ZSTD_CONTENTSIZE_ERROR) {
+  provided = INTEGER(_outbuffersize)[0];
+  if (provided == NA_INTEGER) {
+    unsigned long long frameSize = ZSTD_getFrameContentSize(p_input, compressed_size);
+    if (frameSize == ZSTD_CONTENTSIZE_UNKNOWN || frameSize == ZSTD_CONTENTSIZE_ERROR) {
+      // FIXME: When ZSTD_CONTENTSIZE_UNKNOWN, we can still use streaming mode according to
+      // the docs. 
       error("Unable to determine decompressed buffer size for zstd frame; ensure metadata provides nbytes\n");
     }
+    /* Ensure frameSize fits in size_t on this platform. 
+    FIXME: we should implement streaming decompression mode in thisn case, as recommended
+    in the ZSTD docs. */
+    if (frameSize > SIZE_MAX) {
+      error("decompressed frame size (%llu) exceeds platform maximum (%zu); use streaming decompression\n",
+            frameSize, SIZE_MAX);
+    }
+    outbuf_size = (size_t) frameSize;
+  } else {
+    outbuf_size = (size_t) provided;
   }
-  output = PROTECT(allocVector(RAWSXP, outbuf_size));
+
+  output = PROTECT(allocVector(RAWSXP, (R_xlen_t) outbuf_size));
   p_output = RAW(output);
-  
+
   dsize = ZSTD_decompress(p_output, outbuf_size, p_input, compressed_size);
-  if(ZSTD_isError(dsize)) {
-    error("zstd decompression error - error code: %d (%s)\n", dsize, ZSTD_getErrorName(dsize));
+  if (ZSTD_isError(dsize)) {
+    error("zstd decompression error - error code: %zu (%s)\n", dsize, ZSTD_getErrorName(dsize));
   }
-  
-  /*  set the length of our output vector the actual number of decompressed
-  bytes.  _outbuffersize is an upper bound based on the chunk size and 
-  datatyp */
-  SET_LENGTH(output, dsize);
-  
+
+  /* set the length of our output vector the actual number of decompressed
+   * bytes. _outbuffersize/frameSize is an upper bound. */
+  SET_LENGTH(output, (R_xlen_t) dsize);
+
   UNPROTECT(1);
   return output;
-} 
+}
 
 /* not required as R has a native decompressor for ZLIB */
 // SEXP decompress_chunk_ZLIB(SEXP input, SEXP _outbuffersize) {
