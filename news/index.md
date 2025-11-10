@@ -17,6 +17,10 @@
 ### Bug fixes
 
 - Rarr is now fully compatible with big endian platforms.
+- ZSTD decompression now also works in case where we cannot guess a
+  priori the buffer size from the data type, such as when using variable
+  length strings. Thanks to Artür Manukyan for the bug report and test
+  data.
 
 ### Internal changes
 
