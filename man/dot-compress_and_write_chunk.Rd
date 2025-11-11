@@ -4,14 +4,7 @@
 \alias{.compress_and_write_chunk}
 \title{Compress and write a single chunk}
 \usage{
-.compress_and_write_chunk(
-  input_chunk,
-  chunk_path,
-  metadata,
-  compressor = use_zlib(),
-  data_type_size,
-  is_base64 = FALSE
-)
+.compress_and_write_chunk(input_chunk, chunk_path, metadata, is_base64 = FALSE)
 }
 \arguments{
 \item{input_chunk}{Array containing the chunk data to be compressed.  Will be
@@ -19,14 +12,6 @@ converted to a raw vector before compression.}
 
 \item{chunk_path}{Character string giving the path to the chunk that should
 be written.}
-
-\item{compressor}{A "compressor" function that returns a list giving the
-details of the compression tool to apply.  See \link{compressors} for more
-details.}
-
-\item{data_type_size}{An integer giving the size of the original datatype.
-This is passed to the blosc algorithm, which seems to need it to achieve
-any compression.}
 
 \item{is_base64}{When dealing with Py_unicode strings we convert them to
 base64 strings for storage in our intermediate R arrays.  This argument
