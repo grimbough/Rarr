@@ -282,9 +282,7 @@ write_zarr_array <- function(
   .compress_and_write_chunk(
     input_chunk = chunk_in_mem,
     chunk_path = chunk_path,
-    metadata,
-    compressor = metadata$compressor,
-    data_type_size = .parse_datatype(metadata$dtype)$nbytes
+    metadata
   )
 
   return(invisible(TRUE))
@@ -443,8 +441,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     input_chunk = chunk_in_mem,
     chunk_path = chunk_path,
     metadata,
-    compressor = metadata$compressor,
-    data_type_size = metadata$datatype$nbytes,
     is_base64 = (metadata$datatype$base_type == "unicode")
   )
 }
@@ -455,12 +451,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #'   converted to a raw vector before compression.
 #' @param chunk_path Character string giving the path to the chunk that should
 #'   be written.
-#' @param compressor A "compressor" function that returns a list giving the
-#'   details of the compression tool to apply.  See [compressors] for more
-#'   details.
-#' @param data_type_size An integer giving the size of the original datatype.
-#'   This is passed to the blosc algorithm, which seems to need it to achieve
-#'   any compression.
 #' @param is_base64 When dealing with Py_unicode strings we convert them to
 #' base64 strings for storage in our intermediate R arrays.  This argument
 #' indicates if base64 is in use, because the conversion to raw in .as_raw
@@ -474,8 +464,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   input_chunk,
   chunk_path,
   metadata,
-  compressor = use_zlib(),
-  data_type_size,
   is_base64 = FALSE
 ) {
   # Array to array codecs
@@ -488,7 +476,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
   # Array to bytes codecs
   ## convert strings to Unicode if required
-  if (grepl("<U|>U", x = metadata$dtype, fixed = FALSE)) {
+  if (metadata$datatype$base_type == "unicode") {
     input_chunk <- .unicode_to_int(
       input = input_chunk,
       typestr = metadata$dtype
@@ -498,7 +486,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   ## the compression tools need a raw vector
   raw_chunk <- .as_raw(
     as.vector(input_chunk),
-    nchar = data_type_size,
+    nchar = metadata$datatype$nbytes,
     is_base64 = is_base64
   )
 
@@ -512,13 +500,14 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   # Bytes to bytes codecs
+  compressor <- metadata$compressor
   if (is.null(compressor)) {
     compressed_chunk <- raw_chunk
   } else if (compressor$id == "blosc") {
     compressed_chunk <- .Call(
       "compress_chunk_BLOSC",
       raw_chunk,
-      as.integer(data_type_size),
+      as.integer(metadata$datatype$nbytes),
       PACKAGE = "Rarr"
     )
   } else if (compressor$id == "zlib") {
