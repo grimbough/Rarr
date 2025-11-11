@@ -32,3 +32,38 @@ codec_endian_encode <- function(raw_obj, endian, bytesize) {
 }
 
 codec_endian_decode <- codec_endian_encode
+
+codec_vlen_utf8_encode <- function(input) {
+  raw_nvalues <- writeBin(length(input), raw(), size = 4, endian = "little")
+  raw_strings <- lapply(input, function(x) charToRaw(enc2utf8(x)))
+  raw_string_lens <- lapply(lengths(raw_strings), function(x) {
+    writeBin(x, raw(), size = 4, endian = "little")
+  })
+
+  raw_vlen_utf8 <- c(
+    raw_nvalues,
+    unlist(Map(
+      function(len, str) c(len, str),
+      raw_string_lens,
+      raw_strings
+    ))
+  )
+
+  return(raw_vlen_utf8)
+}
+
+codec_vlen_utf8_decode <- function(input) {
+  con <- rawConnection(input)
+  on.exit(close(con))
+  # Looking at numcodecs source code, this is by definition/convention
+  # always little-endian
+  nvalues <- readBin(con, what = "integer", n = 1, size = 4, endian = "little")
+  output <- character(length = nvalues)
+  for (i in seq_len(nvalues)) {
+    nbytes <- readBin(con, what = "integer", n = 1, size = 4, endian = "little")
+    output[i] <- readChar(con, nchars = nbytes, useBytes = TRUE)
+  }
+
+  Encoding(output) <- "UTF-8"
+  return(output)
+}
