@@ -6,7 +6,7 @@
     )
   }
 
-  dt <- .parse_datatype(metadata$dtype)
+  dt <- metadata$datatype
 
   metadata_v3 <- list(
     datatype = dt,
