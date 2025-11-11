@@ -94,6 +94,20 @@ check_index <- function(index, metadata) {
 
   return(datatype)
 }
+parse_datatype_v3 <- function(typestr) {
+  datatype <- list()
+  datatype_parts <- strsplit(typestr, "", fixed = TRUE)[[1]]
+
+  datatype$base_type <- gsub("^([[:alpha:]]+)", "\\1", typestr)
+
+  datatype$nbytes <- as.integer(
+    gsub(x = typestr, pattern = "^[[:alpha:]]", replacement = "")
+  )
+
+  datatype$is_signed <- datatype$base_type != "uint"
+
+  return(datatype)
+}
 
 
 #' Normalize a Zarr array path

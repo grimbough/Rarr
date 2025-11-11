@@ -53,15 +53,19 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     c(".zarray", "zarr.json")
   )
 
-  if (metadata_file["zarr.json"]) {
-    stop("Reading Zarr v3 arrays is not currently supported", call. = FALSE)
-  }
-
   metadata <- .read_array_metadata(
     zarr_array_path,
     ".zarray",
     s3_client = s3_client
   )
+
+  if (metadata_file[".zarray"]) {
+    metadata <- .convert_metadata_version(
+      metadata,
+      version_from = 2,
+      version_to = 3
+    )
+  }
 
   ## if no index provided we will return everything
   if (missing(index)) {
@@ -95,7 +99,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 ) {
   ## find elements to select from the chunk and what in the output we replace
   index_in_result <- index_in_chunk <- list()
-  alt_chunk_dim <- unlist(metadata$chunks)
+  alt_chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
   for (j in seq_len(ncol(required_chunks))) {
     index_in_result[[j]] <- which(chunk_idx[[j]] == required_chunks[i, j])
@@ -109,7 +113,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     }
 
     index_in_chunk[[j]] <- ((index[[j]][index_in_result[[j]]] - 1) %%
-      metadata$chunks[[j]]) +
+      metadata$chunk_grid$configuration$chunk_shape[[j]]) +
       1
   }
 
@@ -152,7 +156,7 @@ read_data <- function(
       (x - 1) %/% y
     },
     index,
-    metadata$chunks,
+    metadata$chunk_grid$configuration$chunk_shape,
     SIMPLIFY = FALSE
   )
 
@@ -189,7 +193,9 @@ read_data <- function(
 find_chunks_needed <- function(metadata, index) {
   index_chunks <- list()
   for (i in seq_along(index)) {
-    index_chunks[[i]] <- unique((index[[i]] - 1) %/% metadata$chunks[[i]])
+    index_chunks[[i]] <- unique(
+      (index[[i]] - 1) %/% metadata$chunk_grid$configuration$chunk_shape[[i]]
+    )
   }
 
   required_chunks <- expand.grid(index_chunks)
@@ -242,15 +248,7 @@ read_chunk <- function(
   s3_client = NULL,
   alt_chunk_dim = NULL
 ) {
-  if (missing(metadata)) {
-    metadata <- .read_array_metadata(
-      zarr_array_path,
-      ".zarray",
-      s3_client = s3_client
-    )
-  }
-
-  dim_separator <- metadata$dimension_separator %||% "."
+  dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
   chunk_id <- paste(chunk_id, collapse = dim_separator)
 
   chunk_file <- paste0(zarr_array_path, chunk_id)
@@ -283,9 +281,11 @@ read_chunk <- function(
   ## or create a new chunk based on the fill value
   if (!is.null(compressed_chunk)) {
     decompressed_chunk <- .decompress_chunk(compressed_chunk, metadata)
+
+    bytes_codec_config <- metadata$codecs[["bytes"]]$configuration
     decompressed_chunk <- codec_endian_decode(
       decompressed_chunk,
-      metadata$datatype$endian,
+      bytes_codec_config,
       ifelse(
         # For unicode, nbytes actually is sizeof(int) * nchar
         metadata$datatype$base_type == "unicode",
@@ -301,7 +301,10 @@ read_chunk <- function(
     # FIXME: run array -> array codecs here
   } else {
     converted_chunk <- list(
-      "chunk_data" = array(metadata$fill_value, dim = unlist(metadata$chunks)),
+      "chunk_data" = array(
+        metadata$fill_value,
+        dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
+      ),
       "warning" = 0L
     )
   }
@@ -344,13 +347,12 @@ read_chunk <- function(
   actual_chunk_size <- length(decompressed_chunk) / datatype$nbytes
   if (
     (datatype$base_type == "py_object") ||
-      (actual_chunk_size == prod(unlist(metadata$chunks)))
+      (actual_chunk_size ==
+        prod(unlist(metadata$chunk_grid$configuration$chunk_shape)))
   ) {
-    chunk_dim <- unlist(metadata$chunks)
-  } else if (actual_chunk_size == prod(alt_chunk_dim)) {
-    chunk_dim <- alt_chunk_dim
+    chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
   } else {
-    stop("Decompressed data doesn't match expected chunk size.")
+    chunk_dim <- alt_chunk_dim
   }
 
   if (datatype$base_type == "string") {
@@ -381,12 +383,11 @@ read_chunk <- function(
     )
   }
 
-  if (metadata$order == "C") {
-    converted_chunk[[1]] <- codec_transpose_encode(
-      converted_chunk[[1]],
-      rev(seq_along(chunk_dim))
-    )
-  }
+  transpose_config <- metadata$codecs[["transpose"]]$configuration
+  converted_chunk[[1]] <- codec_transpose_encode(
+    converted_chunk[[1]],
+    transpose_config$order + 1L
+  )
 
   names(converted_chunk) <- c("chunk_data", "warning")
   return(converted_chunk)
@@ -411,14 +412,17 @@ read_chunk <- function(
 #' @importFrom utils tail
 #' @keywords internal
 .decompress_chunk <- function(compressed_chunk, metadata) {
-  decompressor <- metadata$compressor$id
+  decompressor <- intersect(
+    vapply(metadata$codecs, function(codec) codec$name, character(1)),
+    c("blosc", "zlib", "gzip", "bz2", "lzma", "lz4", "zstd")
+  )
   datatype <- metadata$datatype
   buffer_size <- get_decompressed_chunk_size(
     datatype,
-    dimensions = metadata$chunks
+    dimensions = metadata$chunk_grid$configuration$chunk_shape
   )
 
-  if (is.null(decompressor)) {
+  if (length(decompressor) == 0) {
     decompressed_chunk <- compressed_chunk
   } else if (decompressor == "blosc") {
     decompressed_chunk <- .Call(
