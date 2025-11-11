@@ -1,26 +1,4 @@
-# -- Array to array -------------------
-codec_transpose_encode <- function(array, indices = seq_along(dim(array))) {
-  if (identical(indices, seq_along(dim(array)))) {
-    return(array)
-  }
-  dim(array) <- dim(array)[indices]
-  array <- aperm(array, indices)
-
-  return(array)
-}
-
-codec_transpose_decode <- function(array, indices = seq_along(dim(array))) {
-  if (identical(indices, seq_along(dim(array)))) {
-    return(array)
-  }
-  inv_indices <- order(indices)
-  array <- aperm(array, inv_indices)
-  dim(array) <- dim(array)[inv_indices]
-
-  return(array)
-}
-
-# -- Array to bytes -------------------
+# -- Endian ---------------------------------------
 codec_endian_encode <- function(raw_obj, endian, bytesize) {
   if (is.na(endian) || endian == .Platform$endian) {
     return(raw_obj)
@@ -33,6 +11,7 @@ codec_endian_encode <- function(raw_obj, endian, bytesize) {
 
 codec_endian_decode <- codec_endian_encode
 
+# -- Variable-length UTF-8 ------------------------
 codec_vlen_utf8_encode <- function(input) {
   raw_nvalues <- writeBin(length(input), raw(), size = 4, endian = "little")
   raw_strings <- lapply(input, function(x) charToRaw(enc2utf8(x)))
