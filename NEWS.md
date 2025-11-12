@@ -18,6 +18,9 @@
 * ZSTD decompression now also works in case where we cannot guess a priori the buffer
   size from the data type, such as when using variable length strings. 
   Thanks to Artür Manukyan for the bug report and test data.
+* `zarr_overview()` no longer fails on consolidated metadata containing uncompressed
+  arrays. This was introduced in https://github.com/Huber-group-EMBL/Rarr/pull/45.
+  Thanks to Sharla Gelfand for reporting the issue and providing test data. 
 
 ## Internal changes
 
