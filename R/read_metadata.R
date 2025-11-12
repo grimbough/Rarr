@@ -158,11 +158,6 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   )
 
   codecs <- array_metadata$codecs
-  names(codecs) <- vapply(
-    codecs,
-    FUN = function(x) x$name,
-    FUN.VALUE = character(1)
-  )
   compressor <- names(codecs)[match(
     TRUE,
     names(codecs) %in% c("zstd", "blosc", "gzip")
@@ -172,8 +167,10 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   res <- data.frame(
     path = paste0(.normalize_array_path(zarr_array_path), array_name),
     data_type = array_metadata$data_type,
-    endianness = endianness,
-    compressor = compressor
+    # We already introduce default values in .convert_metadata_version() but
+    # these do not exist when v3 metadata directly.
+    endianness = endianness %||% NA_character_,
+    compressor = compressor %||% "None"
   )
   res$dim <- list(data_shape)
   res$chunk_dim <- list(chunk_shape)
