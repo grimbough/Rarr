@@ -62,8 +62,16 @@ test_that("zarr_overview works with consolidated metadata store", {
     "complex_consolidated.zarr",
     package = "Rarr"
   )
+  metadata_df <- zarr_overview(complex_consolidated, as_data_frame = TRUE)
+  # "path" is absolute path so will differ between systems
+  metadata_df$path <- gsub(
+    complex_consolidated,
+    "",
+    metadata_df$path,
+    fixed = TRUE
+  )
   expect_snapshot(
-    zarr_overview(complex_consolidated, as_data_frame = TRUE)
+    metadata_df
   )
 })
 
