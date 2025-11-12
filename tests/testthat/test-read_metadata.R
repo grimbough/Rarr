@@ -53,6 +53,18 @@ test_that("zarr_overview works with consolidated metadata store", {
       "nchunks"
     )
   )
+
+  # From https://objects.eodc.eu:443/e05ab01a9d56408d82ac32d69a5aae2a:202505-s02msil2a/30/products/cpm_v256/S2B_MSIL2A_20250530T101559_N0511_R065_T32TPT_20250530T130924.zarr
+  complex_consolidated <- system.file(
+    "extdata",
+    "zarr_examples",
+    "metadata",
+    "complex_consolidated.zarr",
+    package = "Rarr"
+  )
+  expect_snapshot(
+    zarr_overview(complex_consolidated, as_data_frame = TRUE)
+  )
 })
 
 test_that("zarr_overview console output matches snapshot for consolidated store", {
@@ -117,13 +129,13 @@ test_that("zarr_overview throws error for missing metadata files", {
 })
 
 test_that("zarr_overview throws error for mixed v2/v3 zarr", {
-   invalid_zarr <- system.file(
+  invalid_zarr <- system.file(
     "extdata",
     "zarr_examples",
     "metadata",
     "invalid_mixed.zarr",
     package = "Rarr"
-   )
+  )
 
   expect_snapshot_error(
     zarr_overview(invalid_zarr)
