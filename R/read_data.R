@@ -53,19 +53,20 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     c(".zarray", "zarr.json")
   )
 
+  if (metadata_file["zarr.json"]) {
+    stop("Reading Zarr v3 arrays is not currently supported", call. = FALSE)
+  }
+
   metadata <- .read_array_metadata(
     zarr_array_path,
     ".zarray",
     s3_client = s3_client
   )
-
-  if (metadata_file[".zarray"]) {
-    metadata <- .convert_metadata_version(
-      metadata,
-      version_from = 2,
-      version_to = 3
-    )
-  }
+  metadata <- .convert_metadata_version(
+    metadata,
+    version_from = 2,
+    version_to = 3
+  )
 
   ## if no index provided we will return everything
   if (missing(index)) {
