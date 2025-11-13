@@ -1,4 +1,4 @@
-test_that("", {
+test_that("Create zarr arrays with DelayedArray backend", {
   skip_if(
     !identical(.Platform$endian, "little"),
     "Delayed arrays only supported on little-endian platforms"
@@ -37,4 +37,24 @@ test_that("", {
   expect_s4_class(z2, "ZarrArray")
 
   expect_identical(type(z2), "character")
+})
+
+test_that("Zarr arrays can be read directly as DelayedArrays", {
+  zarr_example <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "int32.zarr",
+    package = "Rarr"
+  )
+  zarr_array <- ZarrArray(zarr_example)
+  expect_s4_class(zarr_array, "ZarrArray")
+  expect_identical(dim(zarr_array), c(30L, 20L, 10L))
+  expect_identical(chunkdim(zarr_array), c(10L, 10L, 5L))
+
+  zarr_array_seed <- ZarrArraySeed(zarr_example)
+  expect_identical(
+    zarr_array,
+    ZarrArray(zarr_array_seed)
+  )
 })
