@@ -32,14 +32,6 @@
 
 ## for now we're going to assume you only get here with a VLEN UTF8 datatype
 .format_object <- function(decompressed_chunk, metadata, datatype) {
-  if (length(metadata$filters) != 1) {
-    stop("Unknown object data type")
-  }
-
-  if (metadata$filters[[1]]$id != "vlen-utf8") {
-    stop("Not VLEN UTF8 encoded data.  We don't know how to process this!")
-  }
-
   converted_chunk <- list(
     .readVlenUTF8(decompressed_chunk),
     0L

@@ -347,7 +347,7 @@ read_chunk <- function(
   ## values or not, so we try both approaches.
   actual_chunk_size <- length(decompressed_chunk) / datatype$nbytes
   if (
-    (datatype$base_type == "py_object") ||
+    !is.null(metadata$codecs[["vlen-utf8"]]) ||
       (actual_chunk_size ==
         prod(unlist(metadata$chunk_grid$configuration$chunk_shape)))
   ) {
@@ -357,13 +357,15 @@ read_chunk <- function(
   }
 
   if (datatype$base_type == "string") {
-    converted_chunk <- .format_string(decompressed_chunk, datatype)
-    dim(converted_chunk[[1]]) <- chunk_dim
+    if (!is.null(metadata$codecs[["vlen-utf8"]])) {
+      converted_chunk <- .format_object(decompressed_chunk, metadata, datatype)
+      dim(converted_chunk[[1]]) <- chunk_dim
+    } else {
+      converted_chunk <- .format_string(decompressed_chunk, datatype)
+      dim(converted_chunk[[1]]) <- chunk_dim
+    }
   } else if (datatype$base_type == "unicode") {
     converted_chunk <- .format_unicode(decompressed_chunk, datatype)
-    dim(converted_chunk[[1]]) <- chunk_dim
-  } else if (datatype$base_type == "py_object") {
-    converted_chunk <- .format_object(decompressed_chunk, metadata, datatype)
     dim(converted_chunk[[1]]) <- chunk_dim
   } else {
     output_type <- switch(
