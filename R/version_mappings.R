@@ -22,6 +22,7 @@
         separator = metadata$dimension_separator %||% "."
       )
     ),
+    # FIXME: we get invalid types from this. For example, unicode no longer exists
     data_type = paste0(dt$base_type, 8 * dt$nbytes),
     fill_value = metadata$fill_value,
     codecs = list(
@@ -44,13 +45,24 @@
   )
 
   if (!is.null(metadata$compressor$id)) {
-    metadata_v3$codecs[[metadata$compressor$id]] <-
-      list(
-        name = metadata$compressor$id,
-        configuration = list(
-          metadata$compressor[names(metadata$compressor) != "id"]
-        )
+    metadata_v3$codecs[[metadata$compressor$id]] <- list(
+      name = metadata$compressor$id,
+      configuration = list(
+        metadata$compressor[names(metadata$compressor) != "id"]
       )
+    )
+  }
+
+  for (filter in metadata$filters) {
+    metadata_v3$codecs[[filter$id]] <- list(
+      name = filter$id
+    )
+  }
+
+  if (!is.null(metadata_v3$codecs[["vlen-utf8"]])) {
+    # In v3, vlen-utf8 applies to 'string' type
+    metadata_v3$data_type <- "string"
+    metadata_v3$datatype$base_type <- "string"
   }
 
   return(metadata_v3)
