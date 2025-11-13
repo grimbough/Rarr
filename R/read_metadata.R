@@ -144,6 +144,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   # FIXME: once the data reading/writing code has been updated to use v3, this
   # should move to .read_array_metadata()
   if (array_metadata$zarr_format == 2) {
+    array_metadata$datatype <- .parse_datatype(array_metadata$dtype)
     array_metadata <- .convert_metadata_version(
       array_metadata,
       version_from = 2,
