@@ -317,6 +317,11 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
   zarr_array_path <- .normalize_array_path(zarr_array_path)
   metadata <- .read_array_metadata(zarr_array_path, ".zarray")
+  metadata_v3 <- .convert_metadata_version(
+    metadata,
+    version_from = 2,
+    version_to = 3
+  )
   index <- check_index(index, metadata = metadata)
 
   data_type <- switch(
@@ -380,7 +385,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_dim = chunk_dim,
     chunk_idx = chunk_idx,
     index = index,
-    metadata = metadata
+    metadata = metadata,
+    metadata_v3 = metadata_v3
   )
 
   return(invisible(all(unlist(res))))
@@ -393,7 +399,9 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_dim,
   chunk_idx,
   index,
-  metadata
+  # FIXME: once we fully switch to v3, we can remove this argument
+  metadata,
+  metadata_v3
 ) {
   chunk_id_split <- as.integer(
     strsplit(chunk_id, metadata$dimension_separator, fixed = TRUE)[[1]]
@@ -413,7 +421,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_in_mem <- read_chunk(
     zarr_array_path = path,
     chunk_id = chunk_id_split,
-    metadata = metadata
+    metadata = metadata_v3
   )[["chunk_data"]]
 
   ## extract the new values from x and insert them into the chunk
