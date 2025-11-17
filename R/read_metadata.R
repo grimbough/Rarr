@@ -170,7 +170,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     # We already introduce default values in .convert_metadata_version() but
     # these do not exist when reading v3 metadata directly.
     endianness = endianness %||% NA_character_,
-    compressor = compressor %||% "None"
+    compressor = compressor %||% NA_character_
   )
   res$dim <- list(data_shape)
   res$chunk_dim <- list(chunk_shape)
