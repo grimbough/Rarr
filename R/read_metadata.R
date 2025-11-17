@@ -168,7 +168,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     path = paste0(.normalize_array_path(zarr_array_path), array_name),
     data_type = array_metadata$data_type,
     # We already introduce default values in .convert_metadata_version() but
-    # these do not exist when v3 metadata directly.
+    # these do not exist when reading v3 metadata directly.
     endianness = endianness %||% NA_character_,
     compressor = compressor %||% "None"
   )
@@ -308,7 +308,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     )
   } else {
     stop(
-      "Unsupported Zarr format version: %s",
+      "Unsupported Zarr format version: ",
       metadata$zarr_format,
       call. = FALSE
     )
