@@ -103,10 +103,10 @@ have permission to access this resource as an anonymous user.  However, if we us
 below, which gives read-only access to the objects in the `rarr-testing` bucket,
 we're now able to interrogate the files with functions in *Rarr*.
 
-```{r, eval = FALSE}
+```{r}
 Sys.setenv(
-  "AWS_ACCESS_KEY_ID" = "V352gmotks4ZyhfU",
-  "AWS_SECRET_ACCESS_KEY" = "2jveausI91c8P3c7OCRIOrxdLbp3LNW8"
+  "AWS_ACCESS_KEY_ID" = "bYUBYVg1AsEreuDgtg5K",
+  "AWS_SECRET_ACCESS_KEY" = "r8FrLXc9dseD6V1P3htsu7ZBzP7Gszsd3sM1G4KX"
 )
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
 ```
