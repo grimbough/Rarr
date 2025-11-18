@@ -77,8 +77,9 @@ test_that("int64 v3 zarr arrays throw appropriate error", {
     package = "Rarr"
   )
 
-  expect_error(
-    read_zarr_array(zarr_v3),
-    "Zarr v3 arrays"
+  expect_no_condition(
+    zarr_v3_array <- read_zarr_array(zarr_v3),
   )
+
+  expect_shape(zarr_v3_array, dim = c(3, 4, 5))
 })

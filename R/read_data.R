@@ -47,26 +47,44 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     s3_client <- .create_s3_client(path = zarr_array_path)
   }
 
-  metadata_file <- .file_or_blob_exists(
+  metadata_files <- .file_or_blob_exists(
     zarr_array_path,
     s3_client,
     c(".zarray", "zarr.json")
   )
 
-  if (metadata_file["zarr.json"]) {
-    stop("Reading Zarr v3 arrays is not currently supported", call. = FALSE)
+  if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
+    stop(
+      "The path contains both `.zarray` (Zarr V2 specification) and ",
+      "`zarr.json` (Zarr V3 specification) metadata files.\n",
+      "An array or group must conform to either the Zarr V2 or V3 ",
+      "specification.",
+      call. = FALSE
+    )
+  }
+  if (!any(metadata_files)) {
+    stop(
+      "The path does not contain any metadata files. ",
+      "It must contain one of: ",
+      "  - `.zarray` (Zarr V2 specification)\n",
+      "  - `zarr.json` (Zarr V3 specification)",
+      call. = FALSE
+    )
   }
 
   metadata <- .read_array_metadata(
     zarr_array_path,
-    ".zarray",
+    names(metadata_files)[metadata_files],
     s3_client = s3_client
   )
-  metadata <- .convert_metadata_version(
-    metadata,
-    version_from = 2,
-    version_to = 3
-  )
+
+  if (metadata$zarr_format == 2) {
+    metadata <- .convert_metadata_version(
+      metadata,
+      version_from = 2,
+      version_to = 3
+    )
+  }
 
   ## if no index provided we will return everything
   if (missing(index)) {
