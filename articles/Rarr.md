@@ -287,11 +287,20 @@ the files with functions in *Rarr*.
 
 ``` r
 Sys.setenv(
-  "AWS_ACCESS_KEY_ID" = "V352gmotks4ZyhfU",
-  "AWS_SECRET_ACCESS_KEY" = "2jveausI91c8P3c7OCRIOrxdLbp3LNW8"
+  "AWS_ACCESS_KEY_ID" = "bYUBYVg1AsEreuDgtg5K",
+  "AWS_SECRET_ACCESS_KEY" = "r8FrLXc9dseD6V1P3htsu7ZBzP7Gszsd3sM1G4KX"
 )
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
 ```
+
+    ## Type: Array
+    ## Path: https://s3.embl.de/rarr-testing/bzip2.zarr
+    ## Shape: 20 x 10
+    ## Chunk Shape: 10 x 10
+    ## No. of Chunks: 2 (2 x 1)
+    ## Data Type: int32
+    ## Endianness: little
+    ## Compressor: None
 
 Behind the scenes **Rarr** makes use of the **paws** suite of packages
 (<https://paws-r.github.io/>) to interact with S3 storage. A
@@ -316,14 +325,7 @@ s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.z
 zarr_overview(s3_address)
 ```
 
-    ## Type: Array
-    ## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0
-    ## Shape: 50 x 494 x 464
-    ## Chunk Shape: 1 x 494 x 464
-    ## No. of Chunks: 50 (50 x 1 x 1)
-    ## Data Type: float64
-    ## Endianness: little
-    ## Compressor: blosc
+    ## Error:
 
 You might encounter similar problems if you’re trying to access multiple
 buckets each of which require different credentials. The solution here
@@ -638,7 +640,7 @@ zarr_X
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] jsonlite_2.0.0      crayon_1.5.3        compiler_4.5.2     
-    ##  [4] BiocManager_1.30.26 Rcpp_1.1.0          xml2_1.4.1         
+    ##  [4] BiocManager_1.30.27 Rcpp_1.1.0          xml2_1.4.1         
     ##  [7] jquerylib_0.1.4     systemfonts_1.3.1   textshaping_1.0.4  
     ## [10] yaml_2.3.10         fastmap_1.2.0       lattice_0.22-7     
     ## [13] R6_2.6.1            XVector_0.50.0      curl_7.0.0         

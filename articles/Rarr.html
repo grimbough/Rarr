@@ -61,7 +61,7 @@
                         <h4 data-toc-skip class="author">Mike L.
 Smith</h4>
                         
-            <h4 data-toc-skip class="date">17 November 2025</h4>
+            <h4 data-toc-skip class="date">18 November 2025</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/Rarr.Rmd" class="external-link"><code>vignettes/Rarr.Rmd</code></a></small>
       <div class="d-none name"><code>Rarr.Rmd</code></div>
@@ -325,10 +325,18 @@ the objects in the <code>rarr-testing</code> bucket, we’re now able to
 interrogate the files with functions in <em>Rarr</em>.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span></span>
-<span>  <span class="st">"AWS_ACCESS_KEY_ID"</span> <span class="op">=</span> <span class="st">"V352gmotks4ZyhfU"</span>,</span>
-<span>  <span class="st">"AWS_SECRET_ACCESS_KEY"</span> <span class="op">=</span> <span class="st">"2jveausI91c8P3c7OCRIOrxdLbp3LNW8"</span></span>
+<span>  <span class="st">"AWS_ACCESS_KEY_ID"</span> <span class="op">=</span> <span class="st">"bYUBYVg1AsEreuDgtg5K"</span>,</span>
+<span>  <span class="st">"AWS_SECRET_ACCESS_KEY"</span> <span class="op">=</span> <span class="st">"r8FrLXc9dseD6V1P3htsu7ZBzP7Gszsd3sM1G4KX"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="st">"https://s3.embl.de/rarr-testing/bzip2.zarr"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Type: Array</span></span>
+<span><span class="co">## Path: https://s3.embl.de/rarr-testing/bzip2.zarr</span></span>
+<span><span class="co">## Shape: 20 x 10</span></span>
+<span><span class="co">## Chunk Shape: 10 x 10</span></span>
+<span><span class="co">## No. of Chunks: 2 (2 x 1)</span></span>
+<span><span class="co">## Data Type: int32</span></span>
+<span><span class="co">## Endianness: little</span></span>
+<span><span class="co">## Compressor: None</span></span></code></pre>
 <p>Behind the scenes <strong>Rarr</strong> makes use of the
 <strong>paws</strong> suite of packages (<a href="https://paws-r.github.io/" class="external-link uri">https://paws-r.github.io/</a>) to interact with S3 storage.
 A comprehensive overview of the multiple ways credentials can be set and
@@ -348,17 +356,10 @@ of this below, where we access the same public bucket used in
 @ref(read-s3), but it now fails because we have set the
 <code>AWS_ACCESS_KEY_ID</code> environment variable in the previous
 section.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s3_address</span> <span class="op">&lt;-</span> <span class="st">"https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"</span></span>
 <span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">s3_address</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Type: Array</span></span>
-<span><span class="co">## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0</span></span>
-<span><span class="co">## Shape: 50 x 494 x 464</span></span>
-<span><span class="co">## Chunk Shape: 1 x 494 x 464</span></span>
-<span><span class="co">## No. of Chunks: 50 (50 x 1 x 1)</span></span>
-<span><span class="co">## Data Type: float64</span></span>
-<span><span class="co">## Endianness: little</span></span>
-<span><span class="co">## Compressor: blosc</span></span></code></pre>
+<pre><code><span><span class="co">## Error:</span></span></code></pre>
 <p>You might encounter similar problems if you’re trying to access
 multiple buckets each of which require different credentials. The
 solution here is to create an “s3_client” using
@@ -368,7 +369,7 @@ for accessing a particular bucket. Doing so will prevent
 gives you complete control over the settings used to communicate with
 the S3 bucket. Here’s an example that will let us access the failing
 bucket by creating a client with anonymous credentials.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s3_client</span> <span class="op">&lt;-</span> <span class="fu">paws.storage</span><span class="fu">::</span><span class="fu"><a href="https://paws-r.r-universe.dev/paws.storage/reference/s3.html" class="external-link">s3</a></span><span class="op">(</span></span>
 <span>  config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    credentials <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>anonymous <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
@@ -390,7 +391,7 @@ information on creating an S3 client see the <a href="https://paws-r.github.io/d
 documentation</a>.</p>
 <p>We can then pass our s3_client to <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code> and it
 now works successfully.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">s3_address</span>, s3_client <span class="op">=</span> <span class="va">s3_client</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Type: Array</span></span>
 <span><span class="co">## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0</span></span>
@@ -429,7 +430,7 @@ allows for very efficient creation of the new array, since only a small
 metadata file is actually written. However it is necessary to provide
 some additional details, such as the shape of the array, since there’s
 no R array to infer these from. Let’s look at an example:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/create_empty_zarr_array.html">create_empty_zarr_array</a></span><span class="op">(</span></span>
 <span>  zarr_array_path <span class="op">=</span> <span class="va">path</span>,</span>
@@ -457,10 +458,10 @@ that’s been created is the <code>.zarray</code> metadata; there are no
 chunk files. Then we use <code><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table()</a></code> to check the contents of
 the array, and confirm that when it’s read the resulting array in R is
 full of 7s, our fill value.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">path</span>, all.files <span class="op">=</span> <span class="cn">TRUE</span>, no.. <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] ".zarray"</span></span></code></pre>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="../reference/read_zarr_array.html">read_zarr_array</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##    7 </span></span>
@@ -479,7 +480,7 @@ array should be updated. It’s important that the shape and number of
 values in <code>x</code> corresponds to the total count of points in the
 Zarr array we want to update e.g. in this case we’re updating a single
 row of 20 values.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span></span>
 <span><span class="fu"><a href="../reference/update_zarr_array.html">update_zarr_array</a></span><span class="op">(</span></span>
 <span>  zarr_array_path <span class="op">=</span> <span class="va">path</span>,</span>
@@ -488,15 +489,15 @@ row of 20 values.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>As before, we can take a look at what’s happened on disk and confirm
 the values are present in the array if we read it into R.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">path</span>, all.files <span class="op">=</span> <span class="cn">TRUE</span>, no.. <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] ".zarray" "0.0"     "0.1"</span></span></code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/read_zarr_array.html">read_zarr_array</a></span><span class="op">(</span><span class="va">path</span>, index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      [,1] [,2] [,3] [,4] [,5]</span></span>
 <span><span class="co">## [1,]    1    2    3    4    5</span></span>
 <span><span class="co">## [2,]    7    7    7    7    7</span></span></code></pre>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="../reference/read_zarr_array.html">read_zarr_array</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 </span></span>
@@ -524,7 +525,7 @@ data.</p>
 <p>To demonstrate using the DelayedArray framework, we’ll pick the
 example file containing 32-bit integers arranged in the “column first”
 ordering.</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">zarr_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
 <span>  <span class="st">"extdata"</span>,</span>
 <span>  <span class="st">"zarr_examples"</span>,</span>
@@ -534,12 +535,12 @@ ordering.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>We use the function <code><a href="../reference/ZarrArray-classes.html">ZarrArray()</a></code> to create a
 <strong>ZarrArray</strong> object backed by the Zarr file.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">zarr_array</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ZarrArray-classes.html">ZarrArray</a></span><span class="op">(</span><span class="va">zarr_example</span><span class="op">)</span></span></code></pre></div>
 <p>We can print this to screen and see a nice visual representation of
 this 3 dimensional array, and confirm that the array is both a
 <strong>ZarrArray</strong> and <strong>DelayedArray</strong></p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">zarr_array</span></span></code></pre></div>
 <pre><code><span><span class="co">## &lt;30 x 20 x 10&gt; ZarrArray object of type "integer":</span></span>
 <span><span class="co">## ,,1</span></span>
@@ -559,21 +560,21 @@ this 3 dimensional array, and confirm that the array is both a
 <span><span class="co">##   ...     .     .     .     .   .     .     .     .     .</span></span>
 <span><span class="co">## [29,]     0     0     0     0   .     0     0     0     0</span></span>
 <span><span class="co">## [30,]     0     0     0     0   .     0     0     0     0</span></span></code></pre>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">is</span><span class="op">(</span><span class="va">zarr_array</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "ZarrArray"         "DelayedArray"      "DelayedUnaryIsoOp"</span></span>
 <span><span class="co">## [4] "DelayedUnaryOp"    "DelayedOp"         "Array"</span></span></code></pre>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">zarr_array</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 30 20 10</span></span></code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/DelayedArray/man/chunkGrid.html" class="external-link">chunkdim</a></span><span class="op">(</span><span class="va">zarr_array</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 10 10  5</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="realizing-an-in-memory-array-to-zarr">Realizing an in-memory array to Zarr<a class="anchor" aria-label="anchor" href="#realizing-an-in-memory-array-to-zarr"></a>
 </h4>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">zarr_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".zarr"</span><span class="op">)</span></span>
 <span><span class="va">zarr_X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ZarrRealizationSink.html">writeZarrArray</a></span><span class="op">(</span><span class="va">X</span>, zarr_array_path <span class="op">=</span> <span class="va">zarr_path</span>, chunk_dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
@@ -630,7 +631,7 @@ this 3 dimensional array, and confirm that the array is both a
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##  [1] jsonlite_2.0.0      crayon_1.5.3        compiler_4.5.2     </span></span>
-<span><span class="co">##  [4] BiocManager_1.30.26 Rcpp_1.1.0          xml2_1.4.1         </span></span>
+<span><span class="co">##  [4] BiocManager_1.30.27 Rcpp_1.1.0          xml2_1.4.1         </span></span>
 <span><span class="co">##  [7] jquerylib_0.1.4     systemfonts_1.3.1   textshaping_1.0.4  </span></span>
 <span><span class="co">## [10] yaml_2.3.10         fastmap_1.2.0       lattice_0.22-7     </span></span>
 <span><span class="co">## [13] R6_2.6.1            XVector_0.50.0      curl_7.0.0         </span></span>
