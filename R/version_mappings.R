@@ -36,8 +36,9 @@
         configuration = list(
           order = switch(
             metadata$order,
-            "F" = seq_along(metadata$shape) - 1, # zero indexed
-            "C" = rev(seq_along(metadata$shape)) - 1
+            # default in numpy is "C"
+            "C" = seq_along(metadata$shape) - 1, # zero indexed
+            "F" = rev(seq_along(metadata$shape)) - 1
           )
         )
       )
