@@ -308,6 +308,15 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       function(x) x$name,
       character(1)
     )
+    if (is.null(metadata$codecs[["transpose"]])) {
+      # We need to make sure this is always present because we do the
+      # reverse of what this codec is telling us (since R uses F-order).
+      # So even when using the implicit default, we need to add it here.
+      metadata$codecs[["transpose"]] <- list(
+        name = "transpose",
+        configuration = list(order = seq_along(metadata$shape) - 1)
+      )
+    }
   } else {
     stop(
       "Unsupported Zarr format version: ",
