@@ -269,6 +269,13 @@ read_chunk <- function(
 ) {
   dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
   chunk_id <- paste(chunk_id, collapse = dim_separator)
+  if (metadata$zarr_format == 3) {
+    chunk_id <- paste(
+      "c",
+      chunk_id,
+      sep = dim_separator
+    )
+  }
 
   chunk_file <- paste0(zarr_array_path, chunk_id)
 

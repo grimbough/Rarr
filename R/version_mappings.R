@@ -9,6 +9,7 @@
   dt <- metadata$datatype
 
   metadata_v3 <- list(
+    zarr_format = 2L,
     datatype = dt,
     shape = metadata$shape,
     chunk_grid = list(
