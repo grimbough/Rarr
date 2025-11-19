@@ -108,6 +108,9 @@ check_index <- function(index, metadata) {
     ) /
       8L
   )
+  if (is.na(datatype$nbytes)) {
+    datatype$nbytes <- 1L
+  }
 
   datatype$is_signed <- datatype$base_type != "uint"
 
