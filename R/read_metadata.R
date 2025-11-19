@@ -300,6 +300,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     metadata$datatype <- .parse_datatype(metadata$dtype)
     metadata <- .update_fill_value(metadata, metadata$datatype)
   } else if (metadata$zarr_format == 3) {
+    metadata$datatype <- .parse_datatype_v3(metadata$data_type)
     # We shouldn't have any case where x$name is NULL since the v3 spec states
     # 'name' MUST be a plain string.
     names(metadata$codecs) <- vapply(
