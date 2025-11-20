@@ -1,16 +1,16 @@
 {
   "shape": [
-    3,
-    4,
-    5
+    30,
+    20,
+    10
   ],
   "data_type": "int64",
   "chunk_grid": {
     "name": "regular",
     "configuration": {
       "chunk_shape": [
-        3,
-        4,
+        10,
+        10,
         5
       ]
     }
