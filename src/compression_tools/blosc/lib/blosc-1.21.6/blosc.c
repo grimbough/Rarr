@@ -67,7 +67,7 @@
 //   #include "win32/pthread.h"
 //   #include "win32/pthread.c"
 // #else
-//   #include <pthread.h>
+#include <pthread.h>
 // #endif
 
 
