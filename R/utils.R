@@ -96,8 +96,13 @@ check_index <- function(index, metadata) {
 }
 
 .parse_datatype_v3 <- function(typestr) {
+  if (is.list(typestr)) {
+    stop(
+      "Only base data types (not extensions) are supported for Zarr v3 arrays for now",
+      call. = FALSE
+    )
+  }
   datatype <- list()
-  datatype_parts <- strsplit(typestr, "", fixed = TRUE)[[1]]
 
   datatype$base_type <- gsub("^([[:alpha:]]+).*", "\\1", typestr)
 

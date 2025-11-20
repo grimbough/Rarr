@@ -148,7 +148,9 @@ test_that("v2 and v3 return identical results", {
   )
 
   expect_no_condition(s_v2 <- read_zarr_array(zarr_v2))
-  expect_no_condition(s_v3 <- read_zarr_array(zarr_v3))
-
-  expect_identical(s_v2, s_v3)
+  expect_error(
+    read_zarr_array(zarr_v3),
+    "Only base data types (not extensions) are supported for Zarr v3 arrays for now",
+    fixed = TRUE
+  )
 })
