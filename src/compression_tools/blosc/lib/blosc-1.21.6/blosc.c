@@ -4,27 +4,22 @@
   Author: Francesc Alted <francesc@blosc.org>
   Creation date: 2009-05-20
 
-  See LICENSES/BLOSC.txt for details about copyright and rights to use.
+  See LICENSE.txt for details about copyright and rights to use.
 **********************************************************************/
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#if !defined(USING_R)
-#  include <assert.h>
-#else
-#  ifndef assert
-#    define assert(condition) ((void)0)
-#  endif
-#endif
+#include <assert.h>
 
 #include "fastcopy.h"
 
-//#if defined(USING_CMAKE)
-#include "config.h"
-//#endif /*  USING_CMAKE */
+#if defined(USING_CMAKE)
+  #include "config.h"
+#endif /*  USING_CMAKE */
 #include "blosc.h"
 #include "shuffle.h"
 #include "blosclz.h"
@@ -61,15 +56,13 @@
   #include <inttypes.h>
 #endif  /* _WIN32 */
 
-/* Include the win32/pthread.h library for all the Windows builds. See #224. 
- * rhdf5filters: pthread is included in rtools, so we don't need the bundled
- * version here.  If this is included we get a 'multiple definitions' error. */
-//#if defined(_WIN32)
-//  #include "win32/pthread.h"
-//  #include "win32/pthread.c"
-//#else
+/* Include the win32/pthread.h library for all the Windows builds. See #224. */
+#if defined(_WIN32)
+  #include "win32/pthread.h"
+  #include "win32/pthread.c"
+#else
   #include <pthread.h>
-//#endif
+#endif
 
 
 /* Some useful units */
@@ -171,7 +164,7 @@ int blosc_release_threadpool(struct blosc_context* context);
 #define WAIT_INIT(RET_VAL, CONTEXT_PTR)  \
   rc = pthread_barrier_wait(&CONTEXT_PTR->barr_init); \
   if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD) { \
-    Rprintf("Could not wait on barrier (init): %d\n", rc); \
+    printf("Could not wait on barrier (init): %d\n", rc); \
     return((RET_VAL));                            \
   }
 #else
@@ -192,7 +185,7 @@ int blosc_release_threadpool(struct blosc_context* context);
 #define WAIT_FINISH(RET_VAL, CONTEXT_PTR)   \
   rc = pthread_barrier_wait(&CONTEXT_PTR->barr_finish); \
   if (rc != 0 && rc != PTHREAD_BARRIER_SERIAL_THREAD) { \
-    Rprintf("Could not wait on barrier (finish)\n"); \
+    printf("Could not wait on barrier (finish)\n"); \
     return((RET_VAL));                              \
   }
 #else
@@ -227,7 +220,7 @@ static uint8_t *my_malloc(size_t size)
 #endif  /* _WIN32 */
 
   if (block == NULL || res != 0) {
-    Rprintf("Error allocating memory!");
+    printf("Error allocating memory!");
     return NULL;
   }
 
@@ -658,7 +651,7 @@ static int blosc_c(const struct blosc_context* context, int32_t blocksize,
     }
     if (context->compcode == BLOSC_BLOSCLZ) {
       cbytes = blosclz_compress(context->clevel, _tmp+j*neblock, neblock,
-                                dest, maxout);
+                                dest, maxout, !dont_split);
     }
     #if defined(HAVE_LZ4)
     else if (context->compcode == BLOSC_LZ4) {
@@ -696,8 +689,8 @@ static int blosc_c(const struct blosc_context* context, int32_t blocksize,
       if (compname == NULL) {
           compname = "(null)";
       }
-      REprintf("Blosc has not been compiled with '%s' ", compname);
-      REprintf("compression support.  Please use one having it.");
+      fprintf(stderr, "Blosc has not been compiled with '%s' ", compname);
+      fprintf(stderr, "compression support.  Please use one having it.");
       return -5;    /* signals no compression support */
     }
 
@@ -844,7 +837,7 @@ static int serial_blosc(struct blosc_context* context)
                          context->destsize, context->src+j*context->blocksize,
                          context->dest+ntbytes, tmp, tmp2);
         if (cbytes == 0) {
-          ntbytes = 0;              /* uncompressible data */
+          ntbytes = 0;              /* incompressible data */
           break;
         }
       }
@@ -963,7 +956,7 @@ static int split_block(int compcode, int typesize, int blocksize) {
                     (blocksize / typesize) >= MIN_BUFFERSIZE);
       break;
     default:
-      REprintf("Split mode %d not supported", g_splitmode);
+      fprintf(stderr, "Split mode %d not supported", g_splitmode);
   }
   return splitblock;
 }
@@ -1104,14 +1097,14 @@ static int initialize_context_compression(struct blosc_context* context,
   /* Check buffer size limits */
   if (sourcesize > BLOSC_MAX_BUFFERSIZE) {
     if (warnlvl > 0) {
-      REprintf("Input buffer size cannot exceed %d bytes\n",
+      fprintf(stderr, "Input buffer size cannot exceed %d bytes\n",
               BLOSC_MAX_BUFFERSIZE);
     }
     return 0;
   }
   if (destsize < BLOSC_MAX_OVERHEAD) {
     if (warnlvl > 0) {
-      REprintf("Output buffer size should be larger than %d bytes\n",
+      fprintf(stderr, "Output buffer size should be larger than %d bytes\n",
               BLOSC_MAX_OVERHEAD);
     }
     return 0;
@@ -1119,13 +1112,13 @@ static int initialize_context_compression(struct blosc_context* context,
 
   /* Compression level */
   if (clevel < 0 || clevel > 9) {
-    REprintf("`clevel` parameter must be between 0 and 9!\n");
+    fprintf(stderr, "`clevel` parameter must be between 0 and 9!\n");
     return -10;
   }
 
   /* Shuffle */
   if (doshuffle != 0 && doshuffle != 1 && doshuffle != 2) {
-    REprintf("`shuffle` parameter must be either 0, 1 or 2!\n");
+    fprintf(stderr, "`shuffle` parameter must be either 0, 1 or 2!\n");
     return -10;
   }
 
@@ -1203,8 +1196,8 @@ static int write_compression_header(struct blosc_context* context, int clevel, i
     if (compname == NULL) {
         compname = "(null)";
     }
-    REprintf("Blosc has not been compiled with '%s' ", compname);
-    REprintf("compression support.  Please use one having it.");
+    fprintf(stderr, "Blosc has not been compiled with '%s' ", compname);
+    fprintf(stderr, "compression support.  Please use one having it.");
     return -5;    /* signals no compression support */
     break;
   }
@@ -1391,7 +1384,7 @@ int blosc_compress(int clevel, int doshuffle, size_t typesize, size_t nbytes,
       blosc_set_splitmode(BLOSC_NEVER_SPLIT);
     }
     else {
-      REprintf("BLOSC_SPLITMODE environment variable '%s' not recognized\n", envvar);
+      fprintf(stderr, "BLOSC_SPLITMODE environment variable '%s' not recognized\n", envvar);
       return -1;
     }
   }
@@ -1640,12 +1633,12 @@ int blosc_getitem(const void* src, int start, int nitems, void* dest) {
 
   /* Check region boundaries */
   if ((start < 0) || (start*typesize > nbytes)) {
-    REprintf("`start` out of bounds");
+    fprintf(stderr, "`start` out of bounds");
     return -1;
   }
 
   if ((stop < 0) || (stop*typesize > nbytes)) {
-    REprintf("`start`+`nitems` out of bounds");
+    fprintf(stderr, "`start`+`nitems` out of bounds");
     return -1;
   }
 
@@ -1843,7 +1836,7 @@ static void *t_blosc(void *ctxt)
         ntdest = context->parent_context->num_output_bytes;
         _sw32(bstarts + nblock_ * 4, ntdest); /* update block start counter */
         if ( (cbytes == 0) || (ntdest+cbytes > maxbytes) ) {
-          context->parent_context->thread_giveup_code = 0;  /* uncompressible buffer */
+          context->parent_context->thread_giveup_code = 0;  /* incompressible buffer */
           pthread_mutex_unlock(&context->parent_context->count_mutex);
           break;
         }
@@ -1935,8 +1928,8 @@ static int init_threads(struct blosc_context* context)
     rc2 = pthread_create(&context->threads[tid], NULL, t_blosc, (void *)thread_context);
 #endif
     if (rc2) {
-      REprintf("ERROR; return code from pthread_create() is %d\n", rc2);
-      REprintf("\tError detail: %s\n", strerror(rc2));
+      fprintf(stderr, "ERROR; return code from pthread_create() is %d\n", rc2);
+      fprintf(stderr, "\tError detail: %s\n", strerror(rc2));
       return(-1);
     }
   }
@@ -1972,13 +1965,13 @@ int blosc_set_nthreads(int nthreads_new)
 int blosc_set_nthreads_(struct blosc_context* context)
 {
   if (context->numthreads > BLOSC_MAX_THREADS) {
-    REprintf(
+    fprintf(stderr,
             "Error.  nthreads cannot be larger than BLOSC_MAX_THREADS (%d)",
             BLOSC_MAX_THREADS);
     return -1;
   }
   else if (context->numthreads <= 0) {
-    REprintf("Error.  nthreads must be a positive integer");
+    fprintf(stderr, "Error.  nthreads must be a positive integer");
     return -1;
   }
 
@@ -2046,64 +2039,64 @@ const char* blosc_get_version_string(void)
   return BLOSC_VERSION_STRING;
 }
 
-// int blosc_get_complib_info(const char *compname, char **complib, char **version)
-// {
-//   int clibcode;
-//   const char *clibname;
-//   const char *clibversion = "unknown";
-// 
-// #if (defined(HAVE_LZ4) && defined(LZ4_VERSION_MAJOR)) || (defined(HAVE_SNAPPY) && defined(SNAPPY_VERSION)) || defined(ZSTD_VERSION_MAJOR)
-//   char sbuffer[256];
-// #endif
-// 
-//   clibcode = compname_to_clibcode(compname);
-//   clibname = clibcode_to_clibname(clibcode);
-// 
-//   /* complib version */
-//   if (clibcode == BLOSC_BLOSCLZ_LIB) {
-//     clibversion = BLOSCLZ_VERSION_STRING;
-//   }
-// #if defined(HAVE_LZ4)
-//   else if (clibcode == BLOSC_LZ4_LIB) {
-// #if defined(LZ4_VERSION_MAJOR)
-//     sprintf(sbuffer, "%d.%d.%d",
-//             LZ4_VERSION_MAJOR, LZ4_VERSION_MINOR, LZ4_VERSION_RELEASE);
-//     clibversion = sbuffer;
-// #endif /* LZ4_VERSION_MAJOR */
-//   }
-// #endif /* HAVE_LZ4 */
-// #if defined(HAVE_SNAPPY)
-//   else if (clibcode == BLOSC_SNAPPY_LIB) {
-// #if defined(SNAPPY_VERSION)
-//     sprintf(sbuffer, "%d.%d.%d", SNAPPY_MAJOR, SNAPPY_MINOR, SNAPPY_PATCHLEVEL);
-//     clibversion = sbuffer;
-// #endif /* SNAPPY_VERSION */
-//   }
-// #endif /* HAVE_SNAPPY */
-// #if defined(HAVE_ZLIB)
-//   else if (clibcode == BLOSC_ZLIB_LIB) {
-//     clibversion = ZLIB_VERSION;
-//   }
-// #endif /* HAVE_ZLIB */
-// #if defined(HAVE_ZSTD)
-//   else if (clibcode == BLOSC_ZSTD_LIB) {
-//     sprintf(sbuffer, "%d.%d.%d",
-//             ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR, ZSTD_VERSION_RELEASE);
-//     clibversion = sbuffer;
-//   }
-// #endif /* HAVE_ZSTD */
-//   else {
-//     /* Unsupported library */
-//     if (complib != NULL) *complib = NULL;
-//     if (version != NULL) *version = NULL;
-//     return -1;
-//   }
-// 
-//   if (complib != NULL) *complib = strdup(clibname);
-//   if (version != NULL) *version = strdup(clibversion);
-// 
-//   return clibcode;
-// }
+int blosc_get_complib_info(const char *compname, char **complib, char **version)
+{
+  int clibcode;
+  const char *clibname;
+  const char *clibversion = "unknown";
+
+#if (defined(HAVE_LZ4) && defined(LZ4_VERSION_MAJOR)) || (defined(HAVE_SNAPPY) && defined(SNAPPY_VERSION)) || defined(ZSTD_VERSION_MAJOR)
+  char sbuffer[256];
+#endif
+
+  clibcode = compname_to_clibcode(compname);
+  clibname = clibcode_to_clibname(clibcode);
+
+  /* complib version */
+  if (clibcode == BLOSC_BLOSCLZ_LIB) {
+    clibversion = BLOSCLZ_VERSION_STRING;
+  }
+#if defined(HAVE_LZ4)
+  else if (clibcode == BLOSC_LZ4_LIB) {
+#if defined(LZ4_VERSION_MAJOR)
+    sprintf(sbuffer, "%d.%d.%d",
+            LZ4_VERSION_MAJOR, LZ4_VERSION_MINOR, LZ4_VERSION_RELEASE);
+    clibversion = sbuffer;
+#endif /* LZ4_VERSION_MAJOR */
+  }
+#endif /* HAVE_LZ4 */
+#if defined(HAVE_SNAPPY)
+  else if (clibcode == BLOSC_SNAPPY_LIB) {
+#if defined(SNAPPY_VERSION)
+    sprintf(sbuffer, "%d.%d.%d", SNAPPY_MAJOR, SNAPPY_MINOR, SNAPPY_PATCHLEVEL);
+    clibversion = sbuffer;
+#endif /* SNAPPY_VERSION */
+  }
+#endif /* HAVE_SNAPPY */
+#if defined(HAVE_ZLIB)
+  else if (clibcode == BLOSC_ZLIB_LIB) {
+    clibversion = ZLIB_VERSION;
+  }
+#endif /* HAVE_ZLIB */
+#if defined(HAVE_ZSTD)
+  else if (clibcode == BLOSC_ZSTD_LIB) {
+    sprintf(sbuffer, "%d.%d.%d",
+            ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR, ZSTD_VERSION_RELEASE);
+    clibversion = sbuffer;
+  }
+#endif /* HAVE_ZSTD */
+  else {
+    /* Unsupported library */
+    if (complib != NULL) *complib = NULL;
+    if (version != NULL) *version = NULL;
+    return -1;
+  }
+
+  if (complib != NULL) *complib = strdup(clibname);
+  if (version != NULL) *version = strdup(clibversion);
+
+  return clibcode;
+}
 
 /* Return `nbytes`, `cbytes` and `blocksize` from a compressed buffer. */
 void blosc_cbuffer_sizes(const void *cbuffer, size_t *nbytes,
@@ -2202,7 +2195,7 @@ void blosc_set_splitmode(int mode)
  * trigger re-init of the global context.
  *
  * All pthread interfaces have undefined behavior in child handler in current
- * posix standards: http://pubs.opengroup.org/onlinepubs/9699919799/
+ * posix standards: https://pubs.opengroup.org/onlinepubs/9699919799/
  */
 void blosc_atfork_child(void) {
   if (!g_initlib) return;
@@ -2276,8 +2269,8 @@ int blosc_release_threadpool(struct blosc_context* context)
     for (t=0; t<context->threads_started; t++) {
       rc2 = pthread_join(context->threads[t], &status);
       if (rc2) {
-        REprintf("ERROR; return code from pthread_join() is %d\n", rc2);
-        REprintf("\tError detail: %s\n", strerror(rc2));
+        fprintf(stderr, "ERROR; return code from pthread_join() is %d\n", rc2);
+        fprintf(stderr, "\tError detail: %s\n", strerror(rc2));
       }
     }
 

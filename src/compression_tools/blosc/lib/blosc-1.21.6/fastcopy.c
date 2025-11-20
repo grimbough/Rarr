@@ -9,21 +9,16 @@
 
 /*********************************************************************
   The code in this file is heavily based on memcopy.h, from the
-  zlib-ng compression library.  See LICENSES/ZLIB.txt for details.
-  See also: https://github.com/Dead2/zlib-ng/blob/develop/zlib.h
+
+  zlib-ng compression library.  See LICENSES/ZLIB-NG.txt for details.
+  See also: https://github.com/zlib-ng/zlib-ng/blob/develop/zlib.h.in
 
   New implementations by Francesc Alted:
     * fast_copy() and copy_run() functions
     * Support for SSE2/AVX2 copy instructions for these routines
 **********************************************************************/
 
-#if !defined(R_BLOSC)
-#  include <assert.h>
-#else
-#  ifndef assert
-#    define assert(condition) ((void)0)
-#  endif
-#endif
+#include <assert.h>
 #include "blosc-common.h"
 
 /*

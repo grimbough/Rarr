@@ -2,7 +2,7 @@
  * Bitshuffle - Filter for improving compression of typed binary data.
  *
  * Author: Kiyoshi Masui <kiyo@physics.ubc.ca>
- * Website: http://www.github.com/kiyo-masui/bitshuffle
+ * Website: https://github.com/kiyo-masui/bitshuffle
  * Created: 2014
  *
  * Note: Adapted for c-blosc by Francesc Alted.
@@ -17,10 +17,21 @@
 #include "bitshuffle-avx2.h"
 
 
-/* Make sure AVX2 is available for the compilation target and compiler. */
+/* Define dummy functions if AVX2 is not available for the compilation target and compiler. */
 #if !defined(__AVX2__)
-  #error AVX2 is not supported by the target architecture/platform and/or this compiler.
-#endif
+#include <stdlib.h>
+
+int64_t blosc_internal_bshuf_trans_bit_elem_avx2(void* in, void* out, const size_t size,
+                                                 const size_t elem_size, void* tmp_buf) {
+    abort();
+}
+
+int64_t blosc_internal_bshuf_untrans_bit_elem_avx2(void* in, void* out, const size_t size,
+                                                   const size_t elem_size, void* tmp_buf) {
+    abort();
+}
+
+#else /* defined(__AVX2__) */
 
 #include <immintrin.h>
 
@@ -243,3 +254,5 @@ int64_t blosc_internal_bshuf_untrans_bit_elem_avx2(void* in, void* out, const si
 
     return count;
 }
+
+#endif /* !defined(__AVX2__) */

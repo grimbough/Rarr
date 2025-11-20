@@ -3,16 +3,29 @@
 
   Author: Francesc Alted <francesc@blosc.org>
 
-  See LICENSES/BLOSC.txt for details about copyright and rights to use.
+  See LICENSE.txt for details about copyright and rights to use.
 **********************************************************************/
 
 #include "shuffle-generic.h"
 #include "shuffle-avx2.h"
 
-/* Make sure AVX2 is available for the compilation target and compiler. */
+/* Define dummy functions if AVX2 is not available for the compilation target and compiler. */
 #if !defined(__AVX2__)
-  #error AVX2 is not supported by the target architecture/platform and/or this compiler.
-#endif
+#include <stdlib.h>
+
+void
+blosc_internal_shuffle_avx2(const size_t bytesoftype, const size_t blocksize,
+                            const uint8_t* const _src, uint8_t* const _dest) {
+  abort();
+}
+
+void
+blosc_internal_unshuffle_avx2(const size_t bytesoftype, const size_t blocksize,
+                              const uint8_t* const _src, uint8_t* const _dest) {
+  abort();
+}
+
+#else /* defined(__AVX2__) */
 
 #include <immintrin.h>
 
@@ -27,7 +40,7 @@ static void printymm(__m256i ymm0)
   uint8_t buf[32];
 
   ((__m256i *)buf)[0] = ymm0;
-  Rprintf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
+  printf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
           buf[0], buf[1], buf[2], buf[3],
           buf[4], buf[5], buf[6], buf[7],
           buf[8], buf[9], buf[10], buf[11],
@@ -755,3 +768,5 @@ blosc_internal_unshuffle_avx2(const size_t bytesoftype, const size_t blocksize,
     unshuffle_generic_inline(bytesoftype, vectorizable_bytes, blocksize, _src, _dest);
   }
 }
+
+#endif /* !defined(__AVX2__) */

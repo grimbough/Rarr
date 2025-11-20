@@ -3,16 +3,28 @@
 
   Author: Francesc Alted <francesc@blosc.org>
 
-  See LICENSES/BLOSC.txt for details about copyright and rights to use.
+  See LICENSE.txt for details about copyright and rights to use.
 **********************************************************************/
 
 #include "shuffle-generic.h"
 #include "shuffle-sse2.h"
 
-/* Make sure SSE2 is available for the compilation target and compiler. */
+/* Define dummy functions if SSE2 is not available for the compilation target and compiler. */
 #if !defined(__SSE2__)
-  #error SSE2 is not supported by the target architecture/platform and/or this compiler.
-#endif
+
+void
+blosc_internal_shuffle_sse2(const size_t bytesoftype, const size_t blocksize,
+                            const uint8_t* const _src, uint8_t* const _dest) {
+  abort();
+}
+
+void
+blosc_internal_unshuffle_sse2(const size_t bytesoftype, const size_t blocksize,
+                              const uint8_t* const _src, uint8_t* const _dest) {
+  abort();
+}
+
+# else /* defined(__SSE2__) */
 
 #include <emmintrin.h>
 
@@ -27,7 +39,7 @@ static void printxmm(__m128i xmm0)
   uint8_t buf[16];
 
   ((__m128i *)buf)[0] = xmm0;
-  Rprintf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
+  printf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
           buf[0], buf[1], buf[2], buf[3],
           buf[4], buf[5], buf[6], buf[7],
           buf[8], buf[9], buf[10], buf[11],
@@ -624,3 +636,5 @@ blosc_internal_unshuffle_sse2(const size_t bytesoftype, const size_t blocksize,
     unshuffle_generic_inline(bytesoftype, vectorizable_bytes, blocksize, _src, _dest);
   }
 }
+
+#endif /* !defined(__SSE2__) */
