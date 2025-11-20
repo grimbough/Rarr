@@ -40,5 +40,26 @@ test_that("boolean zarr array can be written", {
     content_bool_array,
     roundtrip_bool_array
   )
+})
 
+test_that("v2 and v3 return identical results", {
+  zarr_v2 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "boolean.zarr",
+    package = "Rarr"
+  )
+  zarr_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "boolean_v3.zarr",
+    package = "Rarr"
+  )
+
+  expect_no_condition(bool_v2 <- read_zarr_array(zarr_v2))
+  expect_no_condition(bool_v3 <- read_zarr_array(zarr_v3))
+
+  expect_identical(bool_v2, bool_v3)
 })
