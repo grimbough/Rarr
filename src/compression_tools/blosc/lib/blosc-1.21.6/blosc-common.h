@@ -3,24 +3,11 @@
 
   Author: Francesc Alted <francesc@blosc.org>
 
-  See LICENSES/BLOSC.txt for details about copyright and rights to use.
+  See LICENSE.txt for details about copyright and rights to use.
 **********************************************************************/
 
 #ifndef SHUFFLE_COMMON_H
 #define SHUFFLE_COMMON_H
-
-
-#if !defined(NO_RLIB)
-#  include <R_ext/Print.h>
-#  include <R_ext/Error.h>
-#else
-#  ifndef Rprintf
-#    define Rprintf(...) (printf(__VA_ARGS__))
-#  endif
-#  ifndef REprintf
-#    define REprintf(...) (fprintf(stderr, __VA_ARGS__))
-#  endif
-#endif
 
 #include "blosc-export.h"
 #include <string.h>
@@ -69,7 +56,7 @@
 #elif defined(__I86__) /* Digital Mars */
 #undef BLOSC_STRICT_ALIGN
 /* Seems like unaligned access in ARM (at least ARMv6) is pretty
-   expensive, so we are going to always enforce strict aligment in ARM.
+   expensive, so we are going to always enforce strict alignment in ARM.
    If anybody suggest that newer ARMs are better, we can revisit this. */
 /* #elif defined(__ARM_FEATURE_UNALIGNED) */  /* ARM, GNU C */
 /* #undef BLOSC_STRICT_ALIGN */

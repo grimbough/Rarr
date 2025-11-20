@@ -15,10 +15,21 @@
 #include "bitshuffle-generic.h"
 #include "bitshuffle-sse2.h"
 
-/* Make sure SSE2 is available for the compilation target and compiler. */
+/* Define dummy functions if SSE2 is not available for the compilation target and compiler. */
 #if !defined(__SSE2__)
-  #error SSE2 is not supported by the target architecture/platform and/or this compiler.
-#endif
+#include <stdlib.h>
+
+int64_t blosc_internal_bshuf_trans_byte_elem_sse2(void* in, void* out, const size_t size,
+                                                  const size_t elem_size, void* tmp_buf) {
+    abort();
+}
+
+int64_t blosc_internal_bshuf_untrans_bit_elem_sse2(void* in, void* out, const size_t size,
+				                                   const size_t elem_size, void* tmp_buf) {
+    abort();
+}
+
+#else /* defined(__SSE2__) */
 
 #include <emmintrin.h>
 
@@ -465,3 +476,5 @@ int64_t blosc_internal_bshuf_untrans_bit_elem_sse2(void* in, void* out, const si
 
     return count;
 }
+
+#endif /* !defined(__SSE2__) */

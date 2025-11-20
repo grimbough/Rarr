@@ -1,7 +1,9 @@
 /*********************************************************************
   Blosc - Blocked Shuffling and Compression Library
 
-  Author: Francesc Alted <francesc@blosc.org>
+  Copyright (c) 2021  The Blosc Developers <blosc@blosc.org>
+  https://blosc.org
+  License: BSD 3-Clause (see LICENSE.txt)
 
   See LICENSE.txt for details about copyright and rights to use.
 **********************************************************************/
@@ -19,6 +21,8 @@
 #if defined (__cplusplus)
 extern "C" {
 #endif
+
+#define BLOSCLZ_VERSION_STRING "2.5.1"
 
 
 /**
@@ -42,7 +46,7 @@ extern "C" {
 */
 
 int blosclz_compress(int opt_level, const void* input, int length,
-                     void* output, int maxout);
+                     void* output, int maxout, int split_block);
 
 /**
   Decompress a block of compressed data and returns the size of the
