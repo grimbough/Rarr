@@ -4042,7 +4042,7 @@ fi
     SSE2_SHUFFLE='shuffle-sse2.o: shuffle-sse2.c
 	$(CC) $(FLAGS) -c shuffle-sse2.c'
     SSE2_SHUFFLE_OBJ='shuffle-sse2.o'
-    SSE2_OBJ_PATH='lib/blosc-1.20.1/'
+    SSE2_OBJ_PATH='lib/blosc-1.21.6/'
   else
     SSE2=""
     MSSE2=""
@@ -4070,7 +4070,7 @@ fi
     AVX2_SHUFFLE='shuffle-avx2.o: shuffle-avx2.c
 	$(CC) $(FLAGS) -c shuffle-avx2.c'
     AVX2_SHUFFLE_OBJ='shuffle-avx2.o'
-    AVX2_OBJ_PATH='lib/blosc-1.20.1/'
+    AVX2_OBJ_PATH='lib/blosc-1.21.6/'
   else
     AVX2=""
     MAVX2=""
@@ -4091,7 +4091,7 @@ fi
 
   BUILD_BLOSC="libblosc.a"
 
-  BLOSC_INCLUDE="-I./lib/blosc-1.20.1"
+  BLOSC_INCLUDE="-I./lib/blosc-1.21.6"
 
   BLOSC_LIB="./compression_tools/blosc/libblosc.a"
 
@@ -4106,7 +4106,7 @@ printf "%s\n" "$as_me: Using system BLOSC library" >&6;}
 
 fi
 
-ac_config_files="$ac_config_files src/compression_tools/blosc/lib/blosc-1.20.1/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.1.1/Makefile"
+ac_config_files="$ac_config_files src/compression_tools/blosc/lib/blosc-1.21.6/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.1.1/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4809,7 +4809,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "src/Makevars") CONFIG_FILES="$CONFIG_FILES src/Makevars" ;;
-    "src/compression_tools/blosc/lib/blosc-1.20.1/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/lib/blosc-1.20.1/Makefile" ;;
+    "src/compression_tools/blosc/lib/blosc-1.21.6/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/lib/blosc-1.21.6/Makefile" ;;
     "src/compression_tools/blosc/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/Makefile" ;;
     "src/compression_tools/blosc/lib/snappy-1.1.1/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/lib/snappy-1.1.1/Makefile" ;;
 

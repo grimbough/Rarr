@@ -1,10 +1,9 @@
-EXTRA_FLAGS=-I../lz4-1.9.4 -I../snappy-1.1.1 -I../../../zstd @MSSE2@ @MAVX2@
-FLAGS=$(PKG_CFLAGS) $(PKG_CPICFLAGS) $(PKG_CPPFLAGS) $(EXTRA_FLAGS)
+EXTRA_FLAGS+=-I../lz4-1.9.2 -I../snappy-1.1.1 -I../../../zstd @MSSE2@ @MAVX2@ -DUSING_R @NO_RLIB@
+FLAGS=$(PKG_CFLAGS) $(PKG_CPICFLAGS) $(PKG_CPPFLAGS) $(PKG_R_CPPFLAGS) $(EXTRA_FLAGS)
 
 BLOSC_FILES := $(sort $(wildcard *.c))
 
 BLOSC_OBJS=	@AVX2_BITSHUFFLE_OBJ@ @AVX2_SHUFFLE_OBJ@ @SSE2_BITSHUFFLE_OBJ@ @SSE2_SHUFFLE_OBJ@ bitshuffle-generic.o shuffle-generic.o shuffle.o blosclz.o blosc.o fastcopy.o
-
 
 all: $(BLOSC_OBJS)
 
