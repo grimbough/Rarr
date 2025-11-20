@@ -9,6 +9,18 @@
 #ifndef SHUFFLE_COMMON_H
 #define SHUFFLE_COMMON_H
 
+#if !defined(NO_RLIB)
+#  include <R_ext/Print.h>
+#  include <R_ext/Error.h>
+#else
+#  ifndef Rprintf
+#    define Rprintf(...) (printf(__VA_ARGS__))
+#  endif
+#  ifndef REprintf
+#    define REprintf(...) (fprintf(stderr, __VA_ARGS__))
+#  endif
+#endif
+
 #include "blosc-export.h"
 #include <string.h>
 

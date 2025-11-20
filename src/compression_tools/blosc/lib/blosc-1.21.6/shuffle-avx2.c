@@ -40,7 +40,7 @@ static void printymm(__m256i ymm0)
   uint8_t buf[32];
 
   ((__m256i *)buf)[0] = ymm0;
-  printf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
+  Rprintf("%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x,%x\n",
           buf[0], buf[1], buf[2], buf[3],
           buf[4], buf[5], buf[6], buf[7],
           buf[8], buf[9], buf[10], buf[11],

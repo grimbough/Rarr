@@ -14,27 +14,12 @@
 #include "blosc-comp-features.h"
 #include <stdio.h>
 
-#if defined(_WIN32)
-#include "win32/pthread.h"
-#else
 #include <pthread.h>
-#endif
-
-/* Visual Studio < 2013 does not have stdbool.h so here it is a replacement: */
-#if defined __STDC__ && defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
-/* have a C99 compiler */
-typedef _Bool bool;
-#else
-/* do not have a C99 compiler */
-typedef unsigned char bool;
-#endif
-
 
 #if !defined(__clang__) && defined(__GNUC__) && defined(__GNUC_MINOR__) && \
     __GNUC__ >= 5 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
 #define HAVE_CPU_FEAT_INTRIN
 #endif
-
 
 /*  Include hardware-accelerated shuffle/unshuffle routines based on
     the target architecture. Note that a target architecture may support
@@ -267,19 +252,19 @@ static blosc_cpu_features blosc_get_cpu_features(void) {
 
   envvar = getenv("BLOSC_PRINT_SHUFFLE_ACCEL");
   if (envvar != NULL) {
-    printf("Shuffle CPU Information:\n");
-    printf("SSE2 available: %s\n", sse2_available ? "True" : "False");
-    printf("SSE3 available: %s\n", sse3_available ? "True" : "False");
-    printf("SSSE3 available: %s\n", ssse3_available ? "True" : "False");
-    printf("SSE4.1 available: %s\n", sse41_available ? "True" : "False");
-    printf("SSE4.2 available: %s\n", sse42_available ? "True" : "False");
-    printf("AVX2 available: %s\n", avx2_available ? "True" : "False");
-    printf("AVX512BW available: %s\n", avx512bw_available ? "True" : "False");
-    printf("XSAVE available: %s\n", xsave_available ? "True" : "False");
-    printf("XSAVE enabled: %s\n", xsave_enabled_by_os ? "True" : "False");
-    printf("XMM state enabled: %s\n", xmm_state_enabled ? "True" : "False");
-    printf("YMM state enabled: %s\n", ymm_state_enabled ? "True" : "False");
-    printf("ZMM state enabled: %s\n", zmm_state_enabled ? "True" : "False");
+    Rprintf("Shuffle CPU Information:\n");
+    Rprintf("SSE2 available: %s\n", sse2_available ? "True" : "False");
+    Rprintf("SSE3 available: %s\n", sse3_available ? "True" : "False");
+    Rprintf("SSSE3 available: %s\n", ssse3_available ? "True" : "False");
+    Rprintf("SSE4.1 available: %s\n", sse41_available ? "True" : "False");
+    Rprintf("SSE4.2 available: %s\n", sse42_available ? "True" : "False");
+    Rprintf("AVX2 available: %s\n", avx2_available ? "True" : "False");
+    Rprintf("AVX512BW available: %s\n", avx512bw_available ? "True" : "False");
+    Rprintf("XSAVE available: %s\n", xsave_available ? "True" : "False");
+    Rprintf("XSAVE enabled: %s\n", xsave_enabled_by_os ? "True" : "False");
+    Rprintf("XMM state enabled: %s\n", xmm_state_enabled ? "True" : "False");
+    Rprintf("YMM state enabled: %s\n", ymm_state_enabled ? "True" : "False");
+    Rprintf("ZMM state enabled: %s\n", zmm_state_enabled ? "True" : "False");
   }
 
   /* Using the gathered CPU information, determine which implementation to use. */
@@ -299,7 +284,7 @@ static blosc_cpu_features blosc_get_cpu_features(void) {
   #if defined(_MSC_VER)
   #pragma message("Hardware-acceleration detection not implemented for the target architecture. Only the generic shuffle/unshuffle routines will be available.")
   #else
-  #warning Hardware-acceleration detection not implemented for the target architecture. Only the generic shuffle/unshuffle routines will be available.
+//   #warning Hardware-acceleration detection not implemented for the target architecture. Only the generic shuffle/unshuffle routines will be available.
   #endif
 
 static blosc_cpu_features blosc_get_cpu_features(void) {
