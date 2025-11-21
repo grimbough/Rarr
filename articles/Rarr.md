@@ -632,7 +632,7 @@ zarr_X
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] Rarr_1.11.6           DelayedArray_0.36.0   SparseArray_1.10.1   
+    ##  [1] Rarr_1.11.7           DelayedArray_0.36.0   SparseArray_1.10.2   
     ##  [4] S4Arrays_1.10.0       abind_1.4-8           IRanges_2.44.0       
     ##  [7] S4Vectors_0.48.0      MatrixGenerics_1.22.0 matrixStats_1.5.0    
     ## [10] Matrix_1.7-4          BiocGenerics_0.56.0   generics_0.1.4       
@@ -640,16 +640,16 @@ zarr_X
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] jsonlite_2.0.0      crayon_1.5.3        compiler_4.5.2     
-    ##  [4] BiocManager_1.30.27 Rcpp_1.1.0          xml2_1.4.1         
+    ##  [4] BiocManager_1.30.27 Rcpp_1.1.0          xml2_1.5.0         
     ##  [7] jquerylib_0.1.4     systemfonts_1.3.1   textshaping_1.0.4  
     ## [10] yaml_2.3.10         fastmap_1.2.0       lattice_0.22-7     
     ## [13] R6_2.6.1            XVector_0.50.0      curl_7.0.0         
     ## [16] httr2_1.2.1         knitr_1.50          paws.storage_0.9.0 
-    ## [19] bookdown_0.45       desc_1.4.3          paws.common_0.8.5  
+    ## [19] bookdown_0.45       desc_1.4.3          paws.common_0.8.6  
     ## [22] bslib_0.9.0         R.utils_2.13.0      rlang_1.1.6        
     ## [25] cachem_1.1.0        xfun_0.54           fs_1.6.6           
     ## [28] sass_0.4.10         cli_3.6.5           magrittr_2.0.4     
-    ## [31] pkgdown_2.2.0       digest_0.6.38       grid_4.5.2         
+    ## [31] pkgdown_2.2.0       digest_0.6.39       grid_4.5.2         
     ## [34] rappdirs_0.3.3      lifecycle_1.0.4     R.oo_1.27.1        
     ## [37] R.methodsS3_1.8.2   glue_1.8.0          evaluate_1.0.5     
     ## [40] codetools_0.2-20    ragg_1.5.0          rmarkdown_2.30     
