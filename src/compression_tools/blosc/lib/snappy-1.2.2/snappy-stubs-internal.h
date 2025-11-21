@@ -37,7 +37,14 @@
 
 #include <stdint.h>
 
-#include <cassert>
+#if !defined(USING_R)
+#  include <cassert>
+#else
+#  ifndef assert
+#    define assert(condition) ((void)0)
+#  endif
+#endif
+
 #include <cstdlib>
 #include <cstring>
 #include <limits>
