@@ -26,7 +26,7 @@ touchstone::benchmark_run(
     x = x_bool,
     zarr_array_path = "boolean.zarr",
     chunk_dim = c(2, 2),
-    compressor = NULL
+    compressor = use_blosc()
   ),
   n = 25
 )
