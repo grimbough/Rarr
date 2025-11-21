@@ -27,7 +27,7 @@
 
 sed \
 -e "s^@NO_RLIB@^^" \
-src/compression_tools/blosc/lib/snappy-1.1.1/Makefile.in > src/compression_tools/blosc/lib/snappy-1.1.1/Makefile
+src/compression_tools/blosc/lib/snappy-1.2.2/Makefile.in > src/compression_tools/blosc/lib/snappy-1.2.2/Makefile
 
 CC=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CC`
 CFLAGS=`"${R_HOME}/bin${R_ARCH_BIN}/Rcmd.exe" config CFLAGS`
