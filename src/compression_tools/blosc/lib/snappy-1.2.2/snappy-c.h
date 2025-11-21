@@ -30,20 +30,12 @@
  * Plain C interface (a wrapper around the C++ implementation).
  */
 
-#ifndef UTIL_SNAPPY_OPENSOURCE_SNAPPY_C_H_
-#define UTIL_SNAPPY_OPENSOURCE_SNAPPY_C_H_
+#ifndef THIRD_PARTY_SNAPPY_OPENSOURCE_SNAPPY_C_H_
+#define THIRD_PARTY_SNAPPY_OPENSOURCE_SNAPPY_C_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// The next is for getting the Snappy version even if used the C API.
-// Please note that this is only defined in the Blosc sources of Snappy.
-#define SNAPPY_MAJOR 1
-#define SNAPPY_MINOR 1
-#define SNAPPY_PATCHLEVEL 1
-#define SNAPPY_VERSION \
-    ((SNAPPY_MAJOR << 16) | (SNAPPY_MINOR << 8) | SNAPPY_PATCHLEVEL)
 
 #include <stddef.h>
 
@@ -143,4 +135,4 @@ snappy_status snappy_validate_compressed_buffer(const char* compressed,
 }  // extern "C"
 #endif
 
-#endif  /* UTIL_SNAPPY_OPENSOURCE_SNAPPY_C_H_ */
+#endif  /* THIRD_PARTY_SNAPPY_OPENSOURCE_SNAPPY_C_H_ */
