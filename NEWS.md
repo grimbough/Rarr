@@ -30,6 +30,8 @@
   * The endian configuration is now handled via a codec.
 * A GitHub Actions workflow has been added to occasionally test this package on
   a big endian platform.
+* Bundled libraries have been updated:
+  * blosc 1.20.1 -> 1.21.6
 
 # Rarr 1.9
 
