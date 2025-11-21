@@ -4106,7 +4106,7 @@ printf "%s\n" "$as_me: Using system BLOSC library" >&6;}
 
 fi
 
-ac_config_files="$ac_config_files src/compression_tools/blosc/lib/blosc-1.21.6/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.1.1/Makefile"
+ac_config_files="$ac_config_files src/compression_tools/blosc/lib/blosc-1.21.6/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.2.2/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4811,7 +4811,7 @@ do
     "src/Makevars") CONFIG_FILES="$CONFIG_FILES src/Makevars" ;;
     "src/compression_tools/blosc/lib/blosc-1.21.6/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/lib/blosc-1.21.6/Makefile" ;;
     "src/compression_tools/blosc/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/Makefile" ;;
-    "src/compression_tools/blosc/lib/snappy-1.1.1/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/lib/snappy-1.1.1/Makefile" ;;
+    "src/compression_tools/blosc/lib/snappy-1.2.2/Makefile") CONFIG_FILES="$CONFIG_FILES src/compression_tools/blosc/lib/snappy-1.2.2/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

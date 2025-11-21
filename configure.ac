@@ -212,5 +212,5 @@ else
   AC_SUBST(BLOSC_LIB, -lblosc)
 fi
 
-AC_CONFIG_FILES([src/compression_tools/blosc/lib/blosc-1.21.6/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.1.1/Makefile])
+AC_CONFIG_FILES([src/compression_tools/blosc/lib/blosc-1.21.6/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.2.2/Makefile])
 AC_OUTPUT
