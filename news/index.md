@@ -37,6 +37,7 @@
   package on a big endian platform.
 - Bundled libraries have been updated:
   - blosc 1.20.1 -\> 1.21.6
+  - snappy 1.1.1 -\> 1.2.2
 
 ## Rarr 1.9
 
