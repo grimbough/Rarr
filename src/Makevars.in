@@ -23,4 +23,4 @@ libblosc.a: @BUILD_ZSTD@
 	$(MAKE) -C compression_tools/blosc
 
 libzstd.a:
-	$(MAKE) -C compression_tools/zstd
+	$(MAKE) -C compression_tools/zstd-1.5.7

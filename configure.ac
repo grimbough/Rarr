@@ -81,7 +81,7 @@ fi
 if test -z "$HAVE_ZSTD"; then
   AC_MSG_NOTICE(compiling bundled Zstd library)
   AC_SUBST(BUILD_ZSTD, libzstd.a)
-  AC_SUBST(ZSTD_LIB, ./compression_tools/zstd/libzstd.a)
+  AC_SUBST(ZSTD_LIB, ./compression_tools/zstd-1.5.7/libzstd.a)
 else
   AC_MSG_NOTICE(Using system Zstd library)
   AC_SUBST(BUILD_ZSTD, "")
