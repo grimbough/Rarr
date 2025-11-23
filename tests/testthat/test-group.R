@@ -6,7 +6,8 @@ test_that("create zarr and groups", {
   output_zarr <- file.path(td, paste0(name, ".zarr"))
 
   # open zarr
-  create_zarr(dir = td, prefix = name)
+  # create_zarr(dir = td, prefix = name)
+  create_zarr(store = output_zarr)
   expect_true(dir.exists(output_zarr))
   expect_true(file.exists(file.path(output_zarr, ".zgroup")))
 
@@ -50,8 +51,10 @@ test_that("create zarr and groups", {
 test_that("create_zarr rejects unsupported version", {
   td <- withr::local_tempdir()
   name <- "test"
+  output_zarr <- file.path(td, paste0(name, ".zarr"))
   expect_error(
-    create_zarr(dir = td, prefix = name, version = "v4"),
+    create_zarr(store = output_zarr, version = "v4"),
+    # create_zarr(dir = td, prefix = name, version = "v4"),
     "only zarr v2 is supported"
   )
 })

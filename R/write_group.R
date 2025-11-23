@@ -37,11 +37,17 @@ create_zarr_group <- function(store, name, version = "v2"){
 #' 
 #' @examples
 #' dir.create(td <- tempfile())
-#' zarr_name <- "test"
-#' create_zarr(dir = td, prefix = "test")
-#' dir.exists(file.path(td, "test.zarr"))
+#' store <- file.path(td, "test.zarr")
+#' create_zarr(store = store)
+#' dir.exists(store)
 #' 
 #' @export
-create_zarr <- function(dir, prefix, version = "v2"){
-  create_zarr_group(store = dir, name = paste0(prefix, ".zarr"), version = version)
+create_zarr <- function(store, version = "v2"){
+  prefix <- basename(store)
+  dir <- gsub(paste0(prefix, "$"), "", store)
+  create_zarr_group(store = dir, name = prefix, version = version)
 }
+
+# create_zarr <- function(dir, prefix, version = "v2"){
+#   create_zarr_group(store = dir, name = paste0(prefix, ".zarr"), version = version)
+# }
