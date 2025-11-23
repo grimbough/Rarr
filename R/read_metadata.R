@@ -158,11 +158,6 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   )
 
   codecs <- array_metadata$codecs
-  names(codecs) <- vapply(
-    codecs,
-    FUN = function(x) x$name,
-    FUN.VALUE = character(1)
-  )
   compressor <- names(codecs)[match(
     TRUE,
     names(codecs) %in% c("zstd", "blosc", "gzip")
@@ -172,8 +167,10 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   res <- data.frame(
     path = paste0(.normalize_array_path(zarr_array_path), array_name),
     data_type = array_metadata$data_type,
-    endianness = endianness,
-    compressor = compressor
+    # We already introduce default values in .convert_metadata_version() but
+    # these do not exist when reading v3 metadata directly.
+    endianness = endianness %||% NA_character_,
+    compressor = compressor %||% NA_character_
   )
   res$dim <- list(data_shape)
   res$chunk_dim <- list(chunk_shape)
@@ -301,6 +298,20 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     ## the parsed version is used each time a chunk is read
     metadata$datatype <- .parse_datatype(metadata$dtype)
     metadata <- .update_fill_value(metadata, metadata$datatype)
+  } else if (metadata$zarr_format == 3) {
+    # We shouldn't have any case where x$name is NULL since the v3 spec states
+    # 'name' MUST be a plain string.
+    names(metadata$codecs) <- vapply(
+      metadata$codecs,
+      function(x) x$name,
+      character(1)
+    )
+  } else {
+    stop(
+      "Unsupported Zarr format version: ",
+      metadata$zarr_format,
+      call. = FALSE
+    )
   }
 
   return(metadata)

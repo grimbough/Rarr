@@ -18,6 +18,9 @@
 * ZSTD decompression now also works in case where we cannot guess a priori the buffer
   size from the data type, such as when using variable length strings. 
   Thanks to Artür Manukyan for the bug report and test data.
+* `zarr_overview()` no longer fails on consolidated metadata containing uncompressed
+  arrays. This was introduced in https://github.com/Huber-group-EMBL/Rarr/pull/45.
+  Thanks to Sharla Gelfand for reporting the issue and providing test data. 
 
 ## Internal changes
 
@@ -27,6 +30,9 @@
   * The endian configuration is now handled via a codec.
 * A GitHub Actions workflow has been added to occasionally test this package on
   a big endian platform.
+* Bundled libraries have been updated:
+  * blosc 1.20.1 -> 1.21.6
+  * snappy 1.1.1 -> 1.2.2
 
 # Rarr 1.9
 

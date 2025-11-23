@@ -1,21 +1,21 @@
 BLOSC_OBJS=	@AVX2_OBJ_PATH@@AVX2_BITSHUFFLE_OBJ@ \
-			lib/blosc-1.20.1/blosc.o \
+			lib/blosc-1.21.6/blosc.o \
 			@AVX2_OBJ_PATH@@AVX2_SHUFFLE_OBJ@ \
 			@SSE2_OBJ_PATH@@SSE2_SHUFFLE_OBJ@ \
-			lib/blosc-1.20.1/bitshuffle-generic.o \
-			lib/blosc-1.20.1/blosclz.o \
-			lib/blosc-1.20.1/shuffle.o \
+			lib/blosc-1.21.6/bitshuffle-generic.o \
+			lib/blosc-1.21.6/blosclz.o \
+			lib/blosc-1.21.6/shuffle.o \
 			@SSE2_OBJ_PATH@@SSE2_BITSHUFFLE_OBJ@ \
-			lib/blosc-1.20.1/fastcopy.o \
-			lib/blosc-1.20.1/shuffle-generic.o
+			lib/blosc-1.21.6/fastcopy.o \
+			lib/blosc-1.21.6/shuffle-generic.o
 
 LZ4_OBJS=	lib/lz4-1.9.2/lz4.o \
 			lib/lz4-1.9.2/lz4hc.o
 
-SNAPPY_OBJS=lib/snappy-1.1.1/snappy.o \
-			lib/snappy-1.1.1/snappy-c.o \
-			lib/snappy-1.1.1/snappy-sinksource.o \
-			lib/snappy-1.1.1/snappy-stubs-internal.o
+SNAPPY_OBJS=lib/snappy-1.2.2/snappy.o \
+			lib/snappy-1.2.2/snappy-c.o \
+			lib/snappy-1.2.2/snappy-sinksource.o \
+			lib/snappy-1.2.2/snappy-stubs-internal.o
 
 
 all: libblosc.a
@@ -26,9 +26,9 @@ libblosc.a: blosc
 	$(RANLIB) libblosc.a
 
 blosc: subdirs
-	$(MAKE) -C lib/blosc-1.20.1 all
+	$(MAKE) -C lib/blosc-1.21.6 all
 
-SUBDIRS=lib/snappy-1.1.1 lib/lz4-1.9.2
+SUBDIRS=lib/snappy-1.2.2 lib/lz4-1.9.2
 
 .PHONY: subdirs $(SUBDIRS)
 
@@ -39,6 +39,6 @@ $(SUBDIRS):
 
 clean:
 	rm -f libblosc.a
-	rm -f lib/blosc-1.20.1/*.o
-	rm -f lib/snappy-1.1.1/*.o
+	rm -f lib/blosc-1.21.6/*.o
+	rm -f lib/snappy-1.2.2/*.o
 	rm -f lib/lz4-1.9.2/*.o

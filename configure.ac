@@ -155,7 +155,7 @@ if test -z "$HAVE_BLOSC"; then
     SSE2_SHUFFLE='shuffle-sse2.o: shuffle-sse2.c
 	$(CC) $(FLAGS) -c shuffle-sse2.c'
     SSE2_SHUFFLE_OBJ='shuffle-sse2.o'
-    SSE2_OBJ_PATH='lib/blosc-1.20.1/'
+    SSE2_OBJ_PATH='lib/blosc-1.21.6/'
   else
     SSE2=""
     MSSE2=""
@@ -183,7 +183,7 @@ if test -z "$HAVE_BLOSC"; then
     AVX2_SHUFFLE='shuffle-avx2.o: shuffle-avx2.c
 	$(CC) $(FLAGS) -c shuffle-avx2.c'
     AVX2_SHUFFLE_OBJ='shuffle-avx2.o'
-    AVX2_OBJ_PATH='lib/blosc-1.20.1/'
+    AVX2_OBJ_PATH='lib/blosc-1.21.6/'
   else
     AVX2=""
     MAVX2=""
@@ -203,7 +203,7 @@ if test -z "$HAVE_BLOSC"; then
   AC_SUBST(AVX2_OBJ_PATH)
   
   AC_SUBST(BUILD_BLOSC, "libblosc.a")
-  AC_SUBST(BLOSC_INCLUDE, "-I./lib/blosc-1.20.1")
+  AC_SUBST(BLOSC_INCLUDE, "-I./lib/blosc-1.21.6")
   AC_SUBST(BLOSC_LIB, "./compression_tools/blosc/libblosc.a")
 else
   AC_MSG_NOTICE(Using system BLOSC library)
@@ -212,5 +212,5 @@ else
   AC_SUBST(BLOSC_LIB, -lblosc)
 fi
 
-AC_CONFIG_FILES([src/compression_tools/blosc/lib/blosc-1.20.1/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.1.1/Makefile])
+AC_CONFIG_FILES([src/compression_tools/blosc/lib/blosc-1.21.6/Makefile src/compression_tools/blosc/Makefile src/compression_tools/blosc/lib/snappy-1.2.2/Makefile])
 AC_OUTPUT

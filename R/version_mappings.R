@@ -8,7 +8,8 @@
 
   dt <- .parse_datatype(metadata$dtype)
 
-  list(
+  metadata_v3 <- list(
+    datatype = dt,
     shape = metadata$shape,
     chunk_grid = list(
       name = "regular",
@@ -17,23 +18,18 @@
     chunk_key_encoding = list(
       name = "default",
       configuration = list(
-        separator = metadata$dimension_separator
+        # The default was "." in v2
+        separator = metadata$dimension_separator %||% "."
       )
     ),
     data_type = paste0(dt$base_type, 8 * dt$nbytes),
     fill_value = metadata$fill_value,
     codecs = list(
-      list(
+      bytes = list(
         name = "bytes",
-        configuration = c("endian" = dt$endian)
+        configuration = c("endian" = dt$endian %||% NA_character_)
       ),
-      list(
-        name = metadata$compressor$id,
-        configuration = list(
-          metadata$compressor[names(metadata$compressor) != "id"]
-        )
-      ),
-      list(
+      transpose = list(
         name = "transpose",
         configuration = list(
           order = switch(
@@ -46,4 +42,16 @@
       # TODO: add filters
     )
   )
+
+  if (!is.null(metadata$compressor$id)) {
+    metadata_v3$codecs[[metadata$compressor$id]] <-
+      list(
+        name = metadata$compressor$id,
+        configuration = list(
+          metadata$compressor[names(metadata$compressor) != "id"]
+        )
+      )
+  }
+
+  return(metadata_v3)
 }
