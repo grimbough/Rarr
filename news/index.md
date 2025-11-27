@@ -38,6 +38,7 @@
 - Bundled libraries have been updated:
   - blosc 1.20.1 -\> 1.21.6
   - snappy 1.1.1 -\> 1.2.2
+  - zstd 1.5.5 -\> 1.5.7
 
 ## Rarr 1.9
 
