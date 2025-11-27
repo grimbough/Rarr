@@ -9,8 +9,8 @@ BLOSC_OBJS=	@AVX2_OBJ_PATH@@AVX2_BITSHUFFLE_OBJ@ \
 			lib/blosc-1.21.6/fastcopy.o \
 			lib/blosc-1.21.6/shuffle-generic.o
 
-LZ4_OBJS=	lib/lz4-1.9.2/lz4.o \
-			lib/lz4-1.9.2/lz4hc.o
+LZ4_OBJS=	lib/lz4-1.10.0/lz4.o \
+			lib/lz4-1.10.0/lz4hc.o
 
 SNAPPY_OBJS=lib/snappy-1.2.2/snappy.o \
 			lib/snappy-1.2.2/snappy-c.o \
@@ -28,7 +28,7 @@ libblosc.a: blosc
 blosc: subdirs
 	$(MAKE) -C lib/blosc-1.21.6 all
 
-SUBDIRS=lib/snappy-1.2.2 lib/lz4-1.9.2
+SUBDIRS=lib/snappy-1.2.2 lib/lz4-1.10.0
 
 .PHONY: subdirs $(SUBDIRS)
 
