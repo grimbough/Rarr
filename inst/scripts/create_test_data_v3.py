@@ -237,3 +237,10 @@ group.create_array(shape=(1,), name="a", dtype="float64")
 group.create_array(shape=(2, 2), name="b", dtype="float64")
 group.create_array(shape=(3, 3, 3), name="c", dtype="float64")
 zarr.consolidate_metadata(group.store)
+
+#####################################
+
+# Scalar
+z = zarr.create_array('inst/extdata/zarr_examples/scalar/scalar_v3.zarr', shape=(), dtype='i4')
+z[()] = 42
+
