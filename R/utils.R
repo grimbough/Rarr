@@ -109,7 +109,7 @@ check_index <- function(index, metadata) {
   # FIXME: it's awkward to have to reconvert to integer after the division
   datatype$nbytes <- as.integer(
     as.integer(
-      gsub(x = typestr, pattern = "^\\D+", replacement = "")
+      gsub(x = typestr, pattern = "^[^[:digit:]]+", replacement = "")
     ) /
       8L
   )
