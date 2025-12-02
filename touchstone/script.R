@@ -333,4 +333,31 @@ touchstone::benchmark_run(
   n = 25
 )
 
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+  },
+  write_blosc_lz4 = write_zarr_array(
+    array(1:1e6, dim = c(100, 100, 100)),
+    "blosc_lz4.zarr",
+    chunk_dim = c(10, 10, 10),
+    compressor = use_blosc(cname = "lz4")
+  ),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    write_zarr_array(
+      array(1:1e6, dim = c(100, 100, 100)),
+      "blosc_lz4.zarr",
+      chunk_dim = c(10, 10, 10),
+      compressor = use_blosc(cname = "lz4")
+    )
+  },
+  read_blosc_lz4 = read_zarr_array("blosc_lz4.zarr"),
+  n = 25
+)
+
 touchstone::benchmark_analyze()
