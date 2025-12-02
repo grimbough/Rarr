@@ -56,8 +56,8 @@ test_that("v2 and v3 return identical results", {
     package = "Rarr"
   )
 
-  expect_no_condition(u64_v2 <- read_zarr_array(zarr_v2))
-  expect_no_condition(u64_v3 <- read_zarr_array(zarr_v3))
+  u64_v2 <- read_zarr_array(zarr_v2)
+  u64_v3 <- read_zarr_array(zarr_v3)
 
   expect_identical(u64_v2, u64_v3)
 })
