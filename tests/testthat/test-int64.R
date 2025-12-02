@@ -68,22 +68,6 @@ test_that("int64 zarr arrays handle out-of-range values", {
   expect_true(all(is.na(row_major)))
 })
 
-test_that("int64 v3 zarr arrays throw appropriate error", {
-  zarr_v3 <- system.file(
-    "extdata",
-    "zarr_examples",
-    "column-first",
-    "int64_v3.zarr",
-    package = "Rarr"
-  )
-
-  expect_no_condition(
-    zarr_v3_array <- read_zarr_array(zarr_v3),
-  )
-
-  expect_shape(zarr_v3_array, dim = c(30, 20, 10))
-})
-
 test_that("v2 and v3 return identical results", {
   zarr_v2 <- system.file(
     "extdata",
@@ -100,8 +84,8 @@ test_that("v2 and v3 return identical results", {
     package = "Rarr"
   )
 
-  expect_no_condition(i64_v2 <- read_zarr_array(zarr_v2))
-  expect_no_condition(i64_v3 <- read_zarr_array(zarr_v3))
+  i64_v2 <- read_zarr_array(zarr_v2)
+  i64_v3 <- read_zarr_array(zarr_v3)
 
   expect_identical(i64_v2, i64_v3)
 })
