@@ -1,5 +1,8 @@
 # -- Array to array -------------------
 codec_transpose_encode <- function(array, indices = seq_along(dim(array))) {
+  if (identical(indices, seq_along(dim(array)))) {
+    return(array)
+  }
   dim(array) <- dim(array)[indices]
   array <- aperm(array, indices)
 
@@ -7,6 +10,9 @@ codec_transpose_encode <- function(array, indices = seq_along(dim(array))) {
 }
 
 codec_transpose_decode <- function(array, indices = seq_along(dim(array))) {
+  if (identical(indices, seq_along(dim(array)))) {
+    return(array)
+  }
   inv_indices <- order(indices)
   array <- aperm(array, inv_indices)
   dim(array) <- dim(array)[inv_indices]
