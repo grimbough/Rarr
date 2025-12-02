@@ -445,7 +445,7 @@ read_chunk <- function(
 #' @keywords internal
 .decompress_chunk <- function(compressed_chunk, metadata) {
   decompressor <- intersect(
-    vapply(metadata$codecs, function(codec) codec$name, character(1)),
+    names(metadata$codecs),
     c("blosc", "zlib", "gzip", "bz2", "lzma", "lz4", "zstd")
   )
   datatype <- metadata$datatype
