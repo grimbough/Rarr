@@ -632,7 +632,7 @@ zarr_X
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] Rarr_1.11.9           DelayedArray_0.36.0   SparseArray_1.10.2   
+    ##  [1] Rarr_1.11.10          DelayedArray_0.36.0   SparseArray_1.10.3   
     ##  [4] S4Arrays_1.10.0       abind_1.4-8           IRanges_2.44.0       
     ##  [7] S4Vectors_0.48.0      MatrixGenerics_1.22.0 matrixStats_1.5.0    
     ## [10] Matrix_1.7-4          BiocGenerics_0.56.0   generics_0.1.4       
@@ -640,9 +640,9 @@ zarr_X
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] jsonlite_2.0.0      crayon_1.5.3        compiler_4.5.2     
-    ##  [4] BiocManager_1.30.27 Rcpp_1.1.0          xml2_1.5.0         
+    ##  [4] BiocManager_1.30.27 Rcpp_1.1.0          xml2_1.5.1         
     ##  [7] jquerylib_0.1.4     systemfonts_1.3.1   textshaping_1.0.4  
-    ## [10] yaml_2.3.10         fastmap_1.2.0       lattice_0.22-7     
+    ## [10] yaml_2.3.11         fastmap_1.2.0       lattice_0.22-7     
     ## [13] R6_2.6.1            XVector_0.50.0      curl_7.0.0         
     ## [16] httr2_1.2.1         knitr_1.50          paws.storage_0.9.0 
     ## [19] bookdown_0.45       desc_1.4.3          paws.common_0.8.7  
