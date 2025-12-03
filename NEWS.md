@@ -9,7 +9,8 @@
   * int8
   * int16
   * float32 / single
-
+* Scalar arrays (i.e., arrays with zero dimensions) can now be read.
+  Thanks to Artür Manukyan for the bug report.
 
 ## Minor improvements
 
