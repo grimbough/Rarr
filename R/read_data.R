@@ -120,6 +120,8 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   index_in_result <- index_in_chunk <- list()
   alt_chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
+  # FIXME: deal with this by rewriting the chunk grid in metadata after we supported
+  # non-regular chunk grid
   for (j in seq_len(ncol(required_chunks))) {
     index_in_result[[j]] <- which(chunk_idx[[j]] == required_chunks[i, j])
     ## are we requesting values outside the array due to overhanging chunks?
