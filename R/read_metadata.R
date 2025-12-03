@@ -308,6 +308,15 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       function(x) x$name,
       character(1)
     )
+    if (length(metadata$shape) == 0) {
+      # Empty tuple in shape means we are dealing with a scalar.
+      metadata$shape <- 1
+      metadata$chunk_grid <- list(
+        name = "regular",
+        configuration = list(chunk_shape = 1)
+      )
+    }
+    # This needs to happen after we address the scalar edge case
     if (is.null(metadata$codecs[["transpose"]])) {
       # We need to make sure this is always present because we do the
       # reverse of what this codec is telling us (since R uses F-order).
