@@ -108,10 +108,9 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 }
 
 .extract_elements <- function(
-  i,
+  current_chunk_indices,
   metadata,
   index,
-  required_chunks,
   zarr_array_path,
   s3_client,
   chunk_idx
@@ -122,8 +121,8 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 
   # FIXME: deal with this by rewriting the chunk grid in metadata after we supported
   # non-regular chunk grid
-  for (j in seq_len(ncol(required_chunks))) {
-    index_in_result[[j]] <- which(chunk_idx[[j]] == required_chunks[i, j])
+  for (j in seq_along(current_chunk_indices)) {
+    index_in_result[[j]] <- which(chunk_idx[[j]] == current_chunk_indices[j])
     ## are we requesting values outside the array due to overhanging chunks?
     outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
     if (any(outside_extent)) {
@@ -141,7 +140,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   ## read this chunk
   chunk <- read_chunk(
     zarr_array_path,
-    chunk_id = required_chunks[i, ],
+    chunk_id = current_chunk_indices,
     metadata = metadata,
     s3_client = s3_client,
     alt_chunk_dim = alt_chunk_dim
@@ -184,13 +183,16 @@ read_data <- function(
   ## hopefully we can eventually do this in parallel
   chunk_selections <- lapply(
     seq_len(nrow(required_chunks)),
-    FUN = .extract_elements,
-    metadata = metadata,
-    index = index,
-    required_chunks = required_chunks,
-    zarr_array_path = zarr_array_path,
-    s3_client = s3_client,
-    chunk_idx = chunk_idx
+    function(i) {
+      .extract_elements(
+        current_chunk_indices = required_chunks[i, ],
+        metadata = metadata,
+        index = index,
+        zarr_array_path = zarr_array_path,
+        s3_client = s3_client,
+        chunk_idx = chunk_idx
+      )
+    }
   )
 
   ## predefine our array to be populated from the read chunks
