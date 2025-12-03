@@ -108,7 +108,8 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 }
 
 .extract_elements <- function(
-  current_chunk_indices,
+  current_chunk_index,
+  current_chunk_name,
   metadata,
   index,
   zarr_array_path,
@@ -121,8 +122,8 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 
   # FIXME: deal with this by rewriting the chunk grid in metadata after we supported
   # non-regular chunk grid
-  for (j in seq_along(current_chunk_indices)) {
-    index_in_result[[j]] <- which(chunk_idx[[j]] == current_chunk_indices[j])
+  for (j in seq_along(current_chunk_index)) {
+    index_in_result[[j]] <- which(chunk_idx[[j]] == current_chunk_index[j])
     ## are we requesting values outside the array due to overhanging chunks?
     outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
     if (any(outside_extent)) {
@@ -140,7 +141,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   ## read this chunk
   chunk <- read_chunk(
     zarr_array_path,
-    chunk_id = current_chunk_indices,
+    chunk_name = current_chunk_name,
     metadata = metadata,
     s3_client = s3_client,
     alt_chunk_dim = alt_chunk_dim
@@ -180,12 +181,18 @@ read_data <- function(
     SIMPLIFY = FALSE
   )
 
+  chunk_names <- .create_chunk_names(
+    required_chunks,
+    metadata
+  )
+
   ## hopefully we can eventually do this in parallel
   chunk_selections <- lapply(
-    seq_len(nrow(required_chunks)),
+    seq_along(chunk_names),
     function(i) {
       .extract_elements(
-        current_chunk_indices = required_chunks[i, ],
+        current_chunk_index = required_chunks[i, ],
+        current_chunk_name = chunk_names[i],
         metadata = metadata,
         index = index,
         zarr_array_path = zarr_array_path,
@@ -244,8 +251,7 @@ get_decompressed_chunk_size <- function(datatype, dimensions) {
 #'
 #' @param zarr_array_path A character vector of length 1, giving the path to the
 #'   Zarr array
-#' @param chunk_id A numeric vector or single data.frame row with length equal
-#'   to the number of dimensions of a chunk.
+#' @param chunk_name The name of the chunk to read.
 #' @param metadata List produced by `.read_array_metadata()` holding the contents
 #'   of the `.zarray` file. If missing this function will be called
 #'   automatically, but it is probably preferable to pass the meta data rather
@@ -266,22 +272,12 @@ get_decompressed_chunk_size <- function(datatype, dimensions) {
 #' @keywords internal
 read_chunk <- function(
   zarr_array_path,
-  chunk_id,
+  chunk_name,
   metadata,
   s3_client = NULL,
   alt_chunk_dim = NULL
 ) {
-  dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
-  chunk_id <- paste(chunk_id, collapse = dim_separator)
-  if (metadata$zarr_format == 3) {
-    chunk_id <- paste(
-      "c",
-      chunk_id,
-      sep = dim_separator
-    )
-  }
-
-  chunk_file <- paste0(zarr_array_path, chunk_id)
+  chunk_file <- paste0(zarr_array_path, chunk_name)
 
   if (nzchar(Sys.getenv("RARR_DEBUG"))) {
     message(chunk_file)
