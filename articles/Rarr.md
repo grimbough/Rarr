@@ -632,7 +632,7 @@ zarr_X
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] Rarr_1.11.10          DelayedArray_0.36.0   SparseArray_1.10.3   
+    ##  [1] Rarr_1.11.11          DelayedArray_0.36.0   SparseArray_1.10.3   
     ##  [4] S4Arrays_1.10.0       abind_1.4-8           IRanges_2.44.0       
     ##  [7] S4Vectors_0.48.0      MatrixGenerics_1.22.0 matrixStats_1.5.0    
     ## [10] Matrix_1.7-4          BiocGenerics_0.56.0   generics_0.1.4       

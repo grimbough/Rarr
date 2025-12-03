@@ -21,12 +21,12 @@ Source:
 [`DESCRIPTION`](https://github.com/Huber-group-EMBL/Rarr/blob/devel/DESCRIPTION)
 
 Smith M, Gruson H (2025). *Rarr: Read Zarr Files in R*. R package
-version 1.11.10, <https://huber-group-embl.github.io/Rarr/>.
+version 1.11.11, <https://huber-group-embl.github.io/Rarr/>.
 
     @Manual{,
       title = {Rarr: Read Zarr Files in R},
       author = {Mike Smith and Hugo Gruson},
       year = {2025},
-      note = {R package version 1.11.10},
+      note = {R package version 1.11.11},
       url = {https://huber-group-embl.github.io/Rarr/},
     }

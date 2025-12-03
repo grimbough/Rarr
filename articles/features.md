@@ -2,11 +2,12 @@
 
 ## Zarr version
 
-Rarr currently only works with [Zarr specification version
-2](https://zarr-specs.readthedocs.io/en/latest/v2/v2.0.html). Support
-for [version
+Support for [Zarr version
 3](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html) is
-actively being worked on.
+actively being worked on, and some features are likely to be missing.
+
+It is currently known that reading only is supported, not writing, and
+that the sharding codec is not supported.
 
 ## Reading and Writing
 

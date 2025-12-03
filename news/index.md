@@ -2,17 +2,23 @@
 
 ## Rarr 1.11
 
+### New features
+
+- Zarr v3 arrays with data types and codecs that already existed in v2
+  can now be read via
+  [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md).
+- More data types are available when writing Zarr arrays:
+  - boolean / logical
+  - int8
+  - int16
+  - float32 / single
+
 ### Minor improvements
 
 - There is now a dedicated vignette describing the supported Zarr
   features in Rarr, available at
   <https://huber-group-embl.github.io/Rarr/articles/features.html>. This
   makes it more easily discoverable on the Bioconductor landing page.
-- More data types are available when writing Zarr arrays:
-  - boolean / logical
-  - int8
-  - int16
-  - float32 / single
 
 ### Bug fixes
 
