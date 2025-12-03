@@ -28,6 +28,32 @@ check_index <- function(index, metadata) {
   return(index)
 }
 
+.create_chunk_names <- function(chunk_indices, metadata) {
+  dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
+
+  chunk_names <- vapply(
+    seq_len(nrow(chunk_indices)),
+    function(row_idx) {
+      paste(chunk_indices[row_idx, ], collapse = dim_separator)
+    },
+    FUN.VALUE = character(1)
+  )
+
+  if (metadata[["zarr_format"]] == 3) {
+    if (identical(metadata[["shape"]], 1)) {
+      chunk_names <- "c"
+    } else {
+      chunk_names <- paste(
+        "c",
+        chunk_names,
+        sep = dim_separator
+      )
+    }
+  }
+
+  return(chunk_names)
+}
+
 #' Create a string of the form `x[idx[[1]], idx[[2]]] <- y` for an array `x`
 #' where the number of dimensions is variable.
 #'

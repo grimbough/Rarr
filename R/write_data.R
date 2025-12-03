@@ -197,9 +197,20 @@ write_zarr_array <- function(
   )
   ## read the metadata we just created
   metadata <- .read_array_metadata(path, ".zarray")
+  metadata_v3 <- .convert_metadata_version(
+    metadata,
+    version_from = 2,
+    version_to = 3
+  )
 
-  chunk_names <- .generate_chunk_names(x_dim = dim(x), chunk_dim = chunk_dim)
-  chunk_ids <- apply(chunk_names, 1, paste0, collapse = dimension_separator)
+  chunk_indices <- .generate_chunk_indices(
+    x_dim = dim(x),
+    chunk_dim = chunk_dim
+  )
+  chunk_names <- .create_chunk_names(
+    chunk_indices,
+    metadata_v3
+  )
 
   same_type_lower_bytesize <- metadata$dtype %in% c("|i1", "<i2", "<f4")
   lower_bytesize_type <- storage.mode(x) == "double" &&
@@ -213,7 +224,7 @@ write_zarr_array <- function(
   ## iterate over each chunk
   ## TODO: maybe this can be done in parallel with bplapply() ?
   res <- lapply(
-    chunk_ids,
+    chunk_names,
     FUN = .write_chunk,
     x = x,
     path = path,
@@ -223,7 +234,7 @@ write_zarr_array <- function(
   return(invisible(all(unlist(res))))
 }
 
-.generate_chunk_names <- function(x_dim, chunk_dim) {
+.generate_chunk_indices <- function(x_dim, chunk_dim) {
   n_chunks_in_dim <- (x_dim %/% chunk_dim) + as.logical(x_dim %% chunk_dim)
   expand.grid(lapply(n_chunks_in_dim, seq_len)) - 1
 }
@@ -368,17 +379,15 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_needed[i] <- all(lengths(idx_in_zarr) > 0)
   }
   chunk_names <- chunk_names[chunk_needed, , drop = FALSE]
-  chunk_ids <- apply(
+  chunk_names <- .create_chunk_names(
     chunk_names,
-    1,
-    paste0,
-    collapse = metadata$dimension_separator
+    metadata_v3
   )
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bplapply() ?
   res <- lapply(
-    chunk_ids,
+    chunk_names,
     FUN = .update_chunk,
     x = x,
     path = zarr_array_path,
@@ -420,7 +429,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
   chunk_in_mem <- read_chunk(
     zarr_array_path = path,
-    chunk_id = chunk_id_split,
+    chunk_name = chunk_id,
     metadata = metadata_v3
   )[["chunk_data"]]
 
