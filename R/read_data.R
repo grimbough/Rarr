@@ -415,7 +415,7 @@ read_chunk <- function(
   if (!is.null(metadata$codecs$transpose)) {
     transpose_config <- metadata$codecs[["transpose"]]$configuration
     # FIXME: R is already F ordered, so we reverse the order in config
-    converted_chunk[[1]] <- codec_transpose_encode(
+    converted_chunk[[1]] <- codec_transpose_decode(
       converted_chunk[[1]],
       rev(unlist(transpose_config$order)) + 1L
     )

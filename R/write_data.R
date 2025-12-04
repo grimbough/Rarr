@@ -468,7 +468,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 ) {
   # Array to array codecs
   if (metadata$order == "C") {
-    input_chunk <- codec_transpose_decode(
+    input_chunk <- codec_transpose_encode(
       input_chunk,
       indices = rev(seq_along(dim(input_chunk)))
     )
