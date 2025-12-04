@@ -85,6 +85,10 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
       version_to = 3
     )
   }
+  metadata$configured_codecs <- .configure_codecs(
+    metadata$codecs,
+    operation = "decode"
+  )
 
   ## if no index provided we will return everything
   if (missing(index)) {
@@ -412,13 +416,9 @@ read_chunk <- function(
     )
   }
 
-  if (!is.null(metadata$codecs$transpose)) {
-    transpose_config <- metadata$codecs[["transpose"]]$configuration
-    # FIXME: R is already F ordered, so we reverse the order in config
-    converted_chunk[[1]] <- codec_transpose_decode(
-      converted_chunk[[1]],
-      rev(unlist(transpose_config$order)) + 1L
-    )
+  # Run array-array codecs
+  for (codec in metadata$configured_codecs[["array_array"]]) {
+    converted_chunk[[1]] <- do.call(codec, list(converted_chunk[[1]]))
   }
 
   names(converted_chunk) <- c("chunk_data", "warning")
