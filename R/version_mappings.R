@@ -61,12 +61,12 @@
   }
 
   for (filter in metadata$filters) {
-    metadata_v3$codecs[[filter$id]] <- list(
+    metadata_v3$codecs[[gsub("-", "_", filter$id)]] <- list(
       name = filter$id
     )
   }
 
-  if (!is.null(metadata_v3$codecs[["vlen-utf8"]])) {
+  if (!is.null(metadata_v3$codecs[["vlen_utf8"]])) {
     # In v3, vlen-utf8 applies to 'string' type
     metadata_v3$data_type <- "string"
     metadata_v3$datatype$base_type <- "string"
