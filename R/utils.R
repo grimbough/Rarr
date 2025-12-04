@@ -31,13 +31,13 @@ check_index <- function(index, metadata) {
 .create_chunk_names <- function(chunk_indices, metadata) {
   dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
 
-  chunk_names <- vapply(
-    seq_len(nrow(chunk_indices)),
-    function(row_idx) {
-      paste(chunk_indices[row_idx, ], collapse = dim_separator)
-    },
-    FUN.VALUE = character(1)
-  )
+  # This is faster than vapply()
+  chunk_names <- as.vector(apply(
+    chunk_indices,
+    1,
+    paste,
+    collapse = dim_separator
+  ))
 
   if (metadata[["zarr_format"]] == 3) {
     if (identical(metadata[["shape"]], 1)) {
