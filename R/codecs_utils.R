@@ -11,12 +11,38 @@
   codecs_names <- names(codecs)
   operation <- match.arg(operation)
 
-  bytes_bytes_codecs <- intersect(codecs_names, NULL)
+  bytes_bytes_codecs <- intersect(
+    codecs_names,
+    c(
+      "blosc",
+      "zlib",
+      "gzip",
+      "bz2",
+      "lzma",
+      "lz4",
+      "zstd"
+    )
+  )
   array_array_codecs <- intersect(codecs_names, "transpose")
-  array_bytes_codecs <- intersect(codecs_names, c("endian", "vlen_utf8"))
+  array_bytes_codecs <- intersect(codecs_names, c("bytes", "vlen_utf8"))
 
   if (length(array_bytes_codecs) > 1) {
     stop("Only one array-bytes codec is supported at a time.")
+  }
+
+  unsupported_codecs <- setdiff(
+    codecs_names,
+    c(
+      bytes_bytes_codecs,
+      array_array_codecs,
+      array_bytes_codecs
+    )
+  )
+  if (length(unsupported_codecs) > 0) {
+    stop(
+      "The following codecs are not supported: ",
+      paste(unsupported_codecs, collapse = ", ")
+    )
   }
 
   bytes_bytes_env <- list()
@@ -32,6 +58,22 @@
         "encode" = function(x) codec_transpose_encode(x, cfg + 1),
         "decode" = function(x) codec_transpose_decode(x, cfg + 1)
       )
+    }
+  }
+
+  # Compressors
+  for (candidate_codec in bytes_bytes_codecs) {
+    if (candidate_codec %in% codecs_names) {
+      candidate_codec <- ifelse(
+        candidate_codec == "zlib",
+        "gzip",
+        candidate_codec
+      )
+      cfg <- codecs[[candidate_codec]]$configuration
+      func_name <- paste("codec", candidate_codec, operation, sep = "_")
+      bytes_bytes_env[[candidate_codec]] <- function(...) {
+        do.call(func_name, list(..., cfg))
+      }
     }
   }
 
