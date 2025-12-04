@@ -321,7 +321,18 @@ read_chunk <- function(
   }
 
   # Bytes -> Bytes codecs
-  decompressed_chunk <- .decompress_chunk(compressed_chunk, metadata)
+  buffer_size <- get_decompressed_chunk_size(
+    metadata$datatype,
+    dimensions = metadata$chunk_grid$configuration$chunk_shape
+  )
+
+  for (codec in metadata$configured_codecs[["bytes_bytes"]]) {
+    compressed_chunk <- codec(
+      bytes = compressed_chunk,
+      buffer_size = buffer_size
+    )
+  }
+  decompressed_chunk <- compressed_chunk
 
   # Bytes -> Array codecs
   converted_chunk <- .format_chunk(
@@ -426,56 +437,4 @@ read_chunk <- function(
 
   names(converted_chunk) <- c("chunk_data", "warning")
   return(converted_chunk)
-}
-
-#' Decompress a chunk in memory
-#'
-#' R has internal decompression tools for zlib, bz2 and lzma compression.  We
-#' use external libraries bundled with the package for blosc and lz4
-#' decompression.
-#'
-#' @param compressed_chunk Raw vector holding the compressed bytes for this
-#'   chunk.
-#' @param metadata List produced by `.read_array_metadata()` with the contents of
-#'   the `.zarray` file.
-#'
-#' @returns An array with the number of dimensions specified in the Zarr
-#'   metadata.  In most cases it will have the same size as the Zarr chunk,
-#'   however in the case of edge chunks, which overlap the extent of the array,
-#'   the returned chunk will be smaller.
-#'
-#' @importFrom utils tail
-#' @keywords internal
-.decompress_chunk <- function(compressed_chunk, metadata) {
-  decompressor <- intersect(
-    names(metadata$codecs),
-    c("blosc", "zlib", "gzip", "bz2", "lzma", "lz4", "zstd")
-  )
-  datatype <- metadata$datatype
-  buffer_size <- get_decompressed_chunk_size(
-    datatype,
-    dimensions = metadata$chunk_grid$configuration$chunk_shape
-  )
-
-  if (length(decompressor) == 0) {
-    decompressed_chunk <- compressed_chunk
-  } else {
-    codec_compression_decode <- switch(
-      decompressor,
-      blosc = codec_blosc_decode,
-      zlib = ,
-      gzip = codec_gzip_decode,
-      bz2 = codec_bz2_decode,
-      lzma = codec_lzma_decode,
-      lz4 = codec_lz4_decode,
-      zstd = codec_zstd_decode,
-      stop("Unsupported compression tool")
-    )
-    decompressed_chunk <- codec_compression_decode(
-      compressed_chunk,
-      buffer_size
-    )
-  }
-
-  return(decompressed_chunk)
 }
