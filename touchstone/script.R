@@ -360,4 +360,21 @@ touchstone::benchmark_run(
   n = 25
 )
 
+## Other codecs ----------
+
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    write_zarr_array(
+      array(1:1e3, dim = c(10, 10, 10)),
+      "transpose.zarr",
+      chunk_dim = c(2, 2, 5),
+      order = "C",
+      compressor = NULL
+    )
+  },
+  read_c_order = read_zarr_array("transpose.zarr"),
+  n = 25
+)
+
 touchstone::benchmark_analyze()
