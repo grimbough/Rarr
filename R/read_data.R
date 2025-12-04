@@ -307,37 +307,31 @@ read_chunk <- function(
     }
   }
 
-  ## either decompress and format the chunk data
-  ## or create a new chunk based on the fill value
-  if (!is.null(compressed_chunk)) {
-    decompressed_chunk <- .decompress_chunk(compressed_chunk, metadata)
-
-    bytes_codec_config <- metadata$codecs[["bytes"]]$configuration %||%
-      NA_character_
-    decompressed_chunk <- codec_bytes_decode(
-      decompressed_chunk,
-      bytes_codec_config,
-      ifelse(
-        # For unicode, nbytes actually is sizeof(int) * nchar
-        metadata$datatype$base_type == "unicode",
-        4L,
-        metadata$datatype$nbytes
+  # Missing chunks are filled with the fill value
+  if (is.null(compressed_chunk)) {
+    return(
+      list(
+        "chunk_data" = array(
+          metadata$fill_value,
+          dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
+        ),
+        "warning" = 0L
       )
     )
-    converted_chunk <- .format_chunk(
-      decompressed_chunk,
-      metadata,
-      alt_chunk_dim
-    )
-    # FIXME: run array -> array codecs here
-  } else {
-    converted_chunk <- list(
-      "chunk_data" = array(
-        metadata$fill_value,
-        dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
-      ),
-      "warning" = 0L
-    )
+  }
+
+  # Bytes -> Bytes codecs
+  decompressed_chunk <- .decompress_chunk(compressed_chunk, metadata)
+
+  # Bytes -> Array codecs
+  converted_chunk <- .format_chunk(
+    decompressed_chunk,
+    metadata,
+    alt_chunk_dim
+  )
+  # Array -> Array codecs
+  for (codec in metadata$configured_codecs[["array_array"]]) {
+    converted_chunk[[1]] <- do.call(codec, list(converted_chunk[[1]]))
   }
 
   return(converted_chunk)
@@ -372,6 +366,20 @@ read_chunk <- function(
 #' @keywords internal
 .format_chunk <- function(decompressed_chunk, metadata, alt_chunk_dim) {
   datatype <- metadata$datatype
+
+  bytes_codec_config <- metadata$codecs[["bytes"]]$configuration %||%
+    NA_character_
+
+  decompressed_chunk <- codec_bytes_decode(
+    decompressed_chunk,
+    bytes_codec_config,
+    ifelse(
+      # For unicode, nbytes actually is sizeof(int) * nchar
+      metadata$datatype$base_type == "unicode",
+      4L,
+      metadata$datatype$nbytes
+    )
+  )
 
   ## It doesn't seem clear if the on disk chunk will contain the overflow
   ## values or not, so we try both approaches.
@@ -414,11 +422,6 @@ read_chunk <- function(
       chunk_dim,
       PACKAGE = "Rarr"
     )
-  }
-
-  # Run array-array codecs
-  for (codec in metadata$configured_codecs[["array_array"]]) {
-    converted_chunk[[1]] <- do.call(codec, list(converted_chunk[[1]]))
   }
 
   names(converted_chunk) <- c("chunk_data", "warning")
