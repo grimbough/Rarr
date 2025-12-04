@@ -6,7 +6,7 @@
 \usage{
 read_chunk(
   zarr_array_path,
-  chunk_id,
+  chunk_name,
   metadata,
   s3_client = NULL,
   alt_chunk_dim = NULL
@@ -16,8 +16,7 @@ read_chunk(
 \item{zarr_array_path}{A character vector of length 1, giving the path to the
 Zarr array}
 
-\item{chunk_id}{A numeric vector or single data.frame row with length equal
-to the number of dimensions of a chunk.}
+\item{chunk_name}{The name of the chunk to read.}
 
 \item{metadata}{List produced by \code{.read_array_metadata()} holding the contents
 of the \code{.zarray} file. If missing this function will be called
