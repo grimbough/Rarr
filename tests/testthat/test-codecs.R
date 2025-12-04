@@ -33,12 +33,12 @@ test_that("codec: endian", {
 
   if (.Platform$endian == "little") {
     expect_identical(
-      raw_le |> codec_endian_encode("big", 8),
+      raw_le |> codec_bytes_encode("big", 8),
       raw_be
     )
   } else {
     expect_identical(
-      raw_be |> codec_endian_encode("little", 8),
+      raw_be |> codec_bytes_encode("little", 8),
       raw_le
     )
   }

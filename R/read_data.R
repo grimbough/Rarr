@@ -310,7 +310,7 @@ read_chunk <- function(
 
     bytes_codec_config <- metadata$codecs[["bytes"]]$configuration %||%
       NA_character_
-    decompressed_chunk <- codec_endian_decode(
+    decompressed_chunk <- codec_bytes_decode(
       decompressed_chunk,
       bytes_codec_config,
       ifelse(

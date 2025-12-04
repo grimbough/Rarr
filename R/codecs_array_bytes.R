@@ -1,5 +1,5 @@
 # -- Endian ---------------------------------------
-codec_endian_encode <- function(raw_obj, endian, bytesize) {
+codec_bytes_encode <- function(raw_obj, endian, bytesize) {
   if (is.na(endian) || endian == .Platform$endian) {
     return(raw_obj)
   }
@@ -9,7 +9,7 @@ codec_endian_encode <- function(raw_obj, endian, bytesize) {
   return(raw_obj[ind])
 }
 
-codec_endian_decode <- codec_endian_encode
+codec_bytes_decode <- codec_bytes_encode
 
 # -- Variable-length UTF-8 ------------------------
 codec_vlen_utf8_encode <- function(input) {

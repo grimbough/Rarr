@@ -492,7 +492,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
   # Endianness in unicode is handled during the conversion to/from
   if (metadata$datatype$base_type != "unicode") {
-    raw_chunk <- codec_endian_encode(
+    raw_chunk <- codec_bytes_encode(
       raw_chunk,
       endian = metadata$datatype$endian,
       metadata$datatype$nbytes
