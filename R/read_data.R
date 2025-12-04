@@ -456,47 +456,22 @@ read_chunk <- function(
 
   if (length(decompressor) == 0) {
     decompressed_chunk <- compressed_chunk
-  } else if (decompressor == "blosc") {
-    decompressed_chunk <- .Call(
-      "decompress_chunk_BLOSC",
-      compressed_chunk,
-      PACKAGE = "Rarr"
-    )
-  } else if (decompressor %in% c("zlib", "gzip")) {
-    decompressed_chunk <- memDecompress(
-      from = compressed_chunk,
-      type = "gzip",
-      asChar = FALSE
-    )
-  } else if (decompressor == "bz2") {
-    decompressed_chunk <- memDecompress(
-      from = compressed_chunk,
-      type = "bzip2",
-      asChar = FALSE
-    )
-  } else if (decompressor == "lzma") {
-    decompressed_chunk <- memDecompress(
-      from = compressed_chunk,
-      type = "xz",
-      asChar = FALSE
-    )
-  } else if (decompressor == "lz4") {
-    ## numpy codecs stores the original size of the buffer in the first 4 bytes
-    decompressed_chunk <- .Call(
-      "decompress_chunk_LZ4",
-      tail(x = compressed_chunk, n = -4L),
-      buffer_size,
-      PACKAGE = "Rarr"
-    )
-  } else if (decompressor == "zstd") {
-    decompressed_chunk <- .Call(
-      "decompress_chunk_ZSTD",
-      compressed_chunk,
-      buffer_size,
-      PACKAGE = "Rarr"
-    )
   } else {
-    stop("Unsupported compression tool")
+    codec_compression_decode <- switch(
+      decompressor,
+      blosc = codec_blosc_decode,
+      zlib = ,
+      gzip = codec_gzip_decode,
+      bz2 = codec_bz2_decode,
+      lzma = codec_lzma_decode,
+      lz4 = codec_lz4_decode,
+      zstd = codec_zstd_decode,
+      stop("Unsupported compression tool")
+    )
+    decompressed_chunk <- codec_compression_decode(
+      compressed_chunk,
+      buffer_size
+    )
   }
 
   return(decompressed_chunk)
