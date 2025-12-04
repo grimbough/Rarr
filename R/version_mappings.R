@@ -71,6 +71,7 @@
     metadata_v3$data_type <- "string"
     metadata_v3$datatype$base_type <- "string"
   }
+  metadata_v3 <- list2env(metadata_v3, parent = emptyenv(), hash = TRUE)
 
   return(metadata_v3)
 }
