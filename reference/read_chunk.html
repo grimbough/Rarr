@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_chunk</span><span class="op">(</span></span>
 <span>  <span class="va">zarr_array_path</span>,</span>
-<span>  <span class="va">chunk_id</span>,</span>
+<span>  <span class="va">chunk_name</span>,</span>
 <span>  <span class="va">metadata</span>,</span>
 <span>  s3_client <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  alt_chunk_dim <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -62,9 +62,8 @@
 Zarr array</p></dd>
 
 
-<dt id="arg-chunk-id">chunk_id<a class="anchor" aria-label="anchor" href="#arg-chunk-id"></a></dt>
-<dd><p>A numeric vector or single data.frame row with length equal
-to the number of dimensions of a chunk.</p></dd>
+<dt id="arg-chunk-name">chunk_name<a class="anchor" aria-label="anchor" href="#arg-chunk-name"></a></dt>
+<dd><p>The name of the chunk to read.</p></dd>
 
 
 <dt id="arg-metadata">metadata<a class="anchor" aria-label="anchor" href="#arg-metadata"></a></dt>
