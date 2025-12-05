@@ -26,10 +26,6 @@
   array_array_codecs <- intersect(codecs_names, "transpose")
   array_bytes_codecs <- intersect(codecs_names, c("bytes", "vlen_utf8"))
 
-  if (length(array_bytes_codecs) > 1) {
-    stop("Only one array-bytes codec is supported at a time.")
-  }
-
   unsupported_codecs <- setdiff(
     codecs_names,
     c(
