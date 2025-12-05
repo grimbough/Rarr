@@ -30,8 +30,11 @@ codec_lzma_decode <- function(bytes, buffer_size, ...) {
   )
 }
 
-codec_lz4_decode <- function(bytes, buffer_size, ...) {
-  ## numpy codecs stores the original size of the buffer in the first 4 bytes
+codec_lz4_decode <- function(bytes, ...) {
+  # numcodecs docs says:
+  # The compressed output includes a 4-byte header storing the original size
+  # of the decompressed data as a little-endian 32-bit integer.
+  buffer_size <- readBin(bytes, "integer", n = 1, size = 4, endian = "little")
   .Call(
     "decompress_chunk_LZ4",
     tail(x = bytes, n = -4L),

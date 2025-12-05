@@ -360,6 +360,16 @@ touchstone::benchmark_run(
   n = 25
 )
 
+touchstone::benchmark_run(
+  read_lz4 = read_zarr_array(system.file(
+    "zarr_examples",
+    "compression",
+    "lz4.zarr",
+    package = "Rarr"
+  )),
+  n = 25
+)
+
 ## Other codecs ----------
 
 touchstone::benchmark_run(
