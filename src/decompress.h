@@ -9,6 +9,5 @@
 #endif
 
 SEXP decompress_chunk_BLOSC(SEXP input);
-//SEXP decompress_chunk_ZLIB(SEXP input, SEXP _outbuffersize);
 SEXP decompress_chunk_LZ4(SEXP input, SEXP _outbuffersize);
 SEXP decompress_chunk_ZSTD(SEXP input, SEXP _outbuffersize);
