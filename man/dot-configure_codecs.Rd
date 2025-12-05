@@ -22,3 +22,4 @@ An list of 3 environments containing functions:
 \description{
 Convert the metadata \code{codecs} elements into functions
 }
+\keyword{internal}

@@ -7,6 +7,8 @@
 #' - `bytes_bytes_codecs`: functions to encode/decode raw bytes
 #' - `array_array_codecs`: functions to encode/decode R arrays
 #' - `array_bytes_codecs`: functions to encode/decode between R arrays and raw bytes
+#'
+#' @keywords internal
 .configure_codecs <- function(codecs, operation = c("encode", "decode")) {
   codecs_names <- names(codecs)
   operation <- match.arg(operation)
