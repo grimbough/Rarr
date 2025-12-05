@@ -321,15 +321,9 @@ read_chunk <- function(
   }
 
   # Bytes -> Bytes codecs
-  buffer_size <- get_decompressed_chunk_size(
-    metadata$datatype,
-    dimensions = metadata$chunk_grid$configuration$chunk_shape
-  )
-
   for (codec in metadata$configured_codecs[["bytes_bytes"]]) {
     compressed_chunk <- codec(
-      bytes = compressed_chunk,
-      buffer_size = buffer_size
+      bytes = compressed_chunk
     )
   }
   decompressed_chunk <- compressed_chunk

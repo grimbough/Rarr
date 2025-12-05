@@ -22,7 +22,7 @@ codec_bz2_decode <- function(bytes, ...) {
   )
 }
 
-codec_lzma_decode <- function(bytes, buffer_size, ...) {
+codec_lzma_decode <- function(bytes, ...) {
   memDecompress(
     from = bytes,
     type = "xz",
@@ -44,11 +44,11 @@ codec_lz4_decode <- function(bytes, ...) {
   )
 }
 
-codec_zstd_decode <- function(bytes, buffer_size, ...) {
+codec_zstd_decode <- function(bytes, ...) {
   .Call(
     "decompress_chunk_ZSTD",
     bytes,
-    buffer_size,
+    buffer_size = NA_integer_,
     PACKAGE = "Rarr"
   )
 }
