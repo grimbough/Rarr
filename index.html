@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +86,6 @@
 <h2 id="limitations-with-rarr">Limitations with <strong>Rarr</strong>
 <a class="anchor" aria-label="anchor" href="#limitations-with-rarr"></a>
 </h2>
-<p><strong>Rarr currently only works with <a href="https://zarr-specs.readthedocs.io/en/latest/v2/v2.0.html" class="external-link">Zarr specification version 2</a>. Support for <a href="https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html" class="external-link">version 3</a> is actively being worked on.</strong></p>
 <p>If you know about Zarr arrays already, you’ll probably be aware they can be stored in hierarchical groups, where additional meta data can explain the relationship between the arrays. Currently, <strong>Rarr</strong> is not designed to be aware of these hierarchical Zarr array collections. However, the component arrays can be read individually by providing the path to them directly.</p>
 <p>Currently, there are also limitations on the Zarr datatypes that can be accessed using <strong>Rarr</strong>. For now most numeric types can be read into R, although in some instances e.g. 64-bit integers there is potential for loss of information. Writing is more limited with support only for datatypes that are supported natively in R and only using the column-first representation.</p>
 <p>See the dedicated <a href="https://huber-group-embl.github.io/Rarr/articles/features.html">“Supported Zarr features” vignette</a> for more information.</p>

@@ -28,12 +28,6 @@ to provide support for datasets compressed using these tools.
 
 ## Limitations with **Rarr**
 
-**Rarr currently only works with [Zarr specification version
-2](https://zarr-specs.readthedocs.io/en/latest/v2/v2.0.html). Support
-for [version
-3](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html) is
-actively being worked on.**
-
 If you know about Zarr arrays already, you’ll probably be aware they can
 be stored in hierarchical groups, where additional meta data can explain
 the relationship between the arrays. Currently, **Rarr** is not designed
