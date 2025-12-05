@@ -5,14 +5,7 @@ Compress and write a single chunk
 ## Usage
 
 ``` r
-.compress_and_write_chunk(
-  input_chunk,
-  chunk_path,
-  metadata,
-  compressor = use_zlib(),
-  data_type_size,
-  is_base64 = FALSE
-)
+.compress_and_write_chunk(input_chunk, chunk_path, metadata, is_base64 = FALSE)
 ```
 
 ## Arguments
@@ -25,19 +18,6 @@ Compress and write a single chunk
 - chunk_path:
 
   Character string giving the path to the chunk that should be written.
-
-- compressor:
-
-  A "compressor" function that returns a list giving the details of the
-  compression tool to apply. See
-  [compressors](https://huber-group-embl.github.io/Rarr/reference/compressors.md)
-  for more details.
-
-- data_type_size:
-
-  An integer giving the size of the original datatype. This is passed to
-  the blosc algorithm, which seems to need it to achieve any
-  compression.
 
 - is_base64:
 

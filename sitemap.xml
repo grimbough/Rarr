@@ -15,8 +15,8 @@
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/compressors.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/create_empty_zarr_array.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/dot-compress_and_write_chunk.html</loc></url>
+<url><loc>https://huber-group-embl.github.io/Rarr/reference/dot-configure_codecs.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/dot-create_replace_call.html</loc></url>
-<url><loc>https://huber-group-embl.github.io/Rarr/reference/dot-decompress_chunk.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/dot-format_chunk.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/dot-get_credentials.html</loc></url>
 <url><loc>https://huber-group-embl.github.io/Rarr/reference/dot-normalize_array_path.html</loc></url>
