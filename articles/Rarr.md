@@ -632,8 +632,8 @@ zarr_X
     ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] Rarr_1.11.12          DelayedArray_0.36.0   SparseArray_1.10.3   
-    ##  [4] S4Arrays_1.10.0       abind_1.4-8           IRanges_2.44.0       
+    ##  [1] Rarr_1.11.12          DelayedArray_0.36.0   SparseArray_1.10.4   
+    ##  [4] S4Arrays_1.10.1       abind_1.4-8           IRanges_2.44.0       
     ##  [7] S4Vectors_0.48.0      MatrixGenerics_1.22.0 matrixStats_1.5.0    
     ## [10] Matrix_1.7-4          BiocGenerics_0.56.0   generics_0.1.4       
     ## [13] BiocStyle_2.38.0     
@@ -653,7 +653,7 @@ zarr_X
     ## [34] rappdirs_0.3.3      lifecycle_1.0.4     R.oo_1.27.1        
     ## [37] R.methodsS3_1.8.2   glue_1.8.0          evaluate_1.0.5     
     ## [40] codetools_0.2-20    ragg_1.5.0          rmarkdown_2.30     
-    ## [43] tools_4.5.2         htmltools_0.5.8.1
+    ## [43] tools_4.5.2         htmltools_0.5.9
 
 ------------------------------------------------------------------------
 
