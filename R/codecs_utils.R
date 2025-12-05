@@ -38,7 +38,7 @@
   if (length(unsupported_codecs) > 0) {
     stop(
       "The following codecs are not supported: ",
-      paste(unsupported_codecs, collapse = ", ")
+      toString(unsupported_codecs)
     )
   }
 
