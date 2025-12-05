@@ -19,6 +19,7 @@
       "gzip",
       "bz2",
       "lzma",
+      "numcodecs.lz4",
       "lz4",
       "zstd"
     )
@@ -64,12 +65,14 @@
   # Compressors
   for (candidate_codec in bytes_bytes_codecs) {
     if (candidate_codec %in% codecs_names) {
-      candidate_codec <- ifelse(
-        candidate_codec == "zlib",
-        "gzip",
+      cfg <- codecs[[candidate_codec]]$configuration
+      # Aliases
+      candidate_codec <- switch(
+        candidate_codec,
+        "zlib" = "gzip",
+        "numcodecs.lz4" = "lz4",
         candidate_codec
       )
-      cfg <- codecs[[candidate_codec]]$configuration
       func_name <- paste("codec", candidate_codec, operation, sep = "_")
       bytes_bytes_env[[candidate_codec]] <- function(...) {
         do.call(func_name, list(..., cfg))

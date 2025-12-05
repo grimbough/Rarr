@@ -14,18 +14,28 @@ test_that("compressed zarr arrays (bzip2) can be read correctly", {
 })
 
 test_that("compressed zarr arrays (lz4) can be read correctly", {
-  zarr <- system.file(
+  zarr_v2 <- system.file(
     "extdata",
     "zarr_examples",
     "compression",
     "lz4.zarr",
     package = "Rarr"
   )
+  zarr_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "compression",
+    "lz4_v3.zarr",
+    package = "Rarr"
+  )
 
-  expect_silent(data <- read_zarr_array(zarr))
+  expect_silent(data_v2 <- read_zarr_array(zarr_v2))
+  expect_silent(data_v3 <- read_zarr_array(zarr_v3))
 
-  expect_identical(data[1, ], 1:10)
-  expect_true(all(data[, 1] == seq(1, 60, 3)))
+  expect_identical(data_v2, data_v3)
+
+  expect_identical(data_v2[1, ], 1:10)
+  expect_true(all(data_v2[, 1] == seq(1, 60, 3)))
 })
 
 test_that("compressed zarr arrays (lzma) can be read correctly", {
