@@ -30,6 +30,7 @@ codec_lzma_decode <- function(bytes, buffer_size, ...) {
   )
 }
 
+#' @importFrom utils tail
 codec_lz4_decode <- function(bytes, ...) {
   # numcodecs docs says:
   # The compressed output includes a 4-byte header storing the original size
