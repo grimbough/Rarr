@@ -51,12 +51,16 @@
 
   if ("transpose" %in% array_array_codecs) {
     # R is already F ordered, so we reverse the order in config
-    cfg <- rev(unlist(codecs$transpose$configuration$order))
+    cfg <- rev(unlist(codecs$transpose$configuration$order)) + 1
     if (is.unsorted(cfg)) {
       array_array_env[["transpose"]] <- switch(
         operation,
-        "encode" = function(x) codec_transpose_encode(x, cfg + 1),
-        "decode" = function(x) codec_transpose_decode(x, cfg + 1)
+        "encode" = eval(bquote(function(x) {
+          codec_transpose_encode(x, .(cfg))
+        })),
+        "decode" = eval(bquote(function(x) {
+          codec_transpose_decode(x, .(cfg))
+        }))
       )
     }
   }
