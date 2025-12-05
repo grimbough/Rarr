@@ -47,7 +47,6 @@
           )
         )
       )
-      # TODO: add filters
     )
   )
 
