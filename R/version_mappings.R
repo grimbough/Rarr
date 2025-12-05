@@ -61,7 +61,7 @@
   }
 
   for (filter in metadata$filters) {
-    metadata_v3$codecs[[gsub("-", "_", filter$id)]] <- list(
+    metadata_v3$codecs[[gsub("-", "_", filter$id, fixed = TRUE)]] <- list(
       name = filter$id
     )
   }
