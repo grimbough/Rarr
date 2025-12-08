@@ -314,7 +314,9 @@ read_chunk <- function(
     }
   }
 
-  # Missing chunks are filled with the fill value
+  # Missing chunks are filled with the fill value in the whole array.
+  # We generally don't need to re-fill here and this saves resources.
+  # A notable exception when we need to fill is in update_zarr_array().
   if (is.null(compressed_chunk)) {
     if (fill) {
       return(
