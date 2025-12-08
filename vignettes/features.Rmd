@@ -77,4 +77,5 @@ Please open an [issue](https://github.com/Huber-group-EMBL/Rarr/issues) if suppo
 | Codec     | Status<br/>(reading / writing) | Notes |
 |-----------|:------------------------------:|-------|
 |`endian`   | &#x2714; / &#x274C;            |       |
-|`transpose`| &#x2714; / &#x2714;            | Only the simple T/C case defined in v2 |
+|`transpose`| &#x2714; / &#x2714;            |       |
+|`VLen-UTF8`| &#x2714; / &#x274C;            |       |
