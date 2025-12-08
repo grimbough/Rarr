@@ -10,7 +10,8 @@ read_chunk(
   chunk_name,
   metadata,
   s3_client = NULL,
-  alt_chunk_dim = NULL
+  alt_chunk_dim = NULL,
+  fill = FALSE
 )
 ```
 
@@ -45,6 +46,12 @@ read_chunk(
   Normally this will be the same as the chunk shape in `metadata`, but
   when dealing with edge chunks, which may overlap the true extent of
   the array the returned array should be smaller than the chunk shape.
+
+- fill:
+
+  Logical of length 1. If `TRUE`, missing chunks will be filled with the
+  fill value from the array metadata. If `FALSE` (the default), missing
+  chunks will return `NULL`.
 
 ## Value
 
