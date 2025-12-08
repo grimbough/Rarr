@@ -29,6 +29,6 @@ write_zarr_attributes(zarr_path, new.zattrs = list(), overwrite = TRUE)
 ``` r
 z1 <- withr::local_tempdir(fileext = ".zarr")
 write_zarr_attributes(z1, list(date = "2025-01-01", author = "Jane Doe"))
-#> Warning: cannot open file '/tmp/RtmpwrNkqV/file1cc623caf5ac.zarr/.zattrs': No such file or directory
+#> Warning: cannot open file '/tmp/RtmpzTegDV/file1d01385e4e91.zarr/.zattrs': No such file or directory
 #> Error in file(con, "w"): cannot open the connection
 ```

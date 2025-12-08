@@ -21,6 +21,9 @@
   features in Rarr, available at
   <https://huber-group-embl.github.io/Rarr/articles/features.html>. This
   makes it more easily discoverable on the Bioconductor landing page.
+- Rarr initializes empty/missing chunks only once per read operation,
+  which significantly improves performance when reading arrays with many
+  missing chunks.
 
 ### Bug fixes
 
