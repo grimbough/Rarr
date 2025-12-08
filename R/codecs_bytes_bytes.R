@@ -48,7 +48,6 @@ codec_zstd_decode <- function(bytes, ...) {
   .Call(
     "decompress_chunk_ZSTD",
     bytes,
-    buffer_size = NA_integer_,
     PACKAGE = "Rarr"
   )
 }

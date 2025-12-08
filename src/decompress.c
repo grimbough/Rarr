@@ -53,42 +53,32 @@ SEXP decompress_chunk_LZ4(SEXP input, SEXP _outbuffersize) {
 ZSTDLIB_API size_t ZSTD_decompress( void* dst, size_t dstCapacity,
                                     const void* src, size_t compressedSize); */
 
-SEXP decompress_chunk_ZSTD(SEXP input, SEXP _outbuffersize) {
+SEXP decompress_chunk_ZSTD(SEXP input) {
   
   void* p_input = (void *)RAW(input);
   void* p_output;
-  size_t outbuf_size;
   size_t compressed_size = (size_t) xlength(input);
   SEXP output;
   size_t dsize;
-  int provided;
 
-  /* It's better to use the buffer size when we know it. 
-  But if we don't, we can guess it. */
-  provided = INTEGER(_outbuffersize)[0];
-  if (provided == NA_INTEGER) {
-    unsigned long long frameSize = ZSTD_getFrameContentSize(p_input, compressed_size);
-    if (frameSize == ZSTD_CONTENTSIZE_UNKNOWN || frameSize == ZSTD_CONTENTSIZE_ERROR) {
-      // FIXME: When ZSTD_CONTENTSIZE_UNKNOWN, we can still use streaming mode according to
-      // the docs. 
-      error("Unable to determine decompressed buffer size for zstd frame; ensure metadata provides nbytes\n");
-    }
-    /* Ensure frameSize fits in size_t on this platform. 
-    FIXME: we should implement streaming decompression mode in thisn case, as recommended
-    in the ZSTD docs. */
-    if (frameSize > SIZE_MAX) {
-      error("decompressed frame size (%llu) exceeds platform maximum (%zu); use streaming decompression\n",
-            frameSize, SIZE_MAX);
-    }
-    outbuf_size = (size_t) frameSize;
-  } else {
-    outbuf_size = (size_t) provided;
+  unsigned long long frameSize = ZSTD_getFrameContentSize(p_input, compressed_size);
+  if (frameSize == ZSTD_CONTENTSIZE_UNKNOWN || frameSize == ZSTD_CONTENTSIZE_ERROR) {
+    // FIXME: When ZSTD_CONTENTSIZE_UNKNOWN, we can still use streaming mode according to
+    // the docs. 
+    error("Unable to determine decompressed buffer size for zstd frame; ensure metadata provides nbytes\n");
+  }
+  /* Ensure frameSize fits in size_t on this platform. 
+  FIXME: we should implement streaming decompression mode in thisn case, as recommended
+  in the ZSTD docs. */
+  if (frameSize > SIZE_MAX) {
+    error("decompressed frame size (%llu) exceeds platform maximum (%zu); use streaming decompression\n",
+          frameSize, SIZE_MAX);
   }
 
-  output = PROTECT(allocVector(RAWSXP, (R_xlen_t) outbuf_size));
+  output = PROTECT(allocVector(RAWSXP, (R_xlen_t) frameSize));
   p_output = RAW(output);
 
-  dsize = ZSTD_decompress(p_output, outbuf_size, p_input, compressed_size);
+  dsize = ZSTD_decompress(p_output, (size_t) frameSize, p_input, compressed_size);
   if (ZSTD_isError(dsize)) {
     error("zstd decompression error - error code: %zu (%s)\n", dsize, ZSTD_getErrorName(dsize));
   }
