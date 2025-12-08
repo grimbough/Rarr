@@ -153,14 +153,16 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   warn <- chunk$warning[1]
   chunk_data <- chunk$chunk_data
 
-  ## extract the required elements from the chunk
-  selection <- R.utils::extract(
-    chunk_data,
-    indices = index_in_chunk,
-    drop = FALSE
-  )
+  if (!is.null(chunk_data)) {
+    ## extract the required elements from the chunk
+    chunk_data <- R.utils::extract(
+      chunk_data,
+      indices = index_in_chunk,
+      drop = FALSE
+    )
+  }
 
-  return(list(selection, index_in_result, warning = warn))
+  return(list(chunk_data, index_in_result, warning = warn))
 }
 
 
@@ -205,20 +207,21 @@ read_data <- function(
       )
     }
   )
-
   ## predefine our array to be populated from the read chunks
   output <- array(metadata$fill_value, dim = lengths(index))
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
-    index_in_result <- chunk_selections[[i]][[2]]
-    cmd <- .create_replace_call(
-      x_name = "output",
-      idx_name = "index_in_result",
-      idx_length = length(index_in_result),
-      y_name = "chunk_selections[[i]][[1]]"
-    )
-    eval(parse(text = cmd))
+    if (!is.null(chunk_selections[[i]][[1]])) {
+      index_in_result <- chunk_selections[[i]][[2]]
+      cmd <- .create_replace_call(
+        x_name = "output",
+        idx_name = "index_in_result",
+        idx_length = length(index_in_result),
+        y_name = "chunk_selections[[i]][[1]]"
+      )
+      eval(parse(text = cmd))
+    }
     warn <- max(warn, chunk_selections[[i]]$warning[1])
   }
   return(list(output = output, warn = warn))
@@ -267,6 +270,9 @@ get_decompressed_chunk_size <- function(datatype, dimensions) {
 #'   `metadata`, but when dealing with edge chunks, which may overlap the true
 #'   extent of the array the returned array should be smaller than the chunk
 #'   shape.
+#' @param fill Logical of length 1.  If `TRUE`, missing chunks will be filled
+#'    with the fill value from the array metadata.  If `FALSE` (the default),
+#'    missing chunks will return `NULL`.
 #'
 #' @returns A list of length 2.  The entries should be names "chunk_data" and
 #'   "warning". The first is an array containing the decompressed chunk values,
@@ -279,7 +285,8 @@ read_chunk <- function(
   chunk_name,
   metadata,
   s3_client = NULL,
-  alt_chunk_dim = NULL
+  alt_chunk_dim = NULL,
+  fill = FALSE
 ) {
   chunk_file <- paste0(zarr_array_path, chunk_name)
 
@@ -309,15 +316,24 @@ read_chunk <- function(
 
   # Missing chunks are filled with the fill value
   if (is.null(compressed_chunk)) {
-    return(
-      list(
-        "chunk_data" = array(
-          metadata$fill_value,
-          dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
-        ),
-        "warning" = 0L
+    if (fill) {
+      return(
+        list(
+          "chunk_data" = array(
+            metadata$fill_value,
+            dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
+          ),
+          "warning" = 0L
+        )
       )
-    )
+    } else {
+      return(
+        list(
+          "chunk_data" = NULL,
+          "warning" = 0L
+        )
+      )
+    }
   }
 
   # Bytes -> Bytes codecs
