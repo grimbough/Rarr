@@ -645,7 +645,7 @@ zarr_X
     ## [10] yaml_2.3.11         fastmap_1.2.0       lattice_0.22-7     
     ## [13] R6_2.6.1            XVector_0.50.0      curl_7.0.0         
     ## [16] httr2_1.2.1         knitr_1.50          paws.storage_0.9.0 
-    ## [19] bookdown_0.45       desc_1.4.3          paws.common_0.8.7  
+    ## [19] bookdown_0.46       desc_1.4.3          paws.common_0.8.7  
     ## [22] bslib_0.9.0         R.utils_2.13.0      rlang_1.1.6        
     ## [25] cachem_1.1.0        xfun_0.54           fs_1.6.6           
     ## [28] sass_0.4.10         cli_3.6.5           magrittr_2.0.4     
