@@ -288,8 +288,8 @@ read_chunk <- function(
   }
 
   if (is.null(s3_client)) {
-    size <- file.size(chunk_file)
     if (file.exists(chunk_file)) {
+      size <- file.size(chunk_file)
       compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
     } else {
       compressed_chunk <- NULL
