@@ -423,7 +423,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_in_mem <- read_chunk(
     zarr_array_path = path,
     chunk_name = chunk_id,
-    metadata = metadata_v3
+    metadata = metadata_v3,
+    fill = TRUE
   )[["chunk_data"]]
 
   ## extract the new values from x and insert them into the chunk
@@ -435,7 +436,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     "y"
   )
   eval(parse(text = cmd))
-
   ## re-compress updated chunk and write back to disk
   .compress_and_write_chunk(
     input_chunk = chunk_in_mem,
