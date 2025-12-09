@@ -9,7 +9,7 @@ SEXP compress_chunk_BLOSC(SEXP input, SEXP type_size) {
   int clevel = 5;
   size_t typesize = (size_t)INTEGER(type_size)[0];
   
-  output = PROTECT(allocVector(RAWSXP, LENGTH(input)+BLOSC_MAX_OVERHEAD));
+  output = PROTECT(R_allocResizableVector(RAWSXP, LENGTH(input)+BLOSC_MAX_OVERHEAD));
   p_output = RAW(output);
 
   blosc_init();
@@ -19,7 +19,7 @@ SEXP compress_chunk_BLOSC(SEXP input, SEXP type_size) {
 
   if(dsize > 0) {
     /* shrink our output buffer to contain only the compressed bytes */
-    SET_LENGTH(output, dsize);
+    R_resizeVector(output, dsize);
   } else if(dsize == 0) {
     /* if compression results in a bigger chunk, just use the original input */
     p_output = p_input;
@@ -41,7 +41,7 @@ SEXP compress_chunk_LZ4(SEXP input) {
   SEXP output;
   int dsize;
   
-  output = PROTECT(allocVector(RAWSXP, output_size));
+  output = PROTECT(R_allocResizableVector(RAWSXP, output_size));
   p_output = RAW(output);
 
   dsize = LZ4_compress_default((char *)p_input, (char *)p_output, input_size, output_size);
@@ -51,7 +51,7 @@ SEXP compress_chunk_LZ4(SEXP input) {
   }
   
   /* shrink our output vector to include only the compressed bytes */
-  SET_LENGTH(output, dsize);
+  R_resizeVector(output, dsize);
 
   UNPROTECT(1);
   return output;
@@ -75,7 +75,7 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
   size_t output_size = (size_t) ZSTD_compressBound(input_size);
   int compressionLevel = INTEGER(compression_level)[0];
   
-  SEXP output = PROTECT(allocVector(RAWSXP, output_size));
+  SEXP output = PROTECT(R_allocResizableVector(RAWSXP, output_size));
   p_output = RAW(output);
   
   int dsize = ZSTD_compress(p_output, output_size, p_input, input_size, compressionLevel);
@@ -85,7 +85,7 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
   }
   
   /* shrink our output vector to include only the compressed bytes */
-  SET_LENGTH(output, dsize);
+  R_resizeVector(output, dsize);
   
   UNPROTECT(1);
   return output;

@@ -75,7 +75,7 @@ SEXP decompress_chunk_ZSTD(SEXP input) {
           frameSize, SIZE_MAX);
   }
 
-  output = PROTECT(allocVector(RAWSXP, (R_xlen_t) frameSize));
+  output = PROTECT(R_allocResizableVector(RAWSXP, (R_xlen_t) frameSize));
   p_output = RAW(output);
 
   dsize = ZSTD_decompress(p_output, (size_t) frameSize, p_input, compressed_size);
@@ -85,7 +85,7 @@ SEXP decompress_chunk_ZSTD(SEXP input) {
 
   /* set the length of our output vector the actual number of decompressed
    * bytes. _outbuffersize/frameSize is an upper bound. */
-  SET_LENGTH(output, (R_xlen_t) dsize);
+  R_resizeVector(output, (R_xlen_t) dsize);
 
   UNPROTECT(1);
   return output;
