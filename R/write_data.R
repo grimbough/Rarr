@@ -9,20 +9,31 @@
   }
 
   ## if data type was supplied directly, always use that
-  if (!data_type %in% c("|i1", "<i2", "<i4", "<f4", "<f8", "|S", "<U", "|b1")) {
+  supported_types <- c(
+    "|i1",
+    "<i2",
+    "<i4",
+    "<i8",
+    "|u1",
+    "<u2",
+    "<u4",
+    "<u8",
+    "<f4",
+    "<f8",
+    "|S",
+    "<U",
+    "|b1"
+  )
+  if (!data_type %in% supported_types) {
     data_type <- switch(
       data_type,
       "integer" = "<i4",
       "double" = "<f8",
       "character" = "|S",
       "logical" = "|b1",
-      NULL
-    )
-  }
-
-  if (is.null(data_type)) {
-    stop(
-      "Currently only able to write integer, double, character and logical arrays"
+      stop(
+        "Currently only able to write integer, double, character and logical arrays"
+      )
     )
   }
 
@@ -33,6 +44,11 @@
       "|i1" = 0L,
       "<i2" = 0L,
       "<i4" = 0L,
+      "<i8" = 0L,
+      "|u1" = 0L,
+      "<u2" = 0L,
+      "<u4" = 0L,
+      "<u8" = 0L,
       "<f4" = 0,
       "<f8" = 0,
       "|S" = "",
@@ -333,15 +349,17 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   )
   index <- check_index(index, metadata = metadata)
 
-  data_type <- switch(
-    storage.mode(x),
-    "integer" = "<i",
-    "double" = "<f",
-    "character" = c("|S", "<U", ">U"),
-    "logical" = "|b",
+  existing_storage <- switch(
+    metadata_v3$datatype$base_type,
+    "uint" = "integer",
+    "int" = "integer",
+    "float" = "double",
+    "bool" = "logical",
+    "string" = "character",
+    "unicode" = "character",
     NULL
   )
-  if (!substr(metadata$dtype, 1, 2) %in% data_type) {
+  if (!identical(storage.mode(x), existing_storage)) {
     stop("New data is not of the same type as the existing array.")
   }
 

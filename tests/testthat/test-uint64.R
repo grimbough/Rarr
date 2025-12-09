@@ -61,3 +61,24 @@ test_that("v2 and v3 return identical results", {
 
   expect_identical(u64_v2, u64_v3)
 })
+
+test_that("uint64 zarr array can be written", {
+  uint64_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_uint64_array <- array(1:24, dim = c(4, 3, 2))
+
+  write_zarr_array(
+    content_uint64_array,
+    uint64_zarr,
+    data_type = "<u8",
+    chunk_dim = c(2, 2, 1),
+    compressor = NULL
+  )
+
+  roundtrip_uint64_array <- read_zarr_array(uint64_zarr)
+
+  expect_identical(
+    content_uint64_array,
+    roundtrip_uint64_array
+  )
+})
