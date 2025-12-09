@@ -44,3 +44,24 @@ test_that("v2 and v3 return identical results", {
 
   expect_identical(u16_v2, u16_v3)
 })
+
+test_that("uint16 zarr array can be written", {
+  uint16_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_uint16_array <- array(1:24, dim = c(4, 3, 2))
+
+  write_zarr_array(
+    content_uint16_array,
+    uint16_zarr,
+    data_type = "<u2",
+    chunk_dim = c(2, 2, 1),
+    compressor = NULL
+  )
+
+  roundtrip_uint16_array <- read_zarr_array(uint16_zarr)
+
+  expect_identical(
+    content_uint16_array,
+    roundtrip_uint16_array
+  )
+})

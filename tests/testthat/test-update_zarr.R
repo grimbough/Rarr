@@ -64,3 +64,36 @@ test_that("update_zarr_array on C-order arrays", {
   expect_true(update_zarr_array(path, x, index = list(NULL, NULL)))
   expect_identical(read_zarr_array(path), x)
 })
+
+test_that("update higher precision from lower precision internal type", {
+  path <- withr::local_tempfile(fileext = ".zarr")
+  res <- create_empty_zarr_array(
+    zarr_array_path = path,
+    dim = c(10, 10),
+    chunk_dim = c(5, 5),
+    data_type = "<i8",
+    fill_value = 0L
+  )
+
+  x <- matrix(1:100, ncol = 10)
+
+  expect_true(update_zarr_array(path, x, index = list(NULL, NULL)))
+  expect_identical(read_zarr_array(path), x)
+})
+
+
+test_that("update unsigned array", {
+  path <- withr::local_tempfile(fileext = ".zarr")
+  res <- create_empty_zarr_array(
+    zarr_array_path = path,
+    dim = c(10, 10),
+    chunk_dim = c(5, 5),
+    data_type = "<u4",
+    fill_value = 0L
+  )
+
+  x <- matrix(1:100, ncol = 10)
+
+  expect_true(update_zarr_array(path, x, index = list(NULL, NULL)))
+  expect_identical(read_zarr_array(path), x)
+})
