@@ -24,7 +24,7 @@
     "<U",
     "|b1"
   )
-  if (!data_type %in% supported_types) {
+  if (data_type %notin% supported_types) {
     data_type <- switch(
       data_type,
       "integer" = "<i4",

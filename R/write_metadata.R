@@ -10,7 +10,7 @@
   order = "C"
 ) {
   order <- toupper(order)
-  if (!order %in% c("C", "F")) {
+  if (order %notin% c("C", "F")) {
     stop("The 'order' argument must be either 'C' or 'F'")
   }
 

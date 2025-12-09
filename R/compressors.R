@@ -54,7 +54,7 @@ NULL
 use_blosc <- function(cname = "lz4") {
   valid_options <- c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy")
   cname <- tolower(cname)
-  if (!cname %in% valid_options) {
+  if (cname %notin% valid_options) {
     stop(
       "'cname argument must be one of '",
       paste(valid_options, collapse = "', '"),
