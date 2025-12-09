@@ -11,6 +11,11 @@
   - boolean / logical
   - int8
   - int16
+  - int64 (up to values that can be represented as R integers)
+  - uint8
+  - uint16
+  - uint32 (up to values that can be represented as R integers)
+  - uint64 (up to values that can be represented as R integers)
   - float32 / single
 - Scalar arrays (i.e., arrays with zero dimensions) can now be read.
   Thanks to Artür Manukyan for the bug report.
