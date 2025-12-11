@@ -153,4 +153,23 @@ test_that("v2 and v3 return identical results", {
     "Only base data types (not extensions) are supported for Zarr v3 arrays for now",
     fixed = TRUE
   )
+
+  zarr_vlen_utf8_v2 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "vlenUTF8.zarr",
+    package = "Rarr"
+  )
+  zarr_vlen_utf8_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "vlenUTF8_v3.zarr",
+    package = "Rarr"
+  )
+  expect_no_condition(vlen_utf8_v2 <- read_zarr_array(zarr_vlen_utf8_v2))
+  expect_no_condition(vlen_utf8_v3 <- read_zarr_array(zarr_vlen_utf8_v3))
+
+  expect_identical(vlen_utf8_v2, vlen_utf8_v3)
 })
