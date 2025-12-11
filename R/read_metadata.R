@@ -305,7 +305,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     # 'name' MUST be a plain string.
     names(metadata$codecs) <- vapply(
       metadata$codecs,
-      function(x) gsub("-", "_", x$name),
+      function(x) gsub("-", "_", x$name, fixed = TRUE),
       character(1)
     )
     if (length(metadata$shape) == 0) {
