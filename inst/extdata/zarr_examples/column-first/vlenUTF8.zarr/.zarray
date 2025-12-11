@@ -1,23 +1,24 @@
 {
-    "chunks": [
-        6,
-        6
-    ],
-    "compressor": {
-        "id": "zlib",
-        "level": 1
-    },
-    "dtype": "|O",
-    "fill_value": "",
-    "filters": [
-        {
-            "id": "vlen-utf8"
-        }
-    ],
-    "order": "F",
-    "shape": [
-        12,
-        12
-    ],
-    "zarr_format": 2
+  "shape": [
+    12,
+    12
+  ],
+  "chunks": [
+    6,
+    6
+  ],
+  "dtype": "|O",
+  "fill_value": "",
+  "order": "C",
+  "filters": [
+    {
+      "id": "vlen-utf8"
+    }
+  ],
+  "dimension_separator": ".",
+  "compressor": {
+    "id": "zstd",
+    "level": 0
+  },
+  "zarr_format": 2
 }

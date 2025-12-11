@@ -27,15 +27,6 @@
   "fill_value": "",
   "codecs": [
     {
-      "name": "transpose",
-      "configuration": {
-        "order": [
-          1,
-          0
-        ]
-      }
-    },
-    {
       "name": "bytes",
       "configuration": {
         "endian": "little"

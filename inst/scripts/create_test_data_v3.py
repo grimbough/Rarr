@@ -216,13 +216,13 @@ greetings = ['¡Hola mundo!', 'Hej Världen!', 'Servus Woid!', 'Hei maailma!',
              'เฮลโลเวิลด์']
              
 z = zarr.create_array('inst/extdata/zarr_examples/column-first/Unicode_v3.zarr', shape=(12, 12),
-              chunks=(6, 6), filters = (zarr.codecs.TransposeCodec(order = [1, 0])), fill_value = "",
+              chunks=(6, 6), fill_value = "",
               dtype='U20')
 z[:,0] = greetings
 z[0,:] = greetings
 
 z = zarr.create_array('inst/extdata/zarr_examples/column-first/vlenUTF8_v3.zarr', shape=(12, 12),
-              chunks=(6, 6), filters = (zarr.codecs.TransposeCodec(order = [1, 0])), fill_value = "",
+              chunks=(6, 6), fill_value = "",
               dtype=str)
 z[:,0] = greetings
 z[0,:] = greetings

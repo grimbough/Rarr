@@ -1,19 +1,20 @@
 {
-    "chunks": [
-        6,
-        6
-    ],
-    "compressor": {
-        "id": "zlib",
-        "level": 6
-    },
-    "dtype": "<U20",
-    "fill_value": "",
-    "filters": null,
-    "order": "F",
-    "shape": [
-        12,
-        12
-    ],
-    "zarr_format": 2
+  "shape": [
+    12,
+    12
+  ],
+  "chunks": [
+    6,
+    6
+  ],
+  "dtype": "<U20",
+  "fill_value": "",
+  "order": "C",
+  "filters": null,
+  "dimension_separator": ".",
+  "compressor": {
+    "id": "zstd",
+    "level": 0
+  },
+  "zarr_format": 2
 }

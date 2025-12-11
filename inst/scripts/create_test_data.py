@@ -1,4 +1,5 @@
 import zarr
+import zarr
 import numpy as np
 
 z = zarr.open('/data/column-first/int32.zarr', mode='w', shape=(30, 20, 10),
@@ -210,17 +211,15 @@ greetings = ['¡Hola mundo!', 'Hej Världen!', 'Servus Woid!', 'Hei maailma!',
              'こんにちは世界', '世界，你好！', 'Helló, világ!', 'Zdravo svete!',
              'เฮลโลเวิลด์']
              
-z = zarr.open('/data/column-first/Unicode.zarr', mode='w', shape=(12, 12),
-              chunks=(6, 6), order="F", fill_value = "",
-              dtype='U20',
-              compressor = zarr.Zlib(level = 6))
+z = zarr.open('inst/extdata/zarr_examples/column-first/Unicode.zarr', mode='w', shape=(12, 12),
+              chunks=(6, 6), order="C", fill_value = "",
+              dtype='U20', zarr_format=2)
 z[:,0] = greetings
 z[0,:] = greetings
 
-z = zarr.open('/data/column-first/vlenUTF8.zarr', mode='w', shape=(12, 12),
-              chunks=(6, 6), order="F", fill_value = "",
-              dtype=str,
-              compressor = zarr.Zlib())
+z = zarr.open('inst/extdata/zarr_examples/column-first/vlenUTF8.zarr', mode='w', shape=(12, 12),
+              chunks=(6, 6), order="C", fill_value = "",
+              dtype=str, zarr_format=2)
 z[:,0] = greetings
 z[0,:] = greetings
 
