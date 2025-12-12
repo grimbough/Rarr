@@ -42,6 +42,10 @@
   arrays. This was introduced in
   <https://github.com/Huber-group-EMBL/Rarr/pull/45>. Thanks to Sharla
   Gelfand for reporting the issue and providing test data.
+- the `fill_value` is now correctly interpreted when reading Zarr v2
+  string or unicode arrays. This is visible for example when trying to
+  read missing chunks from such arrays. Thanks to Artür Manukyan for the
+  bug report.
 
 ### Internal changes
 

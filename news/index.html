@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.16</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,7 @@
 <li>ZSTD decompression now also works in case where we cannot guess a priori the buffer size from the data type, such as when using variable length strings. Thanks to Artür Manukyan for the bug report and test data.</li>
 <li>
 <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code> no longer fails on consolidated metadata containing uncompressed arrays. This was introduced in <a href="https://github.com/Huber-group-EMBL/Rarr/pull/45" class="external-link uri">https://github.com/Huber-group-EMBL/Rarr/pull/45</a>. Thanks to Sharla Gelfand for reporting the issue and providing test data.</li>
+<li>the <code>fill_value</code> is now correctly interpreted when reading Zarr v2 string or unicode arrays. This is visible for example when trying to read missing chunks from such arrays. Thanks to Artür Manukyan for the bug report.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="internal-changes-1-11">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-1-11"></a></h3>
