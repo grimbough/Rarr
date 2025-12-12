@@ -379,6 +379,8 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       "int" = as.integer(val),
       "uint" = as.integer(val),
       "complex" = as.complex(val),
+      "string" = as.character(val),
+      "unicode" = as.character(val),
       val
     )
   }
