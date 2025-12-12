@@ -173,3 +173,19 @@ test_that("v2 and v3 return identical results", {
 
   expect_identical(vlen_utf8_v2, vlen_utf8_v3)
 })
+
+test_that("fill_value is converted to string", {
+  # https://github.com/Huber-group-EMBL/Rarr/issues/94
+  path <- withr::local_tempfile(fileext = ".zarr")
+  expect_silent(
+    create_empty_zarr_array(
+      zarr_array_path = path,
+      dim = c(4, 4),
+      chunk_dim = c(2, 2),
+      data_type = "character",
+      fill_value = 0,
+      nchar = 10
+    )
+  )
+  expect_identical(read_zarr_array(path), matrix("0", nrow = 4, ncol = 4))
+})
