@@ -29,12 +29,3 @@
   )
   return(converted_chunk)
 }
-
-## for now we're going to assume you only get here with a VLEN UTF8 datatype
-.format_object <- function(decompressed_chunk, metadata, datatype) {
-  converted_chunk <- list(
-    codec_vlen_utf8_decode(decompressed_chunk),
-    0L
-  )
-  return(converted_chunk)
-}

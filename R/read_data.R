@@ -419,8 +419,12 @@ read_chunk <- function(
 
   if (datatype$base_type == "string") {
     if (!is.null(metadata$codecs[["vlen_utf8"]])) {
-      converted_chunk <- .format_object(decompressed_chunk, metadata, datatype)
-      dim(converted_chunk[[1]]) <- chunk_dim
+      chunk_data <- codec_vlen_utf8_decode(decompressed_chunk)
+      dim(chunk_data) <- chunk_dim
+      converted_chunk <- list(
+        chunk_data,
+        0L
+      )
     } else {
       converted_chunk <- .format_string(decompressed_chunk, datatype)
       dim(converted_chunk[[1]]) <- chunk_dim
