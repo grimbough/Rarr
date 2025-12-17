@@ -1,11 +1,14 @@
 .format_string <- function(decompressed_chunk, datatype) {
   ## break raw vector into list where each element is the bytes for 1 string
-  tmp <- split(
-    x = decompressed_chunk,
-    f = ceiling(seq_along(decompressed_chunk) / datatype$nbytes)
-  )
+  nwords <- length(decompressed_chunk) / datatype$nbytes
+
   converted_chunk <- list(
-    vapply(tmp, rawToChar, character(1), USE.NAMES = FALSE),
+    readBin(
+      decompressed_chunk,
+      "character",
+      size = datatype$nbytes,
+      n = nwords
+    ),
     0L ## no warning so set the second element to zero
   )
   return(converted_chunk)
