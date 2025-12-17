@@ -15,16 +15,20 @@
 }
 
 .format_unicode <- function(decompressed_chunk, datatype) {
+  ints <- readBin(
+    decompressed_chunk,
+    what = "integer",
+    size = 4,
+    n = length(decompressed_chunk) / 4
+  )
   tmp <- split(
-    x = decompressed_chunk,
-    f = ceiling(seq_along(decompressed_chunk) / datatype$nbytes)
+    ints,
+    f = ceiling(seq_along(ints) / datatype$nbytes)
   )
   converted_chunk <- list(
     vapply(
       tmp,
-      FUN = function(x) {
-        intToUtf8(readBin(x, what = "integer", size = 4, n = length(x) / 4))
-      },
+      intToUtf8,
       FUN.VALUE = character(1),
       USE.NAMES = FALSE
     ),
