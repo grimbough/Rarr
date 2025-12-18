@@ -198,7 +198,7 @@ read_data <- function(
       }
     ),
     warning = function(w) {
-      warnings <<- c(warnings, list(w))
+      warnings <<- c(warnings, list(w)) # nolint: undesirable_operator_linter.
       invokeRestart("muffleWarning")
     }
   )
