@@ -10,7 +10,7 @@
       No. of Chunks: 12 (3 x 2 x 2)
       Data Type: int64
       Endianness: little
-      Compressor: blosc
+      Compressor: zstd
 
 # zarr_overview works with consolidated metadata store
 
