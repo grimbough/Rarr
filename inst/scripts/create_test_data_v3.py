@@ -78,6 +78,7 @@ z = zarr.create_array('inst/extdata/zarr_examples/column-first/int64_v3.zarr', s
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 1
 z[29,19,9] = pow(2,32)
+z[28,19,9] = pow(2,32)
 z[29,19,8] = -pow(2,32)
 
 
@@ -86,6 +87,7 @@ z = zarr.create_array('inst/extdata/zarr_examples/row-first/int64_v3.zarr', shap
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 1
 z[29,19,9] = pow(2,32)
+z[28,19,9] = pow(2,32)
 z[29,19,8] = -pow(2,32)
 
 #######################
