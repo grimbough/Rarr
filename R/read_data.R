@@ -334,113 +334,15 @@ read_chunk <- function(
   decompressed_chunk <- compressed_chunk
 
   # Bytes -> Array codecs
-  converted_chunk <- .format_chunk(
-    decompressed_chunk,
-    metadata,
-    alt_chunk_dim
-  )
+  for (codec in metadata$configured_codecs[["array_bytes"]]) {
+    converted_chunk <- do.call(
+      codec,
+      list(decompressed_chunk, metadata, alt_chunk_dim)
+    )
+  }
   # Array -> Array codecs
   for (codec in metadata$configured_codecs[["array_array"]]) {
     converted_chunk <- do.call(codec, list(converted_chunk))
-  }
-
-  return(converted_chunk)
-}
-
-#' Format the decompressed chunk as an array of the correct type
-#'
-#' When a chunk is decompressed it is returned as a vector of raw bytes.  This
-#' function uses the array metadata to select how to convert the bytes into the
-#' final datatype and then converts the resulting output into an array of the
-#' appropriate dimensions, including re-ordering if the original data is in
-#' row-major order.
-#'
-#' @param decompressed_chunk Raw vector holding the decompressed bytes for this
-#'   chunk.
-#' @param metadata List produced by `.read_array_metadata()` holding the contents
-#'   of the `.zarray` file.
-#' @param alt_chunk_dim The dimensions of the array that should be created from
-#'   this chunk.  Normally this will be the same as the chunk shape in
-#'   `metadata`, but when dealing with edge chunks, which may overlap the true
-#'   extent of the array, the returned array should be smaller than the chunk
-#'   shape.
-#'
-#' @returns An array containing the decompressed chunk values.
-#'
-#'   If the output is larger than the space remaining in destination array
-#'   i.e. it contains the overflowing elements, these will be trimmed when the
-#'   chunk is returned to `read_data()`
-#'
-#' @keywords internal
-.format_chunk <- function(decompressed_chunk, metadata, alt_chunk_dim) {
-  datatype <- metadata$datatype
-
-  bytes_codec_config <- metadata$codecs[["bytes"]]$configuration %||%
-    NA_character_
-
-  decompressed_chunk <- codec_bytes_decode(
-    decompressed_chunk,
-    bytes_codec_config,
-    ifelse(
-      # For unicode, nbytes actually is sizeof(int) * nchar
-      metadata$datatype$base_type == "unicode",
-      4L,
-      metadata$datatype$nbytes
-    )
-  )
-
-  ## It doesn't seem clear if the on disk chunk will contain the overflow
-  ## values or not, so we try both approaches.
-  actual_chunk_size <- length(decompressed_chunk) / datatype$nbytes
-  if (
-    !is.null(metadata$codecs[["vlen_utf8"]]) ||
-      (actual_chunk_size ==
-        prod(unlist(metadata$chunk_grid$configuration$chunk_shape)))
-  ) {
-    chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
-  } else {
-    chunk_dim <- alt_chunk_dim
-  }
-
-  if (!is.null(metadata$codecs[["vlen_utf8"]])) {
-    converted_chunk <- codec_vlen_utf8_decode(decompressed_chunk)
-    dim(converted_chunk) <- chunk_dim
-  } else if (datatype$base_type == "unicode") {
-    ints <- readBin(
-      decompressed_chunk,
-      what = "integer",
-      size = 4,
-      n = length(decompressed_chunk) / 4
-    )
-    tmp <- split(
-      ints,
-      f = ceiling(seq_along(ints) / (datatype$nbytes / 4))
-    )
-    converted_chunk <- vapply(
-      tmp,
-      intToUtf8,
-      FUN.VALUE = character(1),
-      USE.NAMES = FALSE
-    )
-    dim(converted_chunk) <- chunk_dim
-  } else {
-    output_type <- switch(
-      datatype$base_type,
-      "bool" = 0L,
-      "int" = 1L,
-      "uint" = 1L,
-      "float" = 2L,
-      "string" = 3L
-    )
-    converted_chunk <- .Call(
-      "type_convert_chunk",
-      decompressed_chunk,
-      output_type,
-      datatype$nbytes,
-      datatype$is_signed,
-      chunk_dim,
-      PACKAGE = "Rarr"
-    )
   }
 
   return(converted_chunk)
