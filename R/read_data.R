@@ -406,7 +406,22 @@ read_chunk <- function(
     converted_chunk <- codec_vlen_utf8_decode(decompressed_chunk)
     dim(converted_chunk) <- chunk_dim
   } else if (datatype$base_type == "unicode") {
-    converted_chunk <- .format_unicode(decompressed_chunk, datatype)
+    ints <- readBin(
+      decompressed_chunk,
+      what = "integer",
+      size = 4,
+      n = length(decompressed_chunk) / 4
+    )
+    tmp <- split(
+      ints,
+      f = ceiling(seq_along(ints) / (datatype$nbytes / 4))
+    )
+    converted_chunk <- vapply(
+      tmp,
+      intToUtf8,
+      FUN.VALUE = character(1),
+      USE.NAMES = FALSE
+    )
     dim(converted_chunk) <- chunk_dim
   } else {
     output_type <- switch(
