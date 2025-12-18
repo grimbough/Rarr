@@ -23,7 +23,7 @@
   )
   tmp <- split(
     ints,
-    f = ceiling(seq_along(ints) / datatype$nbytes)
+    f = ceiling(seq_along(ints) / (datatype$nbytes / 4))
   )
   converted_chunk <- list(
     vapply(
