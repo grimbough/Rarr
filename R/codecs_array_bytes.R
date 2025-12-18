@@ -1,5 +1,5 @@
 # -- Endian ---------------------------------------
-codec_bytes_decode <- function(decompressed_chunk, metadata, alt_chunk_dim) {
+codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
   datatype <- metadata$datatype
   bytesize <- ifelse(
     # For unicode, nbytes actually is sizeof(int) * nchar
@@ -13,19 +13,6 @@ codec_bytes_decode <- function(decompressed_chunk, metadata, alt_chunk_dim) {
     ind <- rep_len(rev(seq_len(bytesize)), length(decompressed_chunk)) +
       (seq_along(decompressed_chunk) - 1) %/% bytesize * bytesize
     decompressed_chunk <- decompressed_chunk[ind]
-  }
-
-  ## It doesn't seem clear if the on disk chunk will contain the overflow
-  ## values or not, so we try both approaches.
-  actual_chunk_size <- length(decompressed_chunk) / datatype$nbytes
-  if (
-    !is.null(metadata$codecs[["vlen_utf8"]]) ||
-      (actual_chunk_size ==
-        prod(unlist(metadata$chunk_grid$configuration$chunk_shape)))
-  ) {
-    chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
-  } else {
-    chunk_dim <- alt_chunk_dim
   }
 
   if (datatype$base_type == "unicode") {
@@ -79,7 +66,7 @@ codec_bytes_encode <- function(raw_obj, endian, bytesize) {
 
 
 # -- Variable-length UTF-8 ------------------------
-codec_vlen_utf8_encode <- function(input, ...) {
+codec_vlen_utf8_encode <- function(input, chunkdim, ...) {
   raw_nvalues <- writeBin(length(input), raw(), size = 4, endian = "little")
   raw_strings <- lapply(input, function(x) charToRaw(enc2utf8(x)))
   raw_string_lens <- lapply(lengths(raw_strings), function(x) {
@@ -94,7 +81,6 @@ codec_vlen_utf8_encode <- function(input, ...) {
       raw_strings
     ))
   )
-
   return(raw_vlen_utf8)
 }
 
@@ -111,5 +97,7 @@ codec_vlen_utf8_decode <- function(input, ...) {
   }
 
   Encoding(output) <- "UTF-8"
+  dim(output) <- chunkdim
+
   return(output)
 }

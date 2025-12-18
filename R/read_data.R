@@ -333,11 +333,24 @@ read_chunk <- function(
   }
   decompressed_chunk <- compressed_chunk
 
+  ## It doesn't seem clear if the on disk chunk will contain the overflow
+  ## values or not, so we try both approaches.
+  actual_chunk_size <- length(decompressed_chunk) / metadata$datatype$nbytes
+  if (
+    !is.null(metadata$codecs[["vlen_utf8"]]) ||
+      (actual_chunk_size ==
+        prod(unlist(metadata$chunk_grid$configuration$chunk_shape)))
+  ) {
+    chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
+  } else {
+    chunk_dim <- alt_chunk_dim
+  }
+
   # Bytes -> Array codecs
   for (codec in metadata$configured_codecs[["array_bytes"]]) {
     converted_chunk <- do.call(
       codec,
-      list(decompressed_chunk, metadata, alt_chunk_dim)
+      list(decompressed_chunk, chunk_dim, metadata)
     )
   }
   # Array -> Array codecs
