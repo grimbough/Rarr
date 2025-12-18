@@ -197,7 +197,8 @@ write_zarr_array <- function(
   path <- .normalize_array_path(zarr_array_path)
 
   if (storage.mode(x) == "character" && missing(nchar)) {
-    nchar <- max(base::nchar(x))
+    # +1 to add NUL terminator
+    nchar <- max(base::nchar(x)) + 1
   }
 
   create_empty_zarr_array(

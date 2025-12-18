@@ -103,7 +103,8 @@ setMethod(
 #' @export
 writeZarrArray <- function(x, zarr_array_path, chunk_dim = NULL, nchar = NULL) {
   if (storage.mode(x) == "character" && is.null(nchar)) {
-    nchar <- max(base::nchar(x))
+    # +1 to add NUL terminator
+    nchar <- max(base::nchar(x)) + 1
   }
 
   sink <- ZarrRealizationSink(
