@@ -32,7 +32,6 @@ codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
       FUN.VALUE = character(1),
       USE.NAMES = FALSE
     )
-    dim(converted_chunk) <- chunk_dim
   } else {
     output_type <- switch(
       datatype$base_type,
@@ -48,10 +47,11 @@ codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
       output_type,
       datatype$nbytes,
       datatype$is_signed,
-      chunk_dim,
       PACKAGE = "Rarr"
     )
   }
+  dim(converted_chunk) <- chunk_dim
+  return(converted_chunk)
 }
 
 codec_bytes_encode <- function(raw_obj, endian, bytesize) {
