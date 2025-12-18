@@ -180,21 +180,32 @@ read_data <- function(
     metadata
   )
 
+  warnings <- list()
   ## hopefully we can eventually do this in parallel
-  chunk_selections <- lapply(
-    seq_along(chunk_names),
-    function(i) {
-      .extract_elements(
-        current_chunk_index = required_chunks[i, ],
-        current_chunk_name = chunk_names[i],
-        metadata = metadata,
-        index = index,
-        zarr_array_path = zarr_array_path,
-        s3_client = s3_client,
-        chunk_idx = chunk_idx
-      )
+  chunk_selections <- withCallingHandlers(
+    lapply(
+      seq_along(chunk_names),
+      function(i) {
+        .extract_elements(
+          current_chunk_index = required_chunks[i, ],
+          current_chunk_name = chunk_names[i],
+          metadata = metadata,
+          index = index,
+          zarr_array_path = zarr_array_path,
+          s3_client = s3_client,
+          chunk_idx = chunk_idx
+        )
+      }
+    ),
+    warning = function(w) {
+      warnings <<- c(warnings, list(w))
+      invokeRestart("muffleWarning")
     }
   )
+  for (w in unique(warnings)) {
+    warning(w)
+  }
+
   ## predefine our array to be populated from the read chunks
   output <- array(metadata$fill_value, dim = lengths(index))
 
