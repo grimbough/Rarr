@@ -38,10 +38,7 @@ with the fill value from the array metadata.  If \code{FALSE} (the default),
 missing chunks will return \code{NULL}.}
 }
 \value{
-A list of length 2.  The entries should be names "chunk_data" and
-"warning". The first is an array containing the decompressed chunk values,
-the second is an integer indicating whether there were any overflow
-warnings generated will reading the chunk into an R datatype.
+An array containing the decompressed chunk values.
 }
 \description{
 Read a single Zarr chunk

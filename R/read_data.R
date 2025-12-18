@@ -272,10 +272,7 @@ get_decompressed_chunk_size <- function(datatype, dimensions) {
 #'    with the fill value from the array metadata.  If `FALSE` (the default),
 #'    missing chunks will return `NULL`.
 #'
-#' @returns A list of length 2.  The entries should be names "chunk_data" and
-#'   "warning". The first is an array containing the decompressed chunk values,
-#'   the second is an integer indicating whether there were any overflow
-#'   warnings generated will reading the chunk into an R datatype.
+#' @returns An array containing the decompressed chunk values.
 #'
 #' @keywords internal
 read_chunk <- function(
@@ -368,11 +365,9 @@ read_chunk <- function(
 #'   extent of the array, the returned array should be smaller than the chunk
 #'   shape.
 #'
-#' @returns A list of length 2.  The first element is the formatted chunk data.
-#'   The second is an integer of length 1, indicating if warnings were
-#'   encountered when converting types
+#' @returns An array containing the decompressed chunk values.
 #'
-#'   If "chunk_data" is larger than the space remaining in destination array
+#'   If the output is larger than the space remaining in destination array
 #'   i.e. it contains the overflowing elements, these will be trimmed when the
 #'   chunk is returned to `read_data()`
 #'
