@@ -14,6 +14,8 @@ SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_sign
     output = PROTECT(type_convert_INTEGER(p_input, xlength(input), n_bytes, is_signed));
   } else if (new_type == 2) {
     output = PROTECT(type_convert_REAL(p_input, xlength(input), n_bytes));
+  } else if (new_type == 3) {
+    output = PROTECT(type_convert_STRING(p_input, xlength(input), n_bytes));
   } else {
     error("Unknown data type\n");
   }
@@ -150,6 +152,35 @@ SEXP type_convert_LOGICAL(void *raw_buffer, R_xlen_t length) {
     p_data[i] = ((int8_t *)raw_buffer)[i];
   }
 
+  output = PROTECT(allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(output, 0, data);
+  SET_VECTOR_ELT(output, 1, warning);
+
+  UNPROTECT(3);
+  return(output);
+}
+
+SEXP type_convert_STRING(void *raw_buffer, R_xlen_t length, int n_bytes) {
+
+  R_xlen_t data_length = length / n_bytes;
+  R_xlen_t i;
+  SEXP output, data, warning;
+
+  data = PROTECT(allocVector(STRSXP, data_length));
+  warning = PROTECT(allocVector(INTSXP, 1));
+  INTEGER(warning)[0] = 0;
+
+  for (i = 0; i < data_length; i++) {
+    size_t len =  strlen((char *)raw_buffer + i * n_bytes);
+    // Read up to max length or NUL terminator.
+    // We cannot do one without the other as strings may not be NUL terminated (truncated) and
+    // mkCharLenCE complains about NUL characters in the string.
+    if (len > n_bytes)
+      SET_STRING_ELT(data, i, mkCharLenCE((char *)raw_buffer + i * n_bytes, n_bytes, CE_BYTES));
+    else 
+      SET_STRING_ELT(data, i, mkCharCE((char *)raw_buffer + i * n_bytes, CE_BYTES));
+  }
+  
   output = PROTECT(allocVector(VECSXP, 2));
   SET_VECTOR_ELT(output, 0, data);
   SET_VECTOR_ELT(output, 1, warning);

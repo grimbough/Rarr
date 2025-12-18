@@ -42,7 +42,7 @@ test_that("string zarr arrays can be read correctly", {
     res <- write_zarr_array(
       x = column_major,
       zarr_array_path = path,
-      chunk_dim = c(2, 5, 1)
+      chunk_dim = c(5, 2, 1)
     )
   )
   expect_identical(read_zarr_array(path), column_major)
@@ -53,7 +53,7 @@ test_that("string zarr arrays can be read correctly", {
     res <- write_zarr_array(
       x = column_major,
       zarr_array_path = path,
-      chunk_dim = c(2, 5, 1),
+      chunk_dim = c(5, 2, 1),
       nchar = 1
     )
   )
@@ -65,7 +65,7 @@ test_that("string zarr arrays can be read correctly", {
     create_empty_zarr_array(
       zarr_array_path = path,
       dim = dim(column_major),
-      chunk_dim = c(2, 5, 1),
+      chunk_dim = c(5, 2, 1),
       data_type = storage.mode(column_major)
     )
   )
