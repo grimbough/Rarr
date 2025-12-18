@@ -33,10 +33,8 @@ original data is in row-major order.
 
 ## Value
 
-A list of length 2. The first element is the formatted chunk data. The
-second is an integer of length 1, indicating if warnings were
-encountered when converting types
+An array containing the decompressed chunk values.
 
-If "chunk_data" is larger than the space remaining in destination array
+If the output is larger than the space remaining in destination array
 i.e. it contains the overflowing elements, these will be trimmed when
 the chunk is returned to `read_data()`
