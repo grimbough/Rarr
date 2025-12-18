@@ -174,39 +174,6 @@ touchstone::benchmark_run(
   n = 25
 )
 
-touchstone::benchmark_run(
-  {
-    library(Rarr)
-    x_unicode <- matrix(
-      c(
-        '¡Hola mundo!',
-        'Hej Världen!',
-        'Servus Woid!',
-        'Hei maailma!',
-        'Xin chào thế giới',
-        'Njatjeta Botë!',
-        'Γεια σου κόσμε!',
-        'こんにちは世界',
-        '世界，你好！',
-        'Helló, világ!',
-        'Zdravo svete!',
-        'เฮลโลเวิลด์'
-      ),
-      nrow = 4,
-      ncol = 3
-    )
-    write_zarr_array(
-      x = x_unicode,
-      zarr_array_path = "unicode.zarr",
-      chunk_dim = c(2, 3),
-      data_type = "unicode",
-      compressor = NULL
-    )
-  },
-  read_unicode = read_zarr_array("unicode.zarr"),
-  n = 25
-)
-
 # touchstone::benchmark_run(
 #   {
 #     library(Rarr)
@@ -353,6 +320,22 @@ touchstone::benchmark_run(
 #   ),
 #   n = 25
 # )
+
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+  },
+  read_unicode = read_zarr_array(
+    system.file(
+      "extdata",
+      "zarr_examples",
+      "column-first",
+      "Unicode.zarr",
+      package = "Rarr"
+    )
+  ),
+  n = 25
+)
 
 ## Compression ----------
 
