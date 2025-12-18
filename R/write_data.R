@@ -444,7 +444,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_name = chunk_id,
     metadata = metadata_v3,
     fill = TRUE
-  )[["chunk_data"]]
+  )
 
   ## extract the new values from x and insert them into the chunk
   y <- R.utils::extract(x, indices = idx_in_x) # nolint: object_usage_linter.

@@ -20,7 +20,7 @@ SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_sign
     error("Unknown data type\n");
   }
 
-  setAttrib(VECTOR_ELT(output, 0), R_DimSymbol, Rdim);
+  setAttrib(output, R_DimSymbol, Rdim);
 
   UNPROTECT(1);
   return output;
@@ -29,18 +29,13 @@ SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_sign
 SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is_signed) {
 
   int *p_data;
-  SEXP output, data, warning;
+  SEXP data;
   R_xlen_t data_length = length / n_bytes;
   R_xlen_t i;
 
   // space for the converted output
   data = PROTECT(allocVector(INTSXP, data_length));
   p_data = INTEGER(data);
-
-  // vector to indicate if a warning has been raised
-  warning = PROTECT(allocVector(INTSXP, 1));
-  INTEGER(warning)[0] = 0;
-  int32_t warn = 0;
 
   if(n_bytes == 1) {
     if(is_signed == 1) {
@@ -73,38 +68,30 @@ SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is
     if(is_signed == 1) {
       memcpy(p_data, raw_buffer, length);
     } else {
-      warn = uint32_to_int32(raw_buffer, data_length, p_data);
-      INTEGER(warning)[0] = warn;
+      uint32_to_int32(raw_buffer, data_length, p_data);
     }
 
   } else if (n_bytes == 8) {
     // for now we convert to 32bit int and overflow values are NA_integer
     int bit64conversion = 0;
     if (bit64conversion == 0) {
-      warn = int64_to_int32(raw_buffer, data_length, p_data, is_signed);
+      int64_to_int32(raw_buffer, data_length, p_data, is_signed);
     }
-    INTEGER(warning)[0] = warn;
   }
 
-  output = PROTECT(allocVector(VECSXP, 2));
-  SET_VECTOR_ELT(output, 0, data);
-  SET_VECTOR_ELT(output, 1, warning);
-
-  UNPROTECT(3);
-  return(output);
+  UNPROTECT(1);
+  return(data);
 }
 
 SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length, int n_bytes) {
 
   R_xlen_t data_length, i;
   double *p_data;
-  SEXP output, data, warning;
+  SEXP data;
 
   data_length  = length / n_bytes;
   data = PROTECT(allocVector(REALSXP, data_length));
   p_data = REAL(data);
-  warning = PROTECT(allocVector(INTSXP, 1));
-  INTEGER(warning)[0] = 0;
 
   if(n_bytes == 2) {
 
@@ -128,47 +115,35 @@ SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length, int n_bytes) {
     error("%d byte floating point values are not currently supported\n", n_bytes);
   }
 
-  output = PROTECT(allocVector(VECSXP, 2));
-  SET_VECTOR_ELT(output, 0, data);
-  SET_VECTOR_ELT(output, 1, warning);
-
-  UNPROTECT(3);
-  return(output);
+  UNPROTECT(1);
+  return(data);
 }
 
 SEXP type_convert_LOGICAL(void *raw_buffer, R_xlen_t length) {
 
   int *p_data;
-  SEXP output, data, warning;
+  SEXP data;
 
   R_xlen_t data_length = length;
 
   data = PROTECT(allocVector(LGLSXP, data_length));
   p_data = LOGICAL(data);
-  warning = PROTECT(allocVector(INTSXP, 1));
-  INTEGER(warning)[0] = 0;
 
   for (int i = 0; i < data_length; i++) {
     p_data[i] = ((int8_t *)raw_buffer)[i];
   }
 
-  output = PROTECT(allocVector(VECSXP, 2));
-  SET_VECTOR_ELT(output, 0, data);
-  SET_VECTOR_ELT(output, 1, warning);
-
-  UNPROTECT(3);
-  return(output);
+  UNPROTECT(1);
+  return(data);
 }
 
 SEXP type_convert_STRING(void *raw_buffer, R_xlen_t length, int n_bytes) {
 
   R_xlen_t data_length = length / n_bytes;
   R_xlen_t i;
-  SEXP output, data, warning;
+  SEXP data;
 
   data = PROTECT(allocVector(STRSXP, data_length));
-  warning = PROTECT(allocVector(INTSXP, 1));
-  INTEGER(warning)[0] = 0;
 
   for (i = 0; i < data_length; i++) {
     size_t len =  strlen((char *)raw_buffer + i * n_bytes);
@@ -180,11 +155,7 @@ SEXP type_convert_STRING(void *raw_buffer, R_xlen_t length, int n_bytes) {
     else 
       SET_STRING_ELT(data, i, mkCharCE((char *)raw_buffer + i * n_bytes, CE_BYTES));
   }
-  
-  output = PROTECT(allocVector(VECSXP, 2));
-  SET_VECTOR_ELT(output, 0, data);
-  SET_VECTOR_ELT(output, 1, warning);
 
-  UNPROTECT(3);
-  return(output);
+  UNPROTECT(1);
+  return(data);
 }

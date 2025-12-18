@@ -100,15 +100,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 
   res <- read_data(required_chunks, zarr_array_path, s3_client, index, metadata)
 
-  if (isTRUE(res$warn > 0)) {
-    warning(
-      "Integer overflow detected in at least one chunk.\n",
-      "Overflowing values have been replaced with NA",
-      call. = FALSE
-    )
-  }
-
-  return(res$output)
+  return(res)
 }
 
 .extract_elements <- function(
@@ -150,19 +142,17 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     s3_client = s3_client,
     alt_chunk_dim = alt_chunk_dim
   )
-  warn <- chunk$warning[1]
-  chunk_data <- chunk$chunk_data
 
-  if (!is.null(chunk_data)) {
+  if (!is.null(chunk)) {
     ## extract the required elements from the chunk
-    chunk_data <- R.utils::extract(
-      chunk_data,
+    chunk <- R.utils::extract(
+      chunk,
       indices = index_in_chunk,
       drop = FALSE
     )
   }
 
-  return(list(chunk_data, index_in_result, warning = warn))
+  return(list(chunk, index_in_result))
 }
 
 
@@ -174,8 +164,6 @@ read_data <- function(
   index,
   metadata
 ) {
-  warn <- 0L
-
   ## determine which chunk each of the requests indices belongs to
   # nolint next: undesirable_function_linter.
   chunk_idx <- mapply(
@@ -222,9 +210,8 @@ read_data <- function(
       )
       eval(parse(text = cmd))
     }
-    warn <- max(warn, chunk_selections[[i]]$warning[1])
   }
-  return(list(output = output, warn = warn))
+  return(output)
 }
 
 find_chunks_needed <- function(metadata, index) {
@@ -320,21 +307,13 @@ read_chunk <- function(
   if (is.null(compressed_chunk)) {
     if (fill) {
       return(
-        list(
-          "chunk_data" = array(
-            metadata$fill_value,
-            dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
-          ),
-          "warning" = 0L
+        array(
+          metadata$fill_value,
+          dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
         )
       )
     } else {
-      return(
-        list(
-          "chunk_data" = NULL,
-          "warning" = 0L
-        )
-      )
+      return(NULL)
     }
   }
 
@@ -354,7 +333,7 @@ read_chunk <- function(
   )
   # Array -> Array codecs
   for (codec in metadata$configured_codecs[["array_array"]]) {
-    converted_chunk[[1]] <- do.call(codec, list(converted_chunk[[1]]))
+    converted_chunk <- do.call(codec, list(converted_chunk))
   }
 
   return(converted_chunk)
@@ -418,15 +397,11 @@ read_chunk <- function(
   }
 
   if (!is.null(metadata$codecs[["vlen_utf8"]])) {
-    chunk_data <- codec_vlen_utf8_decode(decompressed_chunk)
-    dim(chunk_data) <- chunk_dim
-    converted_chunk <- list(
-      chunk_data,
-      0L
-    )
+    converted_chunk <- codec_vlen_utf8_decode(decompressed_chunk)
+    dim(converted_chunk) <- chunk_dim
   } else if (datatype$base_type == "unicode") {
     converted_chunk <- .format_unicode(decompressed_chunk, datatype)
-    dim(converted_chunk[[1]]) <- chunk_dim
+    dim(converted_chunk) <- chunk_dim
   } else {
     output_type <- switch(
       datatype$base_type,
@@ -447,6 +422,5 @@ read_chunk <- function(
     )
   }
 
-  names(converted_chunk) <- c("chunk_data", "warning")
   return(converted_chunk)
 }
