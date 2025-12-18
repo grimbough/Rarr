@@ -9,14 +9,11 @@
     ints,
     f = ceiling(seq_along(ints) / (datatype$nbytes / 4))
   )
-  converted_chunk <- list(
-    vapply(
-      tmp,
-      intToUtf8,
-      FUN.VALUE = character(1),
-      USE.NAMES = FALSE
-    ),
-    0L
+  converted_chunk <- vapply(
+    tmp,
+    intToUtf8,
+    FUN.VALUE = character(1),
+    USE.NAMES = FALSE
   )
   return(converted_chunk)
 }
