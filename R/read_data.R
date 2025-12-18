@@ -417,18 +417,13 @@ read_chunk <- function(
     chunk_dim <- alt_chunk_dim
   }
 
-  if (datatype$base_type == "string") {
-    if (!is.null(metadata$codecs[["vlen_utf8"]])) {
-      chunk_data <- codec_vlen_utf8_decode(decompressed_chunk)
-      dim(chunk_data) <- chunk_dim
-      converted_chunk <- list(
-        chunk_data,
-        0L
-      )
-    } else {
-      converted_chunk <- .format_string(decompressed_chunk, datatype)
-      dim(converted_chunk[[1]]) <- chunk_dim
-    }
+  if (!is.null(metadata$codecs[["vlen_utf8"]])) {
+    chunk_data <- codec_vlen_utf8_decode(decompressed_chunk)
+    dim(chunk_data) <- chunk_dim
+    converted_chunk <- list(
+      chunk_data,
+      0L
+    )
   } else if (datatype$base_type == "unicode") {
     converted_chunk <- .format_unicode(decompressed_chunk, datatype)
     dim(converted_chunk[[1]]) <- chunk_dim
@@ -438,7 +433,8 @@ read_chunk <- function(
       "bool" = 0L,
       "int" = 1L,
       "uint" = 1L,
-      "float" = 2L
+      "float" = 2L,
+      "string" = 3L
     )
     converted_chunk <- .Call(
       "type_convert_chunk",
