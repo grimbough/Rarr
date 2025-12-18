@@ -29,6 +29,7 @@
 - Rarr initializes empty/missing chunks only once per read operation,
   which significantly improves performance when reading arrays with many
   missing chunks.
+- Reading fixed-length string and unicode arrays is now ~20% faster.
 
 ### Bug fixes
 
