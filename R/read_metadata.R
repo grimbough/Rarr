@@ -443,7 +443,11 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' @export
 read_zarr_attributes <- function(zarr_path, s3_client = NULL) {
   zarr_path <- .normalize_array_path(zarr_path)
-
+  ## determine if this is a local or S3 array
+  if (missing(s3_client)) {
+    s3_client <- .create_s3_client(path = zarr_path)
+  }
+  
   exists_attribute_files <- .file_or_blob_exists(
     zarr_path,
     s3_client,

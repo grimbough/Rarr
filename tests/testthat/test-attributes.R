@@ -151,3 +151,11 @@ test_that("read_zarr_attributes errors clearly for invalid mixed arrays", {
     read_zarr_attributes(invalid_zarr)
   )
 })
+
+test_that("read_zarr_attributes from s3", {
+  expect_true(
+    is.list(
+      read_zarr_attributes("https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.3/9836842.zarr/")
+    )
+  )
+})
