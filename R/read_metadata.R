@@ -447,7 +447,7 @@ read_zarr_attributes <- function(zarr_path, s3_client = NULL) {
   if (missing(s3_client)) {
     s3_client <- .create_s3_client(path = zarr_path)
   }
-  
+
   exists_attribute_files <- .file_or_blob_exists(
     zarr_path,
     s3_client,
