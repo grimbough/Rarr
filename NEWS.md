@@ -16,6 +16,10 @@
   * float32 / single
 * Scalar arrays (i.e., arrays with zero dimensions) can now be read.
   Thanks to Artür Manukyan for the bug report.
+* Zarr attributes can now be read by passing an s3 URL directly as
+  the first argument of `read_zarr_attributes()`. This makes 
+  `read_zarr_attributes()` consistent with `read_zarr_array()` and
+  `zarr_overview()`.
 
 ## Minor improvements
 
