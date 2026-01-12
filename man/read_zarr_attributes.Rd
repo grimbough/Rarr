@@ -4,7 +4,7 @@
 \alias{read_zarr_attributes}
 \title{Read the attributes associated with a Zarr array or group}
 \usage{
-read_zarr_attributes(zarr_path, s3_client = NULL)
+read_zarr_attributes(zarr_path, s3_client)
 }
 \arguments{
 \item{zarr_path}{A character vector of length 1.  This provides the
