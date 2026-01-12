@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@
                         <h4 data-toc-skip class="author">Mike L.
 Smith</h4>
                         
-            <h4 data-toc-skip class="date">18 December 2025</h4>
+            <h4 data-toc-skip class="date">12 January 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/Rarr.Rmd" class="external-link"><code>vignettes/Rarr.Rmd</code></a></small>
       <div class="d-none name"><code>Rarr.Rmd</code></div>
@@ -243,7 +243,7 @@ data.</p>
 <span>  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/hsv.html" class="external-link">hsv</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">0.3</span>, v <span class="op">=</span> <span class="fl">1</span>, s <span class="op">=</span> <span class="fl">1</span>, alpha <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">100</span> <span class="op">/</span> <span class="fl">100</span><span class="op">)</span>,</span>
 <span>  asp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">z2</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">z2</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, add <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="Rarr_files/figure-html/plot-raster-1.png" class="r-plt" width="30%"></p>
+<p><img src="Rarr_files/figure-html/plot-raster-1.png" class="r-plt" alt="" width="30%"></p>
 <p><strong>Note:</strong> if you receive the error message
 <code>"Error in stop(aws_error(request$error)) : bad error message"</code>
 it is likely you have some AWS credentials available in to your R
@@ -317,7 +317,8 @@ environment variables <code>AWS_ACCESS_KEY_ID</code> and
 example, lets try reading a file in a private S3 bucket:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="st">"https://s3.embl.de/rarr-testing/bzip2.zarr"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Error: AccessDenied (HTTP 403). Access Denied.</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> AccessDenied (HTTP 403). Access Denied.</span></span></code></pre>
 <p>We can see the “Access Denied” message in our output, indicating that
 we don’t have permission to access this resource as an anonymous user.
 However, if we use the key pair below, which gives read-only access to
@@ -359,7 +360,7 @@ section.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s3_address</span> <span class="op">&lt;-</span> <span class="st">"https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"</span></span>
 <span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">s3_address</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Error:</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span></code></pre>
 <p>You might encounter similar problems if you’re trying to access
 multiple buckets each of which require different credentials. The
 solution here is to create an “s3_client” using
@@ -623,28 +624,29 @@ this 3 dimensional array, and confirm that the array is both a
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] Rarr_1.11.17          DelayedArray_0.36.0   SparseArray_1.10.7   </span></span>
+<span><span class="co">##  [1] Rarr_1.11.18          DelayedArray_0.36.0   SparseArray_1.10.8   </span></span>
 <span><span class="co">##  [4] S4Arrays_1.10.1       abind_1.4-8           IRanges_2.44.0       </span></span>
 <span><span class="co">##  [7] S4Vectors_0.48.0      MatrixGenerics_1.22.0 matrixStats_1.5.0    </span></span>
 <span><span class="co">## [10] Matrix_1.7-4          BiocGenerics_0.56.0   generics_0.1.4       </span></span>
 <span><span class="co">## [13] BiocStyle_2.38.0     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] jsonlite_2.0.0      crayon_1.5.3        compiler_4.5.2     </span></span>
-<span><span class="co">##  [4] BiocManager_1.30.27 Rcpp_1.1.0          xml2_1.5.1         </span></span>
-<span><span class="co">##  [7] jquerylib_0.1.4     systemfonts_1.3.1   textshaping_1.0.4  </span></span>
-<span><span class="co">## [10] yaml_2.3.12         fastmap_1.2.0       lattice_0.22-7     </span></span>
-<span><span class="co">## [13] R6_2.6.1            XVector_0.50.0      curl_7.0.0         </span></span>
-<span><span class="co">## [16] httr2_1.2.2         knitr_1.50          paws.storage_0.9.0 </span></span>
-<span><span class="co">## [19] bookdown_0.46       desc_1.4.3          paws.common_0.8.7  </span></span>
-<span><span class="co">## [22] bslib_0.9.0         R.utils_2.13.0      rlang_1.1.6        </span></span>
-<span><span class="co">## [25] cachem_1.1.0        xfun_0.55           fs_1.6.6           </span></span>
-<span><span class="co">## [28] sass_0.4.10         cli_3.6.5           magrittr_2.0.4     </span></span>
-<span><span class="co">## [31] pkgdown_2.2.0       digest_0.6.39       grid_4.5.2         </span></span>
-<span><span class="co">## [34] rappdirs_0.3.3      lifecycle_1.0.4     R.oo_1.27.1        </span></span>
-<span><span class="co">## [37] R.methodsS3_1.8.2   glue_1.8.0          evaluate_1.0.5     </span></span>
-<span><span class="co">## [40] codetools_0.2-20    ragg_1.5.0          rmarkdown_2.30     </span></span>
-<span><span class="co">## [43] tools_4.5.2         htmltools_0.5.9</span></span></code></pre>
+<span><span class="co">##  [1] rappdirs_0.3.3      sass_0.4.10         xml2_1.5.1         </span></span>
+<span><span class="co">##  [4] lattice_0.22-7      paws.common_0.8.7   digest_0.6.39      </span></span>
+<span><span class="co">##  [7] magrittr_2.0.4      evaluate_1.0.5      grid_4.5.2         </span></span>
+<span><span class="co">## [10] bookdown_0.46       fastmap_1.2.0       R.oo_1.27.1        </span></span>
+<span><span class="co">## [13] jsonlite_2.0.0      R.utils_2.13.0      BiocManager_1.30.27</span></span>
+<span><span class="co">## [16] codetools_0.2-20    httr2_1.2.2         textshaping_1.0.4  </span></span>
+<span><span class="co">## [19] jquerylib_0.1.4     cli_3.6.5           rlang_1.1.7        </span></span>
+<span><span class="co">## [22] crayon_1.5.3        XVector_0.50.0      R.methodsS3_1.8.2  </span></span>
+<span><span class="co">## [25] cachem_1.1.0        yaml_2.3.12         tools_4.5.2        </span></span>
+<span><span class="co">## [28] curl_7.0.0          vctrs_0.6.5         R6_2.6.1           </span></span>
+<span><span class="co">## [31] lifecycle_1.0.5     fs_1.6.6            ragg_1.5.0         </span></span>
+<span><span class="co">## [34] desc_1.4.3          pkgdown_2.2.0       bslib_0.9.0        </span></span>
+<span><span class="co">## [37] pillar_1.11.1       glue_1.8.0          Rcpp_1.1.1         </span></span>
+<span><span class="co">## [40] systemfonts_1.3.1   xfun_0.55           paws.storage_0.9.0 </span></span>
+<span><span class="co">## [43] knitr_1.51          htmltools_0.5.9     rmarkdown_2.30     </span></span>
+<span><span class="co">## [46] compiler_4.5.2</span></span></code></pre>
 </div>
 </div>
 

@@ -19,6 +19,15 @@
   - float32 / single
 - Scalar arrays (i.e., arrays with zero dimensions) can now be read.
   Thanks to Artür Manukyan for the bug report.
+- Zarr attributes can now be read by passing an s3 URL directly as the
+  first argument of
+  [`read_zarr_attributes()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_attributes.md).
+  This makes
+  [`read_zarr_attributes()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_attributes.md)
+  consistent with
+  [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md)
+  and
+  [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md).
 
 ### Minor improvements
 

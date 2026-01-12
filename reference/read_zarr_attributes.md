@@ -5,7 +5,7 @@ Read the attributes associated with a Zarr array or group
 ## Usage
 
 ``` r
-read_zarr_attributes(zarr_path, s3_client = NULL)
+read_zarr_attributes(zarr_path, s3_client)
 ```
 
 ## Arguments
