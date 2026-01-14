@@ -32,10 +32,6 @@
     data_type = paste0(dt$base_type, 8 * dt$nbytes),
     fill_value = metadata$fill_value,
     codecs = list(
-      bytes = list(
-        name = "bytes",
-        configuration = c("endian" = dt$endian %||% NA_character_)
-      ),
       transpose = list(
         name = "transpose",
         configuration = list(
@@ -69,6 +65,11 @@
     # In v3, vlen-utf8 applies to 'string' type
     metadata_v3$data_type <- "string"
     metadata_v3$datatype$base_type <- "string"
+  } else {
+    metadata_v3$codecs$bytes <- list(
+      name = "bytes",
+      configuration = c("endian" = dt$endian %||% NA_character_)
+    )
   }
 
   return(metadata_v3)

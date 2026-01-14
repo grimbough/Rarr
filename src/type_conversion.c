@@ -1,6 +1,6 @@
 #include "type_conversion.h"
 
-SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_signed, SEXP Rdim) {
+SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_signed) {
 
   void* p_input = RAW(input);
   SEXP output;
@@ -19,8 +19,6 @@ SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_sign
   } else {
     error("Unknown data type\n");
   }
-
-  setAttrib(output, R_DimSymbol, Rdim);
 
   UNPROTECT(1);
   return output;

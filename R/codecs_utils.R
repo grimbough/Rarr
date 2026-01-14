@@ -64,6 +64,12 @@
     }
   }
 
+  for (candidate_codec in array_bytes_codecs) {
+    cfg <- codecs[[candidate_codec]]$configuration
+    func_name <- paste("codec", candidate_codec, operation, sep = "_")
+    array_bytes_env[[candidate_codec]] <- func_name
+  }
+
   # Compressors
   for (candidate_codec in bytes_bytes_codecs) {
     if (candidate_codec %in% codecs_names) {

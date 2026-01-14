@@ -12,7 +12,7 @@ R_CallMethodDef callMethods[] = {
   {"compress_chunk_LZ4", (DL_FUNC) &compress_chunk_LZ4, 1},
   {"compress_chunk_ZSTD", (DL_FUNC) &compress_chunk_ZSTD, 2},
   
-  {"type_convert_chunk", (DL_FUNC) &type_convert_chunk, 5},
+  {"type_convert_chunk", (DL_FUNC) &type_convert_chunk, 4},
   {NULL, NULL, 0}
 };
 
