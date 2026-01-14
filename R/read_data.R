@@ -275,6 +275,7 @@ get_decompressed_chunk_size <- function(datatype, dimensions) {
 #' @returns An array containing the decompressed chunk values.
 #'
 #' @keywords internal
+# nolint next: cyclocomp_linter.
 read_chunk <- function(
   zarr_array_path,
   chunk_name,
