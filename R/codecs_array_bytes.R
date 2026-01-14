@@ -66,7 +66,7 @@ codec_bytes_encode <- function(raw_obj, endian, bytesize) {
 
 
 # -- Variable-length UTF-8 ------------------------
-codec_vlen_utf8_encode <- function(input, chunkdim, ...) {
+codec_vlen_utf8_encode <- function(input, ...) {
   raw_nvalues <- writeBin(length(input), raw(), size = 4, endian = "little")
   raw_strings <- lapply(input, function(x) charToRaw(enc2utf8(x)))
   raw_string_lens <- lapply(lengths(raw_strings), function(x) {
@@ -84,7 +84,7 @@ codec_vlen_utf8_encode <- function(input, chunkdim, ...) {
   return(raw_vlen_utf8)
 }
 
-codec_vlen_utf8_decode <- function(input, ...) {
+codec_vlen_utf8_decode <- function(input, chunkdim, ...) {
   con <- rawConnection(input)
   on.exit(close(con))
   # Looking at numcodecs source code, this is by definition/convention
