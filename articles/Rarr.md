@@ -641,7 +641,7 @@ zarr_X
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] rappdirs_0.3.3      sass_0.4.10         xml2_1.5.1         
-    ##  [4] lattice_0.22-7      paws.common_0.8.7   digest_0.6.39      
+    ##  [4] lattice_0.22-7      paws.common_0.8.8   digest_0.6.39      
     ##  [7] magrittr_2.0.4      evaluate_1.0.5      grid_4.5.2         
     ## [10] bookdown_0.46       fastmap_1.2.0       R.oo_1.27.1        
     ## [13] jsonlite_2.0.0      R.utils_2.13.0      BiocManager_1.30.27
