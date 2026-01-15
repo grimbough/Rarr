@@ -174,6 +174,37 @@ test_that("v2 and v3 return identical results", {
   expect_identical(vlen_utf8_v2, vlen_utf8_v3)
 })
 
+test_that("roundtrip unicode", {
+  path <- withr::local_tempfile(fileext = ".zarr")
+  greetings <- array(
+    c(
+      '¡Hola mundo!',
+      'Hej Världen!',
+      'Servus Woid!',
+      'Hei maailma!',
+      'Xin chào thế giới',
+      'Njatjeta Botë!',
+      'Γεια σου κόσμε!',
+      'こんにちは世界',
+      '世界，你好！',
+      'Helló, világ!',
+      'Zdravo svete!',
+      'เฮลโลเวิลด์'
+    ),
+    dim = c(12, 1)
+  )
+  write_zarr_array(
+    greetings,
+    path,
+    chunk_dim = c(6, 1),
+    data_type = "<U"
+  )
+  expect_identical(
+    read_zarr_array(path),
+    greetings
+  )
+})
+
 test_that("fill_value is converted to string", {
   # https://github.com/Huber-group-EMBL/Rarr/issues/94
   path <- withr::local_tempfile(fileext = ".zarr")
