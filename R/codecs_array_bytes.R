@@ -69,14 +69,33 @@ codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
   return(converted_chunk)
 }
 
-codec_bytes_encode <- function(raw_obj, endian, bytesize) {
-  if (is.na(endian) || endian == .Platform$endian) {
-    return(raw_obj)
+codec_bytes_encode <- function(d, datatype) {
+  if (is.character(d)) {
+    ## we need to create fixed length strings either via padding or trimming
+    if (datatype$base_type == "unicode") {
+      to <- ifelse(datatype$endian == "little", "UCS-4LE", "UCS-4BE")
+      raw_list <- iconv(d, to = to, toRaw = TRUE)
+    } else {
+      raw_list <- iconv(d, toRaw = TRUE)
+    }
+    unlist(
+      lapply(
+        raw_list,
+        FUN = function(x, nbytes) {
+          if (!is.null(x)) {
+            length(x) <- nbytes
+          }
+          return(x)
+        },
+        nbytes = datatype$nbytes
+      )
+    )
+  } else {
+    if (is.na(datatype$endian)) {
+      datatype$endian <- "little"
+    }
+    writeBin(d, raw(), size = datatype$nbytes, endian = datatype$endian)
   }
-
-  ind <- rep_len(rev(seq_len(bytesize)), length(raw_obj)) +
-    (seq_along(raw_obj) - 1) %/% bytesize * bytesize
-  return(raw_obj[ind])
 }
 
 

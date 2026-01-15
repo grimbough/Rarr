@@ -488,19 +488,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   # Array to bytes codecs
-  raw_chunk <- .as_raw(
+  raw_chunk <- codec_bytes_encode(
     as.vector(input_chunk),
     datatype = metadata$datatype
   )
-
-  # Endianness in unicode is handled during the conversion to/from
-  if (metadata$datatype$base_type != "unicode") {
-    raw_chunk <- codec_bytes_encode(
-      raw_chunk,
-      endian = metadata$datatype$endian,
-      metadata$datatype$nbytes
-    )
-  }
 
   # Bytes to bytes codecs
   compressor <- metadata$compressor
@@ -530,7 +521,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     ## compression. We should do that too for compatibility
     ## TODO: probably faster to do this in C and avoid copying the vector
     compressed_chunk <- c(
-      .as_raw(length(raw_chunk), nchar = 4),
+      writeBin(length(raw_chunk), raw(), size = 4, endian = "little"),
       compressed_chunk
     )
   } else if (compressor$id == "zstd") {
@@ -551,32 +542,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   return(invisible(TRUE))
-}
-
-.as_raw <- function(d, datatype) {
-  if (is.character(d)) {
-    ## we need to create fixed length strings either via padding or trimming
-    if (datatype$base_type == "unicode") {
-      to <- ifelse(datatype$endian == "little", "UCS-4LE", "UCS-4BE")
-      raw_list <- iconv(d, to = to, toRaw = TRUE)
-    } else {
-      raw_list <- iconv(d, toRaw = TRUE)
-    }
-    unlist(
-      lapply(
-        raw_list,
-        FUN = function(x, nbytes) {
-          if (!is.null(x)) {
-            length(x) <- nbytes
-          }
-          return(x)
-        },
-        nbytes = datatype$nbytes
-      )
-    )
-  } else {
-    writeBin(d, raw(), size = nbytes, endian = "little")
-  }
 }
 
 .check_chunk_shape <- function(x_dim, chunk_dim) {
