@@ -20,6 +20,8 @@
   the first argument of `read_zarr_attributes()`. This makes 
   `read_zarr_attributes()` consistent with `read_zarr_array()` and
   `zarr_overview()`.
+* "Simple" structured data types (i.e., only one level of nesting and 
+  no arrays) can now be read from Zarr v2 arrays.
 
 ## Minor improvements
 

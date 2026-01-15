@@ -55,7 +55,7 @@ datatype support.  It will be updated as progress is made.
 |`string`             | &#x2714; / &#x2714; | |
 |`Unicode`            | &#x2714; / &#x2714; | |
 |`void *`             | &#x274C; / &#x274C; | |
-| Structured data types | &#x274C; / &#x274C; | |
+| Structured data types | &#x2714; / &#x274C; | Only one level of nesting and no arrays for now. |
 
 ### Codecs
 
