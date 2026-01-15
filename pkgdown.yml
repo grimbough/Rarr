@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   features: features.html
   Rarr: Rarr.html
-last_built: 2026-01-14T17:10Z
+last_built: 2026-01-15T16:11Z
 urls:
   reference: https://huber-group-embl.github.io/Rarr/reference
   article: https://huber-group-embl.github.io/Rarr/articles

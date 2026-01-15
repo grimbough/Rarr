@@ -28,6 +28,8 @@
   [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md)
   and
   [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md).
+- “Simple” structured data types (i.e., only one level of nesting and no
+  arrays) can now be read from Zarr v2 arrays.
 
 ### Minor improvements
 
