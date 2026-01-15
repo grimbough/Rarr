@@ -32,6 +32,29 @@ codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
       FUN.VALUE = character(1),
       USE.NAMES = FALSE
     )
+  } else if (datatype$base_type == "structured") {
+    field <- rep(
+      seq_along(datatype$nbytes),
+      times = datatype$nbytes,
+      length.out = length(decompressed_chunk)
+    )
+
+    converted_chunk <- vector("list", prod(chunk_dim))
+    for (i in seq_along(datatype$nbytes)) {
+      type <- datatype[[i]]
+      raw_field <- decompressed_chunk[field == i]
+      field_converted <- .Call(
+        paste0("type_convert_", type$base_type),
+        raw_field,
+        type$nbytes,
+        PACKAGE = "Rarr"
+      )
+      converted_chunk <- Map(
+        f = c,
+        converted_chunk,
+        field_converted
+      )
+    }
   } else {
     converted_chunk <- .Call(
       paste0("type_convert_", datatype$base_type),

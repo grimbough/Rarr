@@ -86,7 +86,8 @@ check_index <- function(index, metadata) {
   # structured data type
   if (is.list(typestr)) {
     types <- lapply(typestr, function(field) .parse_datatype(field[[2]]))
-    types$nbytes <- sum(vapply(types, function(x) x$nbytes, integer(1)))
+    types$nbytes <- vapply(types, function(x) x$nbytes, integer(1))
+    types$base_type <- "structured"
     return(types)
   }
 
