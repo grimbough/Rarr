@@ -459,8 +459,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   .compress_and_write_chunk(
     input_chunk = chunk_in_mem,
     chunk_path = chunk_path,
-    metadata,
-    is_base64 = (metadata$datatype$base_type == "unicode")
+    metadata
   )
 }
 
@@ -470,10 +469,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 #'   converted to a raw vector before compression.
 #' @param chunk_path Character string giving the path to the chunk that should
 #'   be written.
-#' @param is_base64 When dealing with Py_unicode strings we convert them to
-#' base64 strings for storage in our intermediate R arrays.  This argument
-#' indicates if base64 is in use, because the conversion to raw in .as_raw
-#' should be done differently for base64 strings vs other types.
 #'
 #' @returns Returns `TRUE` if writing is successful.  Mostly called for the
 #'   side-effect of writing the compressed chunk to disk.
@@ -482,8 +477,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 .compress_and_write_chunk <- function(
   input_chunk,
   chunk_path,
-  metadata,
-  is_base64 = FALSE
+  metadata
 ) {
   # Array to array codecs
   if (metadata$order == "C") {
@@ -494,19 +488,9 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   # Array to bytes codecs
-  ## convert strings to Unicode if required
-  if (metadata$datatype$base_type == "unicode") {
-    input_chunk <- .unicode_to_int(
-      input = input_chunk,
-      typestr = metadata$dtype
-    )
-  }
-
-  ## the compression tools need a raw vector
   raw_chunk <- .as_raw(
     as.vector(input_chunk),
-    nchar = metadata$datatype$nbytes,
-    is_base64 = is_base64
+    datatype = metadata$datatype
   )
 
   # Endianness in unicode is handled during the conversion to/from
@@ -569,28 +553,29 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   return(invisible(TRUE))
 }
 
-.as_raw <- function(d, nchar, is_base64) {
-  ## we need to create fixed length strings either via padding or trimming
+.as_raw <- function(d, datatype) {
   if (is.character(d)) {
-    if (is_base64) {
-      raw_list <- lapply(d, jsonlite::base64_dec)
+    ## we need to create fixed length strings either via padding or trimming
+    if (datatype$base_type == "unicode") {
+      to <- ifelse(datatype$endian == "little", "UCS-4LE", "UCS-4BE")
+      raw_list <- iconv(d, to = to, toRaw = TRUE)
     } else {
       raw_list <- iconv(d, toRaw = TRUE)
     }
     unlist(
       lapply(
         raw_list,
-        FUN = function(x, nchar) {
+        FUN = function(x, nbytes) {
           if (!is.null(x)) {
-            length(x) <- nchar
+            length(x) <- nbytes
           }
           return(x)
         },
-        nchar
+        nbytes = datatype$nbytes
       )
     )
   } else {
-    writeBin(d, raw(), size = nchar, endian = "little")
+    writeBin(d, raw(), size = nbytes, endian = "little")
   }
 }
 
