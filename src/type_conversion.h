@@ -3,8 +3,8 @@
 #include "bit64_conversion.h"
 #include "float16_conversion.h"
 
-SEXP type_convert_chunk(SEXP input, SEXP new_type, SEXP _n_bytes, SEXP _is_signed);
-SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is_signed);
-SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length, int n_bytes);
-SEXP type_convert_LOGICAL(void *raw_buffer, R_xlen_t length);
-SEXP type_convert_STRING(void *raw_buffer, R_xlen_t length, int n_bytes);
+SEXP type_convert_int(SEXP input, SEXP _n_bytes);
+SEXP type_convert_uint(SEXP input, SEXP _n_bytes);
+SEXP type_convert_float(SEXP input, SEXP _n_bytes);
+SEXP type_convert_bool(SEXP input, SEXP _n_bytes);
+SEXP type_convert_string(SEXP input, SEXP _n_bytes);

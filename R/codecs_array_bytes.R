@@ -33,20 +33,10 @@ codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
       USE.NAMES = FALSE
     )
   } else {
-    output_type <- switch(
-      datatype$base_type,
-      "bool" = 0L,
-      "int" = 1L,
-      "uint" = 1L,
-      "float" = 2L,
-      "string" = 3L
-    )
     converted_chunk <- .Call(
-      "type_convert_chunk",
+      paste0("type_convert_", datatype$base_type),
       decompressed_chunk,
-      output_type,
       datatype$nbytes,
-      datatype$is_signed,
       PACKAGE = "Rarr"
     )
   }

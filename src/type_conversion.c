@@ -1,30 +1,10 @@
 #include "type_conversion.h"
 
-SEXP type_convert_chunk(SEXP input, SEXP _new_type, SEXP _n_bytes, SEXP _is_signed) {
+SEXP type_convert_int(SEXP input, SEXP _n_bytes) {
 
-  void* p_input = RAW(input);
-  SEXP output;
-  int new_type = INTEGER(_new_type)[0];
   int n_bytes = INTEGER(_n_bytes)[0];
-  int is_signed = (int)LOGICAL(_is_signed)[0];
-
-  if(new_type == 0) {
-    output = PROTECT(type_convert_LOGICAL(p_input, xlength(input)));
-  } else if(new_type == 1) {
-    output = PROTECT(type_convert_INTEGER(p_input, xlength(input), n_bytes, is_signed));
-  } else if (new_type == 2) {
-    output = PROTECT(type_convert_REAL(p_input, xlength(input), n_bytes));
-  } else if (new_type == 3) {
-    output = PROTECT(type_convert_STRING(p_input, xlength(input), n_bytes));
-  } else {
-    error("Unknown data type\n");
-  }
-
-  UNPROTECT(1);
-  return output;
-}
-
-SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is_signed) {
+  R_xlen_t length = xlength(input);
+  void* raw_buffer = RAW(input);
 
   int *p_data;
   SEXP data;
@@ -36,44 +16,22 @@ SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is
   p_data = INTEGER(data);
 
   if(n_bytes == 1) {
-    if(is_signed == 1) {
-      for (i = 0; i < data_length; i++) {
-        p_data[i] = ((int8_t *)raw_buffer)[i];
-      }
-    } else {
-      for (i = 0; i < data_length; i++) {
-        p_data[i] = ((uint8_t *)raw_buffer)[i];
-      }
+    for (i = 0; i < data_length; i++) {
+      p_data[i] = ((int8_t *)raw_buffer)[i];
     }
   } else if(n_bytes == 2) {
-
-    if(is_signed == 1) {
-      int16_t *mock_buffer = (int16_t *)raw_buffer;
-      for (i = 0; i < data_length; i++) {
-        p_data[i] = mock_buffer[0];
-        mock_buffer++;
-      }
-    } else {
-      uint16_t *mock_buffer = (uint16_t *)raw_buffer;
-      for (i = 0; i < data_length; i++) {
-        p_data[i] = mock_buffer[0];
-        mock_buffer++;
-      }
+    int16_t *mock_buffer = (int16_t *)raw_buffer;
+    for (i = 0; i < data_length; i++) {
+      p_data[i] = mock_buffer[0];
+      mock_buffer++;
     }
-
   } else if(n_bytes == 4) {
-
-    if(is_signed == 1) {
-      memcpy(p_data, raw_buffer, length);
-    } else {
-      uint32_to_int32(raw_buffer, data_length, p_data);
-    }
-
+    memcpy(p_data, raw_buffer, length);
   } else if (n_bytes == 8) {
     // for now we convert to 32bit int and overflow values are NA_integer
     int bit64conversion = 0;
     if (bit64conversion == 0) {
-      int64_to_int32(raw_buffer, data_length, p_data, is_signed);
+      int64_to_int32(raw_buffer, data_length, p_data, true);
     }
   }
 
@@ -81,7 +39,50 @@ SEXP type_convert_INTEGER(void *raw_buffer, R_xlen_t length, int n_bytes, int is
   return(data);
 }
 
-SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length, int n_bytes) {
+SEXP type_convert_uint(SEXP input, SEXP _n_bytes) {
+
+  int n_bytes = INTEGER(_n_bytes)[0];
+  R_xlen_t length = xlength(input);
+  void* raw_buffer = RAW(input);
+
+  int *p_data;
+  SEXP data;
+  R_xlen_t data_length = length / n_bytes;
+  R_xlen_t i;
+
+  // space for the converted output
+  data = PROTECT(allocVector(INTSXP, data_length));
+  p_data = INTEGER(data);
+
+  if(n_bytes == 1) {
+    for (i = 0; i < data_length; i++) {
+      p_data[i] = ((uint8_t *)raw_buffer)[i];
+    }
+  } else if(n_bytes == 2) {
+    uint16_t *mock_buffer = (uint16_t *)raw_buffer;
+    for (i = 0; i < data_length; i++) {
+      p_data[i] = mock_buffer[0];
+      mock_buffer++;
+    }
+  } else if(n_bytes == 4) {
+    uint32_to_int32(raw_buffer, data_length, p_data);
+  } else if (n_bytes == 8) {
+    // for now we convert to 32bit int and overflow values are NA_integer
+    int bit64conversion = 0;
+    if (bit64conversion == 0) {
+      int64_to_int32(raw_buffer, data_length, p_data, false);
+    }
+  }
+
+  UNPROTECT(1);
+  return(data);
+}
+
+SEXP type_convert_float(SEXP input, SEXP _n_bytes){
+
+  int n_bytes = INTEGER(_n_bytes)[0];
+  R_xlen_t length = xlength(input);
+  void* raw_buffer = RAW(input);
 
   R_xlen_t data_length, i;
   double *p_data;
@@ -117,7 +118,11 @@ SEXP type_convert_REAL(void *raw_buffer, R_xlen_t length, int n_bytes) {
   return(data);
 }
 
-SEXP type_convert_LOGICAL(void *raw_buffer, R_xlen_t length) {
+SEXP type_convert_bool(SEXP input, SEXP _n_bytes) {
+
+  int n_bytes = INTEGER(_n_bytes)[0];
+  R_xlen_t length = xlength(input);
+  void* raw_buffer = RAW(input);
 
   int *p_data;
   SEXP data;
@@ -135,7 +140,11 @@ SEXP type_convert_LOGICAL(void *raw_buffer, R_xlen_t length) {
   return(data);
 }
 
-SEXP type_convert_STRING(void *raw_buffer, R_xlen_t length, int n_bytes) {
+SEXP type_convert_string(SEXP input, SEXP _n_bytes) {
+
+  int n_bytes = INTEGER(_n_bytes)[0];
+  R_xlen_t length = xlength(input);
+  void* raw_buffer = RAW(input);
 
   R_xlen_t data_length = length / n_bytes;
   R_xlen_t i;
