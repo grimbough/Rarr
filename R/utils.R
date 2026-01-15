@@ -83,6 +83,13 @@ check_index <- function(index, metadata) {
 #'
 #' @keywords internal
 .parse_datatype <- function(typestr) {
+  # structured data type
+  if (is.list(typestr)) {
+    types <- lapply(typestr, function(field) .parse_datatype(field[[2]]))
+    types$nbytes <- sum(vapply(types, function(x) x$nbytes, integer(1)))
+    return(types)
+  }
+
   datatype <- list()
   datatype_parts <- strsplit(typestr, "", fixed = TRUE)[[1]]
 
