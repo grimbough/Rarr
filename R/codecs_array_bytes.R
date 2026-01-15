@@ -33,9 +33,11 @@ codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
       USE.NAMES = FALSE
     )
   } else if (datatype$base_type == "structured") {
-    field <- rep(
-      seq_along(datatype$nbytes),
-      times = datatype$nbytes,
+    field <- rep_len(
+      rep(
+        seq_along(datatype$nbytes),
+        datatype$nbytes
+      ),
       length.out = length(decompressed_chunk)
     )
 
