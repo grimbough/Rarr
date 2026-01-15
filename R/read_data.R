@@ -220,6 +220,10 @@ read_data <- function(
         y_name = "chunk_selections[[i]][[1]]"
       )
       eval(parse(text = cmd))
+      if (metadata$datatype$base_type == "structured") {
+        # Assigning a list drops the dim attribute so we have to continuously add it again
+        dim(output) <- lengths(index)
+      }
     }
   }
   return(output)
@@ -336,7 +340,8 @@ read_chunk <- function(
 
   ## It doesn't seem clear if the on disk chunk will contain the overflow
   ## values or not, so we try both approaches.
-  actual_chunk_size <- length(decompressed_chunk) / metadata$datatype$nbytes
+  actual_chunk_size <- length(decompressed_chunk) /
+    sum(metadata$datatype$nbytes)
   if (
     !is.null(metadata$codecs[["vlen_utf8"]]) ||
       (actual_chunk_size ==
