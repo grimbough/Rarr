@@ -31,6 +31,7 @@
       "double" = "<f8",
       "character" = "|S",
       "logical" = "|b1",
+      # nolint next: unreachable_code_linter.
       stop(
         "Currently only able to write integer, double, character and logical arrays"
       )
