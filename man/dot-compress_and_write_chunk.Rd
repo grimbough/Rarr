@@ -4,7 +4,7 @@
 \alias{.compress_and_write_chunk}
 \title{Compress and write a single chunk}
 \usage{
-.compress_and_write_chunk(input_chunk, chunk_path, metadata, is_base64 = FALSE)
+.compress_and_write_chunk(input_chunk, chunk_path, metadata)
 }
 \arguments{
 \item{input_chunk}{Array containing the chunk data to be compressed.  Will be
@@ -12,11 +12,6 @@ converted to a raw vector before compression.}
 
 \item{chunk_path}{Character string giving the path to the chunk that should
 be written.}
-
-\item{is_base64}{When dealing with Py_unicode strings we convert them to
-base64 strings for storage in our intermediate R arrays.  This argument
-indicates if base64 is in use, because the conversion to raw in .as_raw
-should be done differently for base64 strings vs other types.}
 }
 \value{
 Returns \code{TRUE} if writing is successful.  Mostly called for the
