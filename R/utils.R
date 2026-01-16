@@ -121,7 +121,7 @@ check_index <- function(index, metadata) {
   )
 
   if (datatype$base_type == "unicode") {
-    datatype$nbytes <- datatype$nbytes * 4
+    datatype$nbytes <- datatype$nbytes * 4L
   }
 
   return(datatype)
