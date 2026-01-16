@@ -120,7 +120,6 @@ SEXP type_convert_float(SEXP input, SEXP _n_bytes){
 
 SEXP type_convert_bool(SEXP input, SEXP _n_bytes) {
 
-  int n_bytes = INTEGER(_n_bytes)[0];
   R_xlen_t length = xlength(input);
   void* raw_buffer = RAW(input);
 
