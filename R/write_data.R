@@ -24,18 +24,23 @@
     "<U",
     "|b1"
   )
+  r_base_types <- c("integer", "double", "character", "logical")
+
   if (data_type %notin% supported_types) {
-    data_type <- switch(
-      data_type,
-      "integer" = "<i4",
-      "double" = "<f8",
-      "character" = "|S",
-      "logical" = "|b1",
-      # nolint next: unreachable_code_linter.
+    if (data_type %in% r_base_types) {
+      # valid R storage modes, convert to numpy format
+      data_type <- switch(
+        data_type,
+        "integer" = "<i4",
+        "double" = "<f8",
+        "character" = "|S",
+        "logical" = "|b1"
+      )
+    } else {
       stop(
         "Currently only able to write integer, double, character and logical arrays"
       )
-    )
+    }
   }
 
   ## set a default fill value if needed
