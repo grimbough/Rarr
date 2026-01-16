@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.19</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.20</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.compress_and_write_chunk</span><span class="op">(</span><span class="va">input_chunk</span>, <span class="va">chunk_path</span>, <span class="va">metadata</span>, is_base64 <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.compress_and_write_chunk</span><span class="op">(</span><span class="va">input_chunk</span>, <span class="va">chunk_path</span>, <span class="va">metadata</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -59,13 +59,6 @@ converted to a raw vector before compression.</p></dd>
 <dt id="arg-chunk-path">chunk_path<a class="anchor" aria-label="anchor" href="#arg-chunk-path"></a></dt>
 <dd><p>Character string giving the path to the chunk that should
 be written.</p></dd>
-
-
-<dt id="arg-is-base-">is_base64<a class="anchor" aria-label="anchor" href="#arg-is-base-"></a></dt>
-<dd><p>When dealing with Py_unicode strings we convert them to
-base64 strings for storage in our intermediate R arrays.  This argument
-indicates if base64 is in use, because the conversion to raw in .as_raw
-should be done differently for base64 strings vs other types.</p></dd>
 
 </dl></div>
     <div class="section level2">
