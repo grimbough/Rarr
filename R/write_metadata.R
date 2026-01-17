@@ -13,7 +13,7 @@
   if (order %notin% c("C", "F")) {
     stop("The 'order' argument must be either 'C' or 'F'")
   }
-  
+
   zarray <- list(
     shape = array(array_shape, dim = length(array_shape)),
     chunks = array(chunk_shape, dim = length(array_shape)),
