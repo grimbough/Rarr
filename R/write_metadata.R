@@ -15,8 +15,9 @@
   }
 
   zarray <- list(
-    shape = array(array_shape, dim = length(array_shape)),
-    chunks = array(chunk_shape, dim = length(array_shape)),
+    # the spec states these need to be json arrays, so we need to avoid auto_unboxing
+    shape = list(array_shape),
+    chunks = list(chunk_shape),
     dtype = data_type,
     fill_value = fill_value,
     dimension_separator = dimension_separator,
