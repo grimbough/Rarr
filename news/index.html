@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.20</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.21</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,6 +62,7 @@
 <ul><li>There is now a dedicated vignette describing the supported Zarr features in Rarr, available at <a href="https://huber-group-embl.github.io/Rarr/articles/features.html" class="uri">https://huber-group-embl.github.io/Rarr/articles/features.html</a>. This makes it more easily discoverable on the Bioconductor landing page.</li>
 <li>Rarr initializes empty/missing chunks only once per read operation, which significantly improves performance when reading arrays with many missing chunks.</li>
 <li>Reading fixed-length string and unicode arrays is now ~20% faster.</li>
+<li>The <code>shape</code> and <code>chunks</code> fields in v2 metadata are now always encoded as JSON arrays, even when they contain a single element. This makes Rarr more compatible with other Zarr implementations. Thanks to Artür Manukyan for the bug report and pull request.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-1-11">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-11"></a></h3>

@@ -41,6 +41,10 @@
   which significantly improves performance when reading arrays with many
   missing chunks.
 - Reading fixed-length string and unicode arrays is now ~20% faster.
+- The `shape` and `chunks` fields in v2 metadata are now always encoded
+  as JSON arrays, even when they contain a single element. This makes
+  Rarr more compatible with other Zarr implementations. Thanks to Artür
+  Manukyan for the bug report and pull request.
 
 ### Bug fixes
 
