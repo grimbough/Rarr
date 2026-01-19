@@ -554,7 +554,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   for (i in seq_along(x_dim)) {
-    if ((x_dim[i] < chunk_dim[i]) || (chunk_dim[i] < 1)) {
+    # spec says:
+    # "The chunk shape elements are non-zero when the corresponding dimensions
+    # of the arrays have non-zero length."
+    if ((x_dim[i] < chunk_dim[i]) || (chunk_dim[i] == 0 && x_dim[i] != 0)) {
       stop("Chunk dimensions outside the extent of the array")
     }
   }
