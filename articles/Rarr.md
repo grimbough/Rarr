@@ -640,7 +640,7 @@ zarr_X
     ## [13] BiocStyle_2.38.0     
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] rappdirs_0.3.3      sass_0.4.10         xml2_1.5.1         
+    ##  [1] rappdirs_0.3.4      sass_0.4.10         xml2_1.5.2         
     ##  [4] lattice_0.22-7      paws.common_0.8.8   digest_0.6.39      
     ##  [7] magrittr_2.0.4      evaluate_1.0.5      grid_4.5.2         
     ## [10] bookdown_0.46       fastmap_1.2.0       R.oo_1.27.1        
@@ -649,11 +649,11 @@ zarr_X
     ## [19] jquerylib_0.1.4     cli_3.6.5           rlang_1.1.7        
     ## [22] crayon_1.5.3        XVector_0.50.0      R.methodsS3_1.8.2  
     ## [25] cachem_1.1.0        yaml_2.3.12         tools_4.5.2        
-    ## [28] curl_7.0.0          vctrs_0.6.5         R6_2.6.1           
+    ## [28] curl_7.0.0          vctrs_0.7.0         R6_2.6.1           
     ## [31] lifecycle_1.0.5     fs_1.6.6            ragg_1.5.0         
     ## [34] desc_1.4.3          pkgdown_2.2.0       bslib_0.9.0        
     ## [37] pillar_1.11.1       glue_1.8.0          Rcpp_1.1.1         
-    ## [40] systemfonts_1.3.1   xfun_0.55           paws.storage_0.9.0 
+    ## [40] systemfonts_1.3.1   xfun_0.56           paws.storage_0.9.0 
     ## [43] knitr_1.51          htmltools_0.5.9     rmarkdown_2.30     
     ## [46] compiler_4.5.2
 
