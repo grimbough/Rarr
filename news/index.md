@@ -45,6 +45,8 @@
   as JSON arrays, even when they contain a single element. This makes
   Rarr more compatible with other Zarr implementations. Thanks to Artür
   Manukyan for the bug report and pull request.
+- Empty zarr arrays (i.e., arrays with `shape` and `chunks` equal zero)
+  can now be written.
 
 ### Bug fixes
 
