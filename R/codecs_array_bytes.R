@@ -40,6 +40,8 @@ codec_bytes_decode <- function(
         raw_field,
         chunk_dim = NULL,
         type,
+        # This only works for v2 datatypes but at this time,
+        # structured datatypes don't exist in v3.
         endian = type$endian
       )
       converted_chunk <- Map(
