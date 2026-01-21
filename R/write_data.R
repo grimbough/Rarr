@@ -232,6 +232,7 @@ write_zarr_array <- function(
     chunk_indices,
     metadata_v3
   )
+  chunk_indices <- apply(chunk_indices, 1, identity, simplify = FALSE)
 
   same_type_lower_bytesize <- metadata_v3$data_type %in%
     c("int8", "int16", "float32")
@@ -244,13 +245,16 @@ write_zarr_array <- function(
   }
 
   ## iterate over each chunk
-  ## TODO: maybe this can be done in parallel with bplapply() ?
-  res <- lapply(
+  ## TODO: maybe this can be done in parallel with bpmapply() ?
+  res <- Map(
+    f = .write_chunk,
     chunk_names,
-    FUN = .write_chunk,
-    x = x,
-    path = path,
-    metadata = metadata
+    chunk_indices,
+    MoreArgs = list(
+      x = x,
+      path = path,
+      metadata = metadata
+    )
   )
 
   return(invisible(all(unlist(res))))
@@ -261,17 +265,15 @@ write_zarr_array <- function(
   expand.grid(lapply(n_chunks_in_dim, seq_len)) - 1
 }
 
-.write_chunk <- function(chunk_id, x, path, metadata) {
+.write_chunk <- function(chunk_name, chunk_index, x, path, metadata) {
   chunk_dim <- unlist(metadata$chunks)
-  dim_sep <- metadata$dimension_separator
 
-  chunk_id_split <- as.integer(strsplit(chunk_id, dim_sep, fixed = TRUE)[[1]])
-  chunk_path <- paste0(path, chunk_id)
+  chunk_path <- paste0(path, chunk_name)
 
   idx_in_array <- list()
   for (j in seq_along(dim(x))) {
     idx_in_array[[j]] <- which(
-      (seq_len(dim(x)[j]) - 1) %/% chunk_dim[j] == chunk_id_split[j]
+      (seq_len(dim(x)[j]) - 1) %/% chunk_dim[j] == chunk_index[j]
     )
   }
 
@@ -376,8 +378,9 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   x <- array(x, dim = lengths(index))
 
   ## create all possible chunk names, then remove those that won't be touched
-  chunk_names <- expand.grid(lapply(ceiling(zarr_dim / chunk_dim), seq_len)) - 1
-  chunk_needed <- rep(FALSE, nrow(chunk_names))
+  chunk_indices <- expand.grid(lapply(ceiling(zarr_dim / chunk_dim), seq_len)) -
+    1
+  chunk_needed <- rep(FALSE, nrow(chunk_indices))
 
   ## determine which chunk each of the requests indices belongs to
   chunk_idx <- .mapply(
@@ -388,38 +391,45 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     MoreArgs = NULL
   )
 
-  for (i in seq_len(nrow(chunk_names))) {
+  for (i in seq_len(nrow(chunk_indices))) {
     idx_in_zarr <- list()
     for (j in seq_along(zarr_dim)) {
-      idx_in_zarr[[j]] <- index[[j]][which(chunk_idx[[j]] == chunk_names[i, j])]
+      idx_in_zarr[[j]] <- index[[j]][which(
+        chunk_idx[[j]] == chunk_indices[i, j]
+      )]
     }
     chunk_needed[i] <- all(lengths(idx_in_zarr) > 0)
   }
-  chunk_names <- chunk_names[chunk_needed, , drop = FALSE]
+  chunk_indices <- chunk_indices[chunk_needed, , drop = FALSE]
   chunk_names <- .create_chunk_names(
-    chunk_names,
+    chunk_indices,
     metadata_v3
   )
+  chunk_indices <- apply(chunk_indices, 1, identity, simplify = FALSE)
 
   ## only update the chunks that need to be
-  ## TODO: maybe this can be done in parallel is bplapply() ?
-  res <- lapply(
+  ## TODO: maybe this can be done in parallel is bpmapply() ?
+  res <- Map(
+    f = .update_chunk,
     chunk_names,
-    FUN = .update_chunk,
-    x = x,
-    path = zarr_array_path,
-    chunk_dim = chunk_dim,
-    chunk_idx = chunk_idx,
-    index = index,
-    metadata = metadata,
-    metadata_v3 = metadata_v3
+    chunk_indices,
+    MoreArgs = list(
+      x = x,
+      path = zarr_array_path,
+      chunk_dim = chunk_dim,
+      chunk_idx = chunk_idx,
+      index = index,
+      metadata = metadata,
+      metadata_v3 = metadata_v3
+    )
   )
 
   return(invisible(all(unlist(res))))
 }
 
 .update_chunk <- function(
-  chunk_id,
+  chunk_name,
+  chunk_index,
   x,
   path,
   chunk_dim,
@@ -429,24 +439,21 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   metadata,
   metadata_v3
 ) {
-  chunk_id_split <- as.integer(
-    strsplit(chunk_id, metadata$dimension_separator, fixed = TRUE)[[1]]
-  )
-  chunk_path <- paste0(path, chunk_id)
+  chunk_path <- paste0(path, chunk_name)
 
   ## determine which elements of x are being used and where in this specific
   ## chunk they should be inserted
   ## TODO: This is pretty ugly, maybe there's something more elegant
   idx_in_zarr <- idx_in_x <- idx_in_chunk <- list()
   for (j in seq_along(chunk_dim)) {
-    idx_in_x[[j]] <- which(chunk_idx[[j]] == chunk_id_split[j])
+    idx_in_x[[j]] <- which(chunk_idx[[j]] == chunk_index[j])
     idx_in_zarr[[j]] <- index[[j]][idx_in_x[[j]]]
     idx_in_chunk[[j]] <- ((idx_in_zarr[[j]] - 1) %% chunk_dim[j]) + 1
   }
 
   chunk_in_mem <- read_chunk(
     zarr_array_path = path,
-    chunk_name = chunk_id,
+    chunk_name = chunk_name,
     metadata = metadata_v3,
     fill = TRUE
   )
