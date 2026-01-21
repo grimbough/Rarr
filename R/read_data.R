@@ -105,7 +105,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 
 .extract_elements <- function(
   current_chunk_index,
-  current_chunk_name,
+  current_chunk_path,
   metadata,
   index,
   zarr_array_path,
@@ -136,8 +136,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 
   ## read this chunk
   chunk <- read_chunk(
-    zarr_array_path,
-    chunk_name = current_chunk_name,
+    chunk_path = current_chunk_path,
     metadata = metadata,
     s3_client = s3_client,
     alt_chunk_dim = alt_chunk_dim
@@ -179,19 +178,19 @@ read_data <- function(
     required_chunks,
     metadata
   )
+  chunk_paths <- paste0(zarr_array_path, chunk_names)
 
   warnings <- list()
   ## hopefully we can eventually do this in parallel
   chunk_selections <- withCallingHandlers(
     lapply(
-      seq_along(chunk_names),
+      seq_along(chunk_paths),
       function(i) {
         .extract_elements(
           current_chunk_index = required_chunks[i, ],
-          current_chunk_name = chunk_names[i],
+          current_chunk_path = chunk_paths[i],
           metadata = metadata,
           index = index,
-          zarr_array_path = zarr_array_path,
           s3_client = s3_client,
           chunk_idx = chunk_idx
         )
@@ -258,9 +257,8 @@ get_decompressed_chunk_size <- function(datatype, dimensions) {
 
 #' Read a single Zarr chunk
 #'
-#' @param zarr_array_path A character vector of length 1, giving the path to the
-#'   Zarr array
-#' @param chunk_name The name of the chunk to read.
+#' @param chunk_path A character vector of length 1, giving the path to the
+#'   chunk to be read.
 #' @param metadata List produced by `.read_array_metadata()` holding the contents
 #'   of the `.zarray` file. If missing this function will be called
 #'   automatically, but it is probably preferable to pass the meta data rather
@@ -281,28 +279,25 @@ get_decompressed_chunk_size <- function(datatype, dimensions) {
 #' @keywords internal
 # nolint next: cyclocomp_linter.
 read_chunk <- function(
-  zarr_array_path,
-  chunk_name,
+  chunk_path,
   metadata,
   s3_client = NULL,
   alt_chunk_dim = NULL,
   fill = FALSE
 ) {
-  chunk_file <- paste0(zarr_array_path, chunk_name)
-
   if (nzchar(Sys.getenv("RARR_DEBUG"))) {
-    message(chunk_file)
+    message(chunk_path)
   }
 
   if (is.null(s3_client)) {
-    if (file.exists(chunk_file)) {
-      size <- file.size(chunk_file)
-      compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
+    if (file.exists(chunk_path)) {
+      size <- file.size(chunk_path)
+      compressed_chunk <- readBin(con = chunk_path, what = "raw", n = size)
     } else {
       compressed_chunk <- NULL
     }
   } else {
-    parsed_url <- parse_s3_path(chunk_file)
+    parsed_url <- parse_s3_path(chunk_path)
 
     if (.s3_object_exists(s3_client, parsed_url$bucket, parsed_url$object)) {
       compressed_chunk <- s3_client$get_object(
