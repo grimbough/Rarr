@@ -42,8 +42,6 @@ arrays can be read individually by providing the path to them directly.
 Currently, there are also limitations on the Zarr datatypes that can be accessed
 using **Rarr**.  For now most numeric types can be read into R, although in some
 instances e.g. 64-bit integers there is potential for loss of information.
-Writing is more limited with support only for datatypes that are supported
-natively in R and only using the column-first representation.
 
 See the dedicated ["Supported Zarr features" vignette](https://huber-group-embl.github.io/Rarr/articles/features.html) for more information.
 
