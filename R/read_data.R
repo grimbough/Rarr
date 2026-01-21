@@ -184,7 +184,10 @@ read_data <- function(
   ## hopefully we can eventually do this in parallel
   chunk_selections <- withCallingHandlers(
     lapply(
-      seq_along(chunk_paths),
+      # It's not equivalent to loop over chunk_path and chunk_names
+      # because the DelayedArray backend can set chunk_names to character(0),
+      # which is length 0, but will create chunk_paths of length 1.
+      seq_along(chunk_names),
       function(i) {
         .extract_elements(
           current_chunk_index = required_chunks[i, ],
