@@ -85,7 +85,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
       version_to = 3
     )
   }
-  metadata$configured_codecs <- .configure_codecs(
+  metadata$configured_decoders <- .configure_codecs(
     metadata$codecs,
     operation = "decode"
   )
@@ -326,7 +326,7 @@ read_chunk <- function(
   }
 
   # Bytes -> Bytes codecs
-  for (codec in metadata$configured_codecs[["bytes_bytes"]]) {
+  for (codec in metadata$configured_decoders[["bytes_bytes"]]) {
     compressed_chunk <- codec(
       bytes = compressed_chunk
     )
@@ -348,7 +348,7 @@ read_chunk <- function(
   }
 
   # Bytes -> Array codecs
-  for (codec in metadata$configured_codecs[["array_bytes"]]) {
+  for (codec in metadata$configured_decoders[["array_bytes"]]) {
     endian <- metadata$codecs[["bytes"]]$configuration %||% NA_character_
     converted_chunk <- do.call(
       codec,
@@ -361,7 +361,7 @@ read_chunk <- function(
     )
   }
   # Array -> Array codecs
-  for (codec in metadata$configured_codecs[["array_array"]]) {
+  for (codec in metadata$configured_decoders[["array_array"]]) {
     converted_chunk <- do.call(codec, list(converted_chunk))
   }
 
