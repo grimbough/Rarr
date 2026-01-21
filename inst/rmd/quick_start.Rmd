@@ -8,8 +8,9 @@ commands below.
 
 ```{r, installation, eval = FALSE}
 ## we need BiocManager to perform the installation
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 ## install Rarr
 BiocManager::install("Rarr")
 ```
@@ -29,7 +30,10 @@ To demonstrate reading a local file, we'll pick the example file containing
 
 ```{r, use-example}
 zarr_example <- system.file(
-  "extdata", "zarr_examples", "column-first", "int32.zarr",
+  "extdata",
+  "zarr_examples",
+  "column-first",
+  "int32.zarr",
   package = "Rarr"
 )
 ```
@@ -42,6 +46,7 @@ the array metadata that accompanies any Zarr array.].
 ```{r, overview-1}
 zarr_overview(zarr_example)
 ```
+
 You can use this to check that the location is a valid Zarr array, and that the
 shape and datatype of the array content are what you are expecting.  For
 example, we can see in the output above that the data type (`int32`) corresponds
@@ -79,10 +84,13 @@ zarr_overview(s3_address)
 
 ```{r, read-from-s3, echo = FALSE, eval = TRUE}
 s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-s3_client <- paws.storage::s3(config = list(
-  credentials = list(anonymous = TRUE),
-  region = "auto",
-  endpoint = "https://uk1s3.embassy.ebi.ac.uk"))
+s3_client <- paws.storage::s3(
+  config = list(
+    credentials = list(anonymous = TRUE),
+    region = "auto",
+    endpoint = "https://uk1s3.embassy.ebi.ac.uk"
+  )
+)
 zarr_overview(s3_address, s3_client = s3_client)
 ```
 
@@ -97,7 +105,11 @@ z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
 ```
 
 ```{r, get-slices, echo = FALSE, eval = TRUE }
-z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL), s3_client = s3_client)
+z2 <- read_zarr_array(
+  s3_address,
+  index = list(c(1, 10), NULL, NULL),
+  s3_client = s3_client
+)
 ```
 
 We then plot our two slices on top of one another using the `image()` function.
@@ -105,14 +117,19 @@ We then plot our two slices on top of one another using the `image()` function.
 ```{r, plot-raster, echo = 2:9, cache = TRUE, out.width="30%", eval = TRUE}
 par(mar = c(0, 0, 0, 0))
 ## plot the first slice in blue
-image(log2(z2[1, , ]),
+image(
+  log2(z2[1, , ]),
   col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE
+  asp = dim(z2)[2] / dim(z2)[3],
+  axes = FALSE
 )
 ## overlay the tenth slice in green
-image(log2(z2[2, , ]),
+image(
+  log2(z2[2, , ]),
   col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE, add = TRUE
+  asp = dim(z2)[2] / dim(z2)[3],
+  axes = FALSE,
+  add = TRUE
 )
 ```
 
@@ -137,7 +154,11 @@ x <- array(1:600, dim = c(10, 10, 6))
 
 ```{r}
 path_to_new_zarr <- file.path(tempdir(), "new.zarr")
-write_zarr_array(x = x, zarr_array_path = path_to_new_zarr, chunk_dim = c(10, 5, 1))
+write_zarr_array(
+  x = x,
+  zarr_array_path = path_to_new_zarr,
+  chunk_dim = c(10, 5, 1)
+)
 ```
 
 We can check that the contents of the Zarr array is what we're expecting.  Since
