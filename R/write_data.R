@@ -371,6 +371,15 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     stop("New data is not of the same type as the existing array.")
   }
 
+  metadata_v3$configured_encoders <- .configure_codecs(
+    codecs = metadata_v3$codecs,
+    operation = "encode"
+  )
+  metadata_v3$configured_decoders <- .configure_codecs(
+    codecs = metadata_v3$codecs,
+    operation = "decode"
+  )
+
   zarr_dim <- unlist(metadata$shape)
   chunk_dim <- unlist(metadata$chunks)
 
