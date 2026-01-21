@@ -59,8 +59,9 @@ need to install **Rarr**[¹](#fn1) with the commands below.
 
 ``` r
 ## we need BiocManager to perform the installation
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 ## install Rarr
 BiocManager::install("Rarr")
 ```
@@ -81,7 +82,10 @@ containing 32-bit integers arranged in the “column first” ordering.
 
 ``` r
 zarr_example <- system.file(
-  "extdata", "zarr_examples", "column-first", "int32.zarr",
+  "extdata",
+  "zarr_examples",
+  "column-first",
+  "int32.zarr",
   package = "Rarr"
 )
 ```
@@ -177,14 +181,19 @@ We then plot our two slices on top of one another using the
 
 ``` r
 ## plot the first slice in blue
-image(log2(z2[1, , ]),
+image(
+  log2(z2[1, , ]),
   col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE
+  asp = dim(z2)[2] / dim(z2)[3],
+  axes = FALSE
 )
 ## overlay the tenth slice in green
-image(log2(z2[2, , ]),
+image(
+  log2(z2[2, , ]),
   col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE, add = TRUE
+  asp = dim(z2)[2] / dim(z2)[3],
+  axes = FALSE,
+  add = TRUE
 )
 ```
 
@@ -211,7 +220,11 @@ x <- array(1:600, dim = c(10, 10, 6))
 
 ``` r
 path_to_new_zarr <- file.path(tempdir(), "new.zarr")
-write_zarr_array(x = x, zarr_array_path = path_to_new_zarr, chunk_dim = c(10, 5, 1))
+write_zarr_array(
+  x = x,
+  zarr_array_path = path_to_new_zarr,
+  chunk_dim = c(10, 5, 1)
+)
 ```
 
 We can check that the contents of the Zarr array is what we’re
