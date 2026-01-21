@@ -223,6 +223,10 @@ write_zarr_array <- function(
     version_from = 2,
     version_to = 3
   )
+  metadata_v3$configured_encoders <- .configure_codecs(
+    codecs = metadata_v3$codecs,
+    operation = "encode"
+  )
 
   chunk_indices <- .generate_chunk_indices(
     x_dim = dim(x),
@@ -253,7 +257,7 @@ write_zarr_array <- function(
     chunk_indices,
     MoreArgs = list(
       x = x,
-      metadata = metadata
+      metadata = metadata_v3
     )
   )
 
@@ -266,7 +270,7 @@ write_zarr_array <- function(
 }
 
 .write_chunk <- function(chunk_path, chunk_index, x, metadata) {
-  chunk_dim <- unlist(metadata$chunks)
+  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
   idx_in_array <- list()
   for (j in seq_along(dim(x))) {
@@ -426,8 +430,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       chunk_dim = chunk_dim,
       chunk_idx = chunk_idx,
       index = index,
-      metadata = metadata,
-      metadata_v3 = metadata_v3
+      metadata = metadata_v3
     )
   )
 
@@ -443,8 +446,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_idx,
   index,
   # FIXME: once we fully switch to v3, we can remove this argument
-  metadata,
-  metadata_v3
+  metadata
 ) {
   ## determine which elements of x are being used and where in this specific
   ## chunk they should be inserted
@@ -458,7 +460,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
   chunk_in_mem <- read_chunk(
     chunk_path = chunk_path,
-    metadata = metadata_v3,
+    metadata = metadata,
     fill = TRUE
   )
 
@@ -496,22 +498,27 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   metadata
 ) {
   # Array to array codecs
-  if (metadata$order == "C") {
-    input_chunk <- codec_transpose_encode(
-      input_chunk,
-      indices = rev(seq_along(dim(input_chunk)))
+  for (codec in metadata$configured_encoders[["array_array"]]) {
+    input_chunk <- do.call(codec, list(input_chunk))
+  }
+  # Array to bytes codecs
+  for (codec in metadata$configured_encoders[["array_bytes"]]) {
+    raw_chunk <- do.call(
+      codec,
+      list(as.vector(input_chunk), metadata$datatype)
     )
   }
 
-  # Array to bytes codecs
-  raw_chunk <- codec_bytes_encode(
-    as.vector(input_chunk),
-    datatype = metadata$datatype
-  )
-
   # Bytes to bytes codecs
-  compressor <- metadata$compressor
-  if (is.null(compressor)) {
+  codecs <- metadata$codecs
+  compressor <- NULL
+  compressor$id <- names(codecs)[match(
+    TRUE,
+    names(codecs) %in% c("zstd", "blosc", "gzip", "zlib", "bz2", "lzma", "lz4")
+  )]
+  compressor$level <- unlist(codecs[[compressor$id]]$configuration)
+
+  if (is.na(compressor$id)) {
     compressed_chunk <- raw_chunk
   } else if (compressor$id == "blosc") {
     compressed_chunk <- .Call(
