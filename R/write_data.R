@@ -233,13 +233,14 @@ write_zarr_array <- function(
     metadata_v3
   )
 
-  same_type_lower_bytesize <- metadata$dtype %in% c("|i1", "<i2", "<f4")
+  same_type_lower_bytesize <- metadata_v3$data_type %in%
+    c("int8", "int16", "float32")
   lower_bytesize_type <- storage.mode(x) == "double" &&
-    metadata$dtype == "<i4"
+    metadata_v3$data_type == "float32"
 
   can_overflow <- same_type_lower_bytesize || lower_bytesize_type
   if (can_overflow) {
-    x <- .truncate_overflow(x, metadata$dtype)
+    x <- .truncate_overflow(x, metadata_v3$datatype$nbytes)
   }
 
   ## iterate over each chunk

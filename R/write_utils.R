@@ -1,5 +1,5 @@
-.truncate_overflow <- function(x, datatype) {
-  max_value <- 2L^(.parse_datatype(datatype)$nbytes * 8L - 1L) - 1L
+.truncate_overflow <- function(x, nbytes) {
+  max_value <- 2L^(nbytes * 8L - 1L) - 1L
   min_value <- -max_value - 1L
 
   positive_overflow <- x > max_value
