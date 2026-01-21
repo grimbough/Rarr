@@ -1,26 +1,17 @@
 # -- Endian ---------------------------------------
-codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
-  datatype <- metadata$datatype
-  bytesize <- ifelse(
-    # For unicode, nbytes actually is sizeof(int) * nchar
-    datatype$base_type == "unicode",
-    4L,
-    datatype$nbytes
-  )
-
-  endian <- metadata$codecs[["bytes"]]$configuration %||% NA_character_
-  if (!is.na(endian) && endian != .Platform$endian) {
-    ind <- rep_len(rev(seq_len(bytesize)), length(decompressed_chunk)) +
-      (seq_along(decompressed_chunk) - 1) %/% bytesize * bytesize
-    decompressed_chunk <- decompressed_chunk[ind]
-  }
-
+codec_bytes_decode <- function(
+  decompressed_chunk,
+  chunk_dim,
+  datatype,
+  endian
+) {
   if (datatype$base_type == "unicode") {
     ints <- readBin(
       decompressed_chunk,
       what = "integer",
       size = 4,
-      n = length(decompressed_chunk) / 4
+      n = length(decompressed_chunk) / 4,
+      endian = endian
     )
     tmp <- split(
       ints,
@@ -45,11 +36,13 @@ codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
     for (i in seq_along(datatype$nbytes)) {
       type <- datatype[[i]]
       raw_field <- decompressed_chunk[field == i]
-      field_converted <- .Call(
-        paste0("type_convert_", type$base_type),
+      field_converted <- codec_bytes_decode(
         raw_field,
-        type$nbytes,
-        PACKAGE = "Rarr"
+        chunk_dim = NULL,
+        type,
+        # This only works for v2 datatypes but at this time,
+        # structured datatypes don't exist in v3.
+        endian = type$endian
       )
       converted_chunk <- Map(
         f = c,
@@ -58,6 +51,18 @@ codec_bytes_decode <- function(decompressed_chunk, chunk_dim, metadata) {
       )
     }
   } else {
+    bytesize <- ifelse(
+      # For unicode, nbytes actually is sizeof(int) * nchar
+      datatype$base_type == "unicode",
+      4L,
+      datatype$nbytes
+    )
+    if (!is.na(endian) && endian != .Platform$endian) {
+      ind <- rep_len(rev(seq_len(bytesize)), length(decompressed_chunk)) +
+        (seq_along(decompressed_chunk) - 1) %/% bytesize * bytesize
+      decompressed_chunk <- decompressed_chunk[ind]
+    }
+
     converted_chunk <- .Call(
       paste0("type_convert_", datatype$base_type),
       decompressed_chunk,
