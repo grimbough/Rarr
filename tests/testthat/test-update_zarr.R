@@ -97,3 +97,67 @@ test_that("update unsigned array", {
   expect_true(update_zarr_array(path, x, index = list(NULL, NULL)))
   expect_identical(read_zarr_array(path), x)
 })
+
+test_that("update VLen-UTF8 array", {
+  path <- withr::local_tempfile(fileext = ".zarr")
+  dir.create(path)
+  list(
+    shape = list(12L, 12L),
+    chunks = list(6L, 6L),
+    dtype = "|O",
+    fill_value = "",
+    order = "C",
+    filters = list(list(id = "vlen-utf8")),
+    dimension_separator = ".",
+    compressor = list(id = "zstd", level = 0L),
+    zarr_format = 2L
+  ) |>
+    jsonlite::write_json(
+      file.path(path, ".zarray"),
+      auto_unbox = TRUE,
+      pretty = TRUE
+    )
+
+  x <- rep_len("ça marche", 12L)
+
+  expect_true(update_zarr_array(path, x, index = list(1, NULL)))
+  res <- read_zarr_array(path)
+  expect_identical(res[1, ], x)
+  expect_identical(res[2:12, ], array("", dim = c(11, 12)))
+})
+
+test_that("update v3 array", {
+  path <- withr::local_tempfile(fileext = ".zarr")
+  dir.create(path)
+  list(
+    shape = list(30L, 20L, 10L),
+    data_type = "int32",
+    chunk_grid = list(
+      name = "regular",
+      configuration = list(chunk_shape = list(10L, 10L, 5L))
+    ),
+    chunk_key_encoding = list(
+      name = "default",
+      configuration = list(separator = "/")
+    ),
+    fill_value = 0L,
+    codecs = list(
+      list(name = "bytes", configuration = list(endian = "little")),
+      list(name = "zstd", configuration = list(level = 0L, checksum = FALSE))
+    ),
+    zarr_format = 3L,
+    node_type = "array"
+  ) |>
+    jsonlite::write_json(
+      file.path(path, "zarr.json"),
+      auto_unbox = TRUE,
+      pretty = TRUE
+    )
+
+  x <- 1:30
+
+  expect_true(update_zarr_array(path, x, index = list(NULL, 1, 1)))
+  res <- read_zarr_array(path)
+  expect_identical(res[, 1, 1], x)
+  expect_identical(res[, 1:20, 2:10], array(0L, dim = c(30, 20, 9)))
+})
