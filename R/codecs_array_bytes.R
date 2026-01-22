@@ -44,10 +44,11 @@ codec_bytes_decode <- function(
         # structured datatypes don't exist in v3.
         endian = type$endian
       )
-      converted_chunk <- Map(
-        f = c,
+      converted_chunk <- mapply(
+        FUN = c,
         converted_chunk,
-        field_converted
+        field_converted,
+        SIMPLIFY = FALSE
       )
     }
   } else {
@@ -114,7 +115,7 @@ codec_vlen_utf8_encode <- function(input, ...) {
 
   raw_vlen_utf8 <- c(
     raw_nvalues,
-    unlist(Map(
+    unlist(mapply(
       function(len, str) c(len, str),
       raw_string_lens,
       raw_strings

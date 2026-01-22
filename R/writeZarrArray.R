@@ -92,7 +92,6 @@ setMethod(
   function(sink, viewport, block) {
     starts <- start(viewport) - 1L
     index <- lapply(width(viewport), seq_len)
-    # nolint next: undesirable_function_linter.
     index <- mapply(FUN = "+", starts, index, SIMPLIFY = FALSE)
 
     update_zarr_array(sink@zarr_array_path, x = block, index = index)

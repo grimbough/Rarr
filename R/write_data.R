@@ -251,8 +251,8 @@ write_zarr_array <- function(
 
   ## iterate over each chunk
   ## TODO: maybe this can be done in parallel with bpmapply() ?
-  res <- Map(
-    f = .write_chunk,
+  res <- mapply(
+    FUN = .write_chunk,
     chunk_paths,
     chunk_indices,
     MoreArgs = list(
@@ -261,7 +261,7 @@ write_zarr_array <- function(
     )
   )
 
-  return(invisible(all(unlist(res))))
+  return(invisible(all(res)))
 }
 
 .generate_chunk_indices <- function(x_dim, chunk_dim) {
@@ -447,8 +447,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bpmapply() ?
-  res <- Map(
-    f = .update_chunk,
+  res <- mapply(
+    FUN = .update_chunk,
     chunk_paths,
     chunk_indices,
     MoreArgs = list(
@@ -460,7 +460,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     )
   )
 
-  return(invisible(all(unlist(res))))
+  return(invisible(all(res)))
 }
 
 .update_chunk <- function(
