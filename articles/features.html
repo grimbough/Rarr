@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.23</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.24</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
 
       <h1>Supported Zarr features in Rarr</h1>
             
-            <h4 data-toc-skip class="date">21 January 2026</h4>
+            <h4 data-toc-skip class="date">22 January 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/features.Rmd" class="external-link"><code>vignettes/features.Rmd</code></a></small>
       <div class="d-none name"><code>features.Rmd</code></div>
@@ -80,8 +80,9 @@
 <p>Support for <a href="https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html" class="external-link">Zarr
 version 3</a> is actively being worked on, and some features are likely
 to be missing.</p>
-<p>It is currently known that reading only is supported, not writing,
-and that the sharding codec is not supported.</p>
+<p>It is known that only reading, and writing via
+<code><a href="../reference/update_zarr_array.html">update_zarr_array()</a></code>, are currently supported and that the
+sharding codec is not yet implemented.</p>
 </div>
 <div class="section level2">
 <h2 id="reading-and-writing">Reading and Writing<a class="anchor" aria-label="anchor" href="#reading-and-writing"></a>
@@ -281,6 +282,11 @@ support for a required compression codec is missing.</p>
 <h4 id="other-codecs">Other codecs<a class="anchor" aria-label="anchor" href="#other-codecs"></a>
 </h4>
 <table class="table">
+<colgroup>
+<col width="22%">
+<col width="64%">
+<col width="14%">
+</colgroup>
 <thead><tr class="header">
 <th>Codec</th>
 <th align="center">Status<br>(reading / writing)</th>
@@ -299,8 +305,9 @@ support for a required compression codec is missing.</p>
 </tr>
 <tr class="odd">
 <td><code>VLen-UTF8</code></td>
-<td align="center">✔ / ❌</td>
-<td></td>
+<td align="center">✔ / ✔ *</td>
+<td>Writing supported only via <code><a href="../reference/update_zarr_array.html">update_zarr_array()</a></code>
+</td>
 </tr>
 </tbody>
 </table>

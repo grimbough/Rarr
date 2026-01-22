@@ -6,8 +6,7 @@ Read a single Zarr chunk
 
 ``` r
 read_chunk(
-  zarr_array_path,
-  chunk_name,
+  chunk_path,
   metadata,
   s3_client = NULL,
   alt_chunk_dim = NULL,
@@ -17,13 +16,10 @@ read_chunk(
 
 ## Arguments
 
-- zarr_array_path:
+- chunk_path:
 
-  A character vector of length 1, giving the path to the Zarr array
-
-- chunk_name:
-
-  The name of the chunk to read.
+  A character vector of length 1, giving the path to the chunk to be
+  read.
 
 - metadata:
 
