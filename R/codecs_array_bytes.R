@@ -74,11 +74,11 @@ codec_bytes_decode <- function(
   return(converted_chunk)
 }
 
-codec_bytes_encode <- function(d, datatype) {
+codec_bytes_encode <- function(d, datatype, endian) {
   if (is.character(d)) {
     ## we need to create fixed length strings either via padding or trimming
     if (datatype$base_type == "unicode") {
-      to <- ifelse(datatype$endian == "little", "UCS-4LE", "UCS-4BE")
+      to <- ifelse(endian == "little", "UCS-4LE", "UCS-4BE")
       raw_list <- iconv(d, to = to, toRaw = TRUE)
     } else {
       raw_list <- iconv(d, toRaw = TRUE)
@@ -96,10 +96,10 @@ codec_bytes_encode <- function(d, datatype) {
       )
     )
   } else {
-    if (is.na(datatype$endian)) {
-      datatype$endian <- "little"
+    if (is.na(endian)) {
+      endian <- "little"
     }
-    writeBin(d, raw(), size = datatype$nbytes, endian = datatype$endian)
+    writeBin(d, raw(), size = datatype$nbytes, endian = endian)
   }
 }
 
