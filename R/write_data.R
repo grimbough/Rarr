@@ -351,16 +351,47 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   stopifnot(is.list(index))
 
   zarr_array_path <- .normalize_array_path(zarr_array_path)
-  metadata <- .read_array_metadata(zarr_array_path, ".zarray")
-  metadata_v3 <- .convert_metadata_version(
-    metadata,
-    version_from = 2,
-    version_to = 3
+
+  metadata_files <- setNames(
+    file.exists(paste0(zarr_array_path, c(".zarray", "zarr.json"))),
+    c(".zarray", "zarr.json")
   )
+
+  if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
+    stop(
+      "The path contains both `.zarray` (Zarr V2 specification) and ",
+      "`zarr.json` (Zarr V3 specification) metadata files.\n",
+      "An array or group must conform to either the Zarr V2 or V3 ",
+      "specification.",
+      call. = FALSE
+    )
+  }
+  if (!any(metadata_files)) {
+    stop(
+      "The path does not contain any metadata files. ",
+      "It must contain one of: ",
+      "  - `.zarray` (Zarr V2 specification)\n",
+      "  - `zarr.json` (Zarr V3 specification)",
+      call. = FALSE
+    )
+  }
+
+  metadata <- .read_array_metadata(
+    zarr_array_path,
+    names(metadata_files)[metadata_files]
+  )
+
+  if (metadata$zarr_format == 2) {
+    metadata <- .convert_metadata_version(
+      metadata,
+      version_from = 2,
+      version_to = 3
+    )
+  }
   index <- check_index(index, metadata = metadata)
 
   existing_storage <- switch(
-    metadata_v3$datatype$base_type,
+    metadata$datatype$base_type,
     "uint" = "integer",
     "int" = "integer",
     "float" = "double",
@@ -373,17 +404,17 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     stop("New data is not of the same type as the existing array.")
   }
 
-  metadata_v3$configured_encoders <- .configure_codecs(
-    codecs = metadata_v3$codecs,
+  metadata$configured_encoders <- .configure_codecs(
+    codecs = metadata$codecs,
     operation = "encode"
   )
-  metadata_v3$configured_decoders <- .configure_codecs(
-    codecs = metadata_v3$codecs,
+  metadata$configured_decoders <- .configure_codecs(
+    codecs = metadata$codecs,
     operation = "decode"
   )
 
   zarr_dim <- unlist(metadata$shape)
-  chunk_dim <- unlist(metadata$chunks)
+  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
   ## coerce x to the same shape as the zarr to be updated
   x <- array(x, dim = lengths(index))
@@ -414,7 +445,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_indices <- chunk_indices[chunk_needed, , drop = FALSE]
   chunk_names <- .create_chunk_names(
     chunk_indices,
-    metadata_v3
+    metadata
   )
   chunk_indices <- apply(chunk_indices, 1, identity, simplify = FALSE)
   chunk_paths <- paste0(zarr_array_path, chunk_names)
@@ -430,7 +461,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       chunk_dim = chunk_dim,
       chunk_idx = chunk_idx,
       index = index,
-      metadata = metadata_v3
+      metadata = metadata
     )
   )
 
@@ -503,9 +534,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
   # Array to bytes codecs
   for (codec in metadata$configured_encoders[["array_bytes"]]) {
+    endian <- metadata$codecs[["bytes"]]$configuration %||% NA_character_
     raw_chunk <- do.call(
       codec,
-      list(as.vector(input_chunk), metadata$datatype)
+      list(as.vector(input_chunk), metadata$datatype, endian)
     )
   }
 
