@@ -22,7 +22,7 @@ output:
 
 Support for [Zarr version 3](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html) is actively being worked on, and some features are likely to be missing.
 
-It is currently known that reading only is supported, not writing, and that the sharding codec is not supported.
+It is known that only reading, and writing via `update_zarr_array()`, are currently supported and that the sharding codec is not yet implemented.
 
 ## Reading and Writing
 
@@ -78,4 +78,4 @@ Please open an [issue](https://github.com/Huber-group-EMBL/Rarr/issues) if suppo
 |-----------|:------------------------------:|-------|
 |`endian`   | &#x2714; / &#x274C;            |       |
 |`transpose`| &#x2714; / &#x2714;            |       |
-|`VLen-UTF8`| &#x2714; / &#x274C;            |       |
+|`VLen-UTF8`| &#x2714; / &#x2714; *          | Writing supported only via `update_zarr_array()` |
