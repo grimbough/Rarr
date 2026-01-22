@@ -300,11 +300,6 @@ write_zarr_array <- function(
     chunk_in_mem <- temp_chunk
   }
 
-  ## check the chunk path exists, and create if not
-  if (isFALSE(dir.exists(dirname(chunk_path)))) {
-    dir.create(dirname(chunk_path), recursive = TRUE, showWarnings = FALSE)
-  }
-
   .compress_and_write_chunk(
     input_chunk = chunk_in_mem,
     chunk_path = chunk_path,
@@ -528,6 +523,11 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_path,
   metadata
 ) {
+  ## check the chunk path exists, and create if not
+  if (isFALSE(dir.exists(dirname(chunk_path)))) {
+    dir.create(dirname(chunk_path), recursive = TRUE, showWarnings = FALSE)
+  }
+
   # Array to array codecs
   for (codec in metadata$configured_encoders[["array_array"]]) {
     input_chunk <- do.call(codec, list(input_chunk))
