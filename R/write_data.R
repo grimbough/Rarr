@@ -237,7 +237,7 @@ write_zarr_array <- function(
     metadata_v3
   )
   chunk_paths <- paste0(path, chunk_names)
-  chunk_indices <- apply(chunk_indices, 1, identity, simplify = FALSE)
+  chunk_indices <- asplit(chunk_indices, 1, drop = TRUE)
 
   same_type_lower_bytesize <- metadata_v3$data_type %in%
     c("int8", "int16", "float32")
@@ -444,7 +444,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_indices,
     metadata
   )
-  chunk_indices <- apply(chunk_indices, 1, identity, simplify = FALSE)
+  chunk_indices <- asplit(chunk_indices, 1, drop = TRUE)
   chunk_paths <- paste0(zarr_array_path, chunk_names)
 
   ## only update the chunks that need to be
