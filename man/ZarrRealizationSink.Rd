@@ -14,6 +14,9 @@
 \alias{coerce,ANY,ZarrArray-method}
 \alias{coerce,ANY,ZarrRealizationSink-method}
 \title{Write arrays to Zarr}
+\value{
+An object of class \code{ZarrMatrix} (2D input) or \code{ZarrArray} (nD input).
+}
 \description{
 Write array data to a Zarr backend via \pkg{DelayedArray}'s \link[DelayedArray:RealizationSink]{RealizationSink} machinery.
 }
