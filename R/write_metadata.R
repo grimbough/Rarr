@@ -38,6 +38,10 @@
 #'
 #' @importFrom jsonlite write_json
 #'
+#' @returns Invisibly, the updated attributes as a named list.
+#' This is equivalent to (but faster than) using `read_zarr_attributes()` after writing.
+#' If no attributes were present before, this is identical to `new.zattrs`.
+#'
 #' @importFrom utils modifyList
 #' @export
 #' @examples
@@ -77,4 +81,6 @@ write_zarr_attributes <- function(
     pretty = 4,
     null = "null"
   )
+
+  invisible(new.zattrs)
 }
