@@ -21,6 +21,9 @@
 #' coerce,ANY,ZarrArray-method
 #' coerce,ANY,ZarrRealizationSink-method
 #'
+#' @returns
+#' An object of class `ZarrMatrix` (2D input) or `ZarrArray` (nD input).
+#'
 #' @name ZarrRealizationSink
 NULL
 
