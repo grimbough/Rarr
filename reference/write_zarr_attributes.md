@@ -24,11 +24,19 @@ write_zarr_attributes(zarr_path, new.zattrs = list(), overwrite = TRUE)
   if `TRUE` (the default), existing .zattrs elements will be overwritten
   by `new.zattrs`.
 
+## Value
+
+Invisibly, the updated attributes as a named list. This is equivalent to
+(but faster than) using
+[`read_zarr_attributes()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_attributes.md)
+after writing. If no attributes were present before, this is identical
+to `new.zattrs`.
+
 ## Examples
 
 ``` r
 z1 <- withr::local_tempdir(fileext = ".zarr")
 write_zarr_attributes(z1, list(date = "2025-01-01", author = "Jane Doe"))
-#> Warning: cannot open file '/tmp/RtmpD0WcA7/file1f0f7e561161.zarr/.zattrs': No such file or directory
+#> Warning: cannot open file '/tmp/Rtmpsj5kg9/file20194c035017.zarr/.zattrs': No such file or directory
 #> Error in file(con, "w"): cannot open the connection
 ```

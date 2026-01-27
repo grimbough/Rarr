@@ -64,12 +64,18 @@ path to a Zarr array or group.</p></dd>
 <dd><p>if <code>TRUE</code> (the default), existing .zattrs elements will be overwritten by <code>new.zattrs</code>.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>Invisibly, the updated attributes as a named list.
+This is equivalent to (but faster than) using <code><a href="read_zarr_attributes.html">read_zarr_attributes()</a></code> after writing.
+If no attributes were present before, this is identical to <code>new.zattrs</code>.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">z1</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_tempfile.html" class="external-link">local_tempdir</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".zarr"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">write_zarr_attributes</span><span class="op">(</span><span class="va">z1</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>date <span class="op">=</span> <span class="st">"2025-01-01"</span>, author <span class="op">=</span> <span class="st">"Jane Doe"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot open file '/tmp/RtmpD0WcA7/file1f0f7e561161.zarr/.zattrs': No such file or directory</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot open file '/tmp/Rtmpsj5kg9/file20194c035017.zarr/.zattrs': No such file or directory</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in file(con, "w"):</span> cannot open the connection</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
