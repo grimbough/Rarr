@@ -482,7 +482,7 @@ read_zarr_attributes <- function(zarr_path, s3_client) {
       Key = parsed_url$object
     )
 
-    zattrs <- fromJSON(rawToChar(s3_object$Body))
+    zattrs <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
   } else {
     zattrs <- read_json(attribute_path)
   }
