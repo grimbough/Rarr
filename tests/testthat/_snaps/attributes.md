@@ -17,21 +17,193 @@
       
       
       $multiscales
-           axes     datasets version
-      1 c, y, x c("0", "....     0.3
+      $multiscales[[1]]
+      $multiscales[[1]]$axes
+      $multiscales[[1]]$axes[[1]]
+      [1] "c"
+      
+      $multiscales[[1]]$axes[[2]]
+      [1] "y"
+      
+      $multiscales[[1]]$axes[[3]]
+      [1] "x"
+      
+      
+      $multiscales[[1]]$datasets
+      $multiscales[[1]]$datasets[[1]]
+      $multiscales[[1]]$datasets[[1]]$path
+      [1] "0"
+      
+      
+      $multiscales[[1]]$datasets[[2]]
+      $multiscales[[1]]$datasets[[2]]$path
+      [1] "1"
+      
+      
+      $multiscales[[1]]$datasets[[3]]
+      $multiscales[[1]]$datasets[[3]]$path
+      [1] "2"
+      
+      
+      $multiscales[[1]]$datasets[[4]]
+      $multiscales[[1]]$datasets[[4]]$path
+      [1] "3"
+      
+      
+      $multiscales[[1]]$datasets[[5]]
+      $multiscales[[1]]$datasets[[5]]$path
+      [1] "4"
+      
+      
+      $multiscales[[1]]$datasets[[6]]
+      $multiscales[[1]]$datasets[[6]]$path
+      [1] "5"
+      
+      
+      
+      $multiscales[[1]]$version
+      [1] "0.3"
+      
+      
       
       $omero
       $omero$channels
-        active coefficient  color family inverted   label window.end window.max
-      1   TRUE           1 FF0000 linear    FALSE Cam2-T1       5090      65535
-      2   TRUE           1 00C000 linear    FALSE Cam1-T2       5736      65535
-      3   TRUE           1 FFFFFF linear    FALSE       2       5312      65535
-      4  FALSE           1 FFFFFF linear    FALSE       3       4128      65535
-        window.min window.start
-      1          0          198
-      2          0          198
-      3          0          196
-      4          0          194
+      $omero$channels[[1]]
+      $omero$channels[[1]]$active
+      [1] TRUE
+      
+      $omero$channels[[1]]$coefficient
+      [1] 1
+      
+      $omero$channels[[1]]$color
+      [1] "FF0000"
+      
+      $omero$channels[[1]]$family
+      [1] "linear"
+      
+      $omero$channels[[1]]$inverted
+      [1] FALSE
+      
+      $omero$channels[[1]]$label
+      [1] "Cam2-T1"
+      
+      $omero$channels[[1]]$window
+      $omero$channels[[1]]$window$end
+      [1] 5090
+      
+      $omero$channels[[1]]$window$max
+      [1] 65535
+      
+      $omero$channels[[1]]$window$min
+      [1] 0
+      
+      $omero$channels[[1]]$window$start
+      [1] 198
+      
+      
+      
+      $omero$channels[[2]]
+      $omero$channels[[2]]$active
+      [1] TRUE
+      
+      $omero$channels[[2]]$coefficient
+      [1] 1
+      
+      $omero$channels[[2]]$color
+      [1] "00C000"
+      
+      $omero$channels[[2]]$family
+      [1] "linear"
+      
+      $omero$channels[[2]]$inverted
+      [1] FALSE
+      
+      $omero$channels[[2]]$label
+      [1] "Cam1-T2"
+      
+      $omero$channels[[2]]$window
+      $omero$channels[[2]]$window$end
+      [1] 5736
+      
+      $omero$channels[[2]]$window$max
+      [1] 65535
+      
+      $omero$channels[[2]]$window$min
+      [1] 0
+      
+      $omero$channels[[2]]$window$start
+      [1] 198
+      
+      
+      
+      $omero$channels[[3]]
+      $omero$channels[[3]]$active
+      [1] TRUE
+      
+      $omero$channels[[3]]$coefficient
+      [1] 1
+      
+      $omero$channels[[3]]$color
+      [1] "FFFFFF"
+      
+      $omero$channels[[3]]$family
+      [1] "linear"
+      
+      $omero$channels[[3]]$inverted
+      [1] FALSE
+      
+      $omero$channels[[3]]$label
+      [1] "2"
+      
+      $omero$channels[[3]]$window
+      $omero$channels[[3]]$window$end
+      [1] 5312
+      
+      $omero$channels[[3]]$window$max
+      [1] 65535
+      
+      $omero$channels[[3]]$window$min
+      [1] 0
+      
+      $omero$channels[[3]]$window$start
+      [1] 196
+      
+      
+      
+      $omero$channels[[4]]
+      $omero$channels[[4]]$active
+      [1] FALSE
+      
+      $omero$channels[[4]]$coefficient
+      [1] 1
+      
+      $omero$channels[[4]]$color
+      [1] "FFFFFF"
+      
+      $omero$channels[[4]]$family
+      [1] "linear"
+      
+      $omero$channels[[4]]$inverted
+      [1] FALSE
+      
+      $omero$channels[[4]]$label
+      [1] "3"
+      
+      $omero$channels[[4]]$window
+      $omero$channels[[4]]$window$end
+      [1] 4128
+      
+      $omero$channels[[4]]$window$max
+      [1] 65535
+      
+      $omero$channels[[4]]$window$min
+      [1] 0
+      
+      $omero$channels[[4]]$window$start
+      [1] 194
+      
+      
+      
       
       $omero$id
       [1] 1
