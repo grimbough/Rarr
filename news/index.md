@@ -30,6 +30,9 @@
   [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md).
 - “Simple” structured data types (i.e., only one level of nesting and no
   arrays) can now be read from Zarr v2 arrays.
+- `simplifyVector = FALSE` is added to `fromJSON` in
+  [`read_zarr_attributes()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_attributes.md),
+  thus attributes of both local and s3 zarr stores are read identically.
 
 ### Minor improvements
 
