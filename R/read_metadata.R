@@ -482,6 +482,8 @@ read_zarr_attributes <- function(zarr_path, s3_client) {
       Key = parsed_url$object
     )
 
+   # simplifyVector = FALSE is used for consistency with read_json(), 
+   # used on local files.
     zattrs <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
   } else {
     zattrs <- read_json(attribute_path)
