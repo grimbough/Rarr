@@ -178,16 +178,15 @@ read_data <- function(
     required_chunks,
     metadata
   )
-  chunk_paths <- paste0(zarr_array_path, chunk_names)
+  # In the DelayedArray framework, we can have integer(0) indices
+  # https://github.com/Huber-group-EMBL/Rarr/issues/112
+  chunk_paths <- paste0(zarr_array_path, chunk_names, recycle0 = TRUE)
 
   warnings <- list()
   ## hopefully we can eventually do this in parallel
   chunk_selections <- withCallingHandlers(
     lapply(
-      # It's not equivalent to loop over chunk_path and chunk_names
-      # because the DelayedArray backend can set chunk_names to character(0),
-      # which is length 0, but will create chunk_paths of length 1.
-      seq_along(chunk_names),
+      seq_along(chunk_paths),
       function(i) {
         .extract_elements(
           current_chunk_index = required_chunks[i, ],
