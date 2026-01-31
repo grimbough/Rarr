@@ -43,10 +43,13 @@ check_index <- function(index, metadata) {
     if (identical(metadata[["shape"]], 1)) {
       chunk_names <- "c"
     } else {
+      # In the DelayedArray framework, we can have integer(0) indices
+      # https://github.com/Huber-group-EMBL/Rarr/issues/112
       chunk_names <- paste(
         "c",
         chunk_names,
-        sep = dim_separator
+        sep = dim_separator,
+        recycle0 = TRUE
       )
     }
   }
