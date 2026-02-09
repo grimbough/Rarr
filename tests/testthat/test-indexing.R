@@ -42,4 +42,18 @@ test_that("integer(0) indexing works correctly", {
     res <- read_zarr_array(zarr_v3, list(integer(0), integer(0), integer(0)))
   )
   expect_shape(res, dim = c(0, 0, 0))
+
+  # Edge case from https://github.com/Huber-group-EMBL/Rarr/issues/112#issuecomment-3842837618.
+  # This happens because the scalar case is special-cased.
+  zarr_scalar_v3 <- system.file(
+    package = "Rarr",
+    "extdata",
+    "zarr_examples",
+    "scalar",
+    "scalar_v3.zarr"
+  )
+  expect_no_condition(
+    res <- read_zarr_array(zarr_scalar_v3, list(integer(0)))
+  )
+  expect_identical(res, integer(0), ignore_attr = "dim")
 })

@@ -29,6 +29,12 @@ check_index <- function(index, metadata) {
 }
 
 .create_chunk_names <- function(chunk_indices, metadata) {
+  # In the DelayedArray framework, we can have integer(0) indices
+  # https://github.com/Huber-group-EMBL/Rarr/issues/112.
+  if (nrow(chunk_indices) == 0L) {
+    return(character(0))
+  }
+
   dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
 
   # This is faster than vapply()
@@ -40,7 +46,7 @@ check_index <- function(index, metadata) {
   ))
 
   if (metadata[["zarr_format"]] == 3) {
-    if (identical(metadata[["shape"]], 1)) {
+    if (identical(metadata[["shape"]], 1) && length(chunk_names) > 0) {
       chunk_names <- "c"
     } else {
       # In the DelayedArray framework, we can have integer(0) indices
