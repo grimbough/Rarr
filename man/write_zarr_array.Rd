@@ -10,7 +10,7 @@ write_zarr_array(
   chunk_dim,
   data_type = storage.mode(x),
   order = "F",
-  compressor = use_zlib(),
+  compressor = use_zstd(),
   fill_value,
   nchar,
   dimension_separator = "."
@@ -39,7 +39,7 @@ are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify
 'row' or 'C' will specify "row-major" order.}
 
 \item{compressor}{What (if any) compression tool should be applied to the
-array chunks.  The default is to use \code{zlib} compression. Supplying \code{NULL}
+array chunks.  The default is to use \code{zstd} compression. Supplying \code{NULL}
 will disable chunk compression. See \link{compressors} for more details.}
 
 \item{fill_value}{The default value for uninitialized portions of the array.

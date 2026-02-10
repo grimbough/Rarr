@@ -94,7 +94,7 @@
 #'   "column-major" ordering, which is how R arrays are arranged in memory.
 #'   'row' or 'C' will specify "row-major" order.
 #' @param compressor What (if any) compression tool should be applied to the
-#'   array chunks.  The default is to use `zlib` compression. Supplying `NULL`
+#'   array chunks.  The default is to use `zstd` compression. Supplying `NULL`
 #'   will disable chunk compression. See [compressors] for more details.
 #' @param fill_value The default value for uninitialized portions of the array.
 #'   Does not have to be provided, in which case the default for the specified
@@ -126,7 +126,7 @@ create_empty_zarr_array <- function(
   chunk_dim,
   data_type,
   order = "F",
-  compressor = use_zlib(),
+  compressor = use_zstd(),
   fill_value,
   nchar = NULL,
   dimension_separator = "."
@@ -193,7 +193,7 @@ write_zarr_array <- function(
   chunk_dim,
   data_type = storage.mode(x),
   order = "F",
-  compressor = use_zlib(),
+  compressor = use_zstd(),
   fill_value,
   nchar,
   dimension_separator = "."
