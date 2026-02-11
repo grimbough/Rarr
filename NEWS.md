@@ -40,6 +40,10 @@
   bug report and pull request.
 * Empty zarr arrays (i.e., arrays with `shape` and `chunks` equal zero)
   can now be written.
+* Compression for writing Zarr arrays now default to zstd rather than zlib.
+  zstd achieves similar or better compression levels while being much faster
+  at compressing (= writing Zarr arrays) and decompressing (= reading Zarr 
+  arrays). This matches the default used by Zarr Python implementation.
 
 ## Bug fixes
 
