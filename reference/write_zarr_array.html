@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.27</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.28</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
 <span>  <span class="va">chunk_dim</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mode.html" class="external-link">storage.mode</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
 <span>  order <span class="op">=</span> <span class="st">"F"</span>,</span>
-<span>  compressor <span class="op">=</span> <span class="fu"><a href="compressors.html">use_zlib</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  compressor <span class="op">=</span> <span class="fu"><a href="compressors.html">use_zstd</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">fill_value</span>,</span>
 <span>  <span class="va">nchar</span>,</span>
 <span>  dimension_separator <span class="op">=</span> <span class="st">"."</span></span>
@@ -94,7 +94,7 @@ are 'column', 'row', 'F' &amp; 'C'.  'column' or 'F' will specify
 
 <dt id="arg-compressor">compressor<a class="anchor" aria-label="anchor" href="#arg-compressor"></a></dt>
 <dd><p>What (if any) compression tool should be applied to the
-array chunks.  The default is to use <code>zlib</code> compression. Supplying <code>NULL</code>
+array chunks.  The default is to use <code>zstd</code> compression. Supplying <code>NULL</code>
 will disable chunk compression. See <a href="compressors.html">compressors</a> for more details.</p></dd>
 
 

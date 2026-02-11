@@ -11,7 +11,7 @@ create_empty_zarr_array(
   chunk_dim,
   data_type,
   order = "F",
-  compressor = use_zlib(),
+  compressor = use_zstd(),
   fill_value,
   nchar = NULL,
   dimension_separator = "."
@@ -53,7 +53,7 @@ create_empty_zarr_array(
 - compressor:
 
   What (if any) compression tool should be applied to the array chunks.
-  The default is to use `zlib` compression. Supplying `NULL` will
+  The default is to use `zstd` compression. Supplying `NULL` will
   disable chunk compression. See
   [compressors](https://huber-group-embl.github.io/Rarr/reference/compressors.md)
   for more details.
