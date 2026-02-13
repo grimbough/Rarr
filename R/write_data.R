@@ -542,10 +542,15 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   } else if (compressor$id %in% c("lz4", "numcodecs.lz4")) {
     compressed_chunk <- codec_lz4_encode(raw_chunk)
   } else if (compressor$id == "zstd") {
-    compressed_chunk <- codec_zstd_encode(raw_chunk, compressor_config)
+    con <- zstdfile(
+      chunk_path,
+      open = "wb",
+      compression = compressor_config$level
+    )
+    on.exit(close(con))
   }
 
-  if (compressor$id %in% c("gzip", "bz2", "lzma")) {
+  if (compressor$id %in% c("gzip", "bz2", "lzma", "zstd")) {
     writeBin(raw_chunk, con = con, useBytes = TRUE)
   } else {
     writeBin(compressed_chunk, con = chunk_path)

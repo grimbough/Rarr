@@ -141,6 +141,14 @@ use_zstd <- function(level = 0L) {
       call. = FALSE
     )
   }
+  if (level > 19) {
+    warning(
+      "Zstd levels above 19 are currently not supported due to a limitation ",
+      "in base R. Setting `level` to 19.",
+      call. = FALSE
+    )
+    level <- 19L
+  }
   res <- list(id = "zstd", level = as.integer(level))
   return(res)
 }

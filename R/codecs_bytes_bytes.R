@@ -70,10 +70,10 @@ codec_lz4_encode <- function(input, ...) {
 }
 
 codec_zstd_decode <- function(bytes, ...) {
-  .Call(
-    "decompress_chunk_ZSTD",
-    bytes,
-    PACKAGE = "Rarr"
+  memDecompress(
+    from = bytes,
+    type = "zstd",
+    asChar = FALSE
   )
 }
 
