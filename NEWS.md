@@ -71,6 +71,8 @@
   * snappy 1.1.1 -> 1.2.2
   * zstd 1.5.5 -> 1.5.7
   * lz4 1.9.2 -> 1.10.0
+* Resizable vector in C code for compression now uses the official exported R C
+  API, instead of internal R functions.
 
 # Rarr 1.9
 
