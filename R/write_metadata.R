@@ -57,6 +57,7 @@
 #'   path to a Zarr array or group.
 #' @param new.zattrs a list inserted to .zattrs at the \code{path}.
 #' @param overwrite if \code{TRUE} (the default), existing .zattrs elements will be overwritten by \code{new.zattrs}.
+#' @inheritParams create_empty_zarr_array
 #'
 #' @importFrom jsonlite write_json
 #'
@@ -73,10 +74,10 @@
 write_zarr_attributes <- function(
   zarr_path,
   new.zattrs = list(),
-  overwrite = TRUE
+  overwrite = TRUE,
+  zarr_version = if (file.exists(file.path(zarr_path, ".zarray"))) 2L else 3L
 ) {
   zarr_path <- .normalize_array_path(zarr_path)
-  zattrs_path <- paste0(zarr_path, ".zattrs")
 
   if (is.null(names(new.zattrs))) {
     stop("list elements should be named")
@@ -87,22 +88,34 @@ write_zarr_attributes <- function(
     new.zattrs <- new.zattrs[nzchar(names(new.zattrs))]
   }
 
-  if (file.exists(zattrs_path)) {
-    old.zattrs <- read_json(zattrs_path)
-    new.zattrs <- if (overwrite) {
-      modifyList(old.zattrs, new.zattrs)
-    } else {
-      modifyList(new.zattrs, old.zattrs)
-    }
+  old.zattrs <- read_zarr_attributes(zarr_path)
+
+  new.zattrs <- if (overwrite) {
+    modifyList(old.zattrs, new.zattrs)
+  } else {
+    modifyList(new.zattrs, old.zattrs)
   }
 
-  write_json(
-    new.zattrs,
-    zattrs_path,
-    auto_unbox = TRUE,
-    pretty = 4,
-    null = "null"
-  )
+  if (zarr_version == 2L) {
+    write_json(
+      new.zattrs,
+      file.path(zarr_path, ".zattrs"),
+      auto_unbox = TRUE,
+      pretty = 4,
+      null = "null"
+    )
+  } else if (zarr_version == 3L) {
+    # FIXME: we really want a partial write to the json file
+    metadata <- read_json(file.path(zarr_path, "zarr.json"))
+    metadata$attributes <- new.zattrs
+    write_json(
+      metadata,
+      file.path(zarr_path, "zarr.json"),
+      auto_unbox = TRUE,
+      pretty = 4,
+      null = "null"
+    )
+  }
 
   invisible(new.zattrs)
 }

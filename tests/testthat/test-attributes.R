@@ -5,7 +5,8 @@ test_that("zarr attributes can be written and read", {
   res <- write_zarr_array(
     x = x,
     zarr_array_path = path,
-    chunk_dim = c(2, 5)
+    chunk_dim = c(2, 5),
+    zarr_version = 2
   )
 
   # add .zattrs to /
