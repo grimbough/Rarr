@@ -4,7 +4,12 @@
 \alias{write_zarr_attributes}
 \title{Read the .zattrs file associated with a Zarr array or group}
 \usage{
-write_zarr_attributes(zarr_path, new.zattrs = list(), overwrite = TRUE)
+write_zarr_attributes(
+  zarr_path,
+  new.zattrs = list(),
+  overwrite = TRUE,
+  zarr_version = if (file.exists(file.path(zarr_path, ".zarray"))) 2L else 3L
+)
 }
 \arguments{
 \item{zarr_path}{A character vector of length 1. This provides the
