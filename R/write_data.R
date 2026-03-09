@@ -129,7 +129,8 @@ create_empty_zarr_array <- function(
   compressor = use_zstd(),
   fill_value,
   nchar = NULL,
-  dimension_separator = "."
+  dimension_separator = ".",
+  zarr_version = 3
 ) {
   path <- .normalize_array_path(zarr_array_path)
   if (!dir.exists(path)) {
@@ -146,16 +147,17 @@ create_empty_zarr_array <- function(
 
   .check_chunk_shape(x_dim = dim, chunk_dim = chunk_dim)
 
-  ## create the .zarray metadata file
-  .write_zarray(
-    path = paste0(path, ".zarray"),
+  ## create the metadata file
+  .write_zarr_metadata(
+    array_path = path,
     array_shape = dim,
     chunk_shape = chunk_dim,
     data_type = data_type,
     order = order,
     fill_value = fill_value,
     compressor = compressor,
-    dimension_separator = dimension_separator
+    dimension_separator = dimension_separator,
+    zarr_version = zarr_version
   )
 
   return(invisible(TRUE))
@@ -196,7 +198,8 @@ write_zarr_array <- function(
   compressor = use_zstd(),
   fill_value,
   nchar,
-  dimension_separator = "."
+  dimension_separator = ".",
+  zarr_version = 3
 ) {
   path <- .normalize_array_path(zarr_array_path)
 
@@ -214,15 +217,17 @@ write_zarr_array <- function(
     fill_value = fill_value,
     compressor = compressor,
     nchar = nchar,
-    dimension_separator = dimension_separator
+    dimension_separator = dimension_separator,
+    zarr_version = zarr_version
   )
   ## read the metadata we just created
-  metadata <- .read_array_metadata(path, ".zarray")
-  metadata_v3 <- .convert_metadata_version(
-    metadata,
-    version_from = 2,
-    version_to = 3
-  )
+  if (zarr_version == 3) {
+    metadata_v3 <- .read_array_metadata(path, "zarr.json")
+  } else {
+    metadata_v3 <- .read_array_metadata(path, ".zarray") |>
+      .convert_metadata_version(version_from = 2, version_to = 3)
+  }
+
   metadata_v3$configured_encoders <- .configure_codecs(
     codecs = metadata_v3$codecs,
     operation = "encode"

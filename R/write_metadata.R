@@ -1,20 +1,16 @@
 #' @importFrom jsonlite write_json
-.write_zarray <- function(
-  path,
+.write_zarr_metadata <- function(
+  array_path,
   array_shape,
   chunk_shape,
   data_type,
   fill_value,
   compressor,
   dimension_separator = ".",
-  order = "C"
+  order = "C",
+  zarr_version = 3
 ) {
-  order <- toupper(order)
-  if (order %notin% c("C", "F")) {
-    stop("The 'order' argument must be either 'C' or 'F'")
-  }
-
-  zarray <- list(
+  metadata_v2 <- list(
     # the spec states these need to be json arrays, so we need to avoid auto_unboxing
     shape = as.list(array_shape),
     chunks = as.list(chunk_shape),
@@ -26,7 +22,33 @@
     filters = NULL,
     compressor = compressor
   )
-  write_json(zarray, path, auto_unbox = TRUE, pretty = 4, null = "null")
+
+  if (zarr_version == 2) {
+    write_json(
+      metadata_v2,
+      file.path(array_path, ".zarray"),
+      auto_unbox = TRUE,
+      pretty = 4,
+      null = "null"
+    )
+    return(invisible(TRUE))
+  }
+  if (zarr_version == 3) {
+    metadata_v2$datatype <- .parse_datatype(data_type)
+    metadata_v3 <- .convert_metadata_version(
+      metadata_v2,
+      version_from = 2,
+      version_to = 3
+    )
+    metadata_v3$zarr_format <- 3L
+    write_json(
+      metadata_v3,
+      file.path(array_path, "zarr.json"),
+      auto_unbox = TRUE,
+      pretty = 4,
+      null = "null"
+    )
+  }
 }
 
 #' Read the .zattrs file associated with a Zarr array or group
