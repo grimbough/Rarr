@@ -72,5 +72,5 @@ identical(read_zarr_array(blosc_path), read_zarr_array(bzip2_path))
 sum(file.size(list.files(blosc_path, full.names = TRUE)))
 #> [1] 9600
 sum(file.size(list.files(bzip2_path, full.names = TRUE)))
-#> [1] 13133
+#> [1] 13162
 ```
