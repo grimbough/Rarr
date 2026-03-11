@@ -624,7 +624,7 @@ zarr_X
 
 ### Session info
 
-    ## R Under development (unstable) (2026-03-08 r89578)
+    ## R Under development (unstable) (2026-03-10 r89593)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.3 LTS
     ## 
