@@ -433,6 +433,11 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' Read the attributes associated with a Zarr array or group
 #'
 #' @inheritParams .read_array_metadata
+#' @param missing A character vector of length 1. This determines the behaviour
+#'   when no file containing attributes is found. This can be one of:
+#'  - "ignore" (the default): an empty list is returned silently
+#'  - "warning": a warning is issued and an empty list is returned.
+#'  - "error": an error is raised.
 #'
 #' @returns A list containing the attributes. If the file containing attributes
 #' (`.zattrs` for Zarr v2 or `zarr.json` for Zarr v3) exists but no attributes
@@ -441,7 +446,12 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #' @importFrom jsonlite read_json fromJSON
 #'
 #' @export
-read_zarr_attributes <- function(zarr_path, s3_client) {
+read_zarr_attributes <- function(
+  zarr_path,
+  s3_client,
+  missing = c("ignore", "warning", "error")
+) {
+  missing <- match.arg(missing)
   zarr_path <- .normalize_array_path(zarr_path)
   ## determine if this is a local or S3 array
   if (missing(s3_client)) {
@@ -455,11 +465,12 @@ read_zarr_attributes <- function(zarr_path, s3_client) {
   )
 
   if (!any(exists_attribute_files)) {
-    stop(
+    warning(
       "No file that could contain attributes (either `.zattrs` for v2 ",
       "or `zarr.json` for v3) was found in the path.",
       call. = FALSE
     )
+    return(list())
   }
   if (all(exists_attribute_files)) {
     stop(
@@ -482,8 +493,8 @@ read_zarr_attributes <- function(zarr_path, s3_client) {
       Key = parsed_url$object
     )
 
-   # simplifyVector = FALSE is used for consistency with read_json(),
-   # used on local files.
+    # simplifyVector = FALSE is used for consistency with read_json(),
+    # used on local files.
     zattrs <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
   } else {
     zattrs <- read_json(attribute_path)
