@@ -90,3 +90,13 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
   UNPROTECT(1);
   return output;
 } 
+
+/* From https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Some-backports-1 */
+#if R_VERSION < R_Version(4, 6, 0)
+SEXP R_allocResizableVector(SEXPTYPE type, R_xlen_t maxlen) {
+  SEXP ret = Rf_allocVector(type, maxlen);
+  SET_TRUELENGTH(ret, maxlen);
+  SET_GROWABLE_BIT(ret);
+  return ret;
+}
+#endif
