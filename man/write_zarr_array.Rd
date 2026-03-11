@@ -13,7 +13,8 @@ write_zarr_array(
   compressor = use_zstd(),
   fill_value,
   nchar,
-  dimension_separator = "."
+  dimension_separator = if (zarr_version == 2) "." else "/",
+  zarr_version = 3
 )
 }
 \arguments{

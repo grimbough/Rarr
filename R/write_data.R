@@ -129,7 +129,7 @@ create_empty_zarr_array <- function(
   compressor = use_zstd(),
   fill_value,
   nchar = NULL,
-  dimension_separator = ".",
+  dimension_separator = if (zarr_version == 2) "." else "/",
   zarr_version = 3
 ) {
   path <- .normalize_array_path(zarr_array_path)
@@ -198,7 +198,7 @@ write_zarr_array <- function(
   compressor = use_zstd(),
   fill_value,
   nchar,
-  dimension_separator = ".",
+  dimension_separator = if (zarr_version == 2) "." else "/",
   zarr_version = 3
 ) {
   path <- .normalize_array_path(zarr_array_path)
