@@ -1,9 +1,14 @@
 .check_datatype <- function(data_type, fill_value, nchar = NULL) {
+  # TODO: Error if fill_value is incompatible with data_type in Zarr v3.
+  # V3 spec says:
+  # "The permitted values depend on the data type.
+  # Fill values for core data types are listed in Permitted fill values."
   if (missing(data_type) && missing(fill_value)) {
     stop(
       "Data type cannot be determined if both 'data_type' and 'fill_value' arguments are missing."
     )
-  } else if (missing(data_type) && !missing(fill_value)) {
+  }
+  if (missing(data_type) && !missing(fill_value)) {
     ## if we only have a fill value, infer the data type from that
     data_type <- storage.mode(fill_value)
   }
