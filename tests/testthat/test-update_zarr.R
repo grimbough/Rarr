@@ -5,7 +5,8 @@ test_that("update_zarr_array replaces chunks for 1D arrays", {
     dim = 100,
     chunk_dim = 10,
     data_type = "integer",
-    fill_value = 100L
+    fill_value = 100L,
+    zarr_version = 2
   )
 
   x <- array(1:5, dim = 5)
@@ -29,6 +30,41 @@ test_that("update_zarr_array replaces chunks for 1D arrays", {
   )
   # expect two chunk files were created
   expect_length(list.files(path), 2)
+
+  path_v3 <- withr::local_tempfile(fileext = ".zarr")
+  res_v3 <- create_empty_zarr_array(
+    zarr_array_path = path_v3,
+    dim = 100,
+    chunk_dim = 10,
+    data_type = "integer",
+    fill_value = 100L,
+    zarr_version = 3
+  )
+
+  x <- array(1:5, dim = 5)
+  expect_true(update_zarr_array(path_v3, x = x, index = list(1:5)))
+  expect_identical(
+    read_zarr_array(path_v3),
+    array(c(1:5, rep(100L, 95)), dim = 100)
+  )
+  # only a single chunk file should have been created
+  expect_identical(list.files(path_v3, recursive = TRUE), c("c/0", "zarr.json"))
+
+  x <- rep(20L, 5)
+  expect_true(update_zarr_array(
+    path_v3,
+    x = x,
+    index = list(c(91, 93, 95, 97, 99))
+  ))
+  expect_identical(
+    read_zarr_array(path_v3)[91:100],
+    array(rep(c(20L, 100L), 5), dim = 10)
+  )
+  # expect two chunk files were created
+  expect_identical(
+    list.files(path_v3, recursive = TRUE),
+    c("c/0", "c/9", "zarr.json")
+  )
 })
 
 test_that("update_zarr_array handles NULL in index for some dimensions (2D case)", {
