@@ -215,7 +215,8 @@ test_that("fill_value is converted to string", {
       chunk_dim = c(2, 2),
       data_type = "character",
       fill_value = 0,
-      nchar = 10
+      nchar = 10,
+      zarr_version = 2
     )
   )
   expect_identical(read_zarr_array(path), matrix("0", nrow = 4, ncol = 4))
