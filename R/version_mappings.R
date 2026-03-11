@@ -68,7 +68,7 @@
   } else {
     metadata_v3$codecs$bytes <- list(
       name = "bytes",
-      configuration = c("endian" = dt$endian %||% NA_character_)
+      configuration = list("endian" = dt$endian %||% NA_character_)
     )
   }
 
