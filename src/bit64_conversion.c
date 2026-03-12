@@ -16,11 +16,11 @@ void uint32_to_int32(void* in_buf, size_t n, void* out_buf) {
   
 }
 
-void int64_to_int32(void* in_buf, size_t n, void* out_buf, int is_signed) {
+void int64_to_int32(void* in_buf, size_t n, void* out_buf, bool is_signed) {
   
   R_xlen_t i;
   
-  if (is_signed == 1) {
+  if (is_signed) {
     for (i=0; i<n; i++) {
       if (((int64_t *)in_buf)[i] > INT_MAX) {
         ((int32_t *)out_buf)[i] = INT_MIN;
