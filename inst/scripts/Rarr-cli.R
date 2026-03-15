@@ -12,11 +12,6 @@ options <- args |>
 
 opt_list <- setNames(options$val, gsub("^--", "", options$arg))
 
-dims <- Rarr::zarr_overview(
-  zarr_array_path = opt_list[["array_path"]],
-  as_data_frame = TRUE
-)$dim[[1]]
-
 res <- Rarr::read_zarr_array(
   zarr_array_path = opt_list[["array_path"]]
 )
