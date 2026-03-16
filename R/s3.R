@@ -136,11 +136,10 @@ parse_s3_path <- function(path) {
 #' If no valid credentials are found this function will error, which is expected
 #' and is caught by `.check_credentials`.
 #'
-#' @importFrom methods formalArgs
 #' @keywords internal
 .get_credentials <- function(credentials) {
   for (provider in credentials$provider) {
-    args <- formalArgs(provider)
+    args <- names(formals(provider))
     if (is.null(args)) {
       creds <- provider()
     } else {
@@ -199,7 +198,8 @@ parse_s3_path <- function(path) {
   exists <- s3_client$list_objects_v2(
     Bucket = Bucket,
     Prefix = Key
-  )$KeyCount > 0
+  )$KeyCount >
+    0
 
   return(exists)
 }

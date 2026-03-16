@@ -23,7 +23,6 @@ Depends:
 Imports:
     curl,
     jsonlite,
-    methods,
     paws.storage,
     R.utils,
     utils
