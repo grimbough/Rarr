@@ -1,5 +1,13 @@
 # Rarr 1.11
 
+## Breaking changes
+
+* The DelayedArray backend (`writeZarrArray()` and `ZarrArray()` functions)
+  has been migrated to a separate, dedicated package.
+  This reduces the number of dependencies from 37 to 24.
+  This also greatly improves performance in for the standard case (when the
+  DelayedArray backend is not used).
+
 ## New features
 
 * Zarr v3 arrays with data types and codecs that already existed in v2 
