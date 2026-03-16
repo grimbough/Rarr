@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.30</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.31</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.11" id="rarr-111">Rarr 1.11<a class="anchor" aria-label="anchor" href="#rarr-111"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-1-11">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-11"></a></h3>
+<ul><li>The DelayedArray backend (<code><a href="../reference/ZarrArray-deprecated.html">writeZarrArray()</a></code> and <code><a href="../reference/ZarrArray-deprecated.html">ZarrArray()</a></code> functions) has been migrated to a separate, dedicated package. This reduces the number of dependencies from 37 to 24. This also greatly improves performance in for the standard case (when the DelayedArray backend is not used).</li>
+</ul></div>
 <div class="section level3">
 <h3 id="new-features-1-11">New features<a class="anchor" aria-label="anchor" href="#new-features-1-11"></a></h3>
 <ul><li>Zarr v3 arrays with data types and codecs that already existed in v2 can now be read via <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code>.</li>
@@ -122,9 +126,9 @@
 <ul><li>
 <code>.url_parse_other()</code> now accounts for port numbers in host name and colons in S3 buckets.</li>
 <li>
-<code><a href="../reference/ZarrRealizationSink.html">writeZarrArray()</a></code> now allows writing character arrays, and no longer errors complaining about null ‘nchar’ argument value. Default of ‘nchar’ is now <code>NULL</code>.</li>
+<code><a href="../reference/ZarrArray-deprecated.html">writeZarrArray()</a></code> now allows writing character arrays, and no longer errors complaining about null ‘nchar’ argument value. Default of ‘nchar’ is now <code>NULL</code>.</li>
 <li>
-<code><a href="../reference/ZarrRealizationSink.html">writeZarrArray()</a></code> no longer silently and incorrectly fills the last rows/columns when <code>dim</code> is not divisible by <code>chunk_dim</code>.</li>
+<code><a href="../reference/ZarrArray-deprecated.html">writeZarrArray()</a></code> no longer silently and incorrectly fills the last rows/columns when <code>dim</code> is not divisible by <code>chunk_dim</code>.</li>
 <li>The object name is no longer repeated (e.g., <code>name.zarrname.zarr</code>) when writing a Zarr array to a file in the current working directory.</li>
 <li>Invalid URLs for examples with S3 storage in <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code> and <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code> have been updated.</li>
 <li>
@@ -148,7 +152,7 @@
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.7" id="rarr-17">Rarr 1.7<a class="anchor" aria-label="anchor" href="#rarr-17"></a></h2>
-<ul><li>Added <code><a href="https://rdrr.io/pkg/BiocGenerics/man/path.html" class="external-link">path()</a></code> method for <code>ZarrArray</code> class that returns the location of the zarr array root.</li>
+<ul><li>Added <code>path()</code> method for <code>ZarrArray</code> class that returns the location of the zarr array root.</li>
 <li>Removed used of non-API call <code>SETLENGTH</code> in C code.</li>
 <li>Small changes to compilation of internal blosc libraries to cope with the C23 compiler becoming the default in R-4.5.0</li>
 </ul></div>

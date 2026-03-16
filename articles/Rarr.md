@@ -446,9 +446,9 @@ file system. First, we use
 [`list.files()`](https://rdrr.io/r/base/list.files.html) to confirm that
 that only file that’s been created is the `.zarray` metadata; there are
 no chunk files. Then we use
-[`table()`](https://rdrr.io/pkg/BiocGenerics/man/table.html) to check
-the contents of the array, and confirm that when it’s read the resulting
-array in R is full of 7s, our fill value.
+[`table()`](https://rdrr.io/r/base/table.html) to check the contents of
+the array, and confirm that when it’s read the resulting array in R is
+full of 7s, our fill value.
 
 ``` r
 list.files(path, all.files = TRUE, no.. = TRUE)
@@ -519,112 +519,14 @@ realized on disk. We use
 [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md)
 to confirm visually that the first row contains our sequence of values,
 whilst the second row is still all 7. We use
-[`table()`](https://rdrr.io/pkg/BiocGenerics/man/table.html) to confirm
-that the total contents is as expected.
-
-### Using the **DelayedArray** framework
-
-**Rarr** can make use of the DelayedArray package to provide a more
-‘array-like’ interface to Zarr array, and use delayed operations and
-block processing to efficiently work with large on-disk data.
-
-#### Working with an existing Zarr array
-
-To demonstrate using the DelayedArray framework, we’ll pick the example
-file containing 32-bit integers arranged in the “column first” ordering.
-
-``` r
-zarr_example <- system.file(
-  "extdata",
-  "zarr_examples",
-  "column-first",
-  "int32.zarr",
-  package = "Rarr"
-)
-```
-
-We use the function
-[`ZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-classes.md)
-to create a **ZarrArray** object backed by the Zarr file.
-
-``` r
-zarr_array <- ZarrArray(zarr_example)
-```
-
-We can print this to screen and see a nice visual representation of this
-3 dimensional array, and confirm that the array is both a **ZarrArray**
-and **DelayedArray**
-
-``` r
-zarr_array
-```
-
-    ## <30 x 20 x 10> ZarrArray object of type "integer":
-    ## ,,1
-    ##        [,1]  [,2]  [,3]  [,4] ... [,17] [,18] [,19] [,20]
-    ##  [1,]     1     2     3     4   .    17    18    19    20
-    ##  [2,]     1     0     0     0   .     0     0     0     0
-    ##   ...     .     .     .     .   .     .     .     .     .
-    ## [29,]     1     0     0     0   .     0     0     0     0
-    ## [30,]     1     0     0     0   .     0     0     0     0
-    ## 
-    ## ...
-    ## 
-    ## ,,10
-    ##        [,1]  [,2]  [,3]  [,4] ... [,17] [,18] [,19] [,20]
-    ##  [1,]     0     0     0     0   .     0     0     0     0
-    ##  [2,]     0     0     0     0   .     0     0     0     0
-    ##   ...     .     .     .     .   .     .     .     .     .
-    ## [29,]     0     0     0     0   .     0     0     0     0
-    ## [30,]     0     0     0     0   .     0     0     0     0
-
-``` r
-is(zarr_array)
-```
-
-    ## [1] "ZarrArray"         "DelayedArray"      "DelayedUnaryIsoOp"
-    ## [4] "DelayedUnaryOp"    "DelayedOp"         "Array"
-
-``` r
-dim(zarr_array)
-```
-
-    ## [1] 30 20 10
-
-``` r
-chunkdim(zarr_array)
-```
-
-    ## [1] 10 10  5
-
-#### Realizing an in-memory array to Zarr
-
-``` r
-X <- matrix(rnorm(1000), ncol = 10)
-zarr_path <- tempfile(fileext = ".zarr")
-zarr_X <- writeZarrArray(X, zarr_array_path = zarr_path, chunk_dim = c(10, 10))
-zarr_X
-```
-
-    ## <100 x 10> ZarrMatrix object of type "double":
-    ##                [,1]         [,2]         [,3] ...        [,9]       [,10]
-    ##   [1,] -1.400043517 -0.387213575 -0.429380087   .   1.5349158   1.3806093
-    ##   [2,]  0.255317055 -0.785432656  1.360461327   .  -0.4161987   1.6750109
-    ##   [3,] -2.437263611 -1.056736867 -0.070857431   .  -0.5205438   1.1769066
-    ##   [4,] -0.005571287 -0.795541430 -0.272153684   .   0.8505839  -0.1488983
-    ##   [5,]  0.621552721 -1.756275428 -2.446680029   .   0.3344966  -0.1778234
-    ##    ...            .            .            .   .           .           .
-    ##  [96,]    1.6728826    0.1329921   -1.5150245   . -1.47658453  1.11582792
-    ##  [97,]   -0.3543612    0.3764993   -1.4160239   . -1.37777577  0.47013513
-    ##  [98,]    0.9463479    1.1387077    0.8767773   . -1.34567231  0.86061271
-    ##  [99,]    1.3168264    1.2412631    0.6241324   . -0.73663796 -0.07039665
-    ## [100,]   -0.2966400    0.6120909    2.1122773   . -0.47011150 -0.61318021
+[`table()`](https://rdrr.io/r/base/table.html) to confirm that the total
+contents is as expected.
 
 ## Appendix
 
 ### Session info
 
-    ## R Under development (unstable) (2026-03-13 r89618)
+    ## R Under development (unstable) (2026-03-14 r89623)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.3 LTS
     ## 
@@ -642,33 +544,27 @@ zarr_X
     ## tzcode source: system (glibc)
     ## 
     ## attached base packages:
-    ## [1] stats4    stats     graphics  grDevices utils     datasets  methods  
-    ## [8] base     
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ##  [1] Rarr_1.11.30          DelayedArray_0.37.0   SparseArray_1.11.11  
-    ##  [4] S4Arrays_1.11.1       abind_1.4-8           IRanges_2.45.0       
-    ##  [7] S4Vectors_0.49.0      MatrixGenerics_1.23.0 matrixStats_1.5.0    
-    ## [10] Matrix_1.7-4          BiocGenerics_0.57.0   generics_0.1.4       
-    ## [13] BiocStyle_2.39.0     
+    ## [1] Rarr_1.11.31     BiocStyle_2.39.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] rappdirs_0.3.4      sass_0.4.10         xml2_1.5.2         
-    ##  [4] lattice_0.22-9      paws.common_0.8.9   digest_0.6.39      
-    ##  [7] magrittr_2.0.4      evaluate_1.0.5      grid_4.6.0         
-    ## [10] bookdown_0.46       fastmap_1.2.0       R.oo_1.27.1        
-    ## [13] jsonlite_2.0.0      R.utils_2.13.0      BiocManager_1.30.27
-    ## [16] codetools_0.2-20    httr2_1.2.2         textshaping_1.0.5  
-    ## [19] jquerylib_0.1.4     cli_3.6.5           rlang_1.1.7        
-    ## [22] crayon_1.5.3        XVector_0.51.0      R.methodsS3_1.8.2  
-    ## [25] cachem_1.1.0        yaml_2.3.12         tools_4.6.0        
-    ## [28] curl_7.0.0          vctrs_0.7.1         R6_2.6.1           
-    ## [31] lifecycle_1.0.5     fs_1.6.7            ragg_1.5.1         
-    ## [34] desc_1.4.3          pkgdown_2.2.0       bslib_0.10.0       
-    ## [37] pillar_1.11.1       glue_1.8.0          Rcpp_1.1.1         
-    ## [40] systemfonts_1.3.2   xfun_0.56           paws.storage_0.9.0 
-    ## [43] knitr_1.51          htmltools_0.5.9     rmarkdown_2.30     
-    ## [46] compiler_4.6.0
+    ##  [1] vctrs_0.7.1         crayon_1.5.3        cli_3.6.5          
+    ##  [4] knitr_1.51          rlang_1.1.7         xfun_0.56          
+    ##  [7] textshaping_1.0.5   jsonlite_2.0.0      glue_1.8.0         
+    ## [10] htmltools_0.5.9     ragg_1.5.1          sass_0.4.10        
+    ## [13] rappdirs_0.3.4      rmarkdown_2.30      evaluate_1.0.5     
+    ## [16] jquerylib_0.1.4     fastmap_1.2.0       yaml_2.3.12        
+    ## [19] lifecycle_1.0.5     httr2_1.2.2         bookdown_0.46      
+    ## [22] BiocManager_1.30.27 compiler_4.6.0      codetools_0.2-20   
+    ## [25] fs_1.6.7            Rcpp_1.1.1          R.oo_1.27.1        
+    ## [28] systemfonts_1.3.2   R.utils_2.13.0      digest_0.6.39      
+    ## [31] R6_2.6.1            pillar_1.11.1       curl_7.0.0         
+    ## [34] paws.common_0.8.9   paws.storage_0.9.0  magrittr_2.0.4     
+    ## [37] bslib_0.10.0        R.methodsS3_1.8.2   tools_4.6.0        
+    ## [40] xml2_1.5.2          pkgdown_2.2.0       cachem_1.1.0       
+    ## [43] desc_1.4.3
 
 ------------------------------------------------------------------------
 

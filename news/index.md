@@ -2,6 +2,17 @@
 
 ## Rarr 1.11
 
+### Breaking changes
+
+- The DelayedArray backend
+  ([`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
+  and
+  [`ZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
+  functions) has been migrated to a separate, dedicated package. This
+  reduces the number of dependencies from 37 to 24. This also greatly
+  improves performance in for the standard case (when the DelayedArray
+  backend is not used).
+
 ### New features
 
 - Zarr v3 arrays with data types and codecs that already existed in v2
@@ -124,10 +135,10 @@
 
 - `.url_parse_other()` now accounts for port numbers in host name and
   colons in S3 buckets.
-- [`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrRealizationSink.md)
+- [`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
   now allows writing character arrays, and no longer errors complaining
   about null ‘nchar’ argument value. Default of ‘nchar’ is now `NULL`.
-- [`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrRealizationSink.md)
+- [`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
   no longer silently and incorrectly fills the last rows/columns when
   `dim` is not divisible by `chunk_dim`.
 - The object name is no longer repeated (e.g., `name.zarrname.zarr`)
@@ -175,9 +186,8 @@
 
 ## Rarr 1.7
 
-- Added [`path()`](https://rdrr.io/pkg/BiocGenerics/man/path.html)
-  method for `ZarrArray` class that returns the location of the zarr
-  array root.
+- Added `path()` method for `ZarrArray` class that returns the location
+  of the zarr array root.
 - Removed used of non-API call `SETLENGTH` in C code.
 - Small changes to compilation of internal blosc libraries to cope with
   the C23 compiler becoming the default in R-4.5.0
