@@ -5,12 +5,10 @@ args <- commandArgs(trailingOnly = TRUE)
 # simple --key=val parser
 options <- args |>
   grepv(pattern = "^--", x = _) |>
-  strsplit("=") |>
-  do.call(rbind, args = _) |>
-  as.data.frame() |>
-  setNames(c("arg", "val"))
+  strsplit("=", fixed = TRUE) |>
+  do.call(rbind, args = _)
 
-opt_list <- setNames(options$val, gsub("^--", "", options$arg))
+opt_list <- setNames(options[, 2], gsub("^--", "", options[, 1]))
 
 res <- Rarr::read_zarr_array(
   zarr_array_path = opt_list[["array_path"]]
