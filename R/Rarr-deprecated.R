@@ -1,3 +1,26 @@
+#' @export
+#' @rdname ZarrArray-deprecated
+#'
+#' @title Deprecated DelayedArray backend functions
+#'
+#' @description
+#' The DelayedArray backend has moved to a dedicated package: the ZarrArray package
+#' (<https://github.com/Bioconductor/ZarrArray>).
+#'
+#' @param ... Ignored.
+#'
+#' @examples
+#' zarr_path <- system.file(
+#'   "extdata",
+#'   "zarr_examples",
+#'   "column-first",
+#'   "int32.zarr",
+#'   package = "Rarr"
+#' )
+#' ZarrArray(
+#'   zarr_path
+#' )
+#'
 ZarrArray <- function(...) {
   .Deprecated(
     "ZarrArray",
@@ -10,6 +33,8 @@ ZarrArray <- function(...) {
   )
 }
 
+#' @export
+#' @rdname ZarrArray-deprecated
 writeZarrArray <- function(...) {
   .Deprecated(
     "writeZarrArray",
