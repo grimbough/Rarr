@@ -67,7 +67,7 @@ jobs:
       - name: Run BiocCheck
         uses: grimbough/bioc-actions/run-BiocCheck@v1
         with:
-          error-on: 'warning'
+          error-on: 'error'
           arguments: '--no-check-bioc-help --no-check-file-size'
 
       - name: Test coverage
