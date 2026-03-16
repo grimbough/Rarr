@@ -19,8 +19,6 @@ License: MIT + file LICENSE
 URL: https://huber-group-embl.github.io/Rarr/, https://github.com/Huber-group-EMBL/Rarr
 BugReports: https://github.com/Huber-group-EMBL/Rarr/issues
 Depends:
-    BiocGenerics,
-    DelayedArray,
     R (>= 4.1.0)
 Imports:
     curl,
