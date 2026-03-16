@@ -11,13 +11,9 @@ reference:
   - title: "Write Zarr data"
     contents:
       - write_zarr_array
-      - writeZarrArray
       - write_zarr_attributes
       - update_zarr_array
       - create_empty_zarr_array
-  - title: "Custom classes"
-    contents:
-      - ZarrArray-class
   - title: "Compression helpers"
     contents:
       - starts_with("use_")
