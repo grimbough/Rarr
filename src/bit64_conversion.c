@@ -1,7 +1,7 @@
 #include "bit64_conversion.h"
 
 
-void uint32_to_int32(void* in_buf, size_t n, void* out_buf) {
+void uint32_to_int32(const void* in_buf, size_t n, void* out_buf) {
   
   R_xlen_t i;
   
@@ -16,7 +16,7 @@ void uint32_to_int32(void* in_buf, size_t n, void* out_buf) {
   
 }
 
-void int64_to_int32(void* in_buf, size_t n, void* out_buf, bool is_signed) {
+void int64_to_int32(const void* in_buf, size_t n, void* out_buf, bool is_signed) {
   
   R_xlen_t i;
   

@@ -3,7 +3,7 @@
 
 SEXP decompress_chunk_BLOSC(SEXP input) {
   
-  void* p_input = RAW(input);
+  const void* p_input = RAW(input);
   void *p_output;
   size_t cbytes, blocksize, outbuf_size;
   SEXP output;
@@ -23,10 +23,10 @@ SEXP decompress_chunk_BLOSC(SEXP input) {
 
 SEXP decompress_chunk_LZ4(SEXP input, SEXP _outbuffersize) {
   
-  void* p_input = (void *)RAW(input);
+  const void* p_input = (const void *)RAW(input);
   void* p_output;
   int outbuf_size;
-  int compressed_size = (int) xlength(input);
+  const int compressed_size = (int) xlength(input);
   SEXP output;
   int dsize;
   
@@ -55,13 +55,13 @@ ZSTDLIB_API size_t ZSTD_decompress( void* dst, size_t dstCapacity,
 
 SEXP decompress_chunk_ZSTD(SEXP input) {
   
-  void* p_input = (void *)RAW(input);
+  const void* p_input = (const void *)RAW(input);
   void* p_output;
-  size_t compressed_size = (size_t) xlength(input);
+  const size_t compressed_size = (size_t) xlength(input);
   SEXP output;
   size_t dsize;
 
-  unsigned long long frameSize = ZSTD_getFrameContentSize(p_input, compressed_size);
+  const unsigned long long frameSize = ZSTD_getFrameContentSize(p_input, compressed_size);
   if (frameSize == ZSTD_CONTENTSIZE_UNKNOWN || frameSize == ZSTD_CONTENTSIZE_ERROR) {
     // FIXME: When ZSTD_CONTENTSIZE_UNKNOWN, we can still use streaming mode according to
     // the docs. 

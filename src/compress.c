@@ -2,12 +2,12 @@
 
 SEXP compress_chunk_BLOSC(SEXP input, SEXP type_size) {
   
-  void* p_input = RAW(input);
+  const void* p_input = RAW(input);
   void *p_output;
   SEXP output;
   int dsize;
-  int clevel = 5;
-  size_t typesize = (size_t)INTEGER(type_size)[0];
+  const int clevel = 5;
+  const size_t typesize = (size_t)INTEGER(type_size)[0];
   
   output = PROTECT(R_allocResizableVector(RAWSXP, LENGTH(input)+BLOSC_MAX_OVERHEAD));
   p_output = RAW(output);
@@ -22,7 +22,7 @@ SEXP compress_chunk_BLOSC(SEXP input, SEXP type_size) {
     R_resizeVector(output, dsize);
   } else if(dsize == 0) {
     /* if compression results in a bigger chunk, just use the original input */
-    p_output = p_input;
+    p_output = (void *)p_input;
   }  else {
     /* something terrible happened */
     error("BLOSC compression error - error code: %d\n", dsize);
@@ -34,10 +34,10 @@ SEXP compress_chunk_BLOSC(SEXP input, SEXP type_size) {
 
 SEXP compress_chunk_LZ4(SEXP input) {
   
-  void* p_input = (void *)RAW(input);
+  const void* p_input = (const void *)RAW(input);
   void* p_output; 
-  int input_size = (int) xlength(input);
-  int output_size = LZ4_compressBound(input_size);
+  const int input_size = (int) xlength(input);
+  const int output_size = LZ4_compressBound(input_size);
   SEXP output;
   int dsize;
   
@@ -69,11 +69,11 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
                                     const void* src, size_t srcSize,
                                     int compressionLevel); */
   
-  void* p_input = (void *)RAW(input);
+  const void* p_input = (const void *)RAW(input);
   void* p_output; 
-  size_t input_size = (size_t) xlength(input);
-  size_t output_size = (size_t) ZSTD_compressBound(input_size);
-  int compressionLevel = INTEGER(compression_level)[0];
+  const size_t input_size = (size_t) xlength(input);
+  const size_t output_size = (size_t) ZSTD_compressBound(input_size);
+  const int compressionLevel = INTEGER(compression_level)[0];
   
   SEXP output = PROTECT(R_allocResizableVector(RAWSXP, output_size));
   p_output = RAW(output);
