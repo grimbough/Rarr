@@ -8,7 +8,7 @@
 double float16_to_float64(uint16_t float16_value) {
   // float16=1bit: sign, 5bit: exponent, 10bit: fraction
   // float64=1bit: sign, 11bit: exponent, 52bit: fraction
-  uint64_t sign = float16_value >> 15;
+  const uint64_t sign = float16_value >> 15;
   uint64_t exponent = (float16_value >> 10) & 0x1F;
   uint64_t fraction = (float16_value & 0x3FF);
   uint64_t float64_value;
