@@ -34,7 +34,7 @@ SEXP compress_chunk_BLOSC(SEXP input, SEXP type_size) {
 
 SEXP compress_chunk_LZ4(SEXP input) {
   
-  const void* p_input = (const void *)RAW(input);
+  const void* p_input = RAW(input);
   void* p_output; 
   const int input_size = (int) xlength(input);
   const int output_size = LZ4_compressBound(input_size);
@@ -69,7 +69,7 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
                                     const void* src, size_t srcSize,
                                     int compressionLevel); */
   
-  const void* p_input = (const void *)RAW(input);
+  const void* p_input = RAW(input);
   void* p_output; 
   const size_t input_size = (size_t) xlength(input);
   const size_t output_size = (size_t) ZSTD_compressBound(input_size);
