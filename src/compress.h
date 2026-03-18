@@ -8,6 +8,13 @@
   #include "compression_tools/zstd-1.5.7/zstd.h"
 #endif
 
-SEXP compress_chunk_BLOSC(SEXP input, SEXP type_size);
+SEXP compress_chunk_BLOSC(
+  SEXP input,
+  SEXP type_size,
+  SEXP cname,
+  SEXP clevel,
+  SEXP shuffle,
+  SEXP blocksize
+);
 SEXP compress_chunk_LZ4(SEXP input);
 SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level);

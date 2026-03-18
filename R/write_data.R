@@ -633,6 +633,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       "compress_chunk_BLOSC",
       raw_chunk,
       as.integer(metadata$datatype$nbytes),
+      "lz4",
+      5L,
+      0L,
+      0L,
       PACKAGE = "Rarr"
     )
   } else if (compressor$id == "zlib") {
