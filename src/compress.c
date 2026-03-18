@@ -1,21 +1,37 @@
 #include "compress.h"
 
-SEXP compress_chunk_BLOSC(SEXP input, SEXP type_size) {
+SEXP compress_chunk_BLOSC(
+  SEXP input,
+  SEXP type_size,
+  SEXP cname,
+  SEXP clevel,
+  SEXP shuffle,
+  SEXP blocksize
+) {
   
   const void* p_input = RAW(input);
-  void *p_output;
-  SEXP output;
-  int dsize;
-  const int clevel = 5;
+
+  const char *compressor_name = CHAR(STRING_ELT(cname, 0));
+  const int compression_level = INTEGER(clevel)[0];
+  const int shuffle_mode = INTEGER(shuffle)[0];
   const size_t typesize = (size_t)INTEGER(type_size)[0];
+  const size_t block_size = (size_t)INTEGER(blocksize)[0];
   
-  output = PROTECT(R_allocResizableVector(RAWSXP, LENGTH(input)+BLOSC_MAX_OVERHEAD));
-  p_output = RAW(output);
+  SEXP output = PROTECT(R_allocResizableVector(RAWSXP, LENGTH(input)+BLOSC_MAX_OVERHEAD));
+  void *p_output = RAW(output);
 
   blosc_init();
-  blosc_set_compressor("lz4");
-  dsize = blosc_compress(clevel, BLOSC_SHUFFLE, typesize, LENGTH(input), 
-                         p_input, p_output, LENGTH(output));
+  blosc_set_compressor(compressor_name);
+  blosc_set_blocksize(block_size);
+  int dsize = blosc_compress(
+    compression_level, 
+    shuffle_mode, 
+    typesize,
+    LENGTH(input), 
+    p_input, 
+    p_output, 
+    LENGTH(output)
+  );
 
   if(dsize > 0) {
     /* shrink our output buffer to contain only the compressed bytes */
