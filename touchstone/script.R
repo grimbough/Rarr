@@ -8,6 +8,11 @@
 # installs branches to benchmark
 touchstone::branch_install()
 
+touchstone::benchmark_run(
+  pkg_load = library(Rarr),
+  n = 25
+)
+
 # # Types ----------
 
 # ## Read/Write ----------
