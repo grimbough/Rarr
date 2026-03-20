@@ -624,36 +624,47 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     TRUE,
     names(codecs) %in% c("zstd", "blosc", "gzip", "zlib", "bz2", "lzma", "lz4")
   )]
-  compressor$level <- unlist(codecs[[compressor$id]]$configuration)
-
+  compressor_config <- codecs[[compressor$id]]$configuration
   if (is.na(compressor$id)) {
     compressed_chunk <- raw_chunk
   } else if (compressor$id == "blosc") {
     compressed_chunk <- .Call(
       "compress_chunk_BLOSC",
       raw_chunk,
-      as.integer(metadata$datatype$nbytes),
-      "lz4",
-      5L,
-      0L,
-      0L,
+      metadata$datatype$nbytes,
+      compressor_config$cname,
+      compressor_config$clevel,
+      compressor_config$shuffle,
+      compressor_config$blocksize,
       PACKAGE = "Rarr"
     )
   } else if (compressor$id == "zlib") {
     compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
   } else if (compressor$id == "gzip") {
-    con <- gzfile(chunk_path, open = "wb", compression = compressor$level)
+    con <- gzfile(
+      chunk_path,
+      open = "wb",
+      compression = compressor_config$level
+    )
     on.exit(close(con))
   } else if (compressor$id == "bz2") {
-    con <- bzfile(chunk_path, open = "wb", compression = compressor$level)
+    con <- bzfile(
+      chunk_path,
+      open = "wb",
+      compression = compressor_config$level
+    )
     on.exit(close(con))
   } else if (compressor$id == "lzma") {
-    con <- xzfile(chunk_path, open = "wb", compression = compressor$level)
+    con <- xzfile(
+      chunk_path,
+      open = "wb",
+      compression = compressor_config$level
+    )
     on.exit(close(con))
   } else if (compressor$id == "lz4") {
-    compressed_chunk <- codec_lz4_encode(raw_chunk, compressor$level)
+    compressed_chunk <- codec_lz4_encode(raw_chunk)
   } else if (compressor$id == "zstd") {
-    compressed_chunk <- codec_zstd_encode(raw_chunk, compressor$level)
+    compressed_chunk <- codec_zstd_encode(raw_chunk, compressor_config)
   }
 
   if (compressor$id %in% c("gzip", "bz2", "lzma")) {
