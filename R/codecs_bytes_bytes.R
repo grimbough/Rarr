@@ -61,11 +61,11 @@ codec_zstd_decode <- function(bytes, ...) {
   )
 }
 
-codec_zstd_encode <- function(input, level, ...) {
+codec_zstd_encode <- function(input, compressor_config, ...) {
   .Call(
     "compress_chunk_ZSTD",
     input,
-    as.integer(level),
+    as.integer(compressor_config$level),
     PACKAGE = "Rarr"
   )
 }
