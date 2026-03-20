@@ -634,7 +634,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       metadata$datatype$nbytes,
       compressor_config$cname,
       compressor_config$clevel,
-      compressor_config$shuffle,
+      which(compressor_config$shuffle == c("noshuffle", "shuffle", "bitshuffle")) - 1L,
       compressor_config$blocksize,
       PACKAGE = "Rarr"
     )
