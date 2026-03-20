@@ -47,26 +47,47 @@ NULL
 #'
 #' @param cname Blosc is a 'meta-compressor' providing access to several
 #'   compression algorithms.  This argument defines which compression tool
-#'   should be used.  Valid options are: 'lz4', 'lz4hc', 'blosclz', 'zstd',
-#'   'zlib', 'snappy'.
+#'   should be used.  Valid options are: `"lz4"`, `"lz4hc"`, `"blosclz"`,
+#'   `"zstd"`, `"zlib"`, `"snappy"`.
+#' @param clevel An integer from 0 to 9 which controls the speed and level of
+#'   compression. A level of 1 is the fastest compression method and produces
+#'   the least compressions, while 9 is slowest and produces the most compression.
+#'   Compression is turned off completely when level is 0. Defaults to 5.
+#' @param shuffle Specifies the type of shuffling to perform, if any, prior to
+#'   compression. Must be one of `"noshuffle"`, to indicate no shuffling;
+#'   `"shuffle"` (default), to indicate byte-wise shuffling; `"bitshuffle"`, to
+#'   indicate bit-wise shuffling.
+#' @param typesize The data type size in bytes used by Blosc shuffling. If
+#'   `NULL` (default), this will be inferred from the array datatype. Ignored if
+#'   `shuffle = "noshuffle"`.
+#' @param blocksize The requested size of the compressed blocks in bytes. Use 0
+#'   (default) to let Blosc choose automatically.
 #'
 #' @export
-use_blosc <- function(cname = "lz4") {
-  valid_options <- c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy")
+use_blosc <- function(
+  cname = c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy"),
+  clevel = 5L,
+  shuffle = c("shuffle", "noshuffle", "bitshuffle"),
+  typesize = NULL,
+  blocksize = 0L
+) {
   cname <- tolower(cname)
-  if (cname %notin% valid_options) {
-    stop(
-      "'cname argument must be one of '",
-      paste(valid_options, collapse = "', '"),
-      "'"
-    )
+  cname <- match.arg(cname)
+
+  shuffle <- match.arg(shuffle)
+
+  if (clevel < 0 || clevel > 9) {
+    stop("'clevel' must be an integer between 0 and 9")
   }
+  clevel <- as.integer(clevel)
 
   res <- list(
     id = "blosc",
     cname = cname,
-    clevel = 5,
-    shuffle = as.integer(TRUE)
+    clevel = as.integer(clevel),
+    shuffle = which(shuffle == c("noshuffle", "shuffle", "bitshuffle")) - 1L,
+    typesize = as.integer(typesize),
+    blocksize = as.integer(blocksize)
   )
   return(res)
 }
