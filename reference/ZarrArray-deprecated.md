@@ -31,5 +31,4 @@ ZarrArray(
   zarr_path
 )
 #> Warning: The functions related to the DelayedArray backend have moved to the dedicated ZarrArray package (https://github.com/Bioconductor/ZarrArray) under the same name.
-
 ```
