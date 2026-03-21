@@ -28,5 +28,4 @@ ZarrArray(
   zarr_path
 )
 
-
 }
