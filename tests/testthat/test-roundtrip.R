@@ -51,7 +51,13 @@ test_that("zarr arrays can be written and read with various compression methods"
       x = x,
       zarr_array_path = path,
       chunk_dim = c(2, 5, 1),
-      compressor = use_blosc()
+      compressor = use_blosc(
+        cname = "blosclz",
+        clevel = 9L,
+        shuffle = "bitshuffle",
+        typesize = 8L,
+        blocksize = 0L
+      )
     )
   )
   expect_identical(read_zarr_array(path), x)
