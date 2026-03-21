@@ -242,21 +242,6 @@ find_chunks_needed <- function(metadata, index) {
   return(required_chunks)
 }
 
-#' Determine the size of chunk in bytes after decompression
-#'
-#' @param datatype A list of details for the array datatype.  Expected to be
-#' produced by [.parse_datatype()].
-#' @param dimensions A list containing the dimensions of the chunk.  Expected
-#' to be found in a list produced by [.read_array_metadata()].
-#'
-#' @returns An integer giving the size of the chunk in bytes
-#'
-#' @keywords internal
-get_decompressed_chunk_size <- function(datatype, dimensions) {
-  buffer_size <- prod(unlist(dimensions), datatype$nbytes)
-  return(as.integer(buffer_size))
-}
-
 #' Read a single Zarr chunk
 #'
 #' @param chunk_path A character vector of length 1, giving the path to the
