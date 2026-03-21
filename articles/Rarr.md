@@ -526,7 +526,7 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-03-16 r89642)
+    ## R Under development (unstable) (2026-03-19 r89661)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.3 LTS
     ## 
@@ -551,7 +551,7 @@ contents is as expected.
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] vctrs_0.7.1         crayon_1.5.3        cli_3.6.5          
-    ##  [4] knitr_1.51          rlang_1.1.7         xfun_0.56          
+    ##  [4] knitr_1.51          rlang_1.1.7         xfun_0.57          
     ##  [7] textshaping_1.0.5   jsonlite_2.0.0      glue_1.8.0         
     ## [10] htmltools_0.5.9     ragg_1.5.1          sass_0.4.10        
     ## [13] rappdirs_0.3.4      rmarkdown_2.30      evaluate_1.0.5     
