@@ -220,7 +220,7 @@ read_data <- function(
         idx_length = length(index_in_result),
         y_name = "chunk_selections[[i]][[1]]"
       )
-      eval(parse(text = cmd))
+      eval(str2lang(cmd))
       if (metadata$datatype$base_type == "structured") {
         # Assigning a list drops the dim attribute so we have to continuously add it again
         dim(output) <- lengths(index)

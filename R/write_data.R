@@ -295,7 +295,7 @@ write_zarr_array <- function(
       length(idx_in_chunk),
       "chunk_in_mem"
     )
-    eval(parse(text = cmd))
+    eval(str2lang(cmd))
     ## update the output with the new full-sized chunk
     chunk_in_mem <- temp_chunk
   }
@@ -500,7 +500,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     length(idx_in_chunk),
     "y"
   )
-  eval(parse(text = cmd))
+  eval(str2lang(cmd))
   ## re-compress updated chunk and write back to disk
   .compress_and_write_chunk(
     input_chunk = chunk_in_mem,
