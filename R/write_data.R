@@ -445,19 +445,19 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     metadata
   )
   chunk_indices <- asplit(chunk_indices, 1, drop = TRUE)
-  chunk_paths <- paste0(zarr_array_path, chunk_names)
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bpmapply() ?
   res <- mapply(
     FUN = .update_chunk,
-    chunk_paths,
+    chunk_names,
     chunk_indices,
     MoreArgs = list(
       x = x,
       chunk_dim = chunk_dim,
       chunk_idx = chunk_idx,
       index = index,
+      zarr_array_path = zarr_array_path,
       metadata = metadata
     )
   )
@@ -466,10 +466,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 }
 
 .update_chunk <- function(
-  chunk_path,
+  chunk_name,
   chunk_index,
   x,
-  path,
+  zarr_array_path,
   chunk_dim,
   chunk_idx,
   index,
@@ -478,6 +478,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 ) {
   ## determine which elements of x are being used and where in this specific
   ## chunk they should be inserted
+  chunk_path <- file.path(zarr_array_path, chunk_name)
   ## TODO: This is pretty ugly, maybe there's something more elegant
   idx_in_zarr <- idx_in_x <- idx_in_chunk <- list()
   for (j in seq_along(chunk_dim)) {
@@ -486,11 +487,17 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     idx_in_chunk[[j]] <- ((idx_in_zarr[[j]] - 1) %% chunk_dim[j]) + 1
   }
 
-  chunk_in_mem <- read_chunk(
-    chunk_path = chunk_path,
-    metadata = metadata,
-    fill = TRUE
-  )
+  if (.file_or_blob_exists(zarr_array_path, s3_client = NULL, chunk_name)) {
+    chunk_in_mem <- read_chunk(
+      chunk_path = chunk_path,
+      metadata = metadata
+    )
+  } else {
+    chunk_in_mem <- array(
+      metadata$fill_value,
+      dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
+    )
+  }
 
   ## extract the new values from x and insert them into the chunk
   y <- R.utils::extract(x, indices = idx_in_x) # nolint: object_usage_linter.

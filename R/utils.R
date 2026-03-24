@@ -213,7 +213,7 @@ check_index <- function(index, metadata) {
 ) {
   if (is.null(s3_client)) {
     is_present <- setNames(
-      file.exists(paste0(zarr_array_path, files)),
+      file.exists(paste0(zarr_array_path, files, recycle0 = TRUE)),
       files
     )
   } else {
