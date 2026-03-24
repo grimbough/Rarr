@@ -5,14 +5,12 @@
 \title{Create a string of the form \code{x[idx[[1]], idx[[2]]] <- y} for an array \code{x}
 where the number of dimensions is variable.}
 \usage{
-.create_replace_call(x_name, idx_name, idx_length, y_name)
+.create_replace_call(x_name, idx, y_name)
 }
 \arguments{
 \item{x_name}{Name of the object to have items replaced}
 
-\item{idx_name}{Name of the list containing the indices}
-
-\item{idx_length}{Length of the list specified in \code{idx_name}}
+\item{idx}{Indices}
 
 \item{y_name}{Name of the object containing the replacement items}
 }
