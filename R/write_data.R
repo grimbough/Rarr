@@ -291,8 +291,7 @@ write_zarr_array <- function(
     idx_in_chunk <- lapply(dim(chunk_in_mem), seq_len)
     cmd <- .create_replace_call(
       "temp_chunk",
-      "idx_in_chunk",
-      length(idx_in_chunk),
+      idx_in_chunk,
       "chunk_in_mem"
     )
     eval(str2lang(cmd))
@@ -503,8 +502,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   y <- R.utils::extract(x, indices = idx_in_x) # nolint: object_usage_linter.
   cmd <- .create_replace_call(
     "chunk_in_mem",
-    "idx_in_chunk",
-    length(idx_in_chunk),
+    idx_in_chunk,
     "y"
   )
   eval(str2lang(cmd))

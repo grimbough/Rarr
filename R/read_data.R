@@ -219,8 +219,7 @@ read_data <- function(
     index_in_result <- chunk_selections[[i]][[2]]
     cmd <- .create_replace_call(
       x_name = "output",
-      idx_name = "index_in_result",
-      idx_length = length(index_in_result),
+      idx = index_in_result,
       y_name = "chunk_selections[[i]][[1]]"
     )
     eval(str2lang(cmd))
