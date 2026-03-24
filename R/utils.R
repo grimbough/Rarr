@@ -178,6 +178,8 @@ check_index <- function(index, metadata) {
 #'
 #' @returns A character vector of length 1 containing the normalised path.
 #'
+#' @importFrom R.utils getAbsolutePath
+#'
 #' @keywords internal
 .normalize_array_path <- function(path) {
   ## we strip the protocol because it gets messed up by the slash removal later
