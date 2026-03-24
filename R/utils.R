@@ -83,8 +83,9 @@ check_index <- function(index, metadata) {
   return(cmd)
 }
 
-.create_extract_call <- function(x_name, idx) {
-  args <- paste(c(idx, "drop=FALSE"), collapse = ",")
+.create_extract_call <- function(x_name, idx_name, idx_length) {
+  args <- sprintf("%s[[%d]]", idx_name, seq_len(idx_length))
+  args <- paste(c(args, "drop=FALSE"), collapse = ",")
   cmd <- sprintf("%s[%s]", x_name, args)
 
   return(cmd)

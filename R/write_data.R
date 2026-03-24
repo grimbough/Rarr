@@ -281,7 +281,8 @@ write_zarr_array <- function(
 
   chunk_in_mem <- eval(str2lang(.create_extract_call(
     x_name = "x",
-    idx = idx_in_array
+    idx_name = "idx_in_array",
+    idx_length = length(idx_in_array)
   )))
 
   ## if a chunk overlaps the edge of the array, most implementations assume we
@@ -505,7 +506,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   ## extract the new values from x and insert them into the chunk
   y <- eval(str2lang(.create_extract_call(
     "x",
-    idx_in_x
+    "idx_in_x",
+    length(idx_in_x)
   )))
   cmd <- .create_replace_call(
     "chunk_in_mem",
