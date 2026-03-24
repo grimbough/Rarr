@@ -4,13 +4,7 @@
 \alias{read_chunk}
 \title{Read a single Zarr chunk}
 \usage{
-read_chunk(
-  chunk_path,
-  metadata,
-  s3_client = NULL,
-  alt_chunk_dim = NULL,
-  fill = FALSE
-)
+read_chunk(chunk_path, metadata, s3_client = NULL, alt_chunk_dim = NULL)
 }
 \arguments{
 \item{chunk_path}{A character vector of length 1, giving the path to the
@@ -29,10 +23,6 @@ this chunk.  Normally this will be the same as the chunk shape in
 \code{metadata}, but when dealing with edge chunks, which may overlap the true
 extent of the array the returned array should be smaller than the chunk
 shape.}
-
-\item{fill}{Logical of length 1.  If \code{TRUE}, missing chunks will be filled
-with the fill value from the array metadata.  If \code{FALSE} (the default),
-missing chunks will return \code{NULL}.}
 }
 \value{
 An array containing the decompressed chunk values.

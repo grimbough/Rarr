@@ -142,14 +142,12 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     alt_chunk_dim = alt_chunk_dim
   )
 
-  if (!is.null(chunk)) {
-    ## extract the required elements from the chunk
-    chunk <- R.utils::extract(
-      chunk,
-      indices = index_in_chunk,
-      drop = FALSE
-    )
-  }
+  ## extract the required elements from the chunk
+  chunk <- R.utils::extract(
+    chunk,
+    indices = index_in_chunk,
+    drop = FALSE
+  )
 
   return(list(chunk, index_in_result))
 }
@@ -182,11 +180,17 @@ read_data <- function(
   # https://github.com/Huber-group-EMBL/Rarr/issues/112
   chunk_paths <- paste0(zarr_array_path, chunk_names, recycle0 = TRUE)
 
+  ## Vectorized check for chunk existence
+  chunk_exists <- .file_or_blob_exists(zarr_array_path, s3_client, chunk_names)
+  existing_idx <- which(chunk_exists)
+
   warnings <- list()
   ## hopefully we can eventually do this in parallel
   chunk_selections <- withCallingHandlers(
     lapply(
-      seq_along(chunk_paths),
+      # We skip missing chunks here since they will just be filled with the fill value
+      # when initializing the consolidated array.
+      existing_idx,
       function(i) {
         .extract_elements(
           current_chunk_index = required_chunks[i, ],
@@ -212,19 +216,17 @@ read_data <- function(
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
-    if (!is.null(chunk_selections[[i]][[1]])) {
-      index_in_result <- chunk_selections[[i]][[2]]
-      cmd <- .create_replace_call(
-        x_name = "output",
-        idx_name = "index_in_result",
-        idx_length = length(index_in_result),
-        y_name = "chunk_selections[[i]][[1]]"
-      )
-      eval(str2lang(cmd))
-      if (metadata$datatype$base_type == "structured") {
-        # Assigning a list drops the dim attribute so we have to continuously add it again
-        dim(output) <- lengths(index)
-      }
+    index_in_result <- chunk_selections[[i]][[2]]
+    cmd <- .create_replace_call(
+      x_name = "output",
+      idx_name = "index_in_result",
+      idx_length = length(index_in_result),
+      y_name = "chunk_selections[[i]][[1]]"
+    )
+    eval(str2lang(cmd))
+    if (metadata$datatype$base_type == "structured") {
+      # Assigning a list drops the dim attribute so we have to continuously add it again
+      dim(output) <- lengths(index)
     }
   }
   return(output)
@@ -257,9 +259,6 @@ find_chunks_needed <- function(metadata, index) {
 #'   `metadata`, but when dealing with edge chunks, which may overlap the true
 #'   extent of the array the returned array should be smaller than the chunk
 #'   shape.
-#' @param fill Logical of length 1.  If `TRUE`, missing chunks will be filled
-#'    with the fill value from the array metadata.  If `FALSE` (the default),
-#'    missing chunks will return `NULL`.
 #'
 #' @returns An array containing the decompressed chunk values.
 #'
@@ -269,47 +268,23 @@ read_chunk <- function(
   chunk_path,
   metadata,
   s3_client = NULL,
-  alt_chunk_dim = NULL,
-  fill = FALSE
+  alt_chunk_dim = NULL
 ) {
+  # When we get here, we know the chunk exists, so we can read it without worrying about
+  # handling missing.
   if (nzchar(Sys.getenv("RARR_DEBUG"))) {
     message(chunk_path)
   }
 
   if (is.null(s3_client)) {
-    if (file.exists(chunk_path)) {
-      size <- file.size(chunk_path)
-      compressed_chunk <- readBin(con = chunk_path, what = "raw", n = size)
-    } else {
-      compressed_chunk <- NULL
-    }
+    size <- file.size(chunk_path)
+    compressed_chunk <- readBin(con = chunk_path, what = "raw", n = size)
   } else {
     parsed_url <- parse_s3_path(chunk_path)
-
-    if (.s3_object_exists(s3_client, parsed_url$bucket, parsed_url$object)) {
-      compressed_chunk <- s3_client$get_object(
-        Bucket = parsed_url$bucket,
-        Key = parsed_url$object
-      )$Body
-    } else {
-      compressed_chunk <- NULL
-    }
-  }
-
-  # Missing chunks are filled with the fill value in the whole array.
-  # We generally don't need to re-fill here and this saves resources.
-  # A notable exception when we need to fill is in update_zarr_array().
-  if (is.null(compressed_chunk)) {
-    if (fill) {
-      return(
-        array(
-          metadata$fill_value,
-          dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
-        )
-      )
-    } else {
-      return(NULL)
-    }
+    compressed_chunk <- s3_client$get_object(
+      Bucket = parsed_url$bucket,
+      Key = parsed_url$object
+    )$Body
   }
 
   # Bytes -> Bytes codecs
