@@ -44,13 +44,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_chunk</span><span class="op">(</span></span>
-<span>  <span class="va">chunk_path</span>,</span>
-<span>  <span class="va">metadata</span>,</span>
-<span>  s3_client <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  alt_chunk_dim <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  fill <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_chunk</span><span class="op">(</span><span class="va">chunk_path</span>, <span class="va">metadata</span>, s3_client <span class="op">=</span> <span class="cn">NULL</span>, alt_chunk_dim <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -80,12 +74,6 @@ this chunk.  Normally this will be the same as the chunk shape in
 <code>metadata</code>, but when dealing with edge chunks, which may overlap the true
 extent of the array the returned array should be smaller than the chunk
 shape.</p></dd>
-
-
-<dt id="arg-fill">fill<a class="anchor" aria-label="anchor" href="#arg-fill"></a></dt>
-<dd><p>Logical of length 1.  If <code>TRUE</code>, missing chunks will be filled
-with the fill value from the array metadata.  If <code>FALSE</code> (the default),
-missing chunks will return <code>NULL</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
