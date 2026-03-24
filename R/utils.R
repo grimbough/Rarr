@@ -67,15 +67,17 @@ check_index <- function(index, metadata) {
 #' where the number of dimensions is variable.
 #'
 #' @param x_name Name of the object to have items replaced
-#' @param idx Indices
+#' @param idx_name Name of the list containing the indices
+#' @param idx_length Length of the list specified in `idx_name`
 #' @param y_name Name of the object containing the replacement items
 #'
 #' @returns A character vector of length one containing the replacement
 #'   commands. This is expected to be passed to `parse() |> eval()`.
 #'
 #' @keywords internal
-.create_replace_call <- function(x_name, idx, y_name) {
-  args <- paste(idx, collapse = ",")
+.create_replace_call <- function(x_name, idx_name, idx_length, y_name) {
+  args <- sprintf("%s[[%d]]", idx_name, seq_len(idx_length))
+  args <- paste(args, collapse = ",")
   cmd <- sprintf("%s[%s] <- %s", x_name, args, y_name)
 
   return(cmd)
