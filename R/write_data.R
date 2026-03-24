@@ -279,7 +279,10 @@ write_zarr_array <- function(
     )
   }
 
-  chunk_in_mem <- R.utils::extract(x, indices = idx_in_array)
+  chunk_in_mem <- eval(str2lang(.create_extract_call(
+    x_name = "x",
+    idx = idx_in_array
+  )))
 
   ## if a chunk overlaps the edge of the array, most implementations assume we
   ## still write the content to disk.  Seems wasteful, but we fail many tests
@@ -499,7 +502,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   ## extract the new values from x and insert them into the chunk
-  y <- R.utils::extract(x, indices = idx_in_x) # nolint: object_usage_linter.
+  y <- eval(str2lang(.create_extract_call(
+    "x",
+    idx_in_x
+  )))
   cmd <- .create_replace_call(
     "chunk_in_mem",
     idx_in_chunk,

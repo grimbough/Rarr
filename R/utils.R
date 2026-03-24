@@ -81,6 +81,13 @@ check_index <- function(index, metadata) {
   return(cmd)
 }
 
+.create_extract_call <- function(x_name, idx) {
+  args <- paste(c(idx, "drop=FALSE"), collapse = ",")
+  cmd <- sprintf("%s[%s]", x_name, args)
+
+  return(cmd)
+}
+
 #' Parse the data type encoding string
 #'
 #' @param typestr The datatype encoding string.  This is in the Numpy array

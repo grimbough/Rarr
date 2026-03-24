@@ -143,17 +143,14 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   )
 
   ## extract the required elements from the chunk
-  chunk <- R.utils::extract(
-    chunk,
-    indices = index_in_chunk,
-    drop = FALSE
-  )
-
+  chunk <- eval(str2lang(.create_extract_call(
+    x_name = "chunk",
+    idx = index_in_chunk
+  )))
   return(list(chunk, index_in_result))
 }
 
 
-#' @importFrom R.utils extract
 read_data <- function(
   required_chunks,
   zarr_array_path,
