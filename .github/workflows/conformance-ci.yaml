@@ -30,4 +30,4 @@ jobs:
 
       - uses: Bisaloo/zarr-conformance-tests@v0.0.2
         with:
-          zarr-cli: Rscript inst/scripts/Rarr-cli.R
+          zarr-cli: Rscript --vanilla inst/scripts/Rarr-cli.R
