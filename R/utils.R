@@ -83,6 +83,14 @@ check_index <- function(index, metadata) {
   return(cmd)
 }
 
+.create_extract_call <- function(x_name, idx_name, idx_length) {
+  args <- sprintf("%s[[%d]]", idx_name, seq_len(idx_length))
+  args <- paste(c(args, "drop=FALSE"), collapse = ",")
+  cmd <- sprintf("%s[%s]", x_name, args)
+
+  return(cmd)
+}
+
 #' Parse the data type encoding string
 #'
 #' @param typestr The datatype encoding string.  This is in the Numpy array
@@ -169,6 +177,8 @@ check_index <- function(index, metadata) {
 #' @param path Character vector of length 1 giving the path to be normalised.
 #'
 #' @returns A character vector of length 1 containing the normalised path.
+#'
+#' @importFrom R.utils getAbsolutePath
 #'
 #' @keywords internal
 .normalize_array_path <- function(path) {
