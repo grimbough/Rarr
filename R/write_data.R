@@ -504,6 +504,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   ## extract the new values from x and insert them into the chunk
+  # nolint next: object_usage_linter.
   y <- eval(str2lang(.create_extract_call(
     "x",
     "idx_in_x",
