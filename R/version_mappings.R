@@ -49,9 +49,7 @@
   if (!is.null(metadata$compressor$id)) {
     metadata_v3$codecs[[metadata$compressor$id]] <- list(
       name = metadata$compressor$id,
-      configuration = list(
-        metadata$compressor[names(metadata$compressor) != "id"]
-      )
+      configuration = metadata$compressor[names(metadata$compressor) != "id"]
     )
   }
 
