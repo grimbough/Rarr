@@ -15,6 +15,7 @@ create_empty_zarr_array(
   fill_value,
   nchar = NULL,
   dimension_separator = if (zarr_version == 2) "." else "/",
+  dimension_names = NULL,
   zarr_version = 3
 )
 ```
@@ -75,6 +76,10 @@ create_empty_zarr_array(
 
   The character used to to separate the dimensions in the names of the
   chunk files. Valid options are limited to "." and "/".
+
+- dimension_names:
+
+  Optional character vector with the same length as `dim`.
 
 - zarr_version:
 

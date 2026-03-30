@@ -40,3 +40,7 @@ if support for a required compression codec is missing.
 #### Other codecs
 
 [TABLE]
+
+### Optional fields or features
+
+[TABLE]

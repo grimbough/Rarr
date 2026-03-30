@@ -89,6 +89,11 @@ write_zarr_array(
 The function is primarily called for the side effect of writing to disk.
 Returns (invisibly) `TRUE` if the array is successfully written.
 
+## Note
+
+If `x` has `dimnames`, `names(dimnames(x))` will be stored as the
+`dimension_names` field in the Zarr metadata.
+
 ## Examples
 
 ``` r

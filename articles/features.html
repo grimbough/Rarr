@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.33</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.34</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,8 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/features.html">Supported Zarr features in Rarr</a></li>
+<li><a class="dropdown-item" href="../articles/design.html">design</a></li>
+    <li><a class="dropdown-item" href="../articles/features.html">Supported Zarr features in Rarr</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -333,6 +334,27 @@ support for a required compression codec is missing.</p>
 </tbody>
 </table>
 </div>
+</div>
+<div class="section level3">
+<h3 id="optional-fields-or-features">Optional fields or features<a class="anchor" aria-label="anchor" href="#optional-fields-or-features"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="23%">
+<col width="62%">
+<col width="13%">
+</colgroup>
+<thead><tr class="header">
+<th>Feature</th>
+<th align="center">Status<br>(reading / writing)</th>
+<th>Notes</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td><code>dimension_names</code></td>
+<td align="center">✔ / ✔</td>
+<td>Corresponds to <code>names(dimnames(x))</code> in R</td>
+</tr></tbody>
+</table>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
