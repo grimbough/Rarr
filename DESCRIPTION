@@ -1,6 +1,6 @@
 Package: Rarr
 Title: Read Zarr Files in R
-Version: 1.11.32
+Version: 1.11.33
 Authors@R: c(
     person("Mike", "Smith", role = c("aut", "ccp"),
            comment = c(ORCID = "0000-0002-7800-3848", "Maintainer from 2022 to 2025.")),
