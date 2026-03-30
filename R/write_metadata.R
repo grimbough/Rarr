@@ -55,9 +55,11 @@
 #'
 #' @param zarr_path A character vector of length 1. This provides the
 #'   path to a Zarr array or group.
-#' @param new.zattrs a list inserted to .zattrs at the \code{path}.
-#' @param overwrite if \code{TRUE} (the default), existing .zattrs elements will be overwritten by \code{new.zattrs}.
-#' @inheritParams create_empty_zarr_array
+#' @param new.zattrs a list inserted to .zattrs at the `path`.
+#' @param overwrite if `TRUE` (the default), existing .zattrs elements will be overwritten by `new.zattrs`.
+#' @param zarr_version The version of the Zarr specification to use. If a
+#'   metadata file already exists, the version will be inferred from the file.
+#'   Otherwise, the default is `3`.
 #'
 #' @importFrom jsonlite write_json
 #'
@@ -75,8 +77,12 @@ write_zarr_attributes <- function(
   zarr_path,
   new.zattrs = list(),
   overwrite = TRUE,
-  zarr_version = if (file.exists(file.path(zarr_path, ".zarray"))) 2L else 3L
+  zarr_version = if (has_metadata_v2) 2L else 3L
 ) {
+  has_metadata_v2 <- any(file.exists(file.path(
+    zarr_path,
+    c(".zarray", ".zgroup", ".zattrs")
+  )))
   stopifnot(
     "`zarr_version` must be 2 or 3" = zarr_version %in% c(2L, 3L),
     "list elements should be named" = !is.null(names(new.zattrs))
