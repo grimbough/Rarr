@@ -8,7 +8,7 @@ write_zarr_attributes(
   zarr_path,
   new.zattrs = list(),
   overwrite = TRUE,
-  zarr_version = if (file.exists(file.path(zarr_path, ".zarray"))) 2L else 3L
+  zarr_version = if (has_metadata_v2) 2L else 3L
 )
 }
 \arguments{
@@ -19,8 +19,9 @@ path to a Zarr array or group.}
 
 \item{overwrite}{if \code{TRUE} (the default), existing .zattrs elements will be overwritten by \code{new.zattrs}.}
 
-\item{zarr_version}{The version of the Zarr specification to use. Currently,
-either \code{2} or \code{3}. The default is \code{3}.}
+\item{zarr_version}{The version of the Zarr specification to use. If a
+metadata file already exists, the version will be inferred from the file.
+Otherwise, the default is \code{3}.}
 }
 \value{
 Invisibly, the updated attributes as a named list.
