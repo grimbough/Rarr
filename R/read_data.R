@@ -316,15 +316,10 @@ read_chunk <- function(
 
   # Bytes -> Array codecs
   for (codec in metadata$configured_decoders[["array_bytes"]]) {
-    endian <- metadata$codecs[["bytes"]]$configuration %||% NA_character_
-    converted_chunk <- do.call(
-      codec,
-      list(
-        decompressed_chunk,
-        chunk_dim,
-        metadata$datatype,
-        endian
-      )
+    converted_chunk <- codec(
+      decompressed_chunk,
+      chunk_dim,
+      metadata$datatype
     )
   }
   # Array -> Array codecs
