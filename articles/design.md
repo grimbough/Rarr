@@ -1,4 +1,4 @@
-# design
+# Design principles for the Rarr package
 
 ## Zarr version
 

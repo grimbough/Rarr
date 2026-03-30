@@ -2,7 +2,8 @@
 
 ### All vignettes
 
-- [design](https://huber-group-embl.github.io/Rarr/articles/design.md):
+- [Design principles for the Rarr
+  package](https://huber-group-embl.github.io/Rarr/articles/design.md):
 - [Supported Zarr features in
   Rarr](https://huber-group-embl.github.io/Rarr/articles/features.md):
 - [Working with Zarr arrays in
