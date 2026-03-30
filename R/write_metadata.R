@@ -77,11 +77,11 @@ write_zarr_attributes <- function(
   overwrite = TRUE,
   zarr_version = if (file.exists(file.path(zarr_path, ".zarray"))) 2L else 3L
 ) {
+  stopifnot(
+    "`zarr_version` must be 2 or 3" = zarr_version %in% c(2L, 3L),
+    "list elements should be named" = !is.null(names(new.zattrs))
+  )
   zarr_path <- .normalize_array_path(zarr_path)
-
-  if (is.null(names(new.zattrs))) {
-    stop("list elements should be named")
-  }
 
   if ("" %in% names(new.zattrs)) {
     message("Ignoring unnamed list elements")
