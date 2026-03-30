@@ -1,16 +1,16 @@
 # -- Endian ---------------------------------------
 codec_bytes_decode <- function(
-  decompressed_chunk,
+  input,
   chunk_dim,
   datatype,
   endian
 ) {
   if (datatype$base_type == "unicode") {
     ints <- readBin(
-      decompressed_chunk,
+      input,
       what = "integer",
       size = 4,
-      n = length(decompressed_chunk) / 4,
+      n = length(input) / 4,
       endian = endian
     )
     tmp <- split(
@@ -29,13 +29,13 @@ codec_bytes_decode <- function(
         seq_along(datatype$nbytes),
         datatype$nbytes
       ),
-      length.out = length(decompressed_chunk)
+      length.out = length(input)
     )
 
     converted_chunk <- vector("list", prod(chunk_dim))
     for (i in seq_along(datatype$nbytes)) {
       type <- datatype[[i]]
-      raw_field <- decompressed_chunk[field == i]
+      raw_field <- input[field == i]
       field_converted <- codec_bytes_decode(
         raw_field,
         chunk_dim = NULL,
@@ -59,14 +59,14 @@ codec_bytes_decode <- function(
       datatype$nbytes
     )
     if (!is.na(endian) && endian != .Platform$endian) {
-      ind <- rep_len(rev(seq_len(bytesize)), length(decompressed_chunk)) +
-        (seq_along(decompressed_chunk) - 1) %/% bytesize * bytesize
-      decompressed_chunk <- decompressed_chunk[ind]
+      ind <- rep_len(rev(seq_len(bytesize)), length(input)) +
+        (seq_along(input) - 1) %/% bytesize * bytesize
+      input <- input[ind]
     }
 
     converted_chunk <- .Call(
       paste0("type_convert_", datatype$base_type),
-      decompressed_chunk,
+      input,
       datatype$nbytes,
       PACKAGE = "Rarr"
     )
@@ -75,14 +75,14 @@ codec_bytes_decode <- function(
   return(converted_chunk)
 }
 
-codec_bytes_encode <- function(d, datatype, endian) {
-  if (is.character(d)) {
+codec_bytes_encode <- function(input, datatype, endian) {
+  if (is.character(input)) {
     ## we need to create fixed length strings either via padding or trimming
     if (datatype$base_type == "unicode") {
       to <- ifelse(endian == "little", "UCS-4LE", "UCS-4BE")
-      raw_list <- iconv(d, to = to, toRaw = TRUE)
+      raw_list <- iconv(input, to = to, toRaw = TRUE)
     } else {
-      raw_list <- iconv(d, toRaw = TRUE)
+      raw_list <- iconv(input, toRaw = TRUE)
     }
     unlist(
       lapply(
@@ -100,7 +100,7 @@ codec_bytes_encode <- function(d, datatype, endian) {
     if (is.na(endian)) {
       endian <- "little"
     }
-    writeBin(d, raw(), size = datatype$nbytes, endian = endian)
+    writeBin(input, raw(), size = datatype$nbytes, endian = endian)
   }
 }
 
@@ -124,7 +124,7 @@ codec_vlen_utf8_encode <- function(input, ...) {
   return(raw_vlen_utf8)
 }
 
-codec_vlen_utf8_decode <- function(input, chunkdim, ...) {
+codec_vlen_utf8_decode <- function(input, chunk_dim, ...) {
   con <- rawConnection(input)
   on.exit(close(con))
   # Looking at numcodecs source code, this is by definition/convention
@@ -137,7 +137,7 @@ codec_vlen_utf8_decode <- function(input, chunkdim, ...) {
   }
 
   Encoding(output) <- "UTF-8"
-  dim(output) <- chunkdim
+  dim(output) <- chunk_dim
 
   return(output)
 }
