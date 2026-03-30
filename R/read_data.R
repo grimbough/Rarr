@@ -167,7 +167,6 @@ read_data <- function(
   metadata
 ) {
   ## determine which chunk each of the requests indices belongs to
-  # nolint next: undesirable_function_linter.
   chunk_idx <- mapply(
     \(x, y) {
       (x - 1) %/% y
@@ -268,7 +267,6 @@ find_chunks_needed <- function(metadata, index) {
 #' @returns An array containing the decompressed chunk values.
 #'
 #' @keywords internal
-# nolint next: cyclocomp_linter.
 read_chunk <- function(
   chunk_path,
   metadata,
