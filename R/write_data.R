@@ -600,21 +600,9 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     con <- xzfile(chunk_path, open = "wb", compression = compressor$level)
     on.exit(close(con))
   } else if (compressor$id == "lz4") {
-    compressed_chunk <- .Call("compress_chunk_LZ4", raw_chunk, PACKAGE = "Rarr")
-    ## numpy stores the original size of the buffer in the first 4 bytes after
-    ## compression. We should do that too for compatibility
-    ## TODO: probably faster to do this in C and avoid copying the vector
-    compressed_chunk <- c(
-      writeBin(length(raw_chunk), raw(), size = 4, endian = "little"),
-      compressed_chunk
-    )
+    compressed_chunk <- codec_lz4_encode(raw_chunk, compressor$level)
   } else if (compressor$id == "zstd") {
-    compressed_chunk <- .Call(
-      "compress_chunk_ZSTD",
-      raw_chunk,
-      as.integer(compressor$level),
-      PACKAGE = "Rarr"
-    )
+    compressed_chunk <- codec_zstd_encode(raw_chunk, compressor$level)
   }
 
   if (compressor$id %in% c("gzip", "bz2", "lzma")) {

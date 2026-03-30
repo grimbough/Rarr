@@ -79,7 +79,6 @@
       # Aliases
       candidate_codec <- switch(
         candidate_codec,
-        "zlib" = "gzip",
         "numcodecs.lz4" = "lz4",
         candidate_codec
       )

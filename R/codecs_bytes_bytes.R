@@ -6,7 +6,7 @@ codec_blosc_decode <- function(bytes, ...) {
   )
 }
 
-codec_gzip_decode <- function(bytes, ...) {
+codec_zlib_decode <- codec_gzip_decode <- function(bytes, ...) {
   memDecompress(
     from = bytes,
     type = "gzip",
@@ -44,10 +44,28 @@ codec_lz4_decode <- function(bytes, ...) {
   )
 }
 
+codec_lz4_encode <- function(input, ...) {
+  ## numpy stores the original size of the buffer in the first 4 bytes after
+  ## compression. We should do that too for compatibility
+  c(
+    writeBin(length(input), raw(), size = 4, endian = "little"),
+    .Call("compress_chunk_LZ4", input, PACKAGE = "Rarr")
+  )
+}
+
 codec_zstd_decode <- function(bytes, ...) {
   .Call(
     "decompress_chunk_ZSTD",
     bytes,
+    PACKAGE = "Rarr"
+  )
+}
+
+codec_zstd_encode <- function(input, level, ...) {
+  .Call(
+    "compress_chunk_ZSTD",
+    input,
+    as.integer(level),
     PACKAGE = "Rarr"
   )
 }
