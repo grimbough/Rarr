@@ -326,6 +326,12 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
         configuration = list(order = seq_along(metadata$shape) - 1)
       )
     }
+    # Set endian to NA for 1-bytes types
+    if (!is.null(metadata$codecs[["bytes"]])) {
+      endian <- metadata$codecs[["bytes"]]$configuration$endian %||%
+        NA_character_
+      metadata$codecs[["bytes"]]$configuration$endian <- endian
+    }
   } else {
     stop(
       "Unsupported Zarr format version: ",
