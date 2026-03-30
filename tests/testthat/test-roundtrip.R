@@ -158,3 +158,20 @@ test_that("zarr arrays work with row-major ordering", {
   )
   expect_identical(read_zarr_array(path3d), x3d)
 })
+
+test_that("dimension names roundtrip", {
+  x <- array(1:32, dim = c(2, 4, 4))
+  dimnames(x) <- list("X" = NULL, "Y" = NULL, "Z" = NULL)
+
+  path <- withr::local_tempfile(fileext = ".zarr")
+
+  expect_silent(
+    write_zarr_array(
+      x = x,
+      zarr_array_path = path,
+      chunk_dim = c(2, 4, 1)
+    )
+  )
+  res <- read_zarr_array(path)
+  expect_identical(res, x)
+})

@@ -2,6 +2,7 @@
 .write_zarr_metadata <- function(
   array_path,
   array_shape,
+  dimension_names = NULL,
   chunk_shape,
   data_type,
   fill_value,
@@ -24,6 +25,10 @@
   )
 
   if (zarr_version == 2) {
+    if (!is.null(dimension_names)) {
+      # The spec says we "SHOULDN'T" do this.
+      metadata_v2$dimension_names <- dimension_names
+    }
     write_json(
       metadata_v2,
       file.path(array_path, ".zarray"),
@@ -41,6 +46,9 @@
       version_to = 3
     )
     metadata_v3$zarr_format <- 3L
+    if (!is.null(dimension_names)) {
+      metadata_v3$dimension_names <- dimension_names
+    }
     # FIXME: get rid of these directly in the internal
     metadata_v3$codecs <- unname(metadata_v3$codecs)
     metadata_v3$datatype <- NULL
