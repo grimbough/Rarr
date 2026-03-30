@@ -150,6 +150,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   )
 
   ## extract the required elements from the chunk
+  # FIXME: optimization: skip this step if we are taking everything in the chunk
   chunk <- eval(str2lang(.create_extract_call(
     x_name = "chunk",
     idx_name = "index_in_chunk",
