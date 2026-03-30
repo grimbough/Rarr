@@ -18,6 +18,9 @@ path to a Zarr array or group.}
 \item{new.zattrs}{a list inserted to .zattrs at the \code{path}.}
 
 \item{overwrite}{if \code{TRUE} (the default), existing .zattrs elements will be overwritten by \code{new.zattrs}.}
+
+\item{zarr_version}{The version of the Zarr specification to use. Currently,
+either \code{2} or \code{3}. The default is \code{3}.}
 }
 \value{
 Invisibly, the updated attributes as a named list.

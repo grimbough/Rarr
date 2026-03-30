@@ -109,6 +109,8 @@
 #'   character array, but it is ignored for other data types.
 #' @param dimension_separator The character used to to separate the dimensions
 #'   in the names of the chunk files.  Valid options are limited to "." and "/".
+#' @param zarr_version The version of the Zarr specification to use. Currently,
+#'   either `2` or `3`. The default is `3`.
 #'
 #' @returns If successful returns (invisibly) `TRUE`.  However this function is
 #'   primarily called for the size effect of initialising a Zarr array location

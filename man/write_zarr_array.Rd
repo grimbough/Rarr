@@ -55,6 +55,9 @@ so no data are truncated. However this may be slow and providing a value to
 
 \item{dimension_separator}{The character used to to separate the dimensions
 in the names of the chunk files.  Valid options are limited to "." and "/".}
+
+\item{zarr_version}{The version of the Zarr specification to use. Currently,
+either \code{2} or \code{3}. The default is \code{3}.}
 }
 \value{
 The function is primarily called for the side effect of writing to
