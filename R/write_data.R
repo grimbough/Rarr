@@ -557,7 +557,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   metadata
 ) {
   ## check the chunk path exists, and create if not
-  if (isFALSE(dir.exists(dirname(chunk_path)))) {
+  if (!dir.exists(dirname(chunk_path))) {
     dir.create(dirname(chunk_path), recursive = TRUE, showWarnings = FALSE)
   }
 
