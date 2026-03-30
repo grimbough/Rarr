@@ -53,6 +53,9 @@ character array, but it is ignored for other data types.}
 
 \item{dimension_separator}{The character used to to separate the dimensions
 in the names of the chunk files.  Valid options are limited to "." and "/".}
+
+\item{zarr_version}{The version of the Zarr specification to use. Currently,
+either \code{2} or \code{3}. The default is \code{3}.}
 }
 \value{
 If successful returns (invisibly) \code{TRUE}.  However this function is
