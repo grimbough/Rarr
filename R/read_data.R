@@ -100,6 +100,13 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
 
   res <- read_data(required_chunks, zarr_array_path, s3_client, index, metadata)
 
+  if (!is.null(metadata$dimension_names)) {
+    dimnames(res) <- setNames(
+      vector("list", length = length(dim(res))),
+      metadata$dimension_names
+    )
+  }
+
   return(res)
 }
 

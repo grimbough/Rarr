@@ -86,3 +86,9 @@ Please open an [issue](https://github.com/Huber-group-EMBL/Rarr/issues) if suppo
 |`endian`   | &#x2714; / &#x274C;            |       |
 |`transpose`| &#x2714; / &#x2714;            |       |
 |`VLen-UTF8`| &#x2714; / &#x2714; *          | Writing supported only via `update_zarr_array()` |
+
+### Optional fields or features
+
+| Feature    | Status<br/>(reading / writing) | Notes |
+|------------|:------------------------------:|-------|
+|`dimension_names` | &#x2714; / &#x2714; | Corresponds to `names(dimnames(x))` in R |

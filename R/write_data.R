@@ -86,6 +86,8 @@
 #'   new Zarr array.
 #' @param dim Dimensions of the new array.  Should be a numeric vector with the
 #'   same length as the number of dimensions.
+#' @param dimension_names Optional character vector with the same length as
+#'   `dim`.
 #' @param chunk_dim Dimensions of the array chunks. Should be a numeric vector
 #'   with the same length as the `dim` argument.
 #' @param data_type Character vector giving the data type of the new array.
@@ -137,6 +139,7 @@ create_empty_zarr_array <- function(
   fill_value,
   nchar = NULL,
   dimension_separator = if (zarr_version == 2) "." else "/",
+  dimension_names = NULL,
   zarr_version = 3
 ) {
   path <- .normalize_array_path(zarr_array_path)
@@ -158,6 +161,7 @@ create_empty_zarr_array <- function(
   .write_zarr_metadata(
     array_path = path,
     array_shape = dim,
+    dimension_names = dimension_names,
     chunk_shape = chunk_dim,
     data_type = data_type,
     order = order,
@@ -182,6 +186,9 @@ create_empty_zarr_array <- function(
 #'   so no data are truncated. However this may be slow and providing a value to
 #'   `nchar` can provide a modest performance improvement.
 #' @inheritParams create_empty_zarr_array
+#'
+#' @note If `x` has `dimnames`, `names(dimnames(x))` will be stored as the
+#' `dimension_names` field in the Zarr metadata.
 #'
 #' @returns The function is primarily called for the side effect of writing to
 #'   disk. Returns (invisibly) `TRUE` if the array is successfully written.
@@ -218,6 +225,7 @@ write_zarr_array <- function(
   create_empty_zarr_array(
     zarr_array_path = path,
     dim = dim(x),
+    dimension_names = names(dimnames(x)),
     chunk_dim = chunk_dim,
     data_type = data_type,
     order = order,
