@@ -283,10 +283,10 @@ read_chunk <- function(
 
   if (is.null(s3_client)) {
     size <- file.size(chunk_path)
-    compressed_chunk <- readBin(con = chunk_path, what = "raw", n = size)
+    raw_chunk <- readBin(con = chunk_path, what = "raw", n = size)
   } else {
     parsed_url <- parse_s3_path(chunk_path)
-    compressed_chunk <- s3_client$get_object(
+    raw_chunk <- s3_client$get_object(
       Bucket = parsed_url$bucket,
       Key = parsed_url$object
     )$Body
@@ -294,16 +294,14 @@ read_chunk <- function(
 
   # Bytes -> Bytes codecs
   for (codec in metadata$configured_decoders[["bytes_bytes"]]) {
-    compressed_chunk <- codec(
-      bytes = compressed_chunk
+    raw_chunk <- codec(
+      bytes = raw_chunk
     )
   }
-  decompressed_chunk <- compressed_chunk
 
   ## It doesn't seem clear if the on disk chunk will contain the overflow
   ## values or not, so we try both approaches.
-  actual_chunk_size <- length(decompressed_chunk) /
-    sum(metadata$datatype$nbytes)
+  actual_chunk_size <- length(raw_chunk) / sum(metadata$datatype$nbytes)
   if (
     !is.null(metadata$codecs[["vlen_utf8"]]) ||
       (actual_chunk_size ==
@@ -317,7 +315,7 @@ read_chunk <- function(
   # Bytes -> Array codecs
   for (codec in metadata$configured_decoders[["array_bytes"]]) {
     converted_chunk <- codec(
-      decompressed_chunk,
+      raw_chunk,
       chunk_dim,
       metadata$datatype
     )
