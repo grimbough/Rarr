@@ -106,7 +106,13 @@ write_zarr_attributes <- function(
     )
   } else if (zarr_version == 3L) {
     # FIXME: we really want a partial write to the json file
-    metadata <- read_json(file.path(zarr_path, "zarr.json"))
+    if (file.exists(file.path(zarr_path, "zarr.json"))) {
+      metadata <- read_json(file.path(zarr_path, "zarr.json"))
+    } else {
+      metadata <- list(
+        "zarr_format" = 3L
+      )
+    }
     metadata$attributes <- new.zattrs
     write_json(
       metadata,

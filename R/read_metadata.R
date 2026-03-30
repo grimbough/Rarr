@@ -471,11 +471,17 @@ read_zarr_attributes <- function(
   )
 
   if (!any(exists_attribute_files)) {
-    warning(
-      "No file that could contain attributes (either `.zattrs` for v2 ",
-      "or `zarr.json` for v3) was found in the path.",
-      call. = FALSE
+    msg <- paste(
+      "No file that could contain attributes",
+      "(either `.zattrs` for v2 or `zarr.json` for v3)",
+      "was found in the path."
     )
+    if (missing == "error") {
+      stop(msg, call. = FALSE)
+    }
+    if (missing == "warning") {
+      warning(msg, call. = FALSE)
+    }
     return(list())
   }
   if (all(exists_attribute_files)) {
