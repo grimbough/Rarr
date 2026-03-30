@@ -454,7 +454,7 @@ full of 7s, our fill value.
 list.files(path, all.files = TRUE, no.. = TRUE)
 ```
 
-    ## [1] ".zarray"
+    ## [1] "zarr.json"
 
 ``` r
 table(read_zarr_array(path))
@@ -493,7 +493,7 @@ values are present in the array if we read it into R.
 list.files(path, all.files = TRUE, no.. = TRUE)
 ```
 
-    ## [1] ".zarray" "0.0"     "0.1"
+    ## [1] "c"         "zarr.json"
 
 ``` r
 read_zarr_array(path, index = list(1:2, 1:5))
@@ -526,9 +526,9 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-03-22 r89674)
+    ## R Under development (unstable) (2026-03-28 r89738)
     ## Platform: x86_64-pc-linux-gnu
-    ## Running under: Ubuntu 24.04.3 LTS
+    ## Running under: Ubuntu 24.04.4 LTS
     ## 
     ## Matrix products: default
     ## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -547,22 +547,22 @@ contents is as expected.
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] Rarr_1.11.32     BiocStyle_2.39.0
+    ## [1] Rarr_1.11.33     BiocStyle_2.39.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] vctrs_0.7.2         crayon_1.5.3        cli_3.6.5          
     ##  [4] knitr_1.51          rlang_1.1.7         xfun_0.57          
     ##  [7] textshaping_1.0.5   jsonlite_2.0.0      glue_1.8.0         
     ## [10] htmltools_0.5.9     ragg_1.5.2          sass_0.4.10        
-    ## [13] rappdirs_0.3.4      rmarkdown_2.30      evaluate_1.0.5     
+    ## [13] rappdirs_0.3.4      rmarkdown_2.31      evaluate_1.0.5     
     ## [16] jquerylib_0.1.4     fastmap_1.2.0       yaml_2.3.12        
     ## [19] lifecycle_1.0.5     httr2_1.2.2         bookdown_0.46      
-    ## [22] BiocManager_1.30.27 compiler_4.6.0      codetools_0.2-20   
+    ## [22] BiocManager_1.30.27 compiler_4.7.0      codetools_0.2-20   
     ## [25] fs_2.0.1            Rcpp_1.1.1          R.oo_1.27.1        
     ## [28] systemfonts_1.3.2   R.utils_2.13.0      digest_0.6.39      
     ## [31] R6_2.6.1            pillar_1.11.1       curl_7.0.0         
     ## [34] paws.common_0.8.9   paws.storage_0.9.0  magrittr_2.0.4     
-    ## [37] bslib_0.10.0        R.methodsS3_1.8.2   tools_4.6.0        
+    ## [37] bslib_0.10.0        R.methodsS3_1.8.2   tools_4.7.0        
     ## [40] xml2_1.5.2          pkgdown_2.2.0       cachem_1.1.0       
     ## [43] desc_1.4.3
 

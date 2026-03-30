@@ -14,7 +14,8 @@ write_zarr_array(
   compressor = use_zstd(),
   fill_value,
   nchar,
-  dimension_separator = "."
+  dimension_separator = if (zarr_version == 2) "." else "/",
+  zarr_version = 3
 )
 ```
 
@@ -77,6 +78,11 @@ write_zarr_array(
 
   The character used to to separate the dimensions in the names of the
   chunk files. Valid options are limited to "." and "/".
+
+- zarr_version:
+
+  The version of the Zarr specification to use. Currently, either `2` or
+  `3`. The default is `3`.
 
 ## Value
 

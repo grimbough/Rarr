@@ -5,7 +5,12 @@ Read the .zattrs file associated with a Zarr array or group
 ## Usage
 
 ``` r
-write_zarr_attributes(zarr_path, new.zattrs = list(), overwrite = TRUE)
+write_zarr_attributes(
+  zarr_path,
+  new.zattrs = list(),
+  overwrite = TRUE,
+  zarr_version = if (has_metadata_v2) 2L else 3L
+)
 ```
 
 ## Arguments
@@ -24,6 +29,12 @@ write_zarr_attributes(zarr_path, new.zattrs = list(), overwrite = TRUE)
   if `TRUE` (the default), existing .zattrs elements will be overwritten
   by `new.zattrs`.
 
+- zarr_version:
+
+  The version of the Zarr specification to use. If a metadata file
+  already exists, the version will be inferred from the file. Otherwise,
+  the default is `3`.
+
 ## Value
 
 Invisibly, the updated attributes as a named list. This is equivalent to
@@ -37,6 +48,6 @@ to `new.zattrs`.
 ``` r
 z1 <- withr::local_tempdir(fileext = ".zarr")
 write_zarr_attributes(z1, list(date = "2025-01-01", author = "Jane Doe"))
-#> Warning: cannot open file '/tmp/RtmpbSfecG/file22753b21225b.zarr/.zattrs': No such file or directory
+#> Warning: cannot open file '/tmp/Rtmp3QkaKo/file2c2d6e85ea44.zarr//zarr.json': No such file or directory
 #> Error in file(con, "w"): cannot open the connection
 ```

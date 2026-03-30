@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.32</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.33</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,12 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">write_zarr_attributes</span><span class="op">(</span><span class="va">zarr_path</span>, new.zattrs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">write_zarr_attributes</span><span class="op">(</span></span>
+<span>  <span class="va">zarr_path</span>,</span>
+<span>  new.zattrs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  zarr_version <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">has_metadata_v2</span><span class="op">)</span> <span class="fl">2L</span> <span class="kw">else</span> <span class="fl">3L</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,6 +68,12 @@ path to a Zarr array or group.</p></dd>
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
 <dd><p>if <code>TRUE</code> (the default), existing .zattrs elements will be overwritten by <code>new.zattrs</code>.</p></dd>
 
+
+<dt id="arg-zarr-version">zarr_version<a class="anchor" aria-label="anchor" href="#arg-zarr-version"></a></dt>
+<dd><p>The version of the Zarr specification to use. If a
+metadata file already exists, the version will be inferred from the file.
+Otherwise, the default is <code>3</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -75,7 +86,7 @@ If no attributes were present before, this is identical to <code>new.zattrs</cod
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">z1</span> <span class="op">&lt;-</span> <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_tempfile.html" class="external-link">local_tempdir</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".zarr"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">write_zarr_attributes</span><span class="op">(</span><span class="va">z1</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>date <span class="op">=</span> <span class="st">"2025-01-01"</span>, author <span class="op">=</span> <span class="st">"Jane Doe"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot open file '/tmp/RtmpbSfecG/file22753b21225b.zarr/.zattrs': No such file or directory</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot open file '/tmp/Rtmp3QkaKo/file2c2d6e85ea44.zarr//zarr.json': No such file or directory</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in file(con, "w"):</span> cannot open the connection</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

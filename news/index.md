@@ -12,12 +12,17 @@
   reduces the number of dependencies from 37 to 24. This also greatly
   improves performance in for the standard case (when the DelayedArray
   backend is not used).
+- [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md)
+  now writes Zarr v3 by default. Writing Zarr v2 is still possible by
+  explicitly setting the argument `zarr_version = 2`.
 
 ### New features
 
 - Zarr v3 arrays with data types and codecs that already existed in v2
   can now be read via
-  [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md).
+  [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md),
+  and written via
+  [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md).
 - More data types are available when writing Zarr arrays:
   - boolean / logical
   - int8

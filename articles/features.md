@@ -6,15 +6,16 @@ Support for [Zarr version
 3](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html) is
 actively being worked on, and some features are likely to be missing.
 
-It is known that only reading, and writing via
-[`update_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/update_zarr_array.md),
-are currently supported and that the sharding codec is not yet
-implemented.
+It is known that the sharding codec is not yet implemented.
 
 ## Reading and Writing
 
 Reading Zarr arrays is reasonably well supported. Writing is available,
 but is more limited. Both aspects are under active development.
+
+### Stores
+
+[TABLE]
 
 ### Data Types
 
