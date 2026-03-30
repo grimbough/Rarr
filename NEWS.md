@@ -34,6 +34,8 @@
   no arrays) can now be read from Zarr v2 arrays.
 * `simplifyVector = FALSE` is added to `fromJSON` in `read_zarr_attributes()`, 
   thus attributes of both local and s3 zarr stores are read identically.
+* The `dimension_names` optional field is support in both v2 (not strictly
+  part of the spec) and v3. It is mapped to `names(dimnames(.))` in R.
 
 ## Minor improvements
 
