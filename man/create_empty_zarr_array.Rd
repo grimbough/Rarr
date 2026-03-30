@@ -14,6 +14,7 @@ create_empty_zarr_array(
   fill_value,
   nchar = NULL,
   dimension_separator = if (zarr_version == 2) "." else "/",
+  dimension_names = NULL,
   zarr_version = 3
 )
 }
@@ -53,6 +54,9 @@ character array, but it is ignored for other data types.}
 
 \item{dimension_separator}{The character used to to separate the dimensions
 in the names of the chunk files.  Valid options are limited to "." and "/".}
+
+\item{dimension_names}{Optional character vector with the same length as
+\code{dim}.}
 
 \item{zarr_version}{The version of the Zarr specification to use. Currently,
 either \code{2} or \code{3}. The default is \code{3}.}

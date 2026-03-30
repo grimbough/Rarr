@@ -66,6 +66,10 @@ disk. Returns (invisibly) \code{TRUE} if the array is successfully written.
 \description{
 Write an R array to Zarr
 }
+\note{
+If \code{x} has \code{dimnames}, \code{names(dimnames(x))} will be stored as the
+\code{dimension_names} field in the Zarr metadata.
+}
 \examples{
 
 new_zarr_array <- file.path(tempdir(), "integer.zarr")
