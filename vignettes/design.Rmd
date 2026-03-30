@@ -1,8 +1,8 @@
 ---
-title: "design"
+title: "Design principles for the Rarr package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{design}
+  %\VignetteIndexEntry{Design principles for the Rarr package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
