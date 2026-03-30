@@ -12,7 +12,7 @@ write_zarr_array(
   order = "F",
   compressor = use_zstd(),
   fill_value,
-  nchar,
+  nchar = max(base::nchar(x)) + 1L,
   dimension_separator = if (zarr_version == 2) "." else "/",
   zarr_version = 3
 )

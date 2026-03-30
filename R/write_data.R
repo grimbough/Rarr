@@ -211,16 +211,11 @@ write_zarr_array <- function(
   order = "F",
   compressor = use_zstd(),
   fill_value,
-  nchar,
+  nchar = max(base::nchar(x)) + 1L, # +1 to add NUL terminator
   dimension_separator = if (zarr_version == 2) "." else "/",
   zarr_version = 3
 ) {
   path <- .normalize_array_path(zarr_array_path)
-
-  if (storage.mode(x) == "character" && missing(nchar)) {
-    # +1 to add NUL terminator
-    nchar <- max(base::nchar(x)) + 1
-  }
 
   create_empty_zarr_array(
     zarr_array_path = path,
