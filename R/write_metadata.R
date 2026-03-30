@@ -41,6 +41,9 @@
       version_to = 3
     )
     metadata_v3$zarr_format <- 3L
+    # FIXME: get rid of these directly in the internal
+    metadata_v3$codecs <- unname(metadata_v3$codecs)
+    metadata_v3$datatype <- NULL
     write_json(
       metadata_v3,
       file.path(array_path, "zarr.json"),
