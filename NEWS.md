@@ -7,11 +7,13 @@
   This reduces the number of dependencies from 37 to 24.
   This also greatly improves performance in for the standard case (when the
   DelayedArray backend is not used).
+* `write_zarr_array()` now writes Zarr v3 by default. Writing Zarr v2 is still
+  possible by explicitly setting the argument `zarr_version = 2`.
 
 ## New features
 
 * Zarr v3 arrays with data types and codecs that already existed in v2 
-  can now be read via `read_zarr_array()`.
+  can now be read via `read_zarr_array()`, and written via `write_zarr_array()`.
 * More data types are available when writing Zarr arrays:
   * boolean / logical
   * int8
@@ -31,7 +33,7 @@
 * "Simple" structured data types (i.e., only one level of nesting and 
   no arrays) can now be read from Zarr v2 arrays.
 * `simplifyVector = FALSE` is added to `fromJSON` in `read_zarr_attributes()`, 
-  thus attributes of both local and s3 zarr stores are read identically. 
+  thus attributes of both local and s3 zarr stores are read identically.
 
 ## Minor improvements
 
