@@ -88,6 +88,9 @@ codec_bytes_encode <- function(input, datatype, endian) {
       lapply(
         raw_list,
         FUN = function(x, nbytes) {
+          # FIXME: Can this really be NULL?
+          # - If yes, add a test for it
+          # - If no, convert this unlist(lapply()) to vapply() and remove the if statement
           if (!is.null(x)) {
             length(x) <- nbytes
           }
