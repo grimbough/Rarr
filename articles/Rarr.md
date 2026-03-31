@@ -526,7 +526,7 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-03-28 r89738)
+    ## R Under development (unstable) (2026-03-30 r89743)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
