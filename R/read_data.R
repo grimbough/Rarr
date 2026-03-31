@@ -110,55 +110,6 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   return(res)
 }
 
-.extract_elements <- function(
-  current_chunk_index,
-  current_chunk_path,
-  metadata,
-  index,
-  zarr_array_path,
-  s3_client,
-  chunk_idx
-) {
-  ## find elements to select from the chunk and what in the output we replace
-  index_in_result <- index_in_chunk <- list()
-  alt_chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
-
-  # FIXME: deal with this by rewriting the chunk grid in metadata after we supported
-  # non-regular chunk grid
-  for (j in seq_along(current_chunk_index)) {
-    index_in_result[[j]] <- which(chunk_idx[[j]] == current_chunk_index[j])
-    ## are we requesting values outside the array due to overhanging chunks?
-    outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
-    if (any(outside_extent)) {
-      index_in_result[[j]] <- index_in_result[[j]][-outside_extent]
-    }
-    if (any(index_in_result[[j]] == metadata$shape[[j]])) {
-      alt_chunk_dim[j] <- length(index_in_result[[j]])
-    }
-
-    index_in_chunk[[j]] <- ((index[[j]][index_in_result[[j]]] - 1) %%
-      metadata$chunk_grid$configuration$chunk_shape[[j]]) +
-      1
-  }
-
-  ## read this chunk
-  chunk <- read_chunk(
-    chunk_path = current_chunk_path,
-    metadata = metadata,
-    s3_client = s3_client,
-    alt_chunk_dim = alt_chunk_dim
-  )
-
-  ## extract the required elements from the chunk
-  # FIXME: optimization: skip this step if we are taking everything in the chunk
-  chunk <- eval(str2lang(.create_extract_call(
-    x_name = "chunk",
-    idx_name = "index_in_chunk",
-    idx_length = length(index_in_chunk)
-  )))
-  return(list(chunk, index_in_result))
-}
-
 
 read_data <- function(
   required_chunks,
@@ -235,6 +186,55 @@ read_data <- function(
     }
   }
   return(output)
+}
+
+.extract_elements <- function(
+  current_chunk_index,
+  current_chunk_path,
+  metadata,
+  index,
+  zarr_array_path,
+  s3_client,
+  chunk_idx
+) {
+  ## find elements to select from the chunk and what in the output we replace
+  index_in_result <- index_in_chunk <- list()
+  alt_chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
+
+  # FIXME: deal with this by rewriting the chunk grid in metadata after we supported
+  # non-regular chunk grid
+  for (j in seq_along(current_chunk_index)) {
+    index_in_result[[j]] <- which(chunk_idx[[j]] == current_chunk_index[j])
+    ## are we requesting values outside the array due to overhanging chunks?
+    outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
+    if (any(outside_extent)) {
+      index_in_result[[j]] <- index_in_result[[j]][-outside_extent]
+    }
+    if (any(index_in_result[[j]] == metadata$shape[[j]])) {
+      alt_chunk_dim[j] <- length(index_in_result[[j]])
+    }
+
+    index_in_chunk[[j]] <- ((index[[j]][index_in_result[[j]]] - 1) %%
+      metadata$chunk_grid$configuration$chunk_shape[[j]]) +
+      1
+  }
+
+  ## read this chunk
+  chunk <- read_chunk(
+    chunk_path = current_chunk_path,
+    metadata = metadata,
+    s3_client = s3_client,
+    alt_chunk_dim = alt_chunk_dim
+  )
+
+  ## extract the required elements from the chunk
+  # FIXME: optimization: skip this step if we are taking everything in the chunk
+  chunk <- eval(str2lang(.create_extract_call(
+    x_name = "chunk",
+    idx_name = "index_in_chunk",
+    idx_length = length(index_in_chunk)
+  )))
+  return(list(chunk, index_in_result))
 }
 
 find_chunks_needed <- function(metadata, index) {
