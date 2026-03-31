@@ -301,10 +301,12 @@ read_chunk <- function(
   ## It doesn't seem clear if the on disk chunk will contain the overflow
   ## values or not, so we try both approaches.
   actual_chunk_size <- length(raw_chunk) / sum(metadata$datatype$nbytes)
+  expected_chunk_size <- prod(unlist(
+    metadata$chunk_grid$configuration$chunk_shape
+  ))
   if (
     !is.null(metadata$codecs[["vlen_utf8"]]) ||
-      (actual_chunk_size ==
-        prod(unlist(metadata$chunk_grid$configuration$chunk_shape)))
+      actual_chunk_size == expected_chunk_size
   ) {
     chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
   } else {
