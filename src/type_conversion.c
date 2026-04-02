@@ -124,6 +124,7 @@ SEXP type_convert_bool(SEXP input, SEXP _n_bytes) {
   const void* raw_buffer = RAW(input);
 
   int *p_data;
+  R_xlen_t i;
   SEXP data;
 
   const R_xlen_t data_length = length;
@@ -131,7 +132,7 @@ SEXP type_convert_bool(SEXP input, SEXP _n_bytes) {
   data = PROTECT(allocVector(LGLSXP, data_length));
   p_data = LOGICAL(data);
 
-  for (int i = 0; i < data_length; i++) {
+  for (i = 0; i < data_length; i++) {
     p_data[i] = ((const int8_t *)raw_buffer)[i];
   }
 
