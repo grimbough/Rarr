@@ -59,7 +59,10 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Design principles for the Rarr package</h1>
-            
+                        <h4 data-toc-skip class="author">Hugo
+Gruson</h4>
+                        
+            <h4 data-toc-skip class="date">2 April 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/design.Rmd" class="external-link"><code>vignettes/design.Rmd</code></a></small>
       <div class="d-none name"><code>design.Rmd</code></div>
@@ -67,6 +70,30 @@
 
     
     
+<div class="section level2">
+<h2 id="guiding-principles">Guiding principles<a class="anchor" aria-label="anchor" href="#guiding-principles"></a>
+</h2>
+<ul>
+<li>
+<strong>performant</strong>. We focus on speed &amp; memory
+efficiency. This results in Rarr being among the most performant Zarr
+implementations. This is ensured by the use of an extensive <a href="https://lorenzwalthert.github.io/touchstone/index.html" class="external-link">continuous
+benchmarking</a> suite. Performance critical steps are written in
+C.</li>
+<li>
+<strong>maintainable and extensible</strong>. Additional codecs can
+easily be supported as the entire codec codebase is decoupled from the
+rest of the codebase.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="scope">Scope<a class="anchor" aria-label="anchor" href="#scope"></a>
+</h2>
+<p>We aim for full support of the Zarr specification.</p>
+<p>There is currently no clear decision process regarding support for <a href="https://github.com/zarr-developers/zarr-extensions" class="external-link">Zarr
+extensions</a>. Please reach out if you have a specific use case that
+relies on a Zarr extension.</p>
+</div>
 <div class="section level2">
 <h2 id="zarr-version">Zarr version<a class="anchor" aria-label="anchor" href="#zarr-version"></a>
 </h2>
@@ -86,7 +113,12 @@ tradeoff) between version 2 and version 3, we would prioritise version
 3.</li>
 </ul>
 </div>
-  </main>
+<div class="section level2">
+<h2 id="functional-programming">Functional programming<a class="anchor" aria-label="anchor" href="#functional-programming"></a>
+</h2>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
