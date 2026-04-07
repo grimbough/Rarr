@@ -80,9 +80,6 @@
 #include <utility>
 #include <vector>
 
-#include <R_ext/Error.h>
-#include <R_ext/Print.h>
-
 namespace snappy {
 
 namespace {
