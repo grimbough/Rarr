@@ -9,6 +9,8 @@
   DelayedArray backend is not used).
 * `write_zarr_array()` now writes Zarr v3 by default. Writing Zarr v2 is still
   possible by explicitly setting the argument `zarr_version = 2`.
+* `write_zarr_array()` now writes R character array as unicode (Zarr 
+  type `U`) instead of `S`.
 
 ## New features
 
@@ -40,6 +42,9 @@
   writing numeric arrays, following a request from Hervé Pagès.
 * Fill values stored as their byte representation are now understood
   when reading Zarr arrays.
+* `write_zarr_array()` now supports writing `NA_character_`, which means
+  it is possible to preserve `NA`s when roundtriping an R character 
+  array, based on a request from Hervé Pagès.
 
 ## Minor improvements
 
