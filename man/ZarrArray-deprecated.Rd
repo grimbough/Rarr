@@ -10,9 +10,11 @@ ZarrArray(...)
 writeZarrArray(...)
 }
 \arguments{
-\item{...}{Ignored.}
+\item{...}{Passed to the new function in the ZarrArray package.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}
+
 The DelayedArray backend has moved to a dedicated package: the ZarrArray package
 (\url{https://github.com/Bioconductor/ZarrArray}).
 }

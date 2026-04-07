@@ -4,10 +4,12 @@
 #' @title Deprecated DelayedArray backend functions
 #'
 #' @description
+#' `r lifecycle::badge('superseded')`
+#'
 #' The DelayedArray backend has moved to a dedicated package: the ZarrArray package
 #' (<https://github.com/Bioconductor/ZarrArray>).
 #'
-#' @param ... Ignored.
+#' @param ... Passed to the new function in the ZarrArray package.
 #'
 #' @examples
 #' zarr_path <- system.file(
@@ -22,27 +24,33 @@
 #' )
 #'
 ZarrArray <- function(...) {
-  .Deprecated(
-    "ZarrArray",
-    package = "ZarrArray",
-    msg = paste(
+  lifecycle::deprecate_warn(
+    when = "1.12.0",
+    what = "ZarrArray()",
+    with = "ZarrArray::ZarrArray()",
+    details = paste(
       "The functions related to the DelayedArray backend have moved",
-      "to the dedicated ZarrArray package (https://github.com/Bioconductor/ZarrArray)",
-      "under the same name."
+      "to the dedicated ZarrArray package (https://github.com/Bioconductor/ZarrArray)."
     )
   )
+  if (requireNamespace("ZarrArray", quietly = TRUE)) {
+    return(ZarrArray::ZarrArray(...))
+  }
 }
 
 #' @export
 #' @rdname ZarrArray-deprecated
 writeZarrArray <- function(...) {
-  .Deprecated(
-    "writeZarrArray",
-    package = "ZarrArray",
-    msg = paste(
+  lifecycle::deprecate_warn(
+    when = "1.12.0",
+    what = "writeZarrArray()",
+    with = "ZarrArray::writeZarrArray()",
+    details = paste(
       "The functions related to the DelayedArray backend have moved",
-      "to the dedicated ZarrArray package (https://github.com/Bioconductor/ZarrArray)",
-      "under the same name."
+      "to the dedicated ZarrArray package (https://github.com/Bioconductor/ZarrArray)."
     )
   )
+  if (requireNamespace("ZarrArray", quietly = TRUE)) {
+    return(ZarrArray::writeZarrArray(...))
+  }
 }
