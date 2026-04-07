@@ -277,6 +277,15 @@ write_zarr_array <- function(
     x <- .truncate_overflow(x, metadata_v3$datatype$nbytes)
   }
 
+  if (anyNA(x) && metadata_v3$data_type == "bool") {
+    warning(
+      "Zarr native 'bool' data type does not support NA values. ",
+      "NA values will be converted to FALSE. ",
+      "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
+      call. = FALSE
+    )
+  }
+
   ## iterate over each chunk
   ## TODO: maybe this can be done in parallel with bpmapply() ?
   res <- mapply(
