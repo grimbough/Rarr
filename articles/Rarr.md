@@ -526,7 +526,7 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-03-30 r89743)
+    ## R Under development (unstable) (2026-04-06 r89795)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
@@ -547,11 +547,11 @@ contents is as expected.
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] Rarr_1.11.35     BiocStyle_2.39.0
+    ## [1] Rarr_1.11.36     BiocStyle_2.39.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] vctrs_0.7.2         crayon_1.5.3        cli_3.6.5          
-    ##  [4] knitr_1.51          rlang_1.1.7         xfun_0.57          
+    ##  [4] knitr_1.51          rlang_1.2.0         xfun_0.57          
     ##  [7] textshaping_1.0.5   jsonlite_2.0.0      glue_1.8.0         
     ## [10] htmltools_0.5.9     ragg_1.5.2          sass_0.4.10        
     ## [13] rappdirs_0.3.4      rmarkdown_2.31      evaluate_1.0.5     
@@ -561,7 +561,7 @@ contents is as expected.
     ## [25] fs_2.0.1            Rcpp_1.1.1          R.oo_1.27.1        
     ## [28] systemfonts_1.3.2   R.utils_2.13.0      digest_0.6.39      
     ## [31] R6_2.6.1            pillar_1.11.1       curl_7.0.0         
-    ## [34] paws.common_0.8.9   paws.storage_0.9.0  magrittr_2.0.4     
+    ## [34] paws.common_0.8.9   paws.storage_0.9.0  magrittr_2.0.5     
     ## [37] bslib_0.10.0        R.methodsS3_1.8.2   tools_4.7.0        
     ## [40] xml2_1.5.2          pkgdown_2.2.0       cachem_1.1.0       
     ## [43] desc_1.4.3

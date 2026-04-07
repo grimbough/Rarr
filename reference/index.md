@@ -35,4 +35,4 @@
 
 - [`ZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
   [`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
-  : Deprecated DelayedArray backend functions
+  **\[superseded\]** : Deprecated DelayedArray backend functions

@@ -1,5 +1,7 @@
 # Deprecated DelayedArray backend functions
 
+**\[superseded\]**
+
 The DelayedArray backend has moved to a dedicated package: the ZarrArray
 package (<https://github.com/Bioconductor/ZarrArray>).
 
@@ -15,7 +17,7 @@ writeZarrArray(...)
 
 - ...:
 
-  Ignored.
+  Passed to the new function in the ZarrArray package.
 
 ## Examples
 
@@ -30,5 +32,8 @@ zarr_path <- system.file(
 ZarrArray(
   zarr_path
 )
-#> Warning: The functions related to the DelayedArray backend have moved to the dedicated ZarrArray package (https://github.com/Bioconductor/ZarrArray) under the same name.
+#> Warning: `ZarrArray()` was deprecated in Rarr 1.12.0.
+#> ℹ Please use `ZarrArray::ZarrArray()` instead.
+#> ℹ The functions related to the DelayedArray backend have moved to the dedicated
+#>   ZarrArray package (https://github.com/Bioconductor/ZarrArray).
 ```
