@@ -175,3 +175,50 @@ test_that("dimension names roundtrip", {
   res <- read_zarr_array(path)
   expect_identical(res, x)
 })
+
+test_that("NAs roundtrip", {
+  int_nas <- array(c(1L, NA_integer_, 3L))
+  path_int <- withr::local_tempfile(fileext = ".zarr")
+  expect_silent(
+    write_zarr_array(
+      x = int_nas,
+      zarr_array_path = path_int,
+      chunk_dim = 3
+    )
+  )
+
+  expect_identical(
+    read_zarr_array(path_int),
+    int_nas
+  )
+
+  dbl_nas <- array(c(1.5, NA_real_, 3.5))
+  path_dbl <- withr::local_tempfile(fileext = ".zarr")
+  expect_silent(
+    write_zarr_array(
+      x = dbl_nas,
+      zarr_array_path = path_dbl,
+      chunk_dim = 3
+    )
+  )
+
+  expect_identical(
+    read_zarr_array(path_dbl),
+    dbl_nas
+  )
+
+  char_nas <- array(c("z", NA_character_, "WORD"))
+  path_char <- withr::local_tempfile(fileext = ".zarr")
+  expect_silent(
+    write_zarr_array(
+      x = char_nas,
+      zarr_array_path = path_char,
+      chunk_dim = 3
+    )
+  )
+
+  expect_identical(
+    read_zarr_array(path_char),
+    char_nas
+  )
+})
