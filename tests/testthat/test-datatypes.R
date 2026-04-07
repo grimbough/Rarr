@@ -11,7 +11,7 @@ test_that("check_datatype works with data_type argument", {
     .check_datatype(data_type = "character", nchar = "10")[[
       "data_type"
     ]],
-    "|S10"
+    "<U10"
   )
 })
 
@@ -20,7 +20,7 @@ test_that("check_datatype works with fill_value argument", {
   expect_identical(.check_datatype(fill_value = 4)[["data_type"]], "<f8")
   expect_identical(
     .check_datatype(fill_value = "Test", nchar = 8)[["data_type"]],
-    "|S8"
+    "<U8"
   )
 })
 
@@ -45,7 +45,7 @@ test_that("data_type has precedence over fill_value when incompatible", {
     )[[
       "data_type"
     ]],
-    "|S4"
+    "<U4"
   )
 })
 
