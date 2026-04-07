@@ -102,7 +102,7 @@ codec_bytes_encode <- function(input, datatype, endian) {
     if (is.na(endian)) {
       endian <- "little"
     }
-    res <- writeBin(input, raw(), size = datatype$nbytes, endian = endian)
+    writeBin(input, raw(), size = datatype$nbytes, endian = endian)
   }
 }
 
