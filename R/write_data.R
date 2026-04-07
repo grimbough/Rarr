@@ -42,7 +42,7 @@
       data_type,
       "integer" = "<i4",
       "double" = "<f8",
-      "character" = "|S",
+      "character" = "<U",
       "logical" = "|b1"
     )
   }
@@ -228,11 +228,18 @@ write_zarr_array <- function(
   order = "F",
   compressor = use_zstd(),
   fill_value,
-  nchar = max(base::nchar(x)) + 1L, # +1 to add NUL terminator
+  nchar,
   dimension_separator = if (zarr_version == 2) "." else "/",
   zarr_version = 3
 ) {
   path <- .normalize_array_path(zarr_array_path)
+
+  if (storage.mode(x) == "character" && missing(nchar)) {
+    # +1 to add NUL terminator
+    # c(0, ) to deal with array full of NAs
+    # base::nchar() to avoid collision with var name
+    nchar <- max(c(0, base::nchar(x)), na.rm = TRUE) + 1
+  }
 
   create_empty_zarr_array(
     zarr_array_path = path,
@@ -277,13 +284,23 @@ write_zarr_array <- function(
     x <- .truncate_overflow(x, metadata_v3$datatype$nbytes)
   }
 
-  if (anyNA(x) && metadata_v3$data_type == "bool") {
-    warning(
-      "Zarr native 'bool' data type does not support NA values. ",
-      "NA values will be converted to FALSE. ",
-      "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
-      call. = FALSE
-    )
+  if (anyNA(x)) {
+    if (metadata_v3$data_type == "bool") {
+      warning(
+        "Zarr native 'bool' data type does not support NA values. ",
+        "NA values will be converted to FALSE. ",
+        "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
+        call. = FALSE
+      )
+    }
+    if (metadata_v3$data_type == "string") {
+      warning(
+        "Zarr 'string' data type does not support NA values. ",
+        "NA values will be converted to empty strings. ",
+        "To preserve NA values, use 'unicode' datatype in `write_zarr_array()`.",
+        call. = FALSE
+      )
+    }
   }
 
   ## iterate over each chunk
