@@ -78,6 +78,19 @@ test_that("NA fill-values are understood correctly", {
   expect_identical(res[2, 2], 10.5)
 })
 
+test_that("non-NA values represented as bytes work", {
+  zarr <- system.file(
+    "extdata",
+    "zarr_examples",
+    "fill-values",
+    "bytes_representation.zarr",
+    package = "Rarr"
+  )
+
+  expect_silent(data <- read_zarr_array(zarr, index = list(1:2, 1:10)))
+  expect_true(all(data == 222))
+})
+
 test_that("fill-values on empty slices", {
   # https://github.com/Huber-group-EMBL/Rarr/issues/137
   m <- matrix(runif(30), c(5, 6))
