@@ -298,7 +298,6 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     ## if we do this here, we save many repeated calls to .parse_datatype
     ## the parsed version is used each time a chunk is read
     metadata$datatype <- .parse_datatype(metadata$dtype)
-    metadata <- .update_fill_value(metadata, metadata$datatype)
     metadata <- .convert_metadata_version(
       metadata,
       version_from = 2,
@@ -344,6 +343,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       call. = FALSE
     )
   }
+  metadata <- .update_fill_value(metadata, metadata$datatype)
 
   return(metadata)
 }
