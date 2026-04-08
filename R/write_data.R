@@ -1,3 +1,4 @@
+# nolint next: cyclocomp_linter.
 .check_datatype <- function(data_type, fill_value, nchar = NULL) {
   # TODO: Error if fill_value is incompatible with data_type in Zarr v3.
   # V3 spec says:
