@@ -335,6 +335,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       endian <- metadata$codecs[["bytes"]]$configuration$endian %||%
         NA_character_
       metadata$codecs[["bytes"]]$configuration$endian <- endian
+      metadata$datatype$endian <- endian
     }
   } else {
     stop(
@@ -400,13 +401,19 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     hex_clean <- sub("^0x", "", metadata$fill_value)
     byte_pairs <- paste0(
       "0x",
-      rev(regmatches(hex_clean, gregexpr(".{2}", hex_clean))[[1]])
+      regmatches(hex_clean, gregexpr(".{2}", hex_clean))[[1]]
+    )
+    # Swap endianness
+    endian <- switch(
+      datatype$endian,
+      "little" = "big",
+      "big" = "little"
     )
     metadata$fill_value <- readBin(
       as.raw(byte_pairs),
       what = "double",
       size = datatype$nbytes,
-      endian = datatype$endian %||% "little"
+      endian = endian
     )
   }
   return(metadata)
