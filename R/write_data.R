@@ -77,6 +77,22 @@
     data_type <- paste0(data_type, as.integer(nchar))
   }
 
+  double_types <- c("<f4", "<f8")
+  # FIXME: the spec only defines this for floats but surely it makes
+  # sense to also apply it to int and uint?
+  if (is.na(fill_value) && data_type %in% double_types) {
+    float_size <- switch(
+      data_type,
+      "<f4" = 4L,
+      "<f8" = 8L
+    )
+    # "0xYYYYYYYY", specifying the byte representation of the floating point number as an unsigned integer.
+    fill_value <- paste(
+      c("0x", rev(writeBin(fill_value, raw(), size = float_size))),
+      collapse = ""
+    )
+  }
+
   return(list(data_type = data_type, fill_value = fill_value))
 }
 

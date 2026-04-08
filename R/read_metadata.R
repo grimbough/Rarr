@@ -394,6 +394,20 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       "unicode" = as.character(val),
       val
     )
+  } else if (datatype$base_type == "float" && startsWith(val, "0x")) {
+    # FIXME: the spec only defines this for floats but surely it makes
+    # sense to also apply it to int and uint?
+    hex_clean <- sub("^0x", "", metadata$fill_value)
+    byte_pairs <- paste0(
+      "0x",
+      rev(regmatches(hex_clean, gregexpr(".{2}", hex_clean))[[1]])
+    )
+    metadata$fill_value <- readBin(
+      as.raw(byte_pairs),
+      what = "double",
+      size = datatype$nbytes,
+      endian = datatype$endian %||% "little"
+    )
   }
   return(metadata)
 }
