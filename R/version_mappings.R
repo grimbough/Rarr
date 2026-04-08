@@ -14,6 +14,7 @@
   }
 
   metadata_v3 <- list(
+    node_type = "array",
     zarr_format = 2L,
     datatype = dt,
     shape = metadata$shape,
