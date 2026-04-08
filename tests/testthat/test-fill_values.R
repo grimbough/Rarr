@@ -43,3 +43,15 @@ test_that("-Inf fill-values are understood correctly", {
   expect_silent(data2 <- read_zarr_array(zarr, index = list(19:20, 1:10)))
   expect_equal(as.vector(data2), rep(fill_val, length(data2)))
 })
+
+test_that("fill-values on empty slices", {
+  # https://github.com/Huber-group-EMBL/Rarr/issues/137
+  m <- matrix(runif(30), c(5, 6))
+  my_zarr3 <- tempfile(fileext = ".zarr")
+  write_zarr_array(m, zarr_array_path = my_zarr3, chunk_dim = c(2, 3))
+
+  expect_type(
+    read_zarr_array(my_zarr3, list(1:2, integer(0))),
+    "double"
+  )
+})
