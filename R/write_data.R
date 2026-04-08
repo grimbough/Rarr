@@ -88,7 +88,7 @@
     )
     # "0xYYYYYYYY", specifying the byte representation of the floating point number as an unsigned integer.
     fill_value <- paste(
-      c("0x", rev(writeBin(fill_value, raw(), size = float_size))),
+      c("0x", writeBin(fill_value, raw(), size = float_size, endian = "swap")),
       collapse = ""
     )
   }
