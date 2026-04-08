@@ -78,13 +78,6 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     s3_client = s3_client
   )
 
-  if (metadata$zarr_format == 2) {
-    metadata <- .convert_metadata_version(
-      metadata,
-      version_from = 2,
-      version_to = 3
-    )
-  }
   metadata$configured_decoders <- .configure_codecs(
     metadata$codecs,
     operation = "decode"
