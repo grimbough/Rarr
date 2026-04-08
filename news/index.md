@@ -52,6 +52,11 @@
 - The `dimension_names` optional field is support in both v2 (not
   strictly part of the spec) and v3. It is mapped to
   `names(dimnames(.))` in R.
+- `NA_real_` is now an allowed fill value in
+  [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md)
+  when writing numeric arrays, following a request from Hervé Pagès.
+- Fill values stored as their byte representation are now understood
+  when reading Zarr arrays.
 
 ### Minor improvements
 
