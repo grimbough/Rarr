@@ -88,8 +88,19 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   if (!is.null(dot_zmeta)) {
     arrays <- grep(
       names(dot_zmeta$metadata),
-      pattern = "/(\\.zarray|zarr\\.json)$",
+      pattern = "/\\.zarray$",
       value = TRUE
+    )
+    dot_zmeta$metadata[arrays] <- lapply(
+      dot_zmeta$metadata[arrays],
+      function(metadata) {
+        metadata$datatype <- .parse_datatype(metadata$dtype)
+        .convert_metadata_version(
+          metadata,
+          version_from = 2,
+          version_to = 3
+        )
+      }
     )
 
     tmp <- lapply(
@@ -139,17 +150,6 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     array_name <- dirname(array_name)
   } else {
     array_metadata <- metadata
-  }
-
-  # FIXME: once the data reading/writing code has been updated to use v3, this
-  # should move to .read_array_metadata()
-  if (array_metadata$zarr_format == 2) {
-    array_metadata$datatype <- .parse_datatype(array_metadata$dtype)
-    array_metadata <- .convert_metadata_version(
-      array_metadata,
-      version_from = 2,
-      version_to = 3
-    )
   }
 
   chunk_shape <- unlist(array_metadata$chunk_grid$configuration$chunk_shape)
@@ -299,6 +299,11 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     ## the parsed version is used each time a chunk is read
     metadata$datatype <- .parse_datatype(metadata$dtype)
     metadata <- .update_fill_value(metadata, metadata$datatype)
+    metadata <- .convert_metadata_version(
+      metadata,
+      version_from = 2,
+      version_to = 3
+    )
   } else if (metadata$zarr_format == 3) {
     metadata$datatype <- .parse_datatype_v3(metadata$data_type)
     # We shouldn't have any case where x$name is NULL since the v3 spec states

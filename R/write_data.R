@@ -231,12 +231,8 @@ write_zarr_array <- function(
     zarr_version = zarr_version
   )
   ## read the metadata we just created
-  if (zarr_version == 3) {
-    metadata_v3 <- .read_array_metadata(path, "zarr.json")
-  } else {
-    metadata_v3 <- .read_array_metadata(path, ".zarray") |>
-      .convert_metadata_version(version_from = 2, version_to = 3)
-  }
+  metadata_file <- if (zarr_version == 2) ".zarray" else "zarr.json"
+  metadata_v3 <- .read_array_metadata(path, metadata_file)
 
   metadata_v3$configured_encoders <- .configure_codecs(
     codecs = metadata_v3$codecs,
@@ -395,13 +391,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     names(metadata_files)[metadata_files]
   )
 
-  if (metadata$zarr_format == 2) {
-    metadata <- .convert_metadata_version(
-      metadata,
-      version_from = 2,
-      version_to = 3
-    )
-  }
   index <- check_index(index, metadata = metadata)
 
   existing_storage <- switch(
