@@ -9,8 +9,6 @@
   DelayedArray backend is not used).
 * `write_zarr_array()` now writes Zarr v3 by default. Writing Zarr v2 is still
   possible by explicitly setting the argument `zarr_version = 2`.
-* `write_zarr_array()` now writes R character array as unicode (Zarr 
-  type `U`) instead of `S`.
 
 ## New features
 
