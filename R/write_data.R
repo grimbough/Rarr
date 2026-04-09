@@ -42,7 +42,7 @@
       data_type,
       "integer" = "<i4",
       "double" = "<f8",
-      "character" = "<U",
+      "character" = "|S",
       "logical" = "|b1"
     )
   }
