@@ -11,6 +11,9 @@ on:
 
 name: Zarr conformance tests
 
+permissions:
+  contents: read
+
 jobs:
   conformance-tests:
     runs-on: ubuntu-latest
