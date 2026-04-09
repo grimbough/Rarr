@@ -32,7 +32,8 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    withr
+    withr,
+    ZarrArray
 VignetteBuilder:
     knitr
 biocViews: DataImport
