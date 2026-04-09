@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.37</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.38</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,6 +69,8 @@
 <li>
 <code>NA_real_</code> is now an allowed fill value in <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code> when writing numeric arrays, following a request from Hervé Pagès.</li>
 <li>Fill values stored as their byte representation are now understood when reading Zarr arrays.</li>
+<li>
+<code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code> now supports writing <code>NA_character_</code>, which means it is possible to preserve <code>NA</code>s when roundtriping an R character array, based on a request from Hervé Pagès.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-1-11">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-1-11"></a></h3>
