@@ -284,15 +284,13 @@ write_zarr_array <- function(
     x <- .truncate_overflow(x, metadata_v3$datatype$nbytes)
   }
 
-  if (anyNA(x)) {
-    if (metadata_v3$data_type == "bool") {
-      warning(
-        "Zarr native 'bool' data type does not support NA values. ",
-        "NA values will be converted to FALSE. ",
-        "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
-        call. = FALSE
-      )
-    }
+  if (metadata_v3$data_type == "bool" && anyNA(x)) {
+    warning(
+      "Zarr native 'bool' data type does not support NA values. ",
+      "NA values will be converted to FALSE. ",
+      "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
+      call. = FALSE
+    )
   }
 
   ## iterate over each chunk
@@ -452,15 +450,13 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     x <- .truncate_overflow(x, metadata$datatype$nbytes)
   }
 
-  if (anyNA(x)) {
-    if (metadata$data_type == "bool") {
-      warning(
-        "Zarr native 'bool' data type does not support NA values. ",
-        "NA values will be converted to FALSE. ",
-        "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
-        call. = FALSE
-      )
-    }
+  if (metadata$data_type == "bool" && anyNA(x)) {
+    warning(
+      "Zarr native 'bool' data type does not support NA values. ",
+      "NA values will be converted to FALSE. ",
+      "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
+      call. = FALSE
+    )
   }
 
   metadata$configured_encoders <- .configure_codecs(
