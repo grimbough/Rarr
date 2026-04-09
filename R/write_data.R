@@ -293,14 +293,6 @@ write_zarr_array <- function(
         call. = FALSE
       )
     }
-    if (metadata_v3$data_type == "string") {
-      warning(
-        "Zarr 'string' data type does not support NA values. ",
-        "NA values will be converted to empty strings. ",
-        "To preserve NA values, use 'unicode' datatype in `write_zarr_array()`.",
-        call. = FALSE
-      )
-    }
   }
 
   ## iterate over each chunk
@@ -466,14 +458,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
         "Zarr native 'bool' data type does not support NA values. ",
         "NA values will be converted to FALSE. ",
         "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
-        call. = FALSE
-      )
-    }
-    if (metadata$data_type == "string") {
-      warning(
-        "Zarr 'string' data type does not support NA values. ",
-        "NA values will be converted to empty strings. ",
-        "To preserve NA values, use 'unicode' datatype in `write_zarr_array()`.",
         call. = FALSE
       )
     }

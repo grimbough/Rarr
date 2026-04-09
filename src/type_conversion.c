@@ -153,14 +153,25 @@ SEXP type_convert_string(SEXP input, SEXP _n_bytes) {
   data = PROTECT(allocVector(STRSXP, data_length));
 
   for (i = 0; i < data_length; i++) {
-    const size_t len =  strlen(raw_buffer + i * n_bytes);
+    const char *field = raw_buffer + i * n_bytes;
+    // Check for R's NA_integer_ sentinel written by writeBin(NA_integer_, raw()).
+    // Using memcpy + NA_INTEGER comparison is endian-agnostic.
+    if (n_bytes >= 4) {
+      int sentinel;
+      memcpy(&sentinel, field, 4);
+      if (sentinel == NA_INTEGER) {
+        SET_STRING_ELT(data, i, NA_STRING);
+        continue;
+      }
+    }
+    const size_t len = strlen(field);
     // Read up to max length or NUL terminator.
     // We cannot do one without the other as strings may not be NUL terminated (truncated) and
     // mkCharLenCE complains about NUL characters in the string.
-    if (len > n_bytes)
-      SET_STRING_ELT(data, i, mkCharLenCE(raw_buffer + i * n_bytes, n_bytes, CE_BYTES));
-    else 
-      SET_STRING_ELT(data, i, mkCharCE(raw_buffer + i * n_bytes, CE_BYTES));
+    if (len > (size_t)n_bytes)
+      SET_STRING_ELT(data, i, mkCharLenCE(field, n_bytes, CE_BYTES));
+    else
+      SET_STRING_ELT(data, i, mkCharCE(field, CE_BYTES));
   }
 
   UNPROTECT(1);

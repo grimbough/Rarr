@@ -208,12 +208,28 @@ test_that("NAs roundtrip", {
   )
 
   char_nas <- array(c("z", NA_character_, "WORD"))
+  path_unicode <- withr::local_tempfile(fileext = ".zarr")
+  expect_silent(
+    write_zarr_array(
+      x = char_nas,
+      zarr_array_path = path_unicode,
+      chunk_dim = 3,
+      data_type = "<U"
+    )
+  )
+
+  expect_identical(
+    read_zarr_array(path_unicode),
+    char_nas
+  )
+
   path_char <- withr::local_tempfile(fileext = ".zarr")
   expect_silent(
     write_zarr_array(
       x = char_nas,
       zarr_array_path = path_char,
-      chunk_dim = 3
+      chunk_dim = 3,
+      data_type = "|S"
     )
   )
 
