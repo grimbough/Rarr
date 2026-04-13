@@ -32,20 +32,23 @@
     # FIXME: we get invalid types from this. For example, unicode no longer exists
     data_type = paste0(dt$base_type, 8 * dt$nbytes),
     fill_value = metadata$fill_value,
-    codecs = list(
-      transpose = list(
-        name = "transpose",
-        configuration = list(
-          order = switch(
-            metadata$order,
-            # default in numpy is "C"
-            "C" = seq_along(metadata$shape) - 1, # zero indexed
-            "F" = rev(seq_along(metadata$shape)) - 1
-          )
+    codecs = list()
+  )
+
+  # Transpose codec only makes sense for more than 1 dimension
+  if (length(metadata_v3$shape) > 1) {
+    metadata_v3$codecs$transpose = list(
+      name = "transpose",
+      configuration = list(
+        order = switch(
+          metadata$order,
+          # default in numpy is "C"
+          "C" = seq_along(metadata$shape) - 1, # zero indexed
+          "F" = rev(seq_along(metadata$shape)) - 1
         )
       )
     )
-  )
+  }
 
   for (filter in metadata$filters) {
     metadata_v3$codecs[[filter$id]] <- list(
