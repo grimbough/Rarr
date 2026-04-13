@@ -47,20 +47,16 @@
     )
   )
 
-  if (!is.null(metadata$compressor$id)) {
-    metadata_v3$codecs[[metadata$compressor$id]] <- list(
-      name = metadata$compressor$id,
-      configuration = metadata$compressor[names(metadata$compressor) != "id"]
-    )
-  }
-
   for (filter in metadata$filters) {
-    metadata_v3$codecs[[gsub("-", "_", filter$id, fixed = TRUE)]] <- list(
+    metadata_v3$codecs[[filter$id]] <- list(
       name = filter$id
     )
   }
 
-  if (!is.null(metadata_v3$codecs[["vlen_utf8"]])) {
+  if (!is.null(metadata_v3$codecs[["vlen-utf8"]])) {
+    # Fix name to avoid dash in function name
+    metadata_v3$codecs[["vlen_utf8"]] <- metadata_v3$codecs[["vlen-utf8"]]
+    metadata_v3$codecs[["vlen-utf8"]] <- NULL
     # In v3, vlen-utf8 applies to 'string' type
     metadata_v3$data_type <- "string"
     metadata_v3$datatype$base_type <- "string"
@@ -68,6 +64,13 @@
     metadata_v3$codecs$bytes <- list(
       name = "bytes",
       configuration = list("endian" = dt$endian %||% NA_character_)
+    )
+  }
+
+  if (!is.null(metadata$compressor$id)) {
+    metadata_v3$codecs[[metadata$compressor$id]] <- list(
+      name = metadata$compressor$id,
+      configuration = metadata$compressor[names(metadata$compressor) != "id"]
     )
   }
 
