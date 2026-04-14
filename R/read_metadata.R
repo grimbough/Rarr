@@ -72,7 +72,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   if (!any(metadata_files)) {
     stop(
       "The path does not contain any metadata files. ",
-      "It must contain one of: ",
+      "It must contain one of:\n",
       "  - `.zmetadata` (consolidated metadata)\n",
       "  - `.zarray` (Zarr V2 specification)\n",
       "  - `zarr.json` (Zarr V3 specification)",
