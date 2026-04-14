@@ -6,6 +6,9 @@
   likely to have a significant impact if you reading a single large array but
   can be noticed if you reading many attributes and small arrays (as in some
   anndata objects).
+* Empty chunks, i.e., chunks were all elements are equal to the fill value,
+  are no longer written by `write_zarr_array()`, saving disk space, and 
+  improving performance when reading it back.
 
 # Rarr 1.99
 
