@@ -333,6 +333,12 @@ write_zarr_array <- function(
 
   chunk_in_mem <- .extract_chunk(x, idx_in_array)
 
+  # FIXME: can this check be faster?
+  if (isTRUE(all(chunk_in_mem == metadata$fill_value))) {
+    ## if the chunk only contains the fill value, we can skip writing it
+    return(invisible(TRUE))
+  }
+
   ## if a chunk overlaps the edge of the array, most implementations assume we
   ## still write the content to disk.  Seems wasteful, but we fail many tests
   if (any(dim(chunk_in_mem) != chunk_dim)) {
