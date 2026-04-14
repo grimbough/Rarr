@@ -47,10 +47,14 @@
 #' zarr_overview(z2)
 #' }
 #' @export
-zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
+zarr_overview <- function(
+  zarr_array_path,
+  s3_client = NULL,
+  as_data_frame = FALSE
+) {
   zarr_array_path <- .normalize_array_path(zarr_array_path)
 
-  if (missing(s3_client)) {
+  if (is.null(s3_client)) {
     s3_client <- .create_s3_client(path = zarr_array_path)
   }
 
@@ -513,16 +517,21 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #'
 #' @importFrom jsonlite read_json fromJSON
 #'
+#' @examples
+#' read_zarr_attributes(
+#'   "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0048A/9846152.zarr"
+#' )
+#'
 #' @export
 read_zarr_attributes <- function(
   zarr_path,
-  s3_client,
+  s3_client = NULL,
   missing = c("ignore", "warning", "error")
 ) {
   missing <- match.arg(missing)
   zarr_path <- .normalize_array_path(zarr_path)
   ## determine if this is a local or S3 array
-  if (missing(s3_client)) {
+  if (is.null(s3_client)) {
     s3_client <- .create_s3_client(path = zarr_path)
   }
 
