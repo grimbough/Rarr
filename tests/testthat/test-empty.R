@@ -28,3 +28,19 @@ test_that("An empty zarr array with dimension 0 can be created", {
   expect_identical(empty_metadata_v3$dim, list(0L))
   expect_identical(empty_metadata_v3$chunk_dim, list(0L))
 })
+
+test_that("Creating an empty zarr array via `write_zarr_array()`", {
+  empty_zarr <- withr::local_tempfile(fileext = ".zarr")
+  expect_no_condition(
+    write_zarr_array(
+      array(5L, dim = c(20, 20, 20)),
+      empty_zarr,
+      chunk_dim = c(2, 5, 5),
+      fill_value = 5L
+    )
+  )
+  expect_identical(
+    list.files(empty_zarr, recursive = TRUE),
+    "zarr.json"
+  )
+})
