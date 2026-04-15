@@ -1,7 +1,5 @@
 # Zarr arrays with Rarr
 
-Mike L. Smith
-
 - [Introduction to Rarr](#introduction-to-rarr)
   - [Limitations with **Rarr**](#limitations-with-rarr)
 - [Quick start guide](#quick-start-guide)
@@ -11,6 +9,10 @@ Mike L. Smith
   - [Reading from S3 storage](#read-s3)
   - [Writing to a Zarr array](#writing-to-a-zarr-array)
 - [Required system libraries](#required-system-libraries)
+
+|                                                                   GitHub Actions                                                                    |                                                        Bioconductor Build Sysytem                                                        | Test Coverage |
+|:---------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------:|:-------------:|
+| [![Bioconductor Status](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/) | [![Codecov test coverage](https://codecov.io/gh/Huber-group-EMBL/Rarr/graph/badge.svg)](https://app.codecov.io/gh/Huber-group-EMBL/Rarr) |               |
 
 # Introduction to Rarr
 
@@ -38,9 +40,7 @@ directly.
 Currently, there are also limitations on the Zarr datatypes that can be
 accessed using **Rarr**. For now most numeric types can be read into R,
 although in some instances e.g. 64-bit integers there is potential for
-loss of information. Writing is more limited with support only for
-datatypes that are supported natively in R and only using the
-column-first representation.
+loss of information.
 
 See the dedicated [“Supported Zarr features”
 vignette](https://huber-group-embl.github.io/Rarr/articles/features.html)
@@ -56,8 +56,9 @@ need to install **Rarr**[¹](#fn1) with the commands below.
 
 ``` r
 ## we need BiocManager to perform the installation
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 ## install Rarr
 BiocManager::install("Rarr")
 ```
@@ -78,7 +79,10 @@ containing 32-bit integers arranged in the “column first” ordering.
 
 ``` r
 zarr_example <- system.file(
-  "extdata", "zarr_examples", "column-first", "int32.zarr",
+  "extdata",
+  "zarr_examples",
+  "column-first",
+  "int32.zarr",
   package = "Rarr"
 )
 ```
@@ -95,7 +99,7 @@ zarr_overview(zarr_example)
 
 ``` R
 ## Type: Array
-## Path: /tmp/RtmpF7Gmri/temp_libpath200434430aca/Rarr/extdata/zarr_examples/column-first/int32.zarr
+## Path: /tmp/Rtmp3ZvhzD/temp_libpath541a2b36c23a/Rarr/extdata/zarr_examples/column-first/int32.zarr
 ## Shape: 30 x 20 x 10
 ## Chunk Shape: 10 x 10 x 5
 ## No. of Chunks: 12 (3 x 2 x 2)
@@ -133,7 +137,7 @@ read_zarr_array(zarr_example, index = index)
 
 ``` R
 ## , , 1
-##
+## 
 ##      [,1] [,2]
 ## [1,]    1    2
 ## [2,]    1    0
@@ -180,14 +184,19 @@ We then plot our two slices on top of one another using the
 
 ``` r
 ## plot the first slice in blue
-image(log2(z2[1, , ]),
+image(
+  log2(z2[1, , ]),
   col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE
+  asp = dim(z2)[2] / dim(z2)[3],
+  axes = FALSE
 )
 ## overlay the tenth slice in green
-image(log2(z2[2, , ]),
+image(
+  log2(z2[2, , ]),
   col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE, add = TRUE
+  asp = dim(z2)[2] / dim(z2)[3],
+  axes = FALSE,
+  add = TRUE
 )
 ```
 
@@ -214,7 +223,11 @@ x <- array(1:600, dim = c(10, 10, 6))
 
 ``` r
 path_to_new_zarr <- file.path(tempdir(), "new.zarr")
-write_zarr_array(x = x, zarr_array_path = path_to_new_zarr, chunk_dim = c(10, 5, 1))
+write_zarr_array(
+  x = x,
+  zarr_array_path = path_to_new_zarr,
+  chunk_dim = c(10, 5, 1)
+)
 ```
 
 We can check that the contents of the Zarr array is what we’re
@@ -233,7 +246,7 @@ read_zarr_array(zarr_array_path = path_to_new_zarr, index = list(6:10, 10, 1))
 
 ``` R
 ## , , 1
-##
+## 
 ##      [,1]
 ## [1,]   96
 ## [2,]   97
