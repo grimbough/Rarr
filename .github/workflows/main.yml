@@ -8,6 +8,9 @@ on:
 
 name: R-CMD-check
 
+permissions:
+  contents: read
+
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
@@ -34,7 +37,7 @@ jobs:
           git config --global user.email "ghau@example.com"
           git config --global user.name "GitHub Actions User"
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install system dependencies
         if: ${{ runner.os == 'linux' && matrix.config.sys-libs == 'true' }}
@@ -79,7 +82,7 @@ jobs:
 
       ## upload the Rcheck folder if the workflow fails
       - name: Upload output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: ${{ matrix.os }}-bioc-${{ matrix.bioc-version}}
