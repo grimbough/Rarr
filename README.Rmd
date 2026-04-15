@@ -1,6 +1,5 @@
 ---
 title: "Zarr arrays with Rarr"
-author: "Mike L. Smith"
 output:
   github_document:
     toc: true
