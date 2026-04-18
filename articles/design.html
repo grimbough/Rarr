@@ -62,7 +62,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Gruson</h4>
                         
-            <h4 data-toc-skip class="date">15 April 2026</h4>
+            <h4 data-toc-skip class="date">18 April 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/design.Rmd" class="external-link"><code>vignettes/design.Rmd</code></a></small>
       <div class="d-none name"><code>design.Rmd</code></div>
@@ -114,8 +114,23 @@ tradeoff) between version 2 and version 3, we would prioritise version
 </ul>
 </div>
 <div class="section level2">
-<h2 id="functional-programming">Functional programming<a class="anchor" aria-label="anchor" href="#functional-programming"></a>
+<h2 id="functional-programming-and-api-design">Functional programming and API design<a class="anchor" aria-label="anchor" href="#functional-programming-and-api-design"></a>
 </h2>
+<ul>
+<li>Reading and writing Zarr arrays should be as easy as reading and
+writing <code>.csv</code> files. In other words, writing
+<code>read_zarr_array("my_array.zarr")</code> should be enough to read a
+Zarr array, and writing
+<code>write_zarr_array(my_array, "my_array.zarr")</code> should be
+enough to write a Zarr array. This has several consequences:
+<ul>
+<li>it is not necessary to explicitly manipulate custom objects for Zarr
+stores or groups. Passing a file path as a string should work out of the
+box.</li>
+<li>(TBD) we provide a sensible default for chunk size.</li>
+</ul>
+</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
