@@ -46,4 +46,10 @@ There is full support for both version 2 and version 3 Zarr arrays but:
   - it is not necessary to explicitly manipulate custom objects for Zarr
     stores or groups. Passing a file path as a string should work out of
     the box.
-  - (TBD) we provide a sensible default for chunk size.
+  - when writing, we provide sensible defaults for:
+    - data type (derived from `storage.mode` of the input array)
+    - chunk size (TBD)
+    - compression (Zstd with default compression level, for a good
+      balance between speed and compression ratio)
+    - dimension names (taken from the dimension names of the input
+      array, if they exist)
