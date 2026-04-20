@@ -323,11 +323,11 @@ write_zarr_array <- function(
     )
   }
 
-  chunk_in_mem <- eval(str2lang(.create_extract_call(
-    x_name = "x",
-    idx_name = "idx_in_array",
-    idx_length = length(idx_in_array)
-  )))
+  chunk_in_mem <- abind::asub(
+    x,
+    idx_in_array,
+    drop = FALSE
+  )
 
   ## if a chunk overlaps the edge of the array, most implementations assume we
   ## still write the content to disk.  Seems wasteful, but we fail many tests
@@ -561,11 +561,11 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
   ## extract the new values from x and insert them into the chunk
   # nolint next: object_usage_linter.
-  y <- eval(str2lang(.create_extract_call(
-    "x",
-    "idx_in_x",
-    length(idx_in_x)
-  )))
+  y <- abind::asub(
+    x,
+    idx_in_x,
+    drop = FALSE
+  )
   cmd <- .create_replace_call(
     "chunk_in_mem",
     "idx_in_chunk",
