@@ -77,6 +77,13 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
     names(metadata_files)[metadata_files],
     s3_client = s3_client
   )
+  if (metadata$node_type == "group") {
+    stop(
+      "The provided path points to a Zarr group, but `read_zarr_array()` can ",
+      "only read arrays. Please provide the path to an array within the group.",
+      call. = FALSE
+    )
+  }
 
   metadata$configured_decoders <- .configure_codecs(
     metadata$codecs,

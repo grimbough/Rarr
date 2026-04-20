@@ -303,7 +303,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       version_from = 2,
       version_to = 3
     )
-  } else if (metadata$zarr_format == 3) {
+  } else if (metadata$node_type == "array" && metadata$zarr_format == 3) {
     metadata$datatype <- .parse_datatype_v3(metadata$data_type)
     # We shouldn't have any case where x$name is NULL since the v3 spec states
     # 'name' MUST be a plain string.
@@ -337,12 +337,6 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       metadata$codecs[["bytes"]]$configuration$endian <- endian
       metadata$datatype$endian <- endian
     }
-  } else {
-    stop(
-      "Unsupported Zarr format version: ",
-      metadata$zarr_format,
-      call. = FALSE
-    )
   }
   metadata <- .update_fill_value(metadata, metadata$datatype)
 
