@@ -14,6 +14,8 @@
 
 * Zarr v3 arrays with data types and codecs that already existed in v2 
   can now be read via `read_zarr_array()`, and written via `write_zarr_array()`.
+* Zarr v3 consolidated metadata is now returned by `zarr_overview()`, the
+  same way it was already previously done for v2 consolidated metadata.
 * More data types are available when writing Zarr arrays:
   * boolean / logical
   * int8
