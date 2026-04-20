@@ -91,6 +91,21 @@ test_that("zarr_overview console output matches snapshot for consolidated store"
   )
 })
 
+test_that("zarr_overview works with consolidated v3 metadata", {
+  zarr_store_consolidated_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "metadata",
+    "consolidated_v3.zarr",
+    package = "Rarr"
+  )
+  expect_snapshot(
+    zarr_overview(zarr_store_consolidated_v3, as_data_frame = FALSE),
+    # "Path" is absolute path so will differ between systems
+    transform = function(x) gsub("^(  )?Path: .*", "Path: <path>", x)
+  )
+})
+
 test_that("zarr_overview works with v3 metadata", {
   zarr_v3 <- system.file(
     "extdata",
