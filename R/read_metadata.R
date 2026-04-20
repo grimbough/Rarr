@@ -60,6 +60,9 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     c(".zmetadata", ".zarray", "zarr.json")
   )
 
+  array_metadata_files <- metadata_files[c(".zarray", "zarr.json")]
+  group_metadata_files <- metadata_files[c(".zmetadata", "zarr.json")]
+
   if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
     stop(
       "The path contains both `.zarray` (Zarr V2 specification) and ",
@@ -80,29 +83,23 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     )
   }
 
-  # FIXME: let's not even try to read it if we know it doesn't exist
-  dot_zmeta <- .read_zmetadata(
-    zarr_path = zarr_array_path,
-    s3_client = s3_client
-  )
+  # FIXME: avoid reading zarr.json twice
+  dot_zmeta <- NULL
+  if (any(group_metadata_files)) {
+    dot_zmeta <- .read_consolidated_metadata(
+      zarr_path = zarr_array_path,
+      metadata_file = names(group_metadata_files)[group_metadata_files],
+      nodes = "array",
+      s3_client = s3_client
+    )
+  }
   if (!is.null(dot_zmeta)) {
-    arrays <- grep(
-      names(dot_zmeta$metadata),
-      pattern = "/\\.zarray$",
-      value = TRUE
+    is_array <- vapply(
+      dot_zmeta$metadata,
+      function(x) !is.null(x$node_type) && x$node_type == "array",
+      FUN.VALUE = logical(1)
     )
-    dot_zmeta$metadata[arrays] <- lapply(
-      dot_zmeta$metadata[arrays],
-      function(metadata) {
-        metadata$datatype <- .parse_datatype(metadata$dtype)
-        .convert_metadata_version(
-          metadata,
-          version_from = 2,
-          version_to = 3
-        )
-      }
-    )
-
+    arrays <- names(dot_zmeta$metadata)[is_array]
     tmp <- lapply(
       arrays,
       FUN = .rbind_array_metadata,
@@ -124,10 +121,9 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     .print_array_metadata(res, indent = "  ")
     invisible(TRUE)
   } else {
-    metadata_files <- metadata_files[-1]
     array_metadata <- .read_array_metadata(
       zarr_path = zarr_array_path,
-      metadata_file = names(metadata_files)[metadata_files],
+      metadata_file = names(array_metadata_files)[array_metadata_files],
       s3_client = s3_client
     )
     res <- .rbind_array_metadata(
@@ -434,9 +430,14 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 #'
 #' @importFrom jsonlite read_json fromJSON
 #' @keywords internal
-.read_zmetadata <- function(zarr_path, s3_client) {
+.read_consolidated_metadata <- function(
+  zarr_path,
+  metadata_file,
+  nodes = c("group", "array"),
+  s3_client
+) {
   zarr_path <- .normalize_array_path(zarr_path)
-  zmeta_path <- paste0(zarr_path, ".zmetadata")
+  zmeta_path <- paste0(zarr_path, metadata_file)
   zmeta <- NULL
 
   if (!is.null(s3_client)) {
@@ -452,8 +453,29 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   } else if (file.exists(zmeta_path)) {
     zmeta <- read_json(zmeta_path)
   }
-
-  return(zmeta)
+  if (metadata_file == ".zmetadata" && !is.null(zmeta)) {
+    arrays <- grep(
+      names(zmeta$metadata),
+      pattern = "/\\.zarray$",
+      value = TRUE
+    )
+    zmeta$metadata[arrays] <- lapply(
+      zmeta$metadata[arrays],
+      function(metadata) {
+        metadata$datatype <- .parse_datatype(metadata$dtype)
+        .convert_metadata_version(
+          metadata,
+          version_from = 2,
+          version_to = 3
+        )
+      }
+    )
+    return(zmeta)
+  }
+  if (identical(zmeta$node_type, "group")) {
+    zmeta <- zmeta$consolidated_metadata
+    return(zmeta)
+  }
 }
 
 #' Read the attributes associated with a Zarr array or group
