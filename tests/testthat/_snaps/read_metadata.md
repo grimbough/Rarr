@@ -351,6 +351,391 @@
         Endianness: little
         Compressor: blosc
 
+# zarr_overview works with consolidated v3 metadata
+
+    Code
+      zarr_overview(zarr_store_consolidated_v3, as_data_frame = FALSE)
+    Output
+      Type: Group of Arrays
+      Path: <path>
+      Arrays:
+      ---
+      Path: <path>
+        Shape: 3 x 45087 x 11580
+        Chunk Shape: 1 x 4096 x 4096
+        No. of Chunks: 108 (3 x 12 x 3)
+        Data Type: uint8
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 3 x 22543 x 5790
+        Chunk Shape: 1 x 4096 x 4096
+        No. of Chunks: 36 (3 x 6 x 2)
+        Data Type: uint8
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 3 x 11271 x 2895
+        Chunk Shape: 1 x 4096 x 2895
+        No. of Chunks: 9 (3 x 3 x 1)
+        Data Type: uint8
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 3 x 5635 x 1447
+        Chunk Shape: 1 x 4096 x 1447
+        No. of Chunks: 6 (3 x 2 x 1)
+        Data Type: uint8
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 3 x 2817 x 723
+        Chunk Shape: 1 x 2817 x 723
+        No. of Chunks: 3 (3 x 1 x 1)
+        Data Type: uint8
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 4 x 17098 x 51187
+        Chunk Shape: 1 x 4096 x 4096
+        No. of Chunks: 260 (4 x 5 x 13)
+        Data Type: uint16
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 4 x 8549 x 25593
+        Chunk Shape: 1 x 4096 x 4096
+        No. of Chunks: 84 (4 x 3 x 7)
+        Data Type: uint16
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 4 x 4274 x 12796
+        Chunk Shape: 1 x 4096 x 4096
+        No. of Chunks: 32 (4 x 2 x 4)
+        Data Type: uint16
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 4 x 2137 x 6398
+        Chunk Shape: 1 x 2137 x 4096
+        No. of Chunks: 8 (4 x 1 x 2)
+        Data Type: uint16
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 4 x 1068 x 3199
+        Chunk Shape: 1 x 1068 x 3199
+        No. of Chunks: 4 (4 x 1 x 1)
+        Data Type: uint16
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 17098 x 51187
+        Chunk Shape: 4096 x 4096
+        No. of Chunks: 65 (5 x 13)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 8549 x 25593
+        Chunk Shape: 4096 x 4096
+        No. of Chunks: 21 (3 x 7)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 4274 x 12796
+        Chunk Shape: 4096 x 4096
+        No. of Chunks: 8 (2 x 4)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 2137 x 6398
+        Chunk Shape: 2137 x 4096
+        No. of Chunks: 2 (1 x 2)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 1068 x 3199
+        Chunk Shape: 1068 x 3199
+        No. of Chunks: 1 (1 x 1)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 17098 x 51187
+        Chunk Shape: 4096 x 4096
+        No. of Chunks: 65 (5 x 13)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 8549 x 25593
+        Chunk Shape: 4096 x 4096
+        No. of Chunks: 21 (3 x 7)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 4274 x 12796
+        Chunk Shape: 4096 x 4096
+        No. of Chunks: 8 (2 x 4)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 2137 x 6398
+        Chunk Shape: 2137 x 4096
+        No. of Chunks: 2 (1 x 2)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 1068 x 3199
+        Chunk Shape: 1068 x 3199
+        No. of Chunks: 1 (1 x 1)
+        Data Type: uint32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 
+        Chunk Shape: 
+        No. of Chunks: 1 ()
+        Data Type: bool
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 162254
+        No. of Chunks: 1 (1)
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: float64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 162254
+        No. of Chunks: 1 (1)
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: int64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: int64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: int64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: int64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: float64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: float64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: int64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: int64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: int64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 40564
+        No. of Chunks: 4 (4)
+        Data Type: float64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254 x 2
+        Chunk Shape: 40564 x 1
+        No. of Chunks: 8 (4 x 2)
+        Data Type: float64
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 377
+        Chunk Shape: 377
+        No. of Chunks: 1 (1)
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 377
+        Chunk Shape: 377
+        No. of Chunks: 1 (1)
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 377
+        Chunk Shape: 377
+        No. of Chunks: 1 (1)
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 377
+        Chunk Shape: 377
+        No. of Chunks: 1 (1)
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 4900367
+        Chunk Shape: 153137
+        No. of Chunks: 32 (32)
+        Data Type: float32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 4900367
+        Chunk Shape: 153137
+        No. of Chunks: 32 (32)
+        Data Type: int32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162255
+        Chunk Shape: 81128
+        No. of Chunks: 2 (2)
+        Data Type: int32
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 1
+        Chunk Shape: 1
+        No. of Chunks: 1 (1)
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 162254
+        Chunk Shape: 162254
+        No. of Chunks: 1 (1)
+        Data Type: int8
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 
+        Chunk Shape: 
+        No. of Chunks: 1 ()
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 
+        Chunk Shape: 
+        No. of Chunks: 1 ()
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+      ---
+      Path: <path>
+        Shape: 
+        Chunk Shape: 
+        No. of Chunks: 1 ()
+        Data Type: string
+        Endianness: NA
+        Compressor: None
+
 # zarr_overview console output matches snapshot for v3 metadata
 
     Code
