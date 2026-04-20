@@ -147,6 +147,13 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
   } else {
     array_metadata <- metadata
   }
+  # FIXME: This is redundant with .read_array_metadata() but we didn't go
+  # through it if we are dealing with consolidated metadata.
+  names(array_metadata$codecs) <- vapply(
+    array_metadata$codecs,
+    function(x) gsub("-", "_", x$name, fixed = TRUE),
+    character(1)
+  )
 
   chunk_shape <- unlist(array_metadata$chunk_grid$configuration$chunk_shape)
   data_shape <- unlist(array_metadata$shape)
