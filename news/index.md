@@ -23,6 +23,10 @@
   [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md),
   and written via
   [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md).
+- Zarr v3 consolidated metadata is now returned by
+  [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md),
+  the same way it was already previously done for v2 consolidated
+  metadata.
 - More data types are available when writing Zarr arrays:
   - boolean / logical
   - int8
