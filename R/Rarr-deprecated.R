@@ -35,6 +35,8 @@ ZarrArray <- function(...) {
   )
   if (requireNamespace("ZarrArray", quietly = TRUE)) {
     return(ZarrArray::ZarrArray(...))
+  } else {
+    stop("ZarrArray() requires the ZarrArray package")
   }
 }
 
@@ -52,5 +54,7 @@ writeZarrArray <- function(...) {
   )
   if (requireNamespace("ZarrArray", quietly = TRUE)) {
     return(ZarrArray::writeZarrArray(...))
+  } else {
+    stop("writeZarrArray() requires the ZarrArray package")
   }
 }
