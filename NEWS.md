@@ -65,6 +65,8 @@
   zstd achieves similar or better compression levels while being much faster
   at compressing (= writing Zarr arrays) and decompressing (= reading Zarr 
   arrays). This matches the default used by Zarr Python implementation.
+* `write_zarr_array()` now fails early with an explicit error message when
+  `x` is not an array.
 
 ## Bug fixes
 
