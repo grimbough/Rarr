@@ -28,7 +28,8 @@
     "<f8",
     "|S",
     "<U",
-    "|b1"
+    "|b1",
+    "|O"
   )
   r_base_types <- c("integer", "double", "character", "logical")
 
@@ -63,6 +64,7 @@
       "<f8" = 0,
       "|S" = "",
       "<U" = "",
+      "|O" = "",
       "|b1" = FALSE,
       NULL
     )
