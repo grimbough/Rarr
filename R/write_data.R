@@ -195,8 +195,7 @@ create_empty_zarr_array <- function(
 
 #' Write an R array to Zarr
 #'
-#' @param x The R array (or object that can be coerced to an array) that will be
-#'   written to the Zarr array.
+#' @param x The R array that will be written to the Zarr array.
 #' @param zarr_array_path Character vector of length 1 giving the path to the
 #'   new Zarr array.
 #' @param nchar For character arrays this parameter gives the maximum length of
@@ -234,6 +233,13 @@ write_zarr_array <- function(
   dimension_separator = if (zarr_version == 2) "." else "/",
   zarr_version = 3
 ) {
+  if (!is.array(x) && !is.atomic(x)) {
+    stop(
+      "`x` must be an atomic array. ",
+      "You can maybe coerce your object with `as.array()`.",
+      call. = FALSE
+    )
+  }
   path <- .normalize_array_path(zarr_array_path)
 
   if (storage.mode(x) == "character" && missing(nchar)) {
