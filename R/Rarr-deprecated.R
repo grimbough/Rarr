@@ -33,11 +33,10 @@ ZarrArray <- function(...) {
       "to the dedicated ZarrArray package (https://github.com/Bioconductor/ZarrArray)."
     )
   )
-  if (requireNamespace("ZarrArray", quietly = TRUE)) {
-    return(ZarrArray::ZarrArray(...))
-  } else {
+  if (!requireNamespace("ZarrArray", quietly = TRUE)) {
     stop("ZarrArray() requires the ZarrArray package")
   }
+  ZarrArray::ZarrArray(...)
 }
 
 #' @export
@@ -52,9 +51,8 @@ writeZarrArray <- function(...) {
       "to the dedicated ZarrArray package (https://github.com/Bioconductor/ZarrArray)."
     )
   )
-  if (requireNamespace("ZarrArray", quietly = TRUE)) {
-    return(ZarrArray::writeZarrArray(...))
-  } else {
+  if (!requireNamespace("ZarrArray", quietly = TRUE)) {
     stop("writeZarrArray() requires the ZarrArray package")
   }
+  ZarrArray::writeZarrArray(...)
 }
