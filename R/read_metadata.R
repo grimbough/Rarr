@@ -445,22 +445,20 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 ) {
   zarr_path <- .normalize_array_path(zarr_path)
   zmeta_path <- paste0(zarr_path, metadata_file)
-  zmeta <- NULL
 
+  # At this stage, we are sure the file exists
   if (!is.null(s3_client)) {
     parsed_url <- parse_s3_path(zmeta_path)
-    if (.s3_object_exists(s3_client, parsed_url$bucket, parsed_url$object)) {
-      s3_object <- s3_client$get_object(
-        Bucket = parsed_url$bucket,
-        Key = parsed_url$object
-      )
-
-      zmeta <- fromJSON(rawToChar(s3_object$Body))
-    }
-  } else if (file.exists(zmeta_path)) {
+    s3_object <- s3_client$get_object(
+      Bucket = parsed_url$bucket,
+      Key = parsed_url$object
+    )
+    zmeta <- fromJSON(rawToChar(s3_object$Body))
+  } else {
     zmeta <- read_json(zmeta_path)
   }
-  if (metadata_file == ".zmetadata" && !is.null(zmeta)) {
+
+  if (metadata_file == ".zmetadata") {
     arrays <- grep(
       names(zmeta$metadata),
       pattern = "/\\.zarray$",
