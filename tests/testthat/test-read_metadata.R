@@ -120,6 +120,20 @@ test_that("zarr_overview works with v3 metadata", {
   expect_identical(dim(df), c(1L, 7L))
 })
 
+test_that("zarr_overview doesn't choke on empty consolidated metadata", {
+  zarr_empty_consolidated <- system.file(
+    "extdata",
+    "zarr_examples",
+    "metadata",
+    "empty_consolidated.zarr",
+    package = "Rarr"
+  )
+
+  expect_no_condition(
+    zarr_overview(zarr_empty_consolidated)
+  )
+})
+
 test_that("zarr_overview console output matches snapshot for v3 metadata", {
   zarr_v3 <- system.file(
     "extdata",
