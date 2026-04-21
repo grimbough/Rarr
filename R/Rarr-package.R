@@ -3,7 +3,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @importFrom lifecycle deprecated
+#' @importFrom lifecycle deprecate_warn
 ## usethis namespace: end
 NULL
 
