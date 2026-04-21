@@ -18,8 +18,7 @@ write_zarr_array(
 )
 }
 \arguments{
-\item{x}{The R array (or object that can be coerced to an array) that will be
-written to the Zarr array.}
+\item{x}{The R array that will be written to the Zarr array.}
 
 \item{zarr_array_path}{Character vector of length 1 giving the path to the
 new Zarr array.}
