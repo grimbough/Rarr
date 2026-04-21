@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.11.44</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.99.44</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,15 +39,15 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.11" id="rarr-111">Rarr 1.11<a class="anchor" aria-label="anchor" href="#rarr-111"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.99" id="rarr-199">Rarr 1.99<a class="anchor" aria-label="anchor" href="#rarr-199"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-1-11">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-11"></a></h3>
+<h3 id="breaking-changes-1-99">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-99"></a></h3>
 <ul><li>The DelayedArray backend (<code><a href="../reference/ZarrArray-deprecated.html">writeZarrArray()</a></code> and <code><a href="../reference/ZarrArray-deprecated.html">ZarrArray()</a></code> functions) has been migrated to a separate, dedicated package. This reduces the number of dependencies from 37 to 24. This also greatly improves performance in for the standard case (when the DelayedArray backend is not used).</li>
 <li>
 <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code> now writes Zarr v3 by default. Writing Zarr v2 is still possible by explicitly setting the argument <code>zarr_version = 2</code>.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="new-features-1-11">New features<a class="anchor" aria-label="anchor" href="#new-features-1-11"></a></h3>
+<h3 id="new-features-1-99">New features<a class="anchor" aria-label="anchor" href="#new-features-1-99"></a></h3>
 <ul><li>Zarr v3 arrays with data types and codecs that already existed in v2 can now be read via <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code>, and written via <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>.</li>
 <li>Zarr v3 consolidated metadata is now returned by <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code>, the same way it was already previously done for v2 consolidated metadata.</li>
 <li>More data types are available when writing Zarr arrays:
@@ -74,7 +74,7 @@
 <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code> now supports writing <code>NA_character_</code>, which means it is possible to preserve <code>NA</code>s when roundtriping an R character array, based on a request from Hervé Pagès.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="minor-improvements-1-11">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-1-11"></a></h3>
+<h3 id="minor-improvements-1-99">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-1-99"></a></h3>
 <ul><li>There is now a dedicated vignette describing the supported Zarr features in Rarr, available at <a href="https://huber-group-embl.github.io/Rarr/articles/features.html" class="uri">https://huber-group-embl.github.io/Rarr/articles/features.html</a>. This makes it more easily discoverable on the Bioconductor landing page.</li>
 <li>Rarr initializes empty/missing chunks only once per read operation, which significantly improves performance when reading arrays with many missing chunks.</li>
 <li>Reading fixed-length string and unicode arrays is now ~20% faster.</li>
@@ -85,7 +85,7 @@
 <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code> now fails early with an explicit error message when <code>x</code> is not an array.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-1-11">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-11"></a></h3>
+<h3 id="bug-fixes-1-99">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-99"></a></h3>
 <ul><li>Rarr is now fully compatible with big endian platforms.</li>
 <li>ZSTD decompression now also works in case where we cannot guess a priori the buffer size from the data type, such as when using variable length strings. Thanks to Artür Manukyan for the bug report and test data.</li>
 <li>
@@ -93,7 +93,7 @@
 <li>the <code>fill_value</code> is now correctly interpreted when reading Zarr v2 string or unicode arrays. This is visible for example when trying to read missing chunks from such arrays. Thanks to Artür Manukyan for the bug report.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="internal-changes-1-11">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-1-11"></a></h3>
+<h3 id="internal-changes-1-99">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-1-99"></a></h3>
 <ul><li>Some internal changes are preparing the transition to support Zarr v3:
 <ul><li>“C” and “F” fill orders are now handled via a codec mechanism, which also supports a wider range of transpose operations.</li>
 <li>The endian configuration is now handled via a codec.</li>

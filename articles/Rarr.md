@@ -547,7 +547,7 @@ contents is as expected.
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] Rarr_1.11.44     BiocStyle_2.39.0
+    ## [1] Rarr_1.99.44     BiocStyle_2.39.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] vctrs_0.7.3         crayon_1.5.3        cli_3.6.6          
