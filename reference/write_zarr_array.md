@@ -23,8 +23,7 @@ write_zarr_array(
 
 - x:
 
-  The R array (or object that can be coerced to an array) that will be
-  written to the Zarr array.
+  The R array that will be written to the Zarr array.
 
 - zarr_array_path:
 

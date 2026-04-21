@@ -87,6 +87,9 @@
   much faster at compressing (= writing Zarr arrays) and decompressing
   (= reading Zarr arrays). This matches the default used by Zarr Python
   implementation.
+- [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md)
+  now fails early with an explicit error message when `x` is not an
+  array.
 
 ### Bug fixes
 
