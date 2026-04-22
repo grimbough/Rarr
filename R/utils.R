@@ -205,16 +205,9 @@ check_index <- function(index, metadata) {
 .normalize_array_path <- function(path) {
   ## we strip the protocol because it gets messed up by the slash removal later
   if (any(startsWith(path, c("http://", "https://", "s3://")))) {
-    root <- gsub(
-      x = path,
-      pattern = "^((https?://)|(s3://)).*$",
-      replacement = "\\1"
-    )
-    path <- gsub(
-      x = path,
-      pattern = "^((https?://)|(s3://))(.*$)",
-      replacement = "\\4"
-    )
+    m <- regmatches(path, regexec("^((https?://)|(s3://))(.*$)", path))[[1]]
+    root <- m[2]
+    path <- m[5]
   } else {
     ## Replace all backward slash ("\\") with forward slash ("/")
     path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
