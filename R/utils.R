@@ -204,7 +204,7 @@ check_index <- function(index, metadata) {
 #' @keywords internal
 .normalize_array_path <- function(path) {
   ## we strip the protocol because it gets messed up by the slash removal later
-  if (grepl(x = path, pattern = "^((https?://)|(s3://)).*$")) {
+  if (any(startsWith(path, c("http://", "https://", "s3://")))) {
     root <- gsub(
       x = path,
       pattern = "^((https?://)|(s3://)).*$",
