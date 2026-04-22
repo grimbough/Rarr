@@ -143,7 +143,7 @@ check_index <- function(index, metadata) {
   )
 
   datatype$nbytes <- as.integer(
-    gsub(x = typestr, pattern = "^[<>|][[:alpha:]]", replacement = "")
+    sub(x = typestr, pattern = "^[<>|][[:alpha:]]", replacement = "")
   )
 
   if (datatype$base_type == "unicode") {
@@ -174,12 +174,12 @@ check_index <- function(index, metadata) {
   }
   datatype <- list()
 
-  datatype$base_type <- gsub("^([[:alpha:]]+).*", "\\1", typestr)
+  datatype$base_type <- sub("^([[:alpha:]]+).*", "\\1", typestr)
 
   # FIXME: it's awkward to have to reconvert to integer after the division
   datatype$nbytes <- as.integer(
     as.integer(
-      gsub(x = typestr, pattern = "^[^[:digit:]]+", replacement = "")
+      sub(x = typestr, pattern = "^[^[:digit:]]+", replacement = "")
     ) /
       8L
   )
@@ -219,16 +219,16 @@ check_index <- function(index, metadata) {
     ## Replace all backward slash ("\\") with forward slash ("/")
     path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
     path <- R.utils::getAbsolutePath(path, expandTilde = TRUE)
-    root <- gsub(x = path, "(^[[:alnum:]:.]*/)?(.*)", replacement = "\\1")
-    path <- gsub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\2")
+    root <- sub(x = path, "(^[[:alnum:]:.]*/)?(.*)", replacement = "\\1")
+    path <- sub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\2")
   }
 
   ## Strip any leading "/" characters
-  path <- gsub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
+  path <- sub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
   ## Strip any trailing "/" characters
-  path <- gsub(x = path, pattern = "/$", replacement = "", fixed = FALSE)
+  path <- sub(x = path, pattern = "/$", replacement = "", fixed = FALSE)
   ## Collapse any sequence of more than one "/" character into a single "/"
-  path <- gsub(x = path, pattern = "//*", replacement = "/", fixed = FALSE)
+  path <- gsub(x = path, pattern = "//+", replacement = "/", fixed = FALSE)
   ## The key prefix is then obtained by appending a single "/" character to
   ## the normalized logical path.
   path <- paste0(root, path, "/")
