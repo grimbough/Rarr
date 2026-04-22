@@ -2,6 +2,7 @@
 #include "decompress.h"
 #include "compress.h"
 #include "type_conversion.h"
+#include "codec_vlen-utf8.h"
 
 static const R_CallMethodDef callMethods[] = {
   {"decompress_chunk_BLOSC", (DL_FUNC) &decompress_chunk_BLOSC, 1},
@@ -17,6 +18,7 @@ static const R_CallMethodDef callMethods[] = {
   {"type_convert_float", (DL_FUNC) &type_convert_float, 2},
   {"type_convert_bool", (DL_FUNC) &type_convert_bool, 2},
   {"type_convert_string", (DL_FUNC) &type_convert_string, 2},
+  {"codec_vlen_utf8_decode_c", (DL_FUNC) &codec_vlen_utf8_decode_c, 2},
   {NULL, NULL, 0}
 };
 
