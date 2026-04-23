@@ -29,7 +29,6 @@
         separator = metadata$dimension_separator %||% "."
       )
     ),
-    # FIXME: we get invalid types from this. For example, unicode no longer exists
     data_type = switch(
       dt$base_type,
       "unicode" = list(
