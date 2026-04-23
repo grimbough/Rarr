@@ -1,1 +1,3 @@
 src/compression_tools/** linguist-vendored
+configure.ac text eol=lf
+configure text eol=lf
