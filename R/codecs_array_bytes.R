@@ -5,6 +5,7 @@ codec_bytes_decode <- function(
   datatype,
   endian
 ) {
+  bytesize <- datatype$nbytes
   if (datatype$base_type == "unicode") {
     ints <- readBin(
       input,
@@ -15,7 +16,7 @@ codec_bytes_decode <- function(
     )
     tmp <- split(
       ints,
-      f = ceiling(seq_along(ints) / (datatype$nbytes / 4))
+      f = ceiling(seq_along(ints) / (bytesize / 4))
     )
     converted_chunk <- vapply(
       tmp,
@@ -26,14 +27,14 @@ codec_bytes_decode <- function(
   } else if (datatype$base_type == "structured") {
     field <- rep_len(
       rep(
-        seq_along(datatype$nbytes),
-        datatype$nbytes
+        seq_along(bytesize),
+        bytesize
       ),
       length.out = length(input)
     )
 
     converted_chunk <- vector("list", prod(chunk_dim))
-    for (i in seq_along(datatype$nbytes)) {
+    for (i in seq_along(bytesize)) {
       type <- datatype[[i]]
       raw_field <- input[field == i]
       field_converted <- codec_bytes_decode(
@@ -52,12 +53,7 @@ codec_bytes_decode <- function(
       )
     }
   } else {
-    bytesize <- ifelse(
-      # For unicode, nbytes actually is sizeof(int) * nchar
-      datatype$base_type == "unicode",
-      4L,
-      datatype$nbytes
-    )
+    # FIXME: optimize this
     if (!is.na(endian) && endian != .Platform$endian) {
       ind <- rep_len(rev(seq_len(bytesize)), length(input)) +
         (seq_along(input) - 1) %/% bytesize * bytesize
@@ -67,7 +63,7 @@ codec_bytes_decode <- function(
     converted_chunk <- .Call(
       paste0("type_convert_", datatype$base_type),
       input,
-      datatype$nbytes,
+      bytesize,
       PACKAGE = "Rarr"
     )
   }
