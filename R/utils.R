@@ -146,6 +146,18 @@ check_index <- function(index, metadata) {
 
 .parse_datatype_v3 <- function(typestr) {
   if (is.list(typestr)) {
+    if (typestr$name == "fixed-length-ucs4") {
+      return(list(
+        base_type = "unicode",
+        nbytes = as.integer(typestr$configuration$length_bits / 8L)
+      ))
+    }
+    if (typestr$name == "fixed-length-ascii") {
+      return(list(
+        base_type = "string",
+        nbytes = as.integer(typestr$configuration$length_bits / 8L)
+      ))
+    }
     stop(
       "Only base data types (not extensions) are supported for Zarr v3 arrays for now",
       call. = FALSE

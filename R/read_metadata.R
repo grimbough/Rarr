@@ -170,7 +170,11 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
 
   res <- data.frame(
     path = paste0(.normalize_array_path(zarr_array_path), array_name),
-    data_type = array_metadata$data_type,
+    data_type = if (is.list(array_metadata$data_type)) {
+      array_metadata$data_type$name
+    } else {
+      array_metadata$data_type
+    },
     # We already introduce default values in .convert_metadata_version() but
     # these do not exist when reading v3 metadata directly.
     endianness = endianness %||% NA_character_,
@@ -308,6 +312,17 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
     )
   } else if (metadata$node_type == "array" && metadata$zarr_format == 3) {
     metadata$datatype <- .parse_datatype_v3(metadata$data_type)
+    if (is.list(metadata$data_type)) {
+      # It is annoying to have to handle both strings & lists in `data_type` in
+      # downstream code, so we convert the fixed-length string types to their v2
+      # equivalents here.
+      # Their length has been calculated in .parse_datatype_v3() and stored in nbytes.
+      metadata$data_type <- switch(
+        metadata$data_type$name,
+        "fixed-length-ucs4" = "unicode",
+        "fixed-length-ascii" = "string"
+      )
+    }
     # We shouldn't have any case where x$name is NULL since the v3 spec states
     # 'name' MUST be a plain string.
     names(metadata$codecs) <- vapply(

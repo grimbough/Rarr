@@ -30,7 +30,22 @@
       )
     ),
     # FIXME: we get invalid types from this. For example, unicode no longer exists
-    data_type = paste0(dt$base_type, 8 * dt$nbytes),
+    data_type = switch(
+      dt$base_type,
+      "unicode" = list(
+        name = "fixed-length-ucs4",
+        configuration = list(
+          length_bits = 8L * dt$nbytes
+        )
+      ),
+      "string" = list(
+        name = "fixed-length-ascii",
+        configuration = list(
+          length_bits = 8L * dt$nbytes
+        )
+      ),
+      paste0(dt$base_type, 8 * dt$nbytes)
+    ),
     fill_value = metadata$fill_value,
     codecs = list()
   )
