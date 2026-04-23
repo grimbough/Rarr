@@ -526,7 +526,7 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-04-19 r89916)
+    ## R Under development (unstable) (2026-04-21 r89937)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
@@ -560,7 +560,7 @@ contents is as expected.
     ## [22] BiocManager_1.30.27 compiler_4.7.0      codetools_0.2-20   
     ## [25] fs_2.1.0            Rcpp_1.1.1-1        R.oo_1.27.1        
     ## [28] systemfonts_1.3.2   R.utils_2.13.0      digest_0.6.39      
-    ## [31] R6_2.6.1            pillar_1.11.1       curl_7.0.0         
+    ## [31] R6_2.6.1            pillar_1.11.1       curl_7.1.0         
     ## [34] paws.common_0.8.9   paws.storage_0.9.0  magrittr_2.0.5     
     ## [37] bslib_0.10.0        R.methodsS3_1.8.2   tools_4.7.0        
     ## [40] xml2_1.5.2          pkgdown_2.2.0       cachem_1.1.0       
