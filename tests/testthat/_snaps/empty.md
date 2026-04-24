@@ -51,7 +51,7 @@
       [1] "bitshuffle"
       
       $compressor$typesize
-      list()
+      [1] 4
       
       $compressor$blocksize
       [1] 0

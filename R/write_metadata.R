@@ -11,6 +11,15 @@
   order = "C",
   zarr_version = 3
 ) {
+  if (!is.null(compressor$id) && compressor$id == "blosc") {
+    nbytes <- .parse_datatype(data_type)$nbytes
+    compressor$typesize <- compressor$typesize %||% nbytes
+    if (is.na(compressor$typesize)) {
+      # e.g., vlen-utf8
+      compressor$typesize <- 1L
+    }
+  }
+
   metadata_v2 <- list(
     # the spec states these need to be json arrays, so we need to avoid auto_unboxing
     shape = as.list(array_shape),
