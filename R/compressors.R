@@ -86,7 +86,7 @@ use_blosc <- function(
     cname = cname,
     clevel = as.integer(clevel),
     shuffle = shuffle,
-    typesize = as.integer(typesize),
+    typesize = typesize,
     blocksize = as.integer(blocksize)
   )
   return(res)

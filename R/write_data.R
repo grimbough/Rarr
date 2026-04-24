@@ -628,8 +628,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   if (is.na(compressor$id)) {
     compressed_chunk <- raw_chunk
   } else if (compressor$id == "blosc") {
-    compressor_config$typesize <- compressor_config$typesize %||%
-      metadata$datatype$nbytes
     compressed_chunk <- codec_blosc_encode(raw_chunk, compressor_config)
   } else if (compressor$id == "zlib") {
     compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
