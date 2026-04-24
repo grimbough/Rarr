@@ -526,7 +526,7 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-04-21 r89937)
+    ## R Under development (unstable) (2026-04-23 r89955)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
@@ -558,7 +558,7 @@ contents is as expected.
     ## [16] jquerylib_0.1.4     fastmap_1.2.0       yaml_2.3.12        
     ## [19] lifecycle_1.0.5     httr2_1.2.2         bookdown_0.46      
     ## [22] BiocManager_1.30.27 compiler_4.7.0      codetools_0.2-20   
-    ## [25] fs_2.1.0            Rcpp_1.1.1-1        R.oo_1.27.1        
+    ## [25] fs_2.1.0            Rcpp_1.1.1-1.1      R.oo_1.27.1        
     ## [28] systemfonts_1.3.2   R.utils_2.13.0      digest_0.6.39      
     ## [31] R6_2.6.1            pillar_1.11.1       curl_7.1.0         
     ## [34] paws.common_0.8.9   paws.storage_0.9.0  magrittr_2.0.5     
