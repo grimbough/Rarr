@@ -6,6 +6,22 @@ codec_blosc_decode <- function(bytes, ...) {
   )
 }
 
+codec_blosc_encode <- function(input, compressor_config, ...) {
+  .Call(
+    "compress_chunk_BLOSC",
+    input,
+    compressor_config$typesize,
+    compressor_config$cname,
+    compressor_config$clevel,
+    which(
+      compressor_config$shuffle == c("noshuffle", "shuffle", "bitshuffle")
+    ) -
+      1L,
+    compressor_config$blocksize,
+    PACKAGE = "Rarr"
+  )
+}
+
 codec_zlib_decode <- codec_gzip_decode <- function(bytes, ...) {
   memDecompress(
     from = bytes,
