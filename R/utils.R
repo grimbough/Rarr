@@ -76,6 +76,8 @@ check_index <- function(index, metadata) {
 #'
 #' @keywords internal
 .create_replace_call <- function(x_name, idx_name, idx_length, y_name) {
+  # This is ugly but AFAICT this is the only way that doesn't require
+  # a copy of `x`.
   args <- sprintf("%s[[%d]]", idx_name, seq_len(idx_length))
   args <- paste(args, collapse = ",")
   cmd <- sprintf("%s[%s] <- %s", x_name, args, y_name)
@@ -83,12 +85,19 @@ check_index <- function(index, metadata) {
   return(cmd)
 }
 
-.create_extract_call <- function(x_name, idx_name, idx_length) {
-  args <- sprintf("%s[[%d]]", idx_name, seq_len(idx_length))
-  args <- paste(c(args, "drop=FALSE"), collapse = ",")
-  cmd <- sprintf("%s[%s]", x_name, args)
-
-  return(cmd)
+#' Subset extraction for an array with a variable number of dimensions.
+#'
+#' @param x Array to extract from.
+#' @param idx List of index vectors, one per dimension.
+#'
+#' @returns The extracted sub-array (with `drop = FALSE`).
+#'
+#' @keywords internal
+.extract_chunk <- function(x, idx) {
+  # do.call() has the same performance if we ever need to drop rlang dependency
+  # but this is more aesthetically pleasing and rlang is likely to always be
+  # somewhere in the dependency tree.
+  rlang::inject(x[!!!idx, drop = FALSE])
 }
 
 #' Parse the data type encoding string
