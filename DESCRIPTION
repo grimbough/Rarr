@@ -26,6 +26,7 @@ Imports:
     lifecycle,
     paws.storage,
     R.utils,
+    rlang,
     utils
 Suggests:
     BiocStyle,
