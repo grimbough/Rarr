@@ -18,7 +18,7 @@ permissions:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    if: >
+    if: >-
       ${{ github.event.workflow_run.event == 'pull_request' }}
     steps:
       - uses: lorenzwalthert/touchstone/actions/comment@7e6072a25d1f8d72649188bc711113039ef94b75
