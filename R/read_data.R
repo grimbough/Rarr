@@ -229,11 +229,11 @@ read_data <- function(
 
   ## extract the required elements from the chunk
   # FIXME: optimization: skip this step if we are taking everything in the chunk
-  chunk <- eval(str2lang(.create_extract_call(
-    x_name = "chunk",
-    idx_name = "index_in_chunk",
-    idx_length = length(index_in_chunk)
-  )))
+  chunk <- abind::asub(
+    chunk,
+    index_in_chunk,
+    drop = FALSE
+  )
   return(list(chunk, index_in_result))
 }
 

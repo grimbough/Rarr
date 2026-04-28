@@ -21,6 +21,7 @@ BugReports: https://github.com/Huber-group-EMBL/Rarr/issues
 Depends:
     R (>= 4.1.0)
 Imports:
+    abind,
     curl,
     jsonlite,
     lifecycle,
