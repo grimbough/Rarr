@@ -280,7 +280,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       Key = parsed_url$object
     )
 
-    metadata <- fromJSON(rawToChar(s3_object$Body))
+    metadata <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
   } else {
     zarray_exists <- file.exists(metadata_path)
 
@@ -468,7 +468,7 @@ zarr_overview <- function(zarr_array_path, s3_client, as_data_frame = FALSE) {
       Bucket = parsed_url$bucket,
       Key = parsed_url$object
     )
-    zmeta <- fromJSON(rawToChar(s3_object$Body))
+    zmeta <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
   } else {
     zmeta <- read_json(zmeta_path)
   }
