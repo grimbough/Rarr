@@ -38,35 +38,28 @@ parse_s3_path <- function(path) {
 
 #' @keywords internal
 .url_parse_aws <- function(url) {
-  tmp <- curl::curl_parse_url(url)
-
   if (grepl(pattern = "^https?://s3\\.", x = url, ignore.case = TRUE)) {
     ## path style address
-    bucket <- sub(
-      x = tmp$path,
-      pattern = "^/?([a-z0-9\\.-]*)/.*",
-      replacement = "\\1",
-      ignore.case = TRUE
-    )
-    object <- sub(
-      x = tmp$path,
-      pattern = "^/?([a-z0-9\\.-]*)/(.*)",
-      replacement = "\\2",
-      ignore.case = TRUE
-    )
-    region <- sub(
-      x = url,
-      pattern = "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/.*$",
-      replacement = "\\1"
-    )
+    url_parts <- regmatches(
+      url,
+      regexec(
+        "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/?([a-z0-9\\.-]*)/(.*)",
+        url,
+        ignore.case = TRUE
+      )
+    )[[1]]
+    region <- url_parts[2]
+    bucket <- url_parts[3]
+    object <- url_parts[4]
   } else if (
     grepl(
-      pattern = "^https?://[a-z0-9\\.-]*.s3\\.",
+      pattern = "^https?://[a-z0-9\\.-]*\\.s3\\.",
       x = url,
       ignore.case = TRUE
     )
   ) {
     ## virtual-host style address
+    tmp <- curl::curl_parse_url(url)
     bucket <- sub(
       x = tmp$host,
       pattern = "^([a-z0-9\\.-]*)\\.s3.*",
@@ -98,18 +91,12 @@ parse_s3_path <- function(path) {
 #' @keywords internal
 .url_parse_other <- function(url) {
   parsed_url <- curl::curl_parse_url(url)
-  bucket <- sub(
-    x = parsed_url$path,
-    pattern = "^/?([[a-z0-9:\\.-]*)/.*",
-    replacement = "\\1",
-    ignore.case = TRUE
-  )
-  object <- sub(
-    x = parsed_url$path,
-    pattern = "^/?([a-z0-9:\\.-]*)/(.*)",
-    replacement = "\\2",
-    ignore.case = TRUE
-  )
+  path_parts <- regmatches(
+    parsed_url$path,
+    regexec("^/?([a-z0-9:\\.-]*)/(.*)", parsed_url$path, ignore.case = TRUE)
+  )[[1]]
+  bucket <- path_parts[2]
+  object <- path_parts[3]
   hostname <- paste0(parsed_url$scheme, "://", parsed_url$host)
 
   if (!is.null(parsed_url$port)) {
