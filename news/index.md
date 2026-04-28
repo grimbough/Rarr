@@ -1,5 +1,14 @@
 # Changelog
 
+## Rarr 2.1
+
+### Minor improvements
+
+- `normalize_array_path()` has been slightly optimized for speed. It is
+  not likely to have a significant impact if you reading a single large
+  array but can be noticed if you reading many attributes and small
+  arrays (as in some anndata objects).
+
 ## Rarr 1.99
 
 ### Breaking changes

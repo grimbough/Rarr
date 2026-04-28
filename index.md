@@ -10,10 +10,6 @@
   - [Writing to a Zarr array](#writing-to-a-zarr-array)
 - [Required system libraries](#required-system-libraries)
 
-|                                                                   GitHub Actions                                                                    |                                                        Bioconductor Build Sysytem                                                        | Test Coverage |
-|:---------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------:|:-------------:|
-| [![Bioconductor Status](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/) | [![Codecov test coverage](https://codecov.io/gh/Huber-group-EMBL/Rarr/graph/badge.svg)](https://app.codecov.io/gh/Huber-group-EMBL/Rarr) |               |
-
 # Introduction to Rarr
 
 The Zarr specification defines a format for chunked, compressed,

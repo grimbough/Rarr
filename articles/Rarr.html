@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.99.44</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,7 @@
                         <h4 data-toc-skip class="author">Mike L.
 Smith</h4>
                         
-            <h4 data-toc-skip class="date">24 April 2026</h4>
+            <h4 data-toc-skip class="date">28 April 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/Rarr.Rmd" class="external-link"><code>vignettes/Rarr.Rmd</code></a></small>
       <div class="d-none name"><code>Rarr.Rmd</code></div>
@@ -408,14 +408,11 @@ documentation</a>.</p>
 now works successfully.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/zarr_overview.html">zarr_overview</a></span><span class="op">(</span><span class="va">s3_address</span>, s3_client <span class="op">=</span> <span class="va">s3_client</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Type: Array</span></span>
-<span><span class="co">## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0</span></span>
-<span><span class="co">## Shape: 50 x 494 x 464</span></span>
-<span><span class="co">## Chunk Shape: 1 x 494 x 464</span></span>
-<span><span class="co">## No. of Chunks: 50 (50 x 1 x 1)</span></span>
-<span><span class="co">## Data Type: float64</span></span>
-<span><span class="co">## Endianness: little</span></span>
-<span><span class="co">## Compressor: blosc</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span></span>
+<span><span class="co">## <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Failure when receiving data from the peer [uk1s3.embassy.ebi.ac.uk]:</span></span>
+<span><span class="co">## Recv failure: Connection reset by peer</span></span></code></pre>
 <p>Most functions in <strong>Rarr</strong> have the
 <code>s3_client</code> argument and it can be applied in the same
 way.</p>
@@ -534,7 +531,7 @@ expected.</p>
 <div class="section level3">
 <h3 class="unnumbered" id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h3>
-<pre><code><span><span class="co">## R Under development (unstable) (2026-04-23 r89955)</span></span>
+<pre><code><span><span class="co">## R Under development (unstable) (2026-04-26 r89963)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">## Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">## </span></span>
@@ -555,7 +552,7 @@ expected.</p>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] Rarr_1.99.44     BiocStyle_2.39.0</span></span>
+<span><span class="co">## [1] Rarr_2.1.1       BiocStyle_2.39.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##  [1] vctrs_0.7.3         crayon_1.5.3        cli_3.6.6          </span></span>
