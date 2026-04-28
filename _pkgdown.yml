@@ -22,7 +22,3 @@ reference:
   - title: "Compression helpers"
     contents:
       - starts_with("use_")
-  - title: "Deprecated functions"
-    contents:
-      - ZarrArray
-      - writeZarrArray
