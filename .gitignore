@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 *.Rproj
+.DS_Store
 
 config.status
 config.log
