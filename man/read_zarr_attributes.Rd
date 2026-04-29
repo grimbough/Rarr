@@ -6,7 +6,7 @@
 \usage{
 read_zarr_attributes(
   zarr_path,
-  s3_client,
+  s3_client = NULL,
   missing = c("ignore", "warning", "error")
 )
 }
@@ -33,4 +33,10 @@ are provided, an empty list is returned.
 }
 \description{
 Read the attributes associated with a Zarr array or group
+}
+\examples{
+read_zarr_attributes(
+  "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0048A/9846152.zarr"
+)
+
 }
