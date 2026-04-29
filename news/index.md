@@ -2,6 +2,15 @@
 
 ## Rarr 2.1
 
+### Breaking changes
+
+- (Minor:) `s3_client =` argument default value in
+  [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md),
+  [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md),
+  etc. is now set to `NULL` instead of missing. In practice, we expect
+  this grant to be invisible to most users but it makes it easier to
+  pass down missing values in Rarr reverse dependencies.
+
 ### Minor improvements
 
 - `normalize_array_path()` has been slightly optimized for speed. It is

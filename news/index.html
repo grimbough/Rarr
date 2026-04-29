@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.1" id="rarr-21">Rarr 2.1<a class="anchor" aria-label="anchor" href="#rarr-21"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-2-1">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-1"></a></h3>
+<ul><li>(Minor:) <code>s3_client =</code> argument default value in <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code>, <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code>, etc. is now set to <code>NULL</code> instead of missing. In practice, we expect this grant to be invisible to most users but it makes it easier to pass down missing values in Rarr reverse dependencies.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-2-1">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-2-1"></a></h3>
 <ul><li>

@@ -5,7 +5,7 @@ Read a Zarr array
 ## Usage
 
 ``` r
-read_zarr_array(zarr_array_path, index, s3_client)
+read_zarr_array(zarr_array_path, index, s3_client = NULL)
 ```
 
 ## Arguments

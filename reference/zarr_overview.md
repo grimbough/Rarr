@@ -10,7 +10,7 @@ array contains.
 ## Usage
 
 ``` r
-zarr_overview(zarr_array_path, s3_client, as_data_frame = FALSE)
+zarr_overview(zarr_array_path, s3_client = NULL, as_data_frame = FALSE)
 ```
 
 ## Arguments
