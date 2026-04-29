@@ -12,6 +12,13 @@
   value, are no longer written by
   [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md),
   saving disk space, and improving performance when reading it back.
+- More blosc options (`clevel`, `shuffle`, etc.) are exposed via
+  [`use_blosc()`](https://huber-group-embl.github.io/Rarr/reference/compressors.md).
+
+### Bug fixes
+
+- Using blosc compression via variable-length types such as when using
+  the vlen-utf8 filter / codec, is no longer causing R to crash.
 
 ## Rarr 1.99
 
