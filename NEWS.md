@@ -9,6 +9,12 @@
 * Empty chunks, i.e., chunks were all elements are equal to the fill value,
   are no longer written by `write_zarr_array()`, saving disk space, and 
   improving performance when reading it back.
+* More blosc options (`clevel`, `shuffle`, etc.) are exposed via `use_blosc()`.
+
+## Bug fixes
+
+* Using blosc compression via variable-length types such as when using the 
+  vlen-utf8 filter / codec, is no longer causing R to crash.
 
 # Rarr 1.99
 
