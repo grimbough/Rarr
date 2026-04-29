@@ -1,5 +1,6 @@
 linters: all_linters(
-    packages = c("lintr"),
+    packages = "lintr",
+    from_json_simplify_linter = Rarr:::from_json_simplify_linter(),
     pipe_consistency_linter(pipe = "|>"),
     object_name_linter = NULL,
     implicit_integer_linter = NULL,
