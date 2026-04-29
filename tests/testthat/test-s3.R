@@ -38,3 +38,13 @@ test_that("Denied access errors return clear error messages", {
     "Denied"
   )
 })
+
+test_that("JSON metadata is not unboxed", {
+  # We don't want to save the metadata and test this locally. It has to be tested on a real S3 store because it relates
+  # to a bug in the code branch.
+  # See https://github.com/Huber-group-EMBL/Rarr/pull/170
+  zarr_overview(
+    "https://livingobjects.ebi.ac.uk/idr/share/ome2024-ngff-challenge/idr0066/ExpA_VIP_ASLM_on_XZ_slice1088.zarr/0"
+  ) |>
+    expect_snapshot()
+})
