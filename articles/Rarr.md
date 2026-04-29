@@ -382,11 +382,14 @@ and it now works successfully.
 zarr_overview(s3_address, s3_client = s3_client)
 ```
 
-    ## Error in `req_perform()`:
-    ## ! Failed to perform HTTP request.
-    ## Caused by error in `curl::curl_fetch_memory()`:
-    ## ! Failure when receiving data from the peer [uk1s3.embassy.ebi.ac.uk]:
-    ## Recv failure: Connection reset by peer
+    ## Type: Array
+    ## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0
+    ## Shape: 50 x 494 x 464
+    ## Chunk Shape: 1 x 494 x 464
+    ## No. of Chunks: 50 (50 x 1 x 1)
+    ## Data Type: float64
+    ## Endianness: little
+    ## Compressor: blosc
 
 Most functions in **Rarr** have the `s3_client` argument and it can be
 applied in the same way.
@@ -544,7 +547,7 @@ contents is as expected.
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] Rarr_2.1.1       BiocStyle_2.39.0
+    ## [1] Rarr_2.1.2       BiocStyle_2.39.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] vctrs_0.7.3         crayon_1.5.3        cli_3.6.6          

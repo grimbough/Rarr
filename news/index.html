@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +44,7 @@
 <h3 id="minor-improvements-2-1">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-2-1"></a></h3>
 <ul><li>
 <code>normalize_array_path()</code> has been slightly optimized for speed. It is not likely to have a significant impact if you reading a single large array but can be noticed if you reading many attributes and small arrays (as in some anndata objects).</li>
+<li>Empty chunks, i.e., chunks were all elements are equal to the fill value, are no longer written by <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>, saving disk space, and improving performance when reading it back.</li>
 </ul></div>
 </div>
     <div class="section level2">
