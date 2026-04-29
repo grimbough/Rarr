@@ -25,9 +25,8 @@ linters: all_linters(
     routine_registration_linter = NULL,
     return_linter = NULL,
     object_overwrite_linter = NULL,
-    # Minimum R version support, as described in the blueprints.
-    # Waiting on the better solution here:
-    backport_linter("oldrel-4")
+    backport_linter("4.1.0"),
+    cyclocomp_linter(17)
   )
 exclusions: list(
     "inst",
