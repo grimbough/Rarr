@@ -17,6 +17,8 @@
 
 * Using blosc compression via variable-length types such as when using the 
   vlen-utf8 filter / codec, is no longer causing R to crash.
+* `zarr_overview()` and `read_zarr_array()` on Zarr v3 files hosted on S3. 
+  Thanks to a report and a patch by Artür Manukyan.
 
 # Rarr 1.99
 
