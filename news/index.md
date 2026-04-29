@@ -14,6 +14,8 @@
   saving disk space, and improving performance when reading it back.
 - More blosc options (`clevel`, `shuffle`, etc.) are exposed via
   [`use_blosc()`](https://huber-group-embl.github.io/Rarr/reference/compressors.md).
+- Reading VLen-UTF8 arrays (used by default for `string` in v3) in now
+  much faster after rewriting the vlen-utf8 codec in C.
 
 ### Bug fixes
 
