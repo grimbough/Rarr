@@ -96,9 +96,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
   }
   index <- check_index(index = index, metadata = metadata)
 
-  required_chunks <- as.matrix(find_chunks_needed(metadata, index))
-
-  res <- read_data(required_chunks, zarr_array_path, s3_client, index, metadata)
+  res <- read_data(zarr_array_path, s3_client, index, metadata)
 
   if (!is.null(metadata$dimension_names)) {
     dimnames(res) <- setNames(
@@ -112,7 +110,6 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
 
 
 read_data <- function(
-  required_chunks,
   zarr_array_path,
   s3_client,
   index,
@@ -125,10 +122,7 @@ read_data <- function(
     metadata
   )
 
-  chunk_names <- .create_chunk_names(
-    required_chunks,
-    metadata
-  )
+  chunk_names <- names(chunk_positions)
   # In the DelayedArray framework, we can have integer(0) indices
   # https://github.com/Huber-group-EMBL/Rarr/issues/112
   chunk_paths <- paste0(zarr_array_path, chunk_names, recycle0 = TRUE)
@@ -228,18 +222,6 @@ read_data <- function(
   # FIXME: optimization: skip this step if we are taking everything in the chunk
   chunk <- .extract_chunk(chunk, index_in_chunk)
   return(list(chunk, index_in_result))
-}
-
-find_chunks_needed <- function(metadata, index) {
-  index_chunks <- list()
-  for (i in seq_along(index)) {
-    index_chunks[[i]] <- unique(
-      (index[[i]] - 1) %/% metadata$chunk_grid$configuration$chunk_shape[[i]]
-    )
-  }
-
-  required_chunks <- expand.grid(index_chunks)
-  return(required_chunks)
 }
 
 #' Read a single Zarr chunk
