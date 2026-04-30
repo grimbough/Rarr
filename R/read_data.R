@@ -142,7 +142,6 @@ read_data <- function(
           chunk_name = chunk_names[i],
           current_chunk_path = chunk_paths[i],
           metadata = metadata,
-          index = index,
           s3_client = s3_client,
           chunk_positions = chunk_positions
         )
@@ -182,8 +181,6 @@ read_data <- function(
   chunk_name,
   current_chunk_path,
   metadata,
-  index,
-  zarr_array_path,
   s3_client,
   chunk_positions
 ) {
