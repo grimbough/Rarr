@@ -489,28 +489,24 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     x_dim = zarr_dim,
     chunk_dim = chunk_dim
   )
-  chunk_needed <- rep(FALSE, nrow(chunk_indices))
 
   ## precompute, for each chunk, the positions in `index` that belong to it
-  chunk_positions <- .chunk_positions_by_chunk(index, as.list(chunk_dim))
-
-  for (i in seq_len(nrow(chunk_indices))) {
-    chunk_key <- paste(chunk_indices[i, ], collapse = ".")
-    chunk_needed[i] <- !is.null(chunk_positions[[chunk_key]])
-  }
-  chunk_indices <- chunk_indices[chunk_needed, , drop = FALSE]
-  chunk_names <- .create_chunk_names(
-    chunk_indices,
+  chunk_positions <- .chunk_positions_by_chunk(
+    index,
+    as.list(chunk_dim),
     metadata
   )
-  chunk_indices <- asplit(chunk_indices, 1, drop = TRUE)
+
+  ## keep only candidate chunks that the requested index actually touches
+  all_chunk_names <- .create_chunk_names(chunk_indices, metadata)
+  chunk_needed <- all_chunk_names %in% names(chunk_positions)
+  chunk_names <- all_chunk_names[chunk_needed]
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bpmapply() ?
   res <- mapply(
     FUN = .update_chunk,
     chunk_names,
-    chunk_indices,
     MoreArgs = list(
       x = x,
       chunk_dim = chunk_dim,
@@ -526,7 +522,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
 .update_chunk <- function(
   chunk_name,
-  chunk_index,
   x,
   zarr_array_path,
   chunk_dim,
@@ -538,8 +533,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   ## determine which elements of x are being used and where in this specific
   ## chunk they should be inserted
   chunk_path <- file.path(zarr_array_path, chunk_name)
-  chunk_key <- paste(chunk_index, collapse = ".")
-  idx_in_x <- chunk_positions[[chunk_key]]
+  idx_in_x <- chunk_positions[[chunk_name]]
   idx_in_zarr <- idx_in_chunk <- list()
   for (j in seq_along(chunk_dim)) {
     idx_in_zarr[[j]] <- index[[j]][idx_in_x[[j]]]
