@@ -484,23 +484,13 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   ## coerce x to the same shape as the zarr to be updated
   x <- array(x, dim = lengths(index))
 
-  ## create all possible chunk names, then remove those that won't be touched
-  chunk_indices <- .generate_chunk_indices(
-    x_dim = zarr_dim,
-    chunk_dim = chunk_dim
-  )
-
   ## precompute, for each chunk, the positions in `index` that belong to it
   chunk_positions <- .chunk_positions_by_chunk(
     index,
     as.list(chunk_dim),
     metadata
   )
-
-  ## keep only candidate chunks that the requested index actually touches
-  all_chunk_names <- .create_chunk_names(chunk_indices, metadata)
-  chunk_needed <- all_chunk_names %in% names(chunk_positions)
-  chunk_names <- all_chunk_names[chunk_needed]
+  chunk_names <- names(chunk_positions)
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bpmapply() ?
