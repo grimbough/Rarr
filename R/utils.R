@@ -274,6 +274,8 @@ check_index <- function(index, metadata) {
 #'   * `index_in_chunk`: a per-dimension list of 1-based integer vectors
 #'     giving the within-chunk coordinates corresponding to `positions`.
 #'
+#' @importFrom utils relist
+#'
 #' @keywords internal
 .chunk_positions_by_chunk <- function(index, metadata) {
   chunk_shape <- as.integer(unlist(
