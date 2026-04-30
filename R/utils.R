@@ -254,3 +254,41 @@ check_index <- function(index, metadata) {
 
   return(is_present)
 }
+
+#' Precompute index positions grouped by chunk
+#'
+#' For each chunk touched by `index`, returns the positions (1-based) within
+#' each dimension of `index` that fall inside that chunk.
+#'
+#' @param index A list of integer vectors, one per dimension, giving the
+#'   requested array indices (1-based).
+#' @param chunk_shape A list of positive integers giving the chunk size in each
+#'   dimension.
+#'
+#' @returns A named list keyed by dot-separated 0-based chunk coordinates
+#'   (e.g. `"0.1.0"`).  Each element is itself a list with one integer vector
+#'   per dimension, giving the positions into the corresponding `index` vector
+#'   that map to that chunk.
+#'
+#' @keywords internal
+.chunk_positions_by_chunk <- function(index, chunk_shape) {
+  per_dim <- mapply(
+    \(x, y) split(seq_along(x), (x - 1L) %/% y),
+    index,
+    chunk_shape,
+    SIMPLIFY = FALSE
+  )
+  chunk_keys <- do.call(expand.grid, lapply(per_dim, names))
+  key_strings <- apply(chunk_keys, 1, paste, collapse = ".")
+  setNames(
+    lapply(seq_len(nrow(chunk_keys)), function(i) {
+      mapply(
+        \(d, k) d[[k]],
+        per_dim,
+        as.list(chunk_keys[i, ]),
+        SIMPLIFY = FALSE
+      )
+    }),
+    key_strings
+  )
+}

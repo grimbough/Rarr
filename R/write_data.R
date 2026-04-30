@@ -491,23 +491,12 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   )
   chunk_needed <- rep(FALSE, nrow(chunk_indices))
 
-  ## determine which chunk each of the requests indices belongs to
-  chunk_idx <- .mapply(
-    \(x, y) {
-      (x - 1) %/% y
-    },
-    dots = list(index, chunk_dim),
-    MoreArgs = NULL
-  )
+  ## precompute, for each chunk, the positions in `index` that belong to it
+  chunk_positions <- .chunk_positions_by_chunk(index, as.list(chunk_dim))
 
   for (i in seq_len(nrow(chunk_indices))) {
-    idx_in_zarr <- list()
-    for (j in seq_along(zarr_dim)) {
-      idx_in_zarr[[j]] <- index[[j]][which(
-        chunk_idx[[j]] == chunk_indices[i, j]
-      )]
-    }
-    chunk_needed[i] <- all(lengths(idx_in_zarr) > 0)
+    chunk_key <- paste(chunk_indices[i, ], collapse = ".")
+    chunk_needed[i] <- !is.null(chunk_positions[[chunk_key]])
   }
   chunk_indices <- chunk_indices[chunk_needed, , drop = FALSE]
   chunk_names <- .create_chunk_names(
@@ -525,7 +514,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     MoreArgs = list(
       x = x,
       chunk_dim = chunk_dim,
-      chunk_idx = chunk_idx,
+      chunk_positions = chunk_positions,
       index = index,
       zarr_array_path = zarr_array_path,
       metadata = metadata
@@ -541,7 +530,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   x,
   zarr_array_path,
   chunk_dim,
-  chunk_idx,
+  chunk_positions,
   index,
   # FIXME: once we fully switch to v3, we can remove this argument
   metadata
@@ -549,10 +538,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   ## determine which elements of x are being used and where in this specific
   ## chunk they should be inserted
   chunk_path <- file.path(zarr_array_path, chunk_name)
-  ## TODO: This is pretty ugly, maybe there's something more elegant
-  idx_in_zarr <- idx_in_x <- idx_in_chunk <- list()
+  chunk_key <- paste(chunk_index, collapse = ".")
+  idx_in_x <- chunk_positions[[chunk_key]]
+  idx_in_zarr <- idx_in_chunk <- list()
   for (j in seq_along(chunk_dim)) {
-    idx_in_x[[j]] <- which(chunk_idx[[j]] == chunk_index[j])
     idx_in_zarr[[j]] <- index[[j]][idx_in_x[[j]]]
     idx_in_chunk[[j]] <- ((idx_in_zarr[[j]] - 1) %% chunk_dim[j]) + 1
   }
