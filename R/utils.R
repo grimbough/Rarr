@@ -279,9 +279,10 @@ check_index <- function(index, metadata) {
   chunk_shape <- as.integer(unlist(
     metadata$chunk_grid$configuration$chunk_shape
   ))
+  index0 <- relist(unlist(index) - 1L, index)
   per_dim <- mapply(
-    \(x, y) split(seq_along(x), (x - 1L) %/% y),
-    index,
+    \(x, y) split(seq_along(x), x %/% y),
+    index0,
     chunk_shape,
     SIMPLIFY = FALSE
   )
@@ -295,13 +296,14 @@ check_index <- function(index, metadata) {
         as.list(chunk_keys[i, ]),
         SIMPLIFY = FALSE
       )
-      index_in_chunk <- mapply(
-        \(idx, pos, cs) ((idx[pos] - 1L) %% cs) + 1L,
-        index,
+      index0_in_chunk <- mapply(
+        \(idx, pos, cs) idx[pos] %% cs,
+        index0,
         positions,
         chunk_shape,
         SIMPLIFY = FALSE
       )
+      index_in_chunk <- relist(unlist(index0_in_chunk) + 1L, index0_in_chunk)
       list(positions = positions, index_in_chunk = index_in_chunk)
     }),
     key_strings
