@@ -121,7 +121,8 @@ read_data <- function(
   ## precompute, for each chunk, the positions in `index` that belong to it
   chunk_positions <- .chunk_positions_by_chunk(
     index,
-    metadata$chunk_grid$configuration$chunk_shape
+    metadata$chunk_grid$configuration$chunk_shape,
+    metadata
   )
 
   chunk_names <- .create_chunk_names(
@@ -145,7 +146,7 @@ read_data <- function(
       existing_idx,
       function(i) {
         .extract_elements(
-          current_chunk_index = required_chunks[i, ],
+          chunk_name = chunk_names[i],
           current_chunk_path = chunk_paths[i],
           metadata = metadata,
           index = index,
@@ -185,7 +186,7 @@ read_data <- function(
 }
 
 .extract_elements <- function(
-  current_chunk_index,
+  chunk_name,
   current_chunk_path,
   metadata,
   index,
@@ -194,14 +195,13 @@ read_data <- function(
   chunk_positions
 ) {
   ## find elements to select from the chunk and what in the output we replace
-  chunk_key <- paste(current_chunk_index, collapse = ".")
-  index_in_result <- chunk_positions[[chunk_key]]
+  index_in_result <- chunk_positions[[chunk_name]]
   index_in_chunk <- list()
   alt_chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
   # FIXME: deal with this by rewriting the chunk grid in metadata after we supported
   # non-regular chunk grid
-  for (j in seq_along(current_chunk_index)) {
+  for (j in seq_along(index)) {
     ## are we requesting values outside the array due to overhanging chunks?
     outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
     if (any(outside_extent)) {

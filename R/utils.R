@@ -264,14 +264,16 @@ check_index <- function(index, metadata) {
 #'   requested array indices (1-based).
 #' @param chunk_shape A list of positive integers giving the chunk size in each
 #'   dimension.
+#' @param metadata List of array metadata as returned by `.read_array_metadata()`.
+#'   Used to derive chunk name keys via `.create_chunk_names()`.
 #'
-#' @returns A named list keyed by dot-separated 0-based chunk coordinates
-#'   (e.g. `"0.1.0"`).  Each element is itself a list with one integer vector
-#'   per dimension, giving the positions into the corresponding `index` vector
-#'   that map to that chunk.
+#' @returns A named list keyed by chunk names (same format as
+#'   `.create_chunk_names()`, e.g. `"c/0/1/0"` for Zarr V3).  Each element is
+#'   itself a list with one integer vector per dimension, giving the positions
+#'   into the corresponding `index` vector that map to that chunk.
 #'
 #' @keywords internal
-.chunk_positions_by_chunk <- function(index, chunk_shape) {
+.chunk_positions_by_chunk <- function(index, chunk_shape, metadata) {
   per_dim <- mapply(
     \(x, y) split(seq_along(x), (x - 1L) %/% y),
     index,
@@ -279,7 +281,7 @@ check_index <- function(index, metadata) {
     SIMPLIFY = FALSE
   )
   chunk_keys <- do.call(expand.grid, lapply(per_dim, names))
-  key_strings <- apply(chunk_keys, 1, paste, collapse = ".")
+  key_strings <- .create_chunk_names(as.matrix(chunk_keys), metadata)
   setNames(
     lapply(seq_len(nrow(chunk_keys)), function(i) {
       mapply(
