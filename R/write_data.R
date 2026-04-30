@@ -339,13 +339,14 @@ write_zarr_array <- function(
     return(invisible(TRUE))
   }
 
-  ## if a chunk overlaps the edge of the array, most implementations assume we
-  ## still write the content to disk.  Seems wasteful, but we fail many tests
+  # Spec says:
+  # "Chunks at the border of an array always have the full chunk size,
+  # even when the array only covers parts of it."
   if (any(dim(chunk_in_mem) != chunk_dim)) {
     ## create a new "complete" chunk
     temp_chunk <- array(dim = chunk_dim)
 
-    ## insert our partial chunk into the new one
+    ## insert our partial chunk into the new full-sized chunk
     idx_in_chunk <- lapply(dim(chunk_in_mem), seq_len)
     cmd <- .create_replace_call(
       "temp_chunk",
