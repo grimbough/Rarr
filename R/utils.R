@@ -280,12 +280,11 @@ check_index <- function(index, metadata) {
     metadata$chunk_grid$configuration$chunk_shape
   ))
   index0 <- relist(unlist(index) - 1L, index)
-  per_dim <- mapply(
-    \(x, y) split(seq_along(x), x %/% y),
-    index0,
-    chunk_shape,
-    SIMPLIFY = FALSE
-  )
+
+  per_dim <- (unlist(index0) %/%
+    rep(unlist(chunk_shape), times = lengths(index0))) |>
+    relist(index0) |>
+    lapply(function(x) split(seq_along(x), x))
   chunk_keys <- do.call(expand.grid, lapply(per_dim, names))
   key_strings <- .create_chunk_names(as.matrix(chunk_keys), metadata)
   setNames(
