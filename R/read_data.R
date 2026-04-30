@@ -118,14 +118,10 @@ read_data <- function(
   index,
   metadata
 ) {
-  ## determine which chunk each of the requests indices belongs to
-  chunk_idx <- mapply(
-    \(x, y) {
-      (x - 1) %/% y
-    },
+  ## precompute, for each chunk, the positions in `index` that belong to it
+  chunk_positions <- .chunk_positions_by_chunk(
     index,
-    metadata$chunk_grid$configuration$chunk_shape,
-    SIMPLIFY = FALSE
+    metadata$chunk_grid$configuration$chunk_shape
   )
 
   chunk_names <- .create_chunk_names(
@@ -154,7 +150,7 @@ read_data <- function(
           metadata = metadata,
           index = index,
           s3_client = s3_client,
-          chunk_idx = chunk_idx
+          chunk_positions = chunk_positions
         )
       }
     ),
@@ -195,16 +191,17 @@ read_data <- function(
   index,
   zarr_array_path,
   s3_client,
-  chunk_idx
+  chunk_positions
 ) {
   ## find elements to select from the chunk and what in the output we replace
-  index_in_result <- index_in_chunk <- list()
+  chunk_key <- paste(current_chunk_index, collapse = ".")
+  index_in_result <- chunk_positions[[chunk_key]]
+  index_in_chunk <- list()
   alt_chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
   # FIXME: deal with this by rewriting the chunk grid in metadata after we supported
   # non-regular chunk grid
   for (j in seq_along(current_chunk_index)) {
-    index_in_result[[j]] <- which(chunk_idx[[j]] == current_chunk_index[j])
     ## are we requesting values outside the array due to overhanging chunks?
     outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
     if (any(outside_extent)) {
