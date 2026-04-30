@@ -281,8 +281,7 @@ check_index <- function(index, metadata) {
   ))
   index0 <- relist(unlist(index) - 1L, index)
 
-  per_dim <- (unlist(index0) %/%
-    rep(unlist(chunk_shape), times = lengths(index0))) |>
+  per_dim <- (unlist(index0) %/% rep(chunk_shape, times = lengths(index0))) |>
     relist(index0) |>
     lapply(function(x) split(seq_along(x), x))
   chunk_keys <- do.call(expand.grid, lapply(per_dim, names))
