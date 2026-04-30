@@ -118,7 +118,6 @@ read_data <- function(
   ## precompute, for each chunk, the positions in `index` that belong to it
   chunk_positions <- .chunk_positions_by_chunk(
     index,
-    metadata$chunk_grid$configuration$chunk_shape,
     metadata
   )
 
@@ -189,15 +188,10 @@ read_data <- function(
   chunk_positions
 ) {
   ## find elements to select from the chunk and what in the output we replace
-  index_in_result <- chunk_positions[[chunk_name]]
-  index_in_chunk <- list()
+  chunk_info <- chunk_positions[[chunk_name]]
+  index_in_result <- chunk_info$positions
+  index_in_chunk <- chunk_info$index_in_chunk
   alt_chunk_dim <- lengths(index_in_result)
-
-  for (j in seq_along(index)) {
-    index_in_chunk[[j]] <- ((index[[j]][index_in_result[[j]]] - 1) %%
-      metadata$chunk_grid$configuration$chunk_shape[[j]]) +
-      1
-  }
 
   ## read this chunk
   chunk <- read_chunk(

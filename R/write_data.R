@@ -478,16 +478,12 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     operation = "decode"
   )
 
-  zarr_dim <- unlist(metadata$shape)
-  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
-
   ## coerce x to the same shape as the zarr to be updated
   x <- array(x, dim = lengths(index))
 
   ## precompute, for each chunk, the positions in `index` that belong to it
   chunk_positions <- .chunk_positions_by_chunk(
     index,
-    as.list(chunk_dim),
     metadata
   )
   chunk_names <- names(chunk_positions)
@@ -499,9 +495,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_names,
     MoreArgs = list(
       x = x,
-      chunk_dim = chunk_dim,
       chunk_positions = chunk_positions,
-      index = index,
       zarr_array_path = zarr_array_path,
       metadata = metadata
     )
@@ -514,20 +508,15 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_name,
   x,
   zarr_array_path,
-  chunk_dim,
   chunk_positions,
-  index,
   metadata
 ) {
   ## determine which elements of x are being used and where in this specific
   ## chunk they should be inserted
   chunk_path <- file.path(zarr_array_path, chunk_name)
-  idx_in_x <- chunk_positions[[chunk_name]]
-  idx_in_zarr <- idx_in_chunk <- list()
-  for (j in seq_along(chunk_dim)) {
-    idx_in_zarr[[j]] <- index[[j]][idx_in_x[[j]]]
-    idx_in_chunk[[j]] <- ((idx_in_zarr[[j]] - 1) %% chunk_dim[j]) + 1
-  }
+  chunk_info <- chunk_positions[[chunk_name]]
+  idx_in_x <- chunk_info$positions
+  idx_in_chunk <- chunk_info$index_in_chunk
 
   if (.file_or_blob_exists(zarr_array_path, s3_client = NULL, chunk_name)) {
     chunk_in_mem <- read_chunk(

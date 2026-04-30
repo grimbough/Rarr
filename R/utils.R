@@ -258,22 +258,27 @@ check_index <- function(index, metadata) {
 #' Precompute index positions grouped by chunk
 #'
 #' For each chunk touched by `index`, returns the positions (1-based) within
-#' each dimension of `index` that fall inside that chunk.
+#' each dimension of `index` that fall inside that chunk, together with the
+#' within-chunk indices needed to extract values from the chunk array.
 #'
 #' @param index A list of integer vectors, one per dimension, giving the
 #'   requested array indices (1-based).
-#' @param chunk_shape A list of positive integers giving the chunk size in each
-#'   dimension.
 #' @param metadata List of array metadata as returned by `.read_array_metadata()`.
 #'   Used to derive chunk name keys via `.create_chunk_names()`.
 #'
 #' @returns A named list keyed by chunk names (same format as
 #'   `.create_chunk_names()`, e.g. `"c/0/1/0"` for Zarr V3).  Each element is
-#'   itself a list with one integer vector per dimension, giving the positions
-#'   into the corresponding `index` vector that map to that chunk.
+#'   a list with two components:
+#'   * `positions`: a per-dimension list of integer vectors of positions into
+#'     the corresponding `index` vector that map to that chunk.
+#'   * `index_in_chunk`: a per-dimension list of 1-based integer vectors
+#'     giving the within-chunk coordinates corresponding to `positions`.
 #'
 #' @keywords internal
-.chunk_positions_by_chunk <- function(index, chunk_shape, metadata) {
+.chunk_positions_by_chunk <- function(index, metadata) {
+  chunk_shape <- as.integer(unlist(
+    metadata$chunk_grid$configuration$chunk_shape
+  ))
   per_dim <- mapply(
     \(x, y) split(seq_along(x), (x - 1L) %/% y),
     index,
@@ -284,12 +289,20 @@ check_index <- function(index, metadata) {
   key_strings <- .create_chunk_names(as.matrix(chunk_keys), metadata)
   setNames(
     lapply(seq_len(nrow(chunk_keys)), function(i) {
-      mapply(
+      positions <- mapply(
         \(d, k) d[[k]],
         per_dim,
         as.list(chunk_keys[i, ]),
         SIMPLIFY = FALSE
       )
+      index_in_chunk <- mapply(
+        \(idx, pos, cs) ((idx[pos] - 1L) %% cs) + 1L,
+        index,
+        positions,
+        chunk_shape,
+        SIMPLIFY = FALSE
+      )
+      list(positions = positions, index_in_chunk = index_in_chunk)
     }),
     key_strings
   )

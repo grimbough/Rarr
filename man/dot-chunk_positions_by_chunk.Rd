@@ -4,23 +4,29 @@
 \alias{.chunk_positions_by_chunk}
 \title{Precompute index positions grouped by chunk}
 \usage{
-.chunk_positions_by_chunk(index, chunk_shape)
+.chunk_positions_by_chunk(index, metadata)
 }
 \arguments{
 \item{index}{A list of integer vectors, one per dimension, giving the
 requested array indices (1-based).}
 
-\item{chunk_shape}{A list of positive integers giving the chunk size in each
-dimension.}
+\item{metadata}{List of array metadata as returned by \code{.read_array_metadata()}.
+Used to derive chunk name keys via \code{.create_chunk_names()}.}
 }
 \value{
-A named list keyed by dot-separated 0-based chunk coordinates
-(e.g. \code{"0.1.0"}).  Each element is itself a list with one integer vector
-per dimension, giving the positions into the corresponding \code{index} vector
-that map to that chunk.
+A named list keyed by chunk names (same format as
+\code{.create_chunk_names()}, e.g. \code{"c/0/1/0"} for Zarr V3).  Each element is
+a list with two components:
+\itemize{
+\item \code{positions}: a per-dimension list of integer vectors of positions into
+the corresponding \code{index} vector that map to that chunk.
+\item \code{index_in_chunk}: a per-dimension list of 1-based integer vectors
+giving the within-chunk coordinates corresponding to \code{positions}.
+}
 }
 \description{
 For each chunk touched by \code{index}, returns the positions (1-based) within
-each dimension of \code{index} that fall inside that chunk.
+each dimension of \code{index} that fall inside that chunk, together with the
+within-chunk indices needed to extract values from the chunk array.
 }
 \keyword{internal}
