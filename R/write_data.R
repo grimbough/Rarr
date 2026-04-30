@@ -271,17 +271,6 @@ write_zarr_array <- function(
     operation = "encode"
   )
 
-  chunk_indices <- .generate_chunk_indices(
-    x_dim = dim(x),
-    chunk_dim = chunk_dim
-  )
-  chunk_names <- .create_chunk_names(
-    chunk_indices,
-    metadata_v3
-  )
-  chunk_paths <- paste0(path, chunk_names)
-  chunk_indices <- asplit(chunk_indices, 1, drop = TRUE)
-
   same_type_lower_bytesize <- metadata_v3$data_type %in%
     c("int8", "int16", "float32")
   lower_bytesize_type <- storage.mode(x) == "double" &&
@@ -301,14 +290,23 @@ write_zarr_array <- function(
     )
   }
 
+  ## build index covering the entire array
+  index <- lapply(dim(x), seq_len)
+
+  ## precompute, for each chunk, the positions in `index` that belong to it
+  chunk_positions <- .chunk_positions_by_chunk(index, metadata_v3)
+  chunk_names <- names(chunk_positions)
+  chunk_paths <- paste0(path, chunk_names)
+
   ## iterate over each chunk
   ## TODO: maybe this can be done in parallel with bpmapply() ?
   res <- mapply(
     FUN = .write_chunk,
     chunk_paths,
-    chunk_indices,
+    chunk_names,
     MoreArgs = list(
       x = x,
+      chunk_positions = chunk_positions,
       metadata = metadata_v3
     )
   )
@@ -316,20 +314,12 @@ write_zarr_array <- function(
   return(invisible(all(res)))
 }
 
-.generate_chunk_indices <- function(x_dim, chunk_dim) {
-  n_chunks_in_dim <- (x_dim %/% chunk_dim) + as.logical(x_dim %% chunk_dim)
-  expand.grid(lapply(n_chunks_in_dim, seq_len)) - 1
-}
-
-.write_chunk <- function(chunk_path, chunk_index, x, metadata) {
+.write_chunk <- function(chunk_path, chunk_name, x, chunk_positions, metadata) {
   chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
-  idx_in_array <- list()
-  for (j in seq_along(dim(x))) {
-    idx_in_array[[j]] <- which(
-      (seq_len(dim(x)[j]) - 1) %/% chunk_dim[j] == chunk_index[j]
-    )
-  }
+  chunk_info <- chunk_positions[[chunk_name]]
+  idx_in_array <- chunk_info$positions
+  idx_in_chunk <- chunk_info$index_in_chunk
 
   chunk_in_mem <- .extract_chunk(x, idx_in_array)
 
@@ -343,11 +333,10 @@ write_zarr_array <- function(
   # "Chunks at the border of an array always have the full chunk size,
   # even when the array only covers parts of it."
   if (any(dim(chunk_in_mem) != chunk_dim)) {
-    ## create a new "complete" chunk
-    temp_chunk <- array(dim = chunk_dim)
+    ## create a new "complete" chunk filled with the fill value
+    temp_chunk <- array(metadata$fill_value, dim = chunk_dim)
 
     ## insert our partial chunk into the new full-sized chunk
-    idx_in_chunk <- lapply(dim(chunk_in_mem), seq_len)
     cmd <- .create_replace_call(
       "temp_chunk",
       "idx_in_chunk",
