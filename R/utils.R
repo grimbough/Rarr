@@ -293,7 +293,7 @@ check_index <- function(index, metadata) {
       positions <- mapply(
         \(d, k) d[[k]],
         per_dim,
-        as.list(chunk_keys[i, ]),
+        chunk_keys[i, ],
         SIMPLIFY = FALSE
       )
       index0_in_chunk <- mapply(
