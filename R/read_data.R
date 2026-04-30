@@ -188,14 +188,12 @@ read_data <- function(
   chunk_info <- chunk_positions[[chunk_name]]
   index_in_result <- chunk_info$positions
   index_in_chunk <- chunk_info$index_in_chunk
-  alt_chunk_dim <- lengths(index_in_result)
 
   ## read this chunk
   chunk <- read_chunk(
     chunk_path = current_chunk_path,
     metadata = metadata,
-    s3_client = s3_client,
-    alt_chunk_dim = alt_chunk_dim
+    s3_client = s3_client
   )
 
   ## extract the required elements from the chunk
@@ -214,11 +212,6 @@ read_data <- function(
 #'   than read it repeatedly for every chunk.
 #' @param s3_client Object created by [paws.storage::s3()]. Only required for a
 #'   file on S3. Leave as `NULL` for a file on local storage.
-#' @param alt_chunk_dim The dimensions of the array that should be created from
-#'   this chunk.  Normally this will be the same as the chunk shape in
-#'   `metadata`, but when dealing with edge chunks, which may overlap the true
-#'   extent of the array the returned array should be smaller than the chunk
-#'   shape.
 #'
 #' @returns An array containing the decompressed chunk values.
 #'
@@ -226,8 +219,7 @@ read_data <- function(
 read_chunk <- function(
   chunk_path,
   metadata,
-  s3_client = NULL,
-  alt_chunk_dim = NULL
+  s3_client = NULL
 ) {
   # When we get here, we know the chunk exists, so we can read it without worrying about
   # handling missing.
@@ -253,20 +245,7 @@ read_chunk <- function(
     )
   }
 
-  ## It doesn't seem clear if the on disk chunk will contain the overflow
-  ## values or not, so we try both approaches.
-  actual_chunk_size <- length(raw_chunk) / sum(metadata$datatype$nbytes)
-  expected_chunk_size <- prod(unlist(
-    metadata$chunk_grid$configuration$chunk_shape
-  ))
-  if (
-    !is.null(metadata$codecs[["vlen_utf8"]]) ||
-      actual_chunk_size == expected_chunk_size
-  ) {
-    chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
-  } else {
-    chunk_dim <- alt_chunk_dim
-  }
+  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
   # Bytes -> Array codecs
   for (codec in metadata$configured_decoders[["array_bytes"]]) {
