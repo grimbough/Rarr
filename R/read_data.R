@@ -191,20 +191,9 @@ read_data <- function(
   ## find elements to select from the chunk and what in the output we replace
   index_in_result <- chunk_positions[[chunk_name]]
   index_in_chunk <- list()
-  alt_chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
+  alt_chunk_dim <- lengths(index_in_result)
 
-  # FIXME: deal with this by rewriting the chunk grid in metadata after we supported
-  # non-regular chunk grid
   for (j in seq_along(index)) {
-    ## are we requesting values outside the array due to overhanging chunks?
-    outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
-    if (any(outside_extent)) {
-      index_in_result[[j]] <- index_in_result[[j]][-outside_extent]
-    }
-    if (any(index_in_result[[j]] == metadata$shape[[j]])) {
-      alt_chunk_dim[j] <- length(index_in_result[[j]])
-    }
-
     index_in_chunk[[j]] <- ((index[[j]][index_in_result[[j]]] - 1) %%
       metadata$chunk_grid$configuration$chunk_shape[[j]]) +
       1
