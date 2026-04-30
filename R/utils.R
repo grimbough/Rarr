@@ -173,15 +173,25 @@ check_index <- function(index, metadata) {
   chunk_shape <- as.integer(unlist(
     metadata$chunk_grid$configuration$chunk_shape
   ))
-  index0 <- as.integer(unlist(index)) - 1L
+  if (is.null(index)) {
+    per_dim <- mapply(
+      \(s, cs) split(seq_len(s), (seq_len(s) - 1L) %/% cs),
+      metadata$shape,
+      chunk_shape,
+      SIMPLIFY = FALSE
+    )
+  } else {
+    index0 <- as.integer(unlist(index)) - 1L
 
-  per_dim <- (index0 %/% rep(chunk_shape, times = lengths(index))) |>
-    relist(index) |>
-    lapply(function(x) split(seq_along(x), x))
+    per_dim <- (index0 %/% rep(chunk_shape, times = lengths(index))) |>
+      relist(index) |>
+      lapply(function(x) split(seq_along(x), x))
+    index0 <- relist(index0, index)
+  }
 
   chunk_keys <- do.call(expand.grid, lapply(per_dim, names))
   key_strings <- .create_chunk_names(as.matrix(chunk_keys), metadata)
-  index0 <- relist(index0, index)
+
   setNames(
     lapply(seq_along(key_strings), function(i) {
       positions <- mapply(
@@ -190,14 +200,18 @@ check_index <- function(index, metadata) {
         chunk_keys[i, ],
         SIMPLIFY = FALSE
       )
-      index0_in_chunk <- mapply(
-        \(idx, pos, cs) idx[pos] %% cs,
-        index0,
-        positions,
-        chunk_shape,
-        SIMPLIFY = FALSE
-      )
-      index_in_chunk <- relist(unlist(index0_in_chunk) + 1L, index0_in_chunk)
+      if (is.null(index)) {
+        index_in_chunk <- NULL
+      } else {
+        index0_in_chunk <- mapply(
+          \(idx, pos, cs) idx[pos] %% cs,
+          index0,
+          positions,
+          chunk_shape,
+          SIMPLIFY = FALSE
+        )
+        index_in_chunk <- relist(unlist(index0_in_chunk) + 1L, index0_in_chunk)
+      }
       list(positions = positions, index_in_chunk = index_in_chunk)
     }),
     key_strings

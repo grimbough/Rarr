@@ -377,14 +377,12 @@ write_zarr_array <- function(
 #' read_zarr_array(new_zarry_array, index = list(1:5, 1:5))
 #'
 #' @export
-update_zarr_array <- function(zarr_array_path, x, index) {
+update_zarr_array <- function(zarr_array_path, x, index = NULL) {
   stopifnot(is.list(index))
 
   zarr_array_path <- .normalize_array_path(zarr_array_path)
 
   metadata <- .read_array_metadata(zarr_array_path)
-
-  index <- check_index(index, metadata = metadata)
 
   existing_storage <- switch(
     metadata$datatype$base_type,
@@ -412,7 +410,12 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   )
 
   ## coerce x to the same shape as the zarr to be updated
-  x <- array(x, dim = lengths(index))
+  out_dims <- if (is.null(index)) {
+    unlist(metadata$shape)
+  } else {
+    lengths(index)
+  }
+  x <- array(x, dim = out_dims)
 
   ## precompute, for each chunk, the positions in `index` that belong to it
   chunk_positions <- .chunk_positions_by_chunk(

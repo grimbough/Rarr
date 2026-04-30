@@ -40,7 +40,7 @@
 #' }
 #'
 #' @export
-read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
+read_zarr_array <- function(zarr_array_path, index = NULL, s3_client = NULL) {
   zarr_array_path <- .normalize_array_path(zarr_array_path)
   ## determine if this is a local or S3 array
   s3_client <- s3_client %||% .create_s3_client(path = zarr_array_path)
@@ -62,12 +62,6 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
     metadata$codecs,
     operation = "decode"
   )
-
-  ## if no index provided we will return everything
-  if (missing(index)) {
-    index <- vector(mode = "list", length = length(metadata$shape))
-  }
-  index <- check_index(index = index, metadata = metadata)
 
   res <- read_data(zarr_array_path, s3_client, index, metadata)
 
@@ -141,7 +135,12 @@ read_data <- function(
   }
 
   ## predefine our array to be populated from the read chunks
-  output <- array(metadata$fill_value, dim = lengths(index))
+  out_dims <- if (is.null(index)) {
+    unlist(metadata$shape)
+  } else {
+    lengths(index)
+  }
+  output <- array(metadata$fill_value, dim = out_dims)
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
@@ -152,7 +151,7 @@ read_data <- function(
         metadata$data_type$name %in% c("struct", "structured")
     ) {
       # Assigning a list drops the dim attribute so we have to continuously add it again
-      dim(output) <- lengths(index)
+      dim(output) <- out_dims
     }
   }
   return(output)
@@ -196,10 +195,14 @@ read_data <- function(
     datatype = metadata$datatype,
     fill_value = metadata$fill_value
   )
+  if (!identical(lengths(index_in_result), dim(chunk)) && is.null(index_in_chunk)) {
+    index_in_chunk <- lapply(lengths(index_in_result), seq_len)
+  }
 
   ## extract the required elements from the chunk
-  # FIXME: optimization: skip this step if we are taking everything in the chunk
-  chunk <- .extract_chunk(chunk, index_in_chunk)
+  if (!is.null(index_in_chunk)) {
+    chunk <- .extract_chunk(chunk, index_in_chunk)
+  }
   return(list(chunk, index_in_result))
 }
 
