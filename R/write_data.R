@@ -517,7 +517,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_dim,
   chunk_positions,
   index,
-  # FIXME: once we fully switch to v3, we can remove this argument
   metadata
 ) {
   ## determine which elements of x are being used and where in this specific
