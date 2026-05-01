@@ -161,12 +161,28 @@ read_data <- function(
   index_in_result <- chunk_info$positions
   index_in_chunk <- chunk_info$index_in_chunk
 
+  # When we get here, we know the chunk exists, so we can read it without worrying about
+  # handling missing.
+  if (nzchar(Sys.getenv("RARR_DEBUG"))) {
+    message(current_chunk_path)
+  }
+
+  if (is.null(s3_client)) {
+    size <- file.size(current_chunk_path)
+    raw_chunk <- readBin(con = current_chunk_path, what = "raw", n = size)
+  } else {
+    parsed_url <- parse_s3_path(current_chunk_path)
+    raw_chunk <- s3_client$get_object(
+      Bucket = parsed_url$bucket,
+      Key = parsed_url$object
+    )$Body
+  }
+
   ## read this chunk
   chunk <- read_chunk(
-    chunk_path = current_chunk_path,
+    chunk_bytes = raw_chunk,
     chunk_dim = chunk_dim,
-    metadata = metadata,
-    s3_client = s3_client
+    metadata = metadata
   )
 
   ## extract the required elements from the chunk
@@ -177,48 +193,31 @@ read_data <- function(
 
 #' Read a single Zarr chunk
 #'
-#' @param chunk_path A character vector of length 1, giving the path to the
-#'   chunk to be read.
+#' @param chunk_bytes A raw vector containing the bytes of the chunk to be read.
 #' @param metadata List produced by `.read_array_metadata()` holding the contents
 #'   of the `.zarray` file. If missing this function will be called
 #'   automatically, but it is probably preferable to pass the meta data rather
 #'   than read it repeatedly for every chunk.
-#' @param s3_client Object created by [paws.storage::s3()]. Only required for a
-#'   file on S3. Leave as `NULL` for a file on local storage.
 #'
 #' @returns An array containing the decompressed chunk values.
 #'
 #' @keywords internal
 read_chunk <- function(
-  chunk_path,
+  chunk_bytes,
   chunk_dim,
-  metadata,
-  s3_client = NULL
+  metadata
 ) {
-  # When we get here, we know the chunk exists, so we can read it without worrying about
-  # handling missing.
-  if (is.null(s3_client)) {
-    size <- file.size(chunk_path)
-    raw_chunk <- readBin(con = chunk_path, what = "raw", n = size)
-  } else {
-    parsed_url <- parse_s3_path(chunk_path)
-    raw_chunk <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )$Body
-  }
-
   # Bytes -> Bytes codecs
   for (codec in metadata$configured_decoders[["bytes_bytes"]]) {
-    raw_chunk <- codec(
-      bytes = raw_chunk
+    chunk_bytes <- codec(
+      bytes = chunk_bytes
     )
   }
 
   # Bytes -> Array codecs
   for (codec in metadata$configured_decoders[["array_bytes"]]) {
     converted_chunk <- codec(
-      raw_chunk,
+      chunk_bytes,
       chunk_dim,
       metadata$datatype
     )
