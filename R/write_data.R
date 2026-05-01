@@ -420,6 +420,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     metadata
   )
   chunk_names <- names(chunk_positions)
+  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bpmapply() ?
@@ -430,6 +431,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       x = x,
       chunk_positions = chunk_positions,
       zarr_array_path = zarr_array_path,
+      chunk_dim = chunk_dim,
       metadata = metadata
     )
   )
@@ -442,6 +444,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   x,
   zarr_array_path,
   chunk_positions,
+  chunk_dim,
   metadata
 ) {
   ## determine which elements of x are being used and where in this specific
@@ -454,12 +457,13 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   if (.store_check_exist(zarr_array_path, chunk_name, s3_client = NULL)) {
     chunk_in_mem <- read_chunk(
       chunk_path = chunk_path,
+      chunk_dim = chunk_dim,
       metadata = metadata
     )
   } else {
     chunk_in_mem <- array(
       metadata$fill_value,
-      dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
+      dim = chunk_dim
     )
   }
 
