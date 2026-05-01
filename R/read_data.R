@@ -182,7 +182,8 @@ read_data <- function(
   chunk <- read_chunk(
     chunk_bytes = raw_chunk,
     chunk_dim = chunk_dim,
-    metadata = metadata
+    decoders = metadata$configured_decoders,
+    datatype = metadata$datatype
   )
 
   ## extract the required elements from the chunk
@@ -194,10 +195,9 @@ read_data <- function(
 #' Read a single Zarr chunk
 #'
 #' @param chunk_bytes A raw vector containing the bytes of the chunk to be read.
-#' @param metadata List produced by `.read_array_metadata()` holding the contents
-#'   of the `.zarray` file. If missing this function will be called
-#'   automatically, but it is probably preferable to pass the meta data rather
-#'   than read it repeatedly for every chunk.
+#' @param chunk_dim The dimensions of the chunk to be read. A numeric vector.
+#' @param decoders A list of configured decoders for the array.
+#' @param datatype A list describing the datatype of the array.
 #'
 #' @returns An array containing the decompressed chunk values.
 #'
@@ -205,25 +205,26 @@ read_data <- function(
 read_chunk <- function(
   chunk_bytes,
   chunk_dim,
-  metadata
+  decoders,
+  datatype
 ) {
   # Bytes -> Bytes codecs
-  for (codec in metadata$configured_decoders[["bytes_bytes"]]) {
+  for (codec in decoders[["bytes_bytes"]]) {
     chunk_bytes <- codec(
       bytes = chunk_bytes
     )
   }
 
   # Bytes -> Array codecs
-  for (codec in metadata$configured_decoders[["array_bytes"]]) {
+  for (codec in decoders[["array_bytes"]]) {
     converted_chunk <- codec(
       chunk_bytes,
       chunk_dim,
-      metadata$datatype
+      datatype
     )
   }
   # Array -> Array codecs
-  for (codec in metadata$configured_decoders[["array_array"]]) {
+  for (codec in decoders[["array_array"]]) {
     converted_chunk <- do.call(codec, list(converted_chunk))
   }
 
