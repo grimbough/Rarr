@@ -1,5 +1,5 @@
 .convert_metadata_version <- function(metadata, version_from, version_to) {
-  if (version_from != 2 || version_to != 3) {
+  if (version_from != 2L || version_to != 3L) {
     stop(
       "Only conversion from version 2 to version 3 is supported.",
       call. = FALSE
@@ -8,9 +8,9 @@
 
   dt <- metadata$datatype
 
-  if (length(metadata$shape) == 0) {
+  if (length(metadata$shape) == 0L) {
     # Empty tuple in shape means we are dealing with a scalar.
-    metadata$shape <- metadata$chunks <- 1
+    metadata$shape <- metadata$chunks <- 1L
   }
 
   metadata_v3 <- list(
@@ -43,22 +43,22 @@
           length_bits = 8L * dt$nbytes
         )
       ),
-      paste0(dt$base_type, 8 * dt$nbytes)
+      paste0(dt$base_type, 8L * dt$nbytes)
     ),
     fill_value = metadata$fill_value,
     codecs = list()
   )
 
   # Transpose codec only makes sense for more than 1 dimension
-  if (length(metadata_v3$shape) > 1) {
+  if (length(metadata_v3$shape) > 1L) {
     metadata_v3$codecs$transpose = list(
       name = "transpose",
       configuration = list(
         order = switch(
           metadata$order,
           # default in numpy is "C"
-          "C" = seq_along(metadata$shape) - 1, # zero indexed
-          "F" = rev(seq_along(metadata$shape)) - 1
+          "C" = seq_along(metadata$shape) - 1L, # zero indexed
+          "F" = rev(seq_along(metadata$shape)) - 1L
         )
       )
     )

@@ -60,8 +60,8 @@
       "<u2" = 0L,
       "<u4" = 0L,
       "<u8" = 0L,
-      "<f4" = 0,
-      "<f8" = 0,
+      "<f4" = 0.0,
+      "<f8" = 0.0,
       "|S" = "",
       "<U" = "",
       "|O" = "",
@@ -71,7 +71,7 @@
   }
 
   if (data_type %in% c("|S", "<U", ">U")) {
-    if (is.null(nchar) || nchar < 1) {
+    if (is.null(nchar) || nchar < 1L) {
       stop(
         "The 'nchar' argument must be provided when working with ",
         "character data types and be a positive integer"
@@ -157,9 +157,9 @@ create_empty_zarr_array <- function(
   compressor = use_zstd(),
   fill_value,
   nchar = NULL,
-  dimension_separator = if (zarr_version == 2) "." else "/",
+  dimension_separator = if (zarr_version == 2L) "." else "/",
   dimension_names = NULL,
-  zarr_version = 3
+  zarr_version = 3L
 ) {
   path <- .normalize_array_path(zarr_array_path)
   if (!dir.exists(path)) {
@@ -230,8 +230,8 @@ write_zarr_array <- function(
   compressor = use_zstd(),
   fill_value,
   nchar,
-  dimension_separator = if (zarr_version == 2) "." else "/",
-  zarr_version = 3
+  dimension_separator = if (zarr_version == 2L) "." else "/",
+  zarr_version = 3L
 ) {
   if (!is.array(x) && !is.atomic(x)) {
     stop(
@@ -246,7 +246,7 @@ write_zarr_array <- function(
     # +1 to add NUL terminator
     # c(0, ) to deal with array full of NAs
     # base::nchar() to avoid collision with var name
-    nchar <- max(c(0, base::nchar(x)), na.rm = TRUE) + 1
+    nchar <- max(c(0L, base::nchar(x)), na.rm = TRUE) + 1L
   }
 
   create_empty_zarr_array(
@@ -263,7 +263,7 @@ write_zarr_array <- function(
     zarr_version = zarr_version
   )
   ## read the metadata we just created
-  metadata_file <- if (zarr_version == 2) ".zarray" else "zarr.json"
+  metadata_file <- if (zarr_version == 2L) ".zarray" else "zarr.json"
   metadata_v3 <- .read_array_metadata(path, metadata_file)
 
   metadata_v3$configured_encoders <- .configure_codecs(
@@ -627,7 +627,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     # spec says:
     # "The chunk shape elements are non-zero when the corresponding dimensions
     # of the arrays have non-zero length."
-    if ((x_dim[i] < chunk_dim[i]) || (chunk_dim[i] == 0 && x_dim[i] != 0)) {
+    if ((x_dim[i] < chunk_dim[i]) || (chunk_dim[i] == 0L && x_dim[i] != 0L)) {
       stop("Chunk dimensions outside the extent of the array")
     }
   }

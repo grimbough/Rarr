@@ -9,7 +9,7 @@
   compressor,
   dimension_separator = ".",
   order = "C",
-  zarr_version = 3
+  zarr_version = 3L
 ) {
   if (!is.null(compressor$id) && compressor$id == "blosc") {
     nbytes <- .parse_datatype(data_type)$nbytes
@@ -28,12 +28,12 @@
     fill_value = fill_value,
     dimension_separator = dimension_separator,
     order = order,
-    zarr_format = 2,
+    zarr_format = 2L,
     filters = NULL,
     compressor = compressor
   )
 
-  if (zarr_version == 2) {
+  if (zarr_version == 2L) {
     if (!is.null(dimension_names)) {
       # The spec says we "SHOULDN'T" do this.
       metadata_v2$dimension_names <- dimension_names
@@ -42,17 +42,17 @@
       metadata_v2,
       file.path(array_path, ".zarray"),
       auto_unbox = TRUE,
-      pretty = 4,
+      pretty = 4L,
       null = "null"
     )
     return(invisible(TRUE))
   }
-  if (zarr_version == 3) {
+  if (zarr_version == 3L) {
     metadata_v2$datatype <- .parse_datatype(data_type)
     metadata_v3 <- .convert_metadata_version(
       metadata_v2,
-      version_from = 2,
-      version_to = 3
+      version_from = 2L,
+      version_to = 3L
     )
     metadata_v3$zarr_format <- 3L
     if (!is.null(dimension_names)) {
@@ -65,7 +65,7 @@
       metadata_v3,
       file.path(array_path, "zarr.json"),
       auto_unbox = TRUE,
-      pretty = 4,
+      pretty = 4L,
       null = "null"
     )
   }
@@ -127,7 +127,7 @@ write_zarr_attributes <- function(
       new.zattrs,
       file.path(zarr_path, ".zattrs"),
       auto_unbox = TRUE,
-      pretty = 4,
+      pretty = 4L,
       null = "null"
     )
   } else if (zarr_version == 3L) {
@@ -144,7 +144,7 @@ write_zarr_attributes <- function(
       metadata,
       file.path(zarr_path, "zarr.json"),
       auto_unbox = TRUE,
-      pretty = 4,
+      pretty = 4L,
       null = "null"
     )
   }

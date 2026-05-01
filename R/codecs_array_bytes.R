@@ -10,18 +10,18 @@ codec_bytes_decode <- function(
     ints <- readBin(
       input,
       what = "integer",
-      size = 4,
-      n = length(input) / 4,
+      size = 4L,
+      n = length(input) / 4L,
       endian = endian
     )
     tmp <- split(
       ints,
-      f = ceiling(seq_along(ints) / (bytesize / 4))
+      f = ceiling(seq_along(ints) / (bytesize / 4L))
     )
     converted_chunk <- vapply(
       tmp,
       intToUtf8,
-      FUN.VALUE = character(1),
+      FUN.VALUE = character(1L),
       USE.NAMES = FALSE
     )
   } else if (datatype$base_type == "structured") {
@@ -56,7 +56,7 @@ codec_bytes_decode <- function(
     # FIXME: optimize this
     if (!is.na(endian) && endian != .Platform$endian) {
       ind <- rep_len(rev(seq_len(bytesize)), length(input)) +
-        (seq_along(input) - 1) %/% bytesize * bytesize
+        (seq_along(input) - 1L) %/% bytesize * bytesize
       input <- input[ind]
     }
 
@@ -105,11 +105,11 @@ codec_bytes_encode <- function(input, datatype, endian) {
 
 # -- Variable-length UTF-8 ------------------------
 codec_vlen_utf8_encode <- function(input, ...) {
-  raw_nvalues <- writeBin(length(input), raw(), size = 4, endian = "little")
+  raw_nvalues <- writeBin(length(input), raw(), size = 4L, endian = "little")
   # charToRaw() converts NA_character_ to "NA"
   raw_strings <- lapply(input, function(x) charToRaw(enc2utf8(x)))
   raw_string_lens <- lapply(lengths(raw_strings), function(x) {
-    writeBin(x, raw(), size = 4, endian = "little")
+    writeBin(x, raw(), size = 4L, endian = "little")
   })
 
   raw_vlen_utf8 <- c(

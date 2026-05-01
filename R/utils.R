@@ -13,7 +13,7 @@ check_index <- function(index, metadata) {
   for (i in seq_along(index)) {
     if (is.null(index[[i]])) {
       index[[i]] <- seq_len(metadata$shape[[i]])
-    } else if (any(index[[i]] < 1) || any(index[[i]] > metadata$shape[[i]])) {
+    } else if (any(index[[i]] < 1L) || any(index[[i]] > metadata$shape[[i]])) {
       failed[i] <- TRUE
     }
   }
@@ -32,7 +32,7 @@ check_index <- function(index, metadata) {
   # In the DelayedArray framework, we can have integer(0) indices
   # https://github.com/Huber-group-EMBL/Rarr/issues/112.
   if (nrow(chunk_indices) == 0L) {
-    return(character(0))
+    return(character(0L))
   }
 
   dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
@@ -40,13 +40,13 @@ check_index <- function(index, metadata) {
   # This is faster than vapply()
   chunk_names <- as.vector(apply(
     chunk_indices,
-    1,
+    1L,
     paste,
     collapse = dim_separator
   ))
 
-  if (metadata[["zarr_format"]] == 3) {
-    if (identical(metadata[["shape"]], 1) && length(chunk_names) > 0) {
+  if (metadata[["zarr_format"]] == 3L) {
+    if (identical(metadata[["shape"]], 1L) && length(chunk_names) > 0L) {
       chunk_names <- "c"
     } else {
       # In the DelayedArray framework, we can have integer(0) indices
@@ -111,24 +111,24 @@ check_index <- function(index, metadata) {
 .parse_datatype <- function(typestr) {
   # structured data type
   if (is.list(typestr)) {
-    types <- lapply(typestr, function(field) .parse_datatype(field[[2]]))
-    types$nbytes <- vapply(types, function(x) x$nbytes, integer(1))
+    types <- lapply(typestr, function(field) .parse_datatype(field[[2L]]))
+    types$nbytes <- vapply(types, function(x) x$nbytes, integer(1L))
     types$base_type <- "structured"
     return(types)
   }
 
   datatype <- list()
-  datatype_parts <- strsplit(typestr, "", fixed = TRUE)[[1]]
+  datatype_parts <- strsplit(typestr, "", fixed = TRUE)[[1L]]
 
   datatype$endian <- switch(
-    datatype_parts[1],
+    datatype_parts[1L],
     "<" = "little",
     ">" = "big",
     "|" = NA
   )
 
   datatype$base_type <- switch(
-    datatype_parts[2],
+    datatype_parts[2L],
     "b" = "bool",
     "i" = "int",
     "u" = "uint",
@@ -205,9 +205,9 @@ check_index <- function(index, metadata) {
 .normalize_array_path <- function(path) {
   ## we strip the protocol because it gets messed up by the slash removal later
   if (any(startsWith(path, c("http://", "https://", "s3://")))) {
-    m <- regmatches(path, regexec("^((https?://)|(s3://))(.*$)", path))[[1]]
-    root <- m[2]
-    path <- m[5]
+    m <- regmatches(path, regexec("^((https?://)|(s3://))(.*$)", path))[[1L]]
+    root <- m[2L]
+    path <- m[5L]
   } else {
     ## Replace all backward slash ("\\") with forward slash ("/")
     path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
@@ -248,7 +248,7 @@ check_index <- function(index, metadata) {
         key <- paste0(parse_url$object, f)
         .s3_object_exists(s3_client, parse_url$bucket, key)
       },
-      FUN.VALUE = logical(1)
+      FUN.VALUE = logical(1L)
     )
   }
 
@@ -281,7 +281,7 @@ check_index <- function(index, metadata) {
   chunk_shape <- as.integer(unlist(
     metadata$chunk_grid$configuration$chunk_shape
   ))
-  index0 <- relist(unlist(index) - 1L, index)
+  index0 <- relist(as.integer(unlist(index)) - 1L, index)
 
   per_dim <- (unlist(index0) %/% rep(chunk_shape, times = lengths(index0))) |>
     relist(index0) |>

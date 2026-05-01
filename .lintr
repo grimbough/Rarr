@@ -3,7 +3,6 @@ linters: all_linters(
     from_json_simplify_linter = Rarr:::from_json_simplify_linter(),
     pipe_consistency_linter(pipe = "|>"),
     object_name_linter = NULL,
-    implicit_integer_linter = NULL,
     todo_comment_linter = NULL,
     library_call_linter = NULL,
     undesirable_function_linter(

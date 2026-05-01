@@ -76,7 +76,7 @@ use_blosc <- function(
 
   shuffle <- match.arg(shuffle)
 
-  if (clevel < 0 || clevel > 9) {
+  if (clevel < 0L || clevel > 9L) {
     stop("'clevel' must be an integer between 0 and 9")
   }
   clevel <- as.integer(clevel)
@@ -116,21 +116,21 @@ use_bz2 <- function(level = 6L) {
 #' @rdname compressors
 #' @export
 use_lzma <- function(level = 9L) {
-  res <- list(id = "lzma", format = 1, level = as.integer(level))
+  res <- list(id = "lzma", format = 1L, level = as.integer(level))
   return(res)
 }
 
 #' @rdname compressors
 #' @export
 use_lz4 <- function() {
-  res <- list(id = "lz4", acceleration = 1)
+  res <- list(id = "lz4", acceleration = 1L)
   return(res)
 }
 
 #' @rdname compressors
 #' @export
-use_zstd <- function(level = 3) {
-  if (level < 1 || level > 22) {
+use_zstd <- function(level = 3L) {
+  if (level < 1L || level > 22L) {
     stop("Zstd level must be between 1 and 22.")
   }
   res <- list(id = "zstd", level = as.integer(level))
