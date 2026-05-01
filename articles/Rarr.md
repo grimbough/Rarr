@@ -42,6 +42,7 @@ list the complete set on your system, however it’s a long list so we
 don’t show the output here.
 
 ``` r
+
 list.dirs(
   system.file("extdata", "zarr_examples", package = "Rarr"),
   recursive = TRUE
@@ -55,9 +56,10 @@ list.dirs(
 
 If you want to quickly get started reading an existing Zarr array with
 the package, this section should have the essentials covered. First, we
-need to install **Rarr**[¹](#fn1) with the commands below.
+need to install **Rarr**[^1] with the commands below.
 
 ``` r
+
 ## we need BiocManager to perform the installation
 if (!require("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
@@ -69,6 +71,7 @@ BiocManager::install("Rarr")
 Once **Rarr** is installed, we have to load it into our R session:
 
 ``` r
+
 library(Rarr)
 ```
 
@@ -81,6 +84,7 @@ To demonstrate reading a local file, we’ll pick the example file
 containing 32-bit integers arranged in the “column first” ordering.
 
 ``` r
+
 zarr_example <- system.file(
   "extdata",
   "zarr_examples",
@@ -94,9 +98,10 @@ zarr_example <- system.file(
 
 We can get an summary of the array properties, such as its shape and
 datatype, using the function
-[`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md)[²](#fn2).
+[`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md)[^2].
 
 ``` r
+
 zarr_overview(zarr_example)
 ```
 
@@ -126,6 +131,7 @@ element of the list corresponding to the indices you want to extract in
 that dimension.
 
 ``` r
+
 index <- list(1:4, 1:2, 1)
 ```
 
@@ -133,6 +139,7 @@ We then extract the subset using
 [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md):
 
 ``` r
+
 read_zarr_array(zarr_example, index = index)
 ```
 
@@ -153,6 +160,7 @@ again use
 to quickly retrieve the array metadata.
 
 ``` r
+
 s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
 zarr_overview(s3_address)
 ```
@@ -173,6 +181,7 @@ Choosing to read only 2 of the 50 slices is much faster than if we opted
 to download the entire array before accessing the data.
 
 ``` r
+
 z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
 ```
 
@@ -180,6 +189,7 @@ We then plot our two slices on top of one another using the
 [`image()`](https://rdrr.io/r/graphics/image.html) function.
 
 ``` r
+
 ## plot the first slice in blue
 image(
   log2(z2[1, , ]),
@@ -215,10 +225,12 @@ want to save as a Zarr. In this case it’s going to be a three
 dimensional array and store the values 1 to 600.
 
 ``` r
+
 x <- array(1:600, dim = c(10, 10, 6))
 ```
 
 ``` r
+
 path_to_new_zarr <- file.path(tempdir(), "new.zarr")
 write_zarr_array(
   x = x,
@@ -238,6 +250,7 @@ reading the whole Zarr returns something equivalent to our original
 input `x`.
 
 ``` r
+
 read_zarr_array(zarr_array_path = path_to_new_zarr, index = list(6:10, 10, 1))
 ```
 
@@ -251,6 +264,7 @@ read_zarr_array(zarr_array_path = path_to_new_zarr, index = list(6:10, 10, 1))
     ## [5,]  100
 
 ``` r
+
 identical(read_zarr_array(zarr_array_path = path_to_new_zarr), x)
 ```
 
@@ -271,6 +285,7 @@ screen, as seen before above, or to return a `data.frame` containing the
 array details.
 
 ``` r
+
 zarr_overview(zarr_example, as_data_frame = TRUE)
 ```
 
@@ -287,6 +302,7 @@ store your credentials. For example, lets try reading a file in a
 private S3 bucket:
 
 ``` r
+
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
 ```
 
@@ -300,6 +316,7 @@ the objects in the `rarr-testing` bucket, we’re now able to interrogate
 the files with functions in *Rarr*.
 
 ``` r
+
 Sys.setenv(
   "AWS_ACCESS_KEY_ID" = "bYUBYVg1AsEreuDgtg5K",
   "AWS_SECRET_ACCESS_KEY" = "r8FrLXc9dseD6V1P3htsu7ZBzP7Gszsd3sM1G4KX"
@@ -335,6 +352,7 @@ because we have set the `AWS_ACCESS_KEY_ID` environment variable in the
 previous section.
 
 ``` r
+
 s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
 zarr_overview(s3_address)
 ```
@@ -353,6 +371,7 @@ access the failing bucket by creating a client with anonymous
 credentials.
 
 ``` r
+
 s3_client <- paws.storage::s3(
   config = list(
     credentials = list(anonymous = TRUE),
@@ -379,6 +398,7 @@ We can then pass our s3_client to
 and it now works successfully.
 
 ``` r
+
 zarr_overview(s3_address, s3_client = s3_client)
 ```
 
@@ -422,6 +442,7 @@ the array, since there’s no R array to infer these from. Let’s look at
 an example:
 
 ``` r
+
 path <- tempfile()
 create_empty_zarr_array(
   zarr_array_path = path,
@@ -439,7 +460,7 @@ two arguments must be compatible with one another i.e. have the same
 number of dimensions and no value in `chunk_dim` should exceed the
 corresponding value in `dim`. The `data_type` argument defines what type
 of values will be stored in the array. This is currently limited to:
-`"integer"`, `"double"`, and `"string"`[³](#fn3). Finally we use the
+`"integer"`, `"double"`, and `"string"`[^3]. Finally we use the
 `fill_value` argument to provide our default value for the uninitialized
 chunks. The next few lines check what’s actually been created on our
 file system. First, we use
@@ -451,12 +472,14 @@ the array, and confirm that when it’s read the resulting array in R is
 full of 7s, our fill value.
 
 ``` r
+
 list.files(path, all.files = TRUE, no.. = TRUE)
 ```
 
     ## [1] "zarr.json"
 
 ``` r
+
 table(read_zarr_array(path))
 ```
 
@@ -478,6 +501,7 @@ Zarr array we want to update e.g. in this case we’re updating a single
 row of 20 values.
 
 ``` r
+
 x <- 1:20
 update_zarr_array(
   zarr_array_path = path,
@@ -490,12 +514,14 @@ As before, we can take a look at what’s happened on disk and confirm the
 values are present in the array if we read it into R.
 
 ``` r
+
 list.files(path, all.files = TRUE, no.. = TRUE)
 ```
 
     ## [1] "c"         "zarr.json"
 
 ``` r
+
 read_zarr_array(path, index = list(1:2, 1:5))
 ```
 
@@ -504,6 +530,7 @@ read_zarr_array(path, index = list(1:2, 1:5))
     ## [2,]    7    7    7    7    7
 
 ``` r
+
 table(read_zarr_array(path))
 ```
 
@@ -526,7 +553,7 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-04-26 r89963)
+    ## R Under development (unstable) (2026-04-29 r89977)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
@@ -547,7 +574,7 @@ contents is as expected.
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] Rarr_2.1.6       BiocStyle_2.39.0
+    ## [1] Rarr_2.1.7       BiocStyle_2.41.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] vctrs_0.7.3         crayon_1.5.3        cli_3.6.6          
@@ -566,13 +593,11 @@ contents is as expected.
     ## [40] xml2_1.5.2          pkgdown_2.2.0       cachem_1.1.0       
     ## [43] desc_1.4.3
 
-------------------------------------------------------------------------
+[^1]: you only need to do the installation step once
 
-1.  you only need to do the installation step once
-
-2.  This is essentially reading and formatting the array metadata that
+[^2]: This is essentially reading and formatting the array metadata that
     accompanies any Zarr array.
 
-3.  **Rarr** is currently limited to writing Zarr arrays using data
+[^3]: **Rarr** is currently limited to writing Zarr arrays using data
     types native to R, rather than the full range provided by other
     implementations.

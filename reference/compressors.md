@@ -77,6 +77,7 @@ will be written to the .zarray metadata when the Zarr array is created.
 ## Examples
 
 ``` r
+
 ## define 2 compression filters for blosc (using snappy) and bzip2 (level 5)
 blosc_with_snappy_compression <- use_blosc(cname = "snappy")
 bzip2_compression <- use_bz2(level = 5)

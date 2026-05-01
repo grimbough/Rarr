@@ -5,7 +5,7 @@ Read a single Zarr chunk
 ## Usage
 
 ``` r
-read_chunk(chunk_path, metadata, s3_client = NULL, alt_chunk_dim = NULL)
+read_chunk(chunk_path, metadata, s3_client = NULL)
 ```
 
 ## Arguments
@@ -29,13 +29,6 @@ read_chunk(chunk_path, metadata, s3_client = NULL, alt_chunk_dim = NULL)
   [`paws.storage::s3()`](https://paws-r.r-universe.dev/paws.storage/reference/s3.html).
   Only required for a file on S3. Leave as `NULL` for a file on local
   storage.
-
-- alt_chunk_dim:
-
-  The dimensions of the array that should be created from this chunk.
-  Normally this will be the same as the chunk shape in `metadata`, but
-  when dealing with edge chunks, which may overlap the true extent of
-  the array the returned array should be smaller than the chunk shape.
 
 ## Value
 

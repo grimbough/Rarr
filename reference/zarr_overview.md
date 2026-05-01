@@ -63,6 +63,7 @@ print the details of all sub-arrays in the group.
 ## Examples
 
 ``` r
+
 ## Using a local file provided with the package
 z1 <- system.file("extdata", "zarr_examples", "row-first",
   "int32.zarr",

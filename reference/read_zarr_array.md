@@ -40,6 +40,7 @@ provided to the `index` argument.
 ## Examples
 
 ``` r
+
 ## Using a local file provided with the package
 ## This array has 3 dimensions
 z1 <- system.file("extdata", "zarr_examples", "row-first", "int32.zarr", package = "Rarr")

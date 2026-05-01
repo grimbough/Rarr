@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,7 +45,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_chunk</span><span class="op">(</span><span class="va">chunk_path</span>, <span class="va">metadata</span>, s3_client <span class="op">=</span> <span class="cn">NULL</span>, alt_chunk_dim <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_chunk</span><span class="op">(</span><span class="va">chunk_path</span>, <span class="va">metadata</span>, s3_client <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,14 +67,6 @@ than read it repeatedly for every chunk.</p></dd>
 <dt id="arg-s-client">s3_client<a class="anchor" aria-label="anchor" href="#arg-s-client"></a></dt>
 <dd><p>Object created by <code><a href="https://paws-r.r-universe.dev/paws.storage/reference/s3.html" class="external-link">paws.storage::s3()</a></code>. Only required for a
 file on S3. Leave as <code>NULL</code> for a file on local storage.</p></dd>
-
-
-<dt id="arg-alt-chunk-dim">alt_chunk_dim<a class="anchor" aria-label="anchor" href="#arg-alt-chunk-dim"></a></dt>
-<dd><p>The dimensions of the array that should be created from
-this chunk.  Normally this will be the same as the chunk shape in
-<code>metadata</code>, but when dealing with edge chunks, which may overlap the true
-extent of the array the returned array should be smaller than the chunk
-shape.</p></dd>
 
 </dl></div>
     <div class="section level2">

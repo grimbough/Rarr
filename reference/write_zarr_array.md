@@ -96,6 +96,7 @@ If `x` has `dimnames`, `names(dimnames(x))` will be stored as the
 ## Examples
 
 ``` r
+
 new_zarr_array <- file.path(tempdir(), "integer.zarr")
 x <- array(1:50, dim = c(10, 5))
 write_zarr_array(

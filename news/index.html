@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,6 +57,10 @@
 <ul><li>Using blosc compression via variable-length types such as when using the vlen-utf8 filter / codec, is no longer causing R to crash.</li>
 <li>
 <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code> and <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code> on Zarr v3 files hosted on S3. Thanks to a report and a patch by Artür Manukyan.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="internal-changes-2-1">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-2-1"></a></h3>
+<ul><li>A refactor reinforced shared the use of internal functions handling indices across <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code>, <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>, and <code><a href="../reference/update_zarr_array.html">update_zarr_array()</a></code>. Some redundant internal functions have been merged. This reduced the cyclomatic complexity in every function back to &lt;15 and it opens the door to further optimizations which now only need to take place in a single function.</li>
 </ul></div>
 </div>
     <div class="section level2">

@@ -34,6 +34,7 @@ Returns (invisibly) `TRUE` if the array is successfully updated.
 ## Examples
 
 ``` r
+
 ## first create a new, empty, Zarr array
 new_zarry_array <- file.path(tempdir(), "new_array.zarr")
 create_empty_zarr_array(
