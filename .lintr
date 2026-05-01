@@ -26,7 +26,7 @@ linters: all_linters(
     return_linter = NULL,
     object_overwrite_linter = NULL,
     backport_linter("4.1.0"),
-    cyclocomp_linter(17)
+    cyclocomp_linter(15L)
   )
 exclusions: list(
     "inst",
