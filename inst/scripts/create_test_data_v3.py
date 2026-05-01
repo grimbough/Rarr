@@ -254,3 +254,19 @@ dt = np.dtype([('x', 'i4'), ('y', 'f4')])
 z = zarr.create_array('inst/extdata/zarr_examples/structured/structured_v3.zarr', shape=(10,2), chunks=(5,2), dtype=Struct.from_native_dtype(dt))
 z['x'] = np.arange(20).reshape(10,2)
 z['y'] = np.array([0.34, 0.67, 0.12, 0.89, 0.45, 0.23, 0.78, 0.56, 0.90, 0.11, 0.34, 0.67, 0.12, 0.89, 0.45, 0.23, 0.78, 0.56, 0.90, 0.11]).reshape(10,2)
+
+# Sharded array
+z = zarr.create_array(
+    'inst/extdata/zarr_examples/sharding/int32_sharded_v3.zarr',
+    shape=(30, 20, 10),
+    chunks=(2, 4, 5),   # inner chunk shape within each shard
+    shards=(10, 20, 5),  # shard shape
+    dtype='i4',
+    filters=[zarr.codecs.TransposeCodec(order=[2, 1, 0])],
+    overwrite=True,
+    compressors=zarr.codecs.BloscCodec(),
+)
+z[:] = 0
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 1
+
