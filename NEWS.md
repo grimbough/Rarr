@@ -27,6 +27,14 @@
 * `zarr_overview()` and `read_zarr_array()` on Zarr v3 files hosted on S3. 
   Thanks to a report and a patch by Artür Manukyan.
 
+## Internal changes
+
+* A refactor reinforced shared the use of internal functions handling indices
+  across `read_zarr_array()`, `write_zarr_array()`, and `update_zarr_array()`.
+  Some redundant internal functions have been merged. This reduced the 
+  cyclomatic complexity in every function back to <15 and it opens the door to
+  further optimizations which now only need to take place in a single function.
+
 # Rarr 1.99
 
 ## Breaking changes
