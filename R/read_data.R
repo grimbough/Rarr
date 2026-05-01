@@ -161,7 +161,7 @@ read_data <- function(
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
-    index_in_result <- chunk_selections[[i]][[2]]
+    index_in_result <- chunk_selections[[i]][[2L]]
     cmd <- .create_replace_call(
       x_name = "output",
       idx_name = "index_in_result",

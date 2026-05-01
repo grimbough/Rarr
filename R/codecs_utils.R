@@ -37,7 +37,7 @@
       array_bytes_codecs
     )
   )
-  if (length(unsupported_codecs) > 0) {
+  if (length(unsupported_codecs) > 0L) {
     stop(
       "The following codecs are not supported: ",
       toString(unsupported_codecs)
@@ -50,7 +50,7 @@
 
   if ("transpose" %in% array_array_codecs) {
     # R is already F ordered, so we reverse the order in config
-    cfg <- rev(unlist(codecs$transpose$configuration$order)) + 1
+    cfg <- rev(unlist(codecs$transpose$configuration$order)) + 1L
     if (is.unsorted(cfg)) {
       array_array_env[["transpose"]] <- switch(
         operation,

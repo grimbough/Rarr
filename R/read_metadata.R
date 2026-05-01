@@ -101,7 +101,7 @@ zarr_overview <- function(
     is_array <- vapply(
       dot_zmeta$metadata,
       function(x) !is.null(x$node_type) && x$node_type == "array",
-      FUN.VALUE = logical(1)
+      FUN.VALUE = logical(1L)
     )
     arrays <- names(dot_zmeta$metadata)[is_array]
     tmp <- lapply(
@@ -156,7 +156,7 @@ zarr_overview <- function(
   names(array_metadata$codecs) <- vapply(
     array_metadata$codecs,
     function(x) gsub("-", "_", x$name, fixed = TRUE),
-    character(1)
+    character(1L)
   )
 
   chunk_shape <- unlist(array_metadata$chunk_grid$configuration$chunk_shape)
@@ -209,14 +209,14 @@ zarr_overview <- function(
       function(x) {
         paste(unlist(x), collapse = " x ")
       },
-      character(1)
+      character(1L)
     ),
     vapply(
       array_metadata_df$chunk_dim,
       function(x) {
         paste(unlist(x), collapse = " x ")
       },
-      character(1)
+      character(1L)
     ),
     vapply(
       array_metadata_df$nchunks,
@@ -224,7 +224,7 @@ zarr_overview <- function(
         chunks <- unlist(x)
         paste0(prod(chunks), " (", paste(chunks, collapse = " x "), ")")
       },
-      character(1)
+      character(1L)
     ),
     array_metadata_df$data_type,
     array_metadata_df$endianness,
@@ -305,30 +305,30 @@ zarr_overview <- function(
     metadata <- read_json(metadata_path)
   }
 
-  if (metadata$zarr_format == 2) {
+  if (metadata$zarr_format == 2L) {
     ## if we do this here, we save many repeated calls to .parse_datatype
     ## the parsed version is used each time a chunk is read
     metadata$datatype <- .parse_datatype(metadata$dtype)
     metadata <- .convert_metadata_version(
       metadata,
-      version_from = 2,
-      version_to = 3
+      version_from = 2L,
+      version_to = 3L
     )
-  } else if (metadata$node_type == "array" && metadata$zarr_format == 3) {
+  } else if (metadata$node_type == "array" && metadata$zarr_format == 3L) {
     metadata$datatype <- .parse_datatype_v3(metadata$data_type)
     # We shouldn't have any case where x$name is NULL since the v3 spec states
     # 'name' MUST be a plain string.
     names(metadata$codecs) <- vapply(
       metadata$codecs,
       function(x) gsub("-", "_", x$name, fixed = TRUE),
-      character(1)
+      character(1L)
     )
-    if (length(metadata$shape) == 0) {
+    if (length(metadata$shape) == 0L) {
       # Empty tuple in shape means we are dealing with a scalar.
-      metadata$shape <- 1
+      metadata$shape <- 1L
       metadata$chunk_grid <- list(
         name = "regular",
-        configuration = list(chunk_shape = 1)
+        configuration = list(chunk_shape = 1L)
       )
     }
     # This needs to happen after we address the scalar edge case
@@ -338,7 +338,7 @@ zarr_overview <- function(
       # So even when using the implicit default, we need to add it here.
       metadata$codecs[["transpose"]] <- list(
         name = "transpose",
-        configuration = list(order = seq_along(metadata$shape) - 1)
+        configuration = list(order = seq_along(metadata$shape) - 1L)
       )
     }
     # Set endian to NA for 1-bytes types
@@ -417,7 +417,7 @@ zarr_overview <- function(
     hex_clean <- sub("^0x", "", metadata$fill_value)
     byte_pairs <- paste0(
       "0x",
-      regmatches(hex_clean, gregexpr(".{2}", hex_clean))[[1]]
+      regmatches(hex_clean, gregexpr(".{2}", hex_clean))[[1L]]
     )
     # Swap endianness
     endian <- switch(
@@ -489,8 +489,8 @@ zarr_overview <- function(
         metadata$datatype <- .parse_datatype(metadata$dtype)
         .convert_metadata_version(
           metadata,
-          version_from = 2,
-          version_to = 3
+          version_from = 2L,
+          version_to = 3L
         )
       }
     )
@@ -588,7 +588,7 @@ read_zarr_attributes <- function(
   }
 
   # Normalize cases of empty named list vs empty list vs NULL
-  if (length(zattrs) == 0) {
+  if (length(zattrs) == 0L) {
     return(list())
   }
 

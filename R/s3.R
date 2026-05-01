@@ -47,10 +47,10 @@ parse_s3_path <- function(path) {
         url,
         ignore.case = TRUE
       )
-    )[[1]]
-    region <- url_parts[2]
-    bucket <- url_parts[3]
-    object <- url_parts[4]
+    )[[1L]]
+    region <- url_parts[2L]
+    bucket <- url_parts[3L]
+    object <- url_parts[4L]
   } else if (
     grepl(
       pattern = "^https?://[a-z0-9\\.-]*\\.s3\\.",
@@ -94,9 +94,9 @@ parse_s3_path <- function(path) {
   path_parts <- regmatches(
     parsed_url$path,
     regexec("^/?([a-z0-9:\\.-]*)/(.*)", parsed_url$path, ignore.case = TRUE)
-  )[[1]]
-  bucket <- path_parts[2]
-  object <- path_parts[3]
+  )[[1L]]
+  bucket <- path_parts[2L]
+  object <- path_parts[3L]
   hostname <- paste0(parsed_url$scheme, "://", parsed_url$host)
 
   if (!is.null(parsed_url$port)) {
@@ -186,7 +186,7 @@ parse_s3_path <- function(path) {
     Bucket = Bucket,
     Prefix = Key
   )$KeyCount >
-    0
+    0L
 
   return(exists)
 }
