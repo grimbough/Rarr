@@ -9,7 +9,7 @@ CODEC_BYTES_BYTES <- c(
   "zstd"
 )
 CODEC_ARRAY_ARRAY <- c("transpose")
-CODEC_ARRAY_BYTES <- c("bytes", "vlen-utf8")
+CODEC_ARRAY_BYTES <- c("bytes", "vlen-utf8", "sharding_indexed")
 
 SUPPORTED_V3_TYPES <- list(
   "bool" = list(base_type = "bool", nbytes = 1L),
