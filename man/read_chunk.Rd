@@ -4,19 +4,16 @@
 \alias{read_chunk}
 \title{Read a single Zarr chunk}
 \usage{
-read_chunk(chunk_path, metadata, s3_client = NULL)
+read_chunk(chunk_bytes, chunk_dim, decoders, datatype)
 }
 \arguments{
-\item{chunk_path}{A character vector of length 1, giving the path to the
-chunk to be read.}
+\item{chunk_bytes}{A raw vector containing the bytes of the chunk to be read.}
 
-\item{metadata}{List produced by \code{.read_array_metadata()} holding the contents
-of the \code{.zarray} file. If missing this function will be called
-automatically, but it is probably preferable to pass the meta data rather
-than read it repeatedly for every chunk.}
+\item{chunk_dim}{The dimensions of the chunk to be read. A numeric vector.}
 
-\item{s3_client}{Object created by \code{\link[paws.storage:s3]{paws.storage::s3()}}. Only required for a
-file on S3. Leave as \code{NULL} for a file on local storage.}
+\item{decoders}{A list of configured decoders for the array.}
+
+\item{datatype}{A list describing the datatype of the array.}
 }
 \value{
 An array containing the decompressed chunk values.
