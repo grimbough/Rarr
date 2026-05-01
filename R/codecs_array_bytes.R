@@ -69,3 +69,97 @@ codec_bytes_encode <- function(input, datatype, endian) {
 `codec_vlen-utf8_decode` <- function(input, chunk_dim, ...) {
   .Call("codec_vlen_utf8_decode_c", input, chunk_dim, PACKAGE = "Rarr")
 }
+
+codec_sharding_indexed_decode <- function(
+  input,
+  shard_dim,
+  datatype,
+  ...
+) {
+  config <- list(...)
+  index_shape <- c(shard_dim / unlist(config$chunk_shape), 2L)
+  index_length <- prod(index_shape)
+  index_nbytes <- index_length * 8L
+  # FIXME: any way for this to be cleaner?
+  if (
+    any(
+      vapply(config$index_codecs, function(x) x$name, character(1L)) == "crc32c"
+    )
+  ) {
+    index_nbytes <- index_nbytes + 4L
+  }
+
+  index_location <- config$index_location %||% "end"
+  index_start <- if (index_location == "end") {
+    length(input) - index_nbytes + 1L
+  } else {
+    1L
+  }
+  index_raw <- input[seq(index_start, length.out = index_nbytes)]
+
+  index <- readBin(
+    index_raw,
+    what = "integer",
+    n = index_length,
+    size = 8L,
+    endian = "little"
+  )
+  dim(index) <- index_shape
+
+  chunk_dim <- unlist(config$chunk_shape)
+
+  configured_decoders <- config$codecs |>
+    setNames(vapply(
+      config$codecs,
+      function(x) x$name,
+      FUN.VALUE = character(1L)
+    )) |>
+    .configure_codecs(operation = "decode")
+
+  chunks_raw <- input[-seq(index_start, length.out = index_nbytes)]
+  chunks <- apply(
+    index,
+    seq_along(shard_dim) + 1L,
+    function(x) {
+      chunk_offset <- x[[1L]]
+      chunk_nbytes <- x[[2L]]
+      if (chunk_nbytes <= 0L) {
+        return()
+      }
+      # FIXME: offset by index nbytes if index is at the start
+      chunk_raw <- chunks_raw[seq(
+        chunk_offset + 1L,
+        chunk_offset + chunk_nbytes
+      )]
+      # FIXME: Once stores are implemented, treat this as a memory store and use `read_data()` directly
+      read_chunk(
+        chunk_raw,
+        chunk_dim = chunk_dim,
+        decoders = configured_decoders,
+        datatype = datatype
+      )
+    }
+  )
+  # FIXME: replace NA by fill value
+  shard <- array(NA, dim = shard_dim)
+  non_empty_coords <- which(
+    asplit(index, 1L)[[2L]] > 0L,
+    arr.ind = TRUE
+  )
+  # Merge chunks into shard
+  for (i in seq_len(nrow(non_empty_coords))) {
+    coords_in_shard <- non_empty_coords[i, ]
+    index_in_result <- mapply(
+      FUN = function(coord, chunk_dim) {
+        seq((coord - 1L) * chunk_dim + 1L, length.out = chunk_dim)
+      },
+      coords_in_shard,
+      chunk_dim = chunk_dim,
+      SIMPLIFY = FALSE
+    )
+    chunk_to_insert <- drop(.extract_chunk(chunks, coords_in_shard))[[1L]]
+    rlang::inject(shard[!!!index_in_result] <- chunk_to_insert) # nolint implicit_assignment_linter.
+  }
+
+  return(shard)
+}
