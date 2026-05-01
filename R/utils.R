@@ -207,24 +207,17 @@ check_index <- function(index, metadata) {
   if (any(startsWith(path, c("http://", "https://", "s3://")))) {
     m <- regmatches(path, regexec("^((https?://)|(s3://))(.*$)", path))[[1L]]
     root <- m[2L]
-    path <- m[5L]
+    path <- paste0(m[5L], "/")
   } else {
     ## Replace all backward slash ("\\") with forward slash ("/")
     path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
     path <- R.utils::getAbsolutePath(path, expandTilde = TRUE)
     root <- sub(x = path, "(^[[:alnum:]:.]*/)?(.*)", replacement = "\\1")
-    path <- sub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\2")
+    path <- sub(x = path, "(^[[:alnum:]:.]*/+)(.*)", replacement = "\\2/")
   }
-
-  ## Strip any leading "/" characters
-  path <- sub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
-  ## Strip any trailing "/" characters
-  path <- sub(x = path, pattern = "/$", replacement = "", fixed = FALSE)
   ## Collapse any sequence of more than one "/" character into a single "/"
   path <- gsub(x = path, pattern = "//+", replacement = "/", fixed = FALSE)
-  ## The key prefix is then obtained by appending a single "/" character to
-  ## the normalized logical path.
-  path <- paste0(root, path, "/")
+  path <- paste0(root, path)
 
   return(path)
 }
