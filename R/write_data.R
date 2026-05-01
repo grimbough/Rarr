@@ -455,10 +455,13 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   idx_in_chunk <- chunk_info$index_in_chunk
 
   if (.store_check_exist(zarr_array_path, chunk_name, s3_client = NULL)) {
+    size <- file.info(chunk_path)$size
+    raw_chunk <- readBin(con = chunk_path, what = "raw", n = size)
     chunk_in_mem <- read_chunk(
-      chunk_path = chunk_path,
+      chunk_bytes = raw_chunk,
       chunk_dim = chunk_dim,
-      metadata = metadata
+      decoders = metadata$configured_decoders,
+      datatype = metadata$datatype
     )
   } else {
     chunk_in_mem <- array(
