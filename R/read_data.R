@@ -115,6 +115,7 @@ read_data <- function(
           chunk_name = chunk_names[i],
           current_chunk_path = chunk_paths[i],
           metadata = metadata,
+          chunk_dim = unlist(metadata$chunk_grid$configuration$chunk_shape),
           s3_client = s3_client,
           chunk_positions = chunk_positions
         )
@@ -151,6 +152,7 @@ read_data <- function(
   chunk_name,
   current_chunk_path,
   metadata,
+  chunk_dim,
   s3_client,
   chunk_positions
 ) {
@@ -162,6 +164,7 @@ read_data <- function(
   ## read this chunk
   chunk <- read_chunk(
     chunk_path = current_chunk_path,
+    chunk_dim = chunk_dim,
     metadata = metadata,
     s3_client = s3_client
   )
@@ -188,6 +191,7 @@ read_data <- function(
 #' @keywords internal
 read_chunk <- function(
   chunk_path,
+  chunk_dim,
   metadata,
   s3_client = NULL
 ) {
@@ -210,8 +214,6 @@ read_chunk <- function(
       bytes = raw_chunk
     )
   }
-
-  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
   # Bytes -> Array codecs
   for (codec in metadata$configured_decoders[["array_bytes"]]) {
