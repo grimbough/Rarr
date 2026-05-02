@@ -553,7 +553,7 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-04-29 r89977)
+    ## R Under development (unstable) (2026-04-30 r89987)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
