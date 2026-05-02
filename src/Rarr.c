@@ -14,7 +14,7 @@ static const R_CallMethodDef callMethods[] = {
   {"compress_chunk_ZSTD", (DL_FUNC) &compress_chunk_ZSTD, 2},
   
   {"type_convert_int", (DL_FUNC) &type_convert_int, 2},
-  {"type_convert_unit", (DL_FUNC) &type_convert_int, 2},
+  {"type_convert_uint", (DL_FUNC) &type_convert_uint, 2},
   {"type_convert_float", (DL_FUNC) &type_convert_float, 2},
   {"type_convert_bool", (DL_FUNC) &type_convert_bool, 2},
   {"type_convert_string", (DL_FUNC) &type_convert_string, 2},
