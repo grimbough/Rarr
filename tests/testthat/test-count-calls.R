@@ -10,7 +10,7 @@ test_that("metadata is read and converted only once", {
     read_metadata_calls <- 0L
     parsedatatype_calls <- 0L
     trace(
-      Rarr:::.parse_datatype,
+      grumpy::parse_npy_datatype,
       function(x) {
         parsedatatype_calls <<- parsedatatype_calls + 1L
       },
