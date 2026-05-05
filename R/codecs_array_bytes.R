@@ -1,74 +1,18 @@
 # -- Endian ---------------------------------------
+#' @importFrom grumpy convert_bytes_to_array
 codec_bytes_decode <- function(
   input,
   chunk_dim,
   datatype,
   endian
 ) {
-  bytesize <- datatype$nbytes
-  if (datatype$base_type == "unicode") {
-    ints <- readBin(
-      input,
-      what = "integer",
-      size = 4L,
-      n = length(input) / 4L,
-      endian = endian
-    )
-    tmp <- split(
-      ints,
-      f = ceiling(seq_along(ints) / (bytesize / 4L))
-    )
-    converted_chunk <- vapply(
-      tmp,
-      intToUtf8,
-      FUN.VALUE = character(1L),
-      USE.NAMES = FALSE
-    )
-  } else if (datatype$base_type == "structured") {
-    field <- rep_len(
-      rep(
-        seq_along(bytesize),
-        bytesize
-      ),
-      length.out = length(input)
-    )
-
-    converted_chunk <- vector("list", prod(chunk_dim))
-    for (i in seq_along(bytesize)) {
-      type <- datatype[[i]]
-      raw_field <- input[field == i]
-      field_converted <- codec_bytes_decode(
-        raw_field,
-        chunk_dim = NULL,
-        type,
-        # This only works for v2 datatypes but at this time,
-        # structured datatypes don't exist in v3.
-        endian = type$endian
-      )
-      converted_chunk <- mapply(
-        FUN = c,
-        converted_chunk,
-        field_converted,
-        SIMPLIFY = FALSE
-      )
-    }
-  } else {
-    # FIXME: optimize this
-    if (!is.na(endian) && endian != .Platform$endian) {
-      ind <- rep_len(rev(seq_len(bytesize)), length(input)) +
-        (seq_along(input) - 1L) %/% bytesize * bytesize
-      input <- input[ind]
-    }
-
-    converted_chunk <- .Call(
-      paste0("type_convert_", datatype$base_type),
-      input,
-      bytesize,
-      PACKAGE = "Rarr"
-    )
-  }
-  dim(converted_chunk) <- chunk_dim
-  return(converted_chunk)
+  convert_bytes_to_array(
+    input,
+    datatype$base_type,
+    chunk_dim,
+    datatype$nbytes,
+    endian
+  )
 }
 
 codec_bytes_encode <- function(input, datatype, endian) {
