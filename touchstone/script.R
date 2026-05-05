@@ -162,6 +162,35 @@ touchstone::benchmark_run(
 touchstone::benchmark_run(
   {
     library(Rarr)
+    x_unicode <- matrix(
+      c(
+        "naïve",
+        "café",
+        "résumé",
+        "exposé",
+        "touché",
+        "jalapeño",
+        "fiancé",
+        "soupçon"
+      ),
+      nrow = 4,
+      ncol = 2
+    )
+    write_unicode = write_zarr_array(
+      x = x_unicode,
+      zarr_array_path = "unicode.zarr",
+      data_type = "<U",
+      chunk_dim = c(2, 2),
+      compressor = NULL
+    )
+  },
+  read_unicode = read_zarr_array("unicode.zarr"),
+  n = 25
+)
+
+touchstone::benchmark_run(
+  {
+    library(Rarr)
     x_int32 <- array(1:1e3, dim = c(10, 10, 10))
     write_int32 = write_zarr_array(
       x = x_int32,
