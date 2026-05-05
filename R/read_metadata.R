@@ -210,6 +210,7 @@ zarr_overview <- function(
 #' @returns A list containing the array metadata
 #'
 #' @importFrom jsonlite read_json fromJSON
+#' @importFrom grumpy parse_npy_datatype
 #'
 #' @keywords internal
 .read_array_metadata <- function(zarr_path, s3_client = NULL) {
@@ -251,9 +252,9 @@ zarr_overview <- function(
   }
 
   if (metadata$zarr_format == 2L) {
-    ## if we do this here, we save many repeated calls to .parse_datatype
+    ## if we do this here, we save many repeated calls to .parse_npy_datatype
     ## the parsed version is used each time a chunk is read
-    metadata$datatype <- .parse_datatype(metadata$dtype)
+    metadata$datatype <- parse_npy_datatype(metadata$dtype)
     metadata <- .convert_metadata_version(
       metadata,
       version_from = 2L,
@@ -329,7 +330,7 @@ zarr_overview <- function(
 #'
 #' @param fill_value The fill value as read from the Zarr metadata.
 #' @param datatype A list of details for the array datatype.  Expected to be
-#' produced by [.parse_datatype()].
+#' produced by [grumpy::parse_npy_datatype()].
 #'
 #' @returns Returns a modified fill value.  The returned value will be equal
 #'   to the input, but with the correct type, unless the `fill_value` entry was one
@@ -419,6 +420,8 @@ zarr_overview <- function(
 #' @inheritParams .read_array_metadata
 #'
 #' @importFrom jsonlite read_json fromJSON
+#' @importFrom grumpy parse_npy_datatype
+#'
 #' @keywords internal
 .read_consolidated_metadata <- function(
   zarr_path,
@@ -469,7 +472,7 @@ zarr_overview <- function(
     zmeta$metadata[arrays] <- lapply(
       zmeta$metadata[arrays],
       function(metadata) {
-        metadata$datatype <- .parse_datatype(metadata$dtype)
+        metadata$datatype <- parse_npy_datatype(metadata$dtype)
         .convert_metadata_version(
           metadata,
           version_from = 2L,
