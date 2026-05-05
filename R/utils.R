@@ -100,23 +100,6 @@ check_index <- function(index, metadata) {
   rlang::inject(x[!!!idx, drop = FALSE])
 }
 
-#' Parse the data type encoding string
-#'
-#' @param typestr The datatype encoding string.  This is in the Numpy array
-#' typestr format.
-#'
-#' @returns A list of length 4 containing the details of the data type.
-#'
-#' @keywords internal
-.parse_datatype <- function(typestr) {
-  parsed <- grumpy:::parse_npy_datatype(typestr)
-  return(list(
-    base_type = parsed$base_type,
-    endian = parsed$endianness,
-    nbytes = parsed$size
-  ))
-}
-
 .parse_datatype_v3 <- function(typestr) {
   if (is.list(typestr)) {
     if (typestr$name == "fixed_length_utf32") {

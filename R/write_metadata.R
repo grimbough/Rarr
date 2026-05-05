@@ -1,4 +1,5 @@
 #' @importFrom jsonlite write_json
+#' @importFrom grumpy parse_npy_datatype
 .write_zarr_metadata <- function(
   array_path,
   array_shape,
@@ -12,7 +13,7 @@
   zarr_version = 3L
 ) {
   if (!is.null(compressor$id) && compressor$id == "blosc") {
-    nbytes <- .parse_datatype(data_type)$nbytes
+    nbytes <- parse_npy_datatype(data_type)$nbytes
     compressor$typesize <- compressor$typesize %||% nbytes
     if (is.na(compressor$typesize)) {
       # e.g., vlen-utf8
@@ -48,7 +49,7 @@
     return(invisible(TRUE))
   }
   if (zarr_version == 3L) {
-    metadata_v2$datatype <- .parse_datatype(data_type)
+    metadata_v2$datatype <- parse_npy_datatype(data_type)
     metadata_v3 <- .convert_metadata_version(
       metadata_v2,
       version_from = 2L,
