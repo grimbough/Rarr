@@ -109,48 +109,12 @@ check_index <- function(index, metadata) {
 #'
 #' @keywords internal
 .parse_datatype <- function(typestr) {
-  # structured data type
-  if (is.list(typestr)) {
-    types <- lapply(typestr, function(field) .parse_datatype(field[[2L]]))
-    types$nbytes <- vapply(types, function(x) x$nbytes, integer(1L))
-    types$base_type <- "structured"
-    return(types)
-  }
-
-  datatype <- list()
-  datatype_parts <- strsplit(typestr, "", fixed = TRUE)[[1L]]
-
-  datatype$endian <- switch(
-    datatype_parts[1L],
-    "<" = "little",
-    ">" = "big",
-    "|" = NA
-  )
-
-  datatype$base_type <- switch(
-    datatype_parts[2L],
-    "b" = "bool",
-    "i" = "int",
-    "u" = "uint",
-    "f" = "float",
-    "c" = "complex",
-    "m" = "timedelta",
-    "M" = "datetime",
-    "S" = "string",
-    "U" = "unicode",
-    "V" = "other",
-    "O" = "py_object"
-  )
-
-  datatype$nbytes <- as.integer(
-    sub(x = typestr, pattern = "^[<>|][[:alpha:]]", replacement = "")
-  )
-
-  if (datatype$base_type == "unicode") {
-    datatype$nbytes <- datatype$nbytes * 4L
-  }
-
-  return(datatype)
+  parsed <- grumpy:::parse_npy_datatype(typestr)
+  return(list(
+    base_type = parsed$base_type,
+    endian = parsed$endianness,
+    nbytes = parsed$size
+  ))
 }
 
 .parse_datatype_v3 <- function(typestr) {
