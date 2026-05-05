@@ -298,7 +298,11 @@ zarr_overview <- function(
     metadata$fill_value,
     metadata$datatype
   )
-  if (is.list(metadata$data_type)) {
+  if (
+    is.list(metadata$data_type) &&
+      metadata$data_type$name %in%
+        c("fixed_length_utf32", "null_terminated_bytes")
+  ) {
     # It is annoying to have to handle both strings & lists in `data_type` in
     # downstream code, so we convert the fixed-length string types to their v2
     # equivalents here.
@@ -333,6 +337,20 @@ zarr_overview <- function(
 #'
 #' @keywords internal
 .update_fill_value <- function(fill_value, datatype) {
+  if (length(datatype$base_type) > 1L) {
+    return(mapply(
+      function(fill, bt, endian, nbytes) {
+        .update_fill_value(
+          fill,
+          list(base_type = bt, endian = endian, nbytes = nbytes)
+        )
+      },
+      fill_value,
+      datatype$base_type,
+      datatype$endian,
+      datatype$nbytes
+    ))
+  }
   ## a null fill value implies no missing values.
   ## We set to NA as you can't create an array of NULL in R
   if (is.null(fill_value)) {
