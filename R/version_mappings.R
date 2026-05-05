@@ -29,7 +29,41 @@
         separator = metadata$dimension_separator %||% "."
       )
     ),
-    data_type = switch(
+    fill_value = metadata$fill_value,
+    codecs = list()
+  )
+
+  if (length(dt$base_type) > 1L) {
+    metadata_v3$data_type <- list(
+      name = "struct",
+      configuration = list(
+        fields = mapply(
+          function(base_type, nbytes) {
+            switch(
+              base_type,
+              "unicode" = list(
+                name = "fixed-length-ucs4",
+                configuration = list(
+                  length_bits = 8L * nbytes
+                )
+              ),
+              "string" = list(
+                name = "fixed-length-ascii",
+                configuration = list(
+                  length_bits = 8L * nbytes
+                )
+              ),
+              paste0(base_type, 8L * nbytes)
+            )
+          },
+          dt$base_type,
+          dt$nbytes,
+          SIMPLIFY = FALSE
+        )
+      )
+    )
+  } else {
+    metadata_v3$data_type <- switch(
       dt$base_type,
       "unicode" = list(
         name = "fixed_length_utf32",
@@ -45,10 +79,8 @@
       ),
       "bool" = "bool",
       paste0(dt$base_type, 8L * dt$nbytes)
-    ),
-    fill_value = metadata$fill_value,
-    codecs = list()
-  )
+    )
+  }
 
   # Transpose codec only makes sense for more than 1 dimension
   if (length(metadata_v3$shape) > 1L) {
