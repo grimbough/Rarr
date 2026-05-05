@@ -68,7 +68,7 @@
     cfg <- codecs[[candidate_codec]]$configuration %||% NA_character_
     func_name <- paste("codec", candidate_codec, operation, sep = "_")
     array_bytes_env[[candidate_codec]] <- eval(bquote(function(...) {
-      do.call(.(func_name), list(..., .(cfg)))
+      do.call(.(func_name), c(list(...), .(cfg)))
     }))
   }
 
@@ -84,7 +84,7 @@
       )
       func_name <- paste("codec", candidate_codec, operation, sep = "_")
       bytes_bytes_env[[candidate_codec]] <- eval(bquote(function(...) {
-        do.call(.(func_name), list(..., .(cfg)))
+        do.call(.(func_name), c(list(...), .(cfg)))
       }))
     }
   }
