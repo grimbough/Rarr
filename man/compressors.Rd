@@ -29,7 +29,7 @@ use_lzma(level = 9L)
 
 use_lz4()
 
-use_zstd(level = 3)
+use_zstd(level = 3L)
 }
 \arguments{
 \item{cname}{Blosc is a 'meta-compressor' providing access to several
