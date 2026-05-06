@@ -14,9 +14,9 @@ create_empty_zarr_array(
   compressor = use_zstd(),
   fill_value,
   nchar = NULL,
-  dimension_separator = if (zarr_version == 2) "." else "/",
+  dimension_separator = if (zarr_version == 2L) "." else "/",
   dimension_names = NULL,
-  zarr_version = 3
+  zarr_version = 3L
 )
 ```
 

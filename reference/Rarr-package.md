@@ -23,6 +23,9 @@ Useful links:
 
 Authors:
 
+- Hugo Gruson <hugo.gruson@embl.de>
+  ([ORCID](https://orcid.org/0000-0002-4094-1476))
+
 - Mike Smith ([ORCID](https://orcid.org/0000-0002-7800-3848))
   (Maintainer from 2022 to 2025.) \[conceptor\]
 
