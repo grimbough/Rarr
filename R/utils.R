@@ -114,6 +114,27 @@ check_index <- function(index, metadata) {
         nbytes = typestr$configuration$length_bytes
       ))
     }
+    if (typestr$name == "struct") {
+      internal_types <- lapply(typestr$configuration$fields, function(field) {
+        .parse_datatype_v3(field$data_type)
+      })
+      return(
+        list(
+          base_type = vapply(
+            internal_types,
+            `[[`,
+            "base_type",
+            FUN.VALUE = character(1L)
+          ),
+          nbytes = vapply(
+            internal_types,
+            `[[`,
+            "nbytes",
+            FUN.VALUE = integer(1L)
+          )
+        )
+      )
+    }
     stop(
       "Only base data types (not extensions) are supported for Zarr v3 arrays for now",
       call. = FALSE
