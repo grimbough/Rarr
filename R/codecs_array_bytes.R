@@ -1,4 +1,3 @@
-# -- Endian ---------------------------------------
 #' @importFrom grumpy convert_bytes_to_array
 codec_bytes_decode <- function(
   input,

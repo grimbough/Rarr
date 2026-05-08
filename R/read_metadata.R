@@ -291,6 +291,13 @@ zarr_overview <- function(
     if (!is.null(metadata$codecs[["bytes"]])) {
       endian <- metadata$codecs[["bytes"]]$configuration$endian %||%
         NA_character_
+      # In v3 struct datatypes, endian is defined only once for the whole array but
+      # our reading infra, based on v2 actually expects it to be defined for each base type,
+      # so we need to replicate it.
+      endian <- rep(
+        endian,
+        length(metadata$datatype$base_type)
+      )
       metadata$codecs[["bytes"]]$configuration$endian <- endian
       metadata$datatype$endian <- endian
     }

@@ -1,6 +1,7 @@
 import zarr
 import numpy as np
 import numcodecs.zarr3
+from zarr.core.dtype.npy.structured import Struct
 
 z = zarr.create_array('inst/extdata/zarr_examples/column-first/int32_v3.zarr', shape=(30, 20, 10),
                chunks=(10, 10, 5), dtype='i4')
@@ -246,3 +247,10 @@ zarr.consolidate_metadata(group.store)
 z = zarr.create_array('inst/extdata/zarr_examples/scalar/scalar_v3.zarr', shape=(), dtype='i4')
 z[()] = 42
 
+#####################################
+
+# Structured datatype
+dt = np.dtype([('x', 'i4'), ('y', 'f4')])
+z = zarr.create_array('inst/extdata/zarr_examples/structured/structured_v3.zarr', shape=(10,2), chunks=(5,2), dtype=Struct.from_native_dtype(dt))
+z['x'] = np.arange(20).reshape(10,2)
+z['y'] = np.array([0.34, 0.67, 0.12, 0.89, 0.45, 0.23, 0.78, 0.56, 0.90, 0.11, 0.34, 0.67, 0.12, 0.89, 0.45, 0.23, 0.78, 0.56, 0.90, 0.11]).reshape(10,2)
