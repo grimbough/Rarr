@@ -43,6 +43,7 @@
           length_bits = 8L * dt$nbytes
         )
       ),
+      "bool" = "bool",
       paste0(dt$base_type, 8L * dt$nbytes)
     ),
     fill_value = metadata$fill_value,
