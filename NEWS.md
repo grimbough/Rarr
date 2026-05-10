@@ -26,6 +26,9 @@
   vlen-utf8 filter / codec, is no longer causing R to crash.
 * `zarr_overview()` and `read_zarr_array()` on Zarr v3 files hosted on S3. 
   Thanks to a report and a patch by Artür Manukyan.
+* `create_empty_zarr_array()` and by extension `write_zarr_array()` now use
+  the correct data type (`bool`) in metadata for boolean arrays. Thanks to
+  a report by Artür Manukyan.
 
 ## Internal changes
 
