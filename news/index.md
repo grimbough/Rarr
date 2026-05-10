@@ -35,6 +35,11 @@
   [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md)
   on Zarr v3 files hosted on S3. Thanks to a report and a patch by Artür
   Manukyan.
+- [`create_empty_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/create_empty_zarr_array.md)
+  and by extension
+  [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md)
+  now use the correct data type (`bool`) in metadata for boolean arrays.
+  Thanks to a report by Artür Manukyan.
 
 ### Internal changes
 
