@@ -52,17 +52,12 @@ zarr_overview <- function(
   s3_client = NULL,
   as_data_frame = FALSE
 ) {
-  s3_path <- parse_s3_path(zarr_array_path)
-  zarr_store <- .create_store(
+  store_elements <- .create_store(
     zarr_array_path,
-    s3_client = s3_client,
-    s3_path = s3_path
+    s3_client = s3_client
   )
-  if (!is.null(s3_path)) {
-    zarr_array_path <- s3_path$object
-  } else {
-    zarr_array_path <- ""
-  }
+  zarr_store <- store_elements[["store"]]
+  zarr_array_path <- store_elements[["path"]]
 
   metadata_files <- c(".zmetadata", ".zarray", "zarr.json") |>
     setNames(nm = _) |>
@@ -483,17 +478,12 @@ read_zarr_attributes <- function(
   missing = c("ignore", "warning", "error")
 ) {
   missing <- match.arg(missing)
-  s3_path <- parse_s3_path(zarr_path)
-  zarr_store <- .create_store(
+  store_elements <- .create_store(
     zarr_path,
-    s3_client = s3_client,
-    s3_path = s3_path
+    s3_client = s3_client
   )
-  if (!is.null(s3_path)) {
-    zarr_path <- s3_path$object
-  } else {
-    zarr_path <- ""
-  }
+  zarr_store <- store_elements[["store"]]
+  zarr_path <- store_elements[["path"]]
 
   exists_attribute_files <- c(".zattrs", "zarr.json") |>
     setNames(nm = _) |>

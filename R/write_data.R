@@ -265,10 +265,11 @@ write_zarr_array <- function(
   ## read the metadata we just created
   metadata_file <- if (zarr_version == 2L) ".zarray" else "zarr.json"
 
-  zarr_store <- .create_store(
+  store_elements <- .create_store(
     zarr_array_path
   )
-  path_from_store <- ""
+  zarr_store <- store_elements[["store"]]
+  path_from_store <- store_elements[["path"]]
 
   metadata_v3 <- .read_array_metadata(
     path_from_store,
@@ -429,8 +430,9 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     )
   }
 
-  zarr_store <- .create_store(zarr_array_path)
-  path_from_store <- ""
+  store_elements <- .create_store(zarr_array_path)
+  zarr_store <- store_elements[["store"]]
+  path_from_store <- store_elements[["path"]]
   metadata <- .read_array_metadata(
     path_from_store,
     names(metadata_files)[metadata_files],
@@ -514,6 +516,10 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_positions,
   metadata
 ) {
+  store_elements <- .create_store(zarr_array_path)
+  zarr_store <- store_elements[["store"]]
+  path_from_store <- store_elements[["path"]]
+
   ## determine which elements of x are being used and where in this specific
   ## chunk they should be inserted
   chunk_path <- paste0(zarr_array_path, chunk_name)
@@ -521,10 +527,9 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   idx_in_x <- chunk_info$positions
   idx_in_chunk <- chunk_info$index_in_chunk
 
-  zarr_store <- .create_store(zarr_array_path, s3_client = NULL)
-  if (robstore::store_exists(zarr_store, chunk_name)) {
+  if (robstore::store_exists(zarr_store, chunk_path)) {
     chunk_in_mem <- read_chunk(
-      chunk_name = chunk_name,
+      chunk_name = chunk_path,
       metadata = metadata,
       zarr_store = zarr_store
     )

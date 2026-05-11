@@ -41,17 +41,12 @@
 #'
 #' @export
 read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
-  s3_path <- parse_s3_path(zarr_array_path)
-  zarr_store <- .create_store(
+  store_elements <- .create_store(
     zarr_array_path,
-    s3_client = s3_client,
-    s3_path = s3_path
+    s3_client = s3_client
   )
-  if (!is.null(s3_path)) {
-    zarr_array_path <- s3_path$object
-  } else {
-    zarr_array_path <- ""
-  }
+  zarr_store <- store_elements[["store"]]
+  zarr_array_path <- store_elements[["path"]]
 
   metadata_files <- c(".zarray", "zarr.json") |>
     setNames(nm = _) |>
@@ -131,12 +126,13 @@ read_data <- function(
   )
 
   chunk_names <- names(chunk_positions)
+  chunk_paths <- paste0(zarr_array_path, chunk_names, recycle0 = TRUE)
 
   ## Vectorized check for chunk existence
   chunk_exists <- vapply(
-    chunk_names,
-    function(name) {
-      robstore::store_exists(zarr_store, name)
+    chunk_paths,
+    function(path) {
+      robstore::store_exists(zarr_store, path)
     },
     logical(1L)
   )
@@ -152,6 +148,7 @@ read_data <- function(
       function(i) {
         .extract_elements(
           chunk_name = chunk_names[i],
+          chunk_path = chunk_paths[i],
           metadata = metadata,
           zarr_store = zarr_store,
           chunk_positions = chunk_positions
@@ -190,6 +187,7 @@ read_data <- function(
 
 .extract_elements <- function(
   chunk_name,
+  chunk_path,
   metadata,
   zarr_store,
   chunk_positions
@@ -201,7 +199,7 @@ read_data <- function(
 
   ## read this chunk
   chunk <- read_chunk(
-    chunk_name = chunk_name,
+    chunk_path = chunk_path,
     metadata = metadata,
     zarr_store = zarr_store
   )
@@ -214,30 +212,30 @@ read_data <- function(
 
 #' Read a single Zarr chunk
 #'
-#' @param chunk_name A character vector of length 1, giving the name of the
-#'   chunk to be read.
+#' @param chunk_path A character vector of length 1, giving the path (relative to the store)
+#'   to the chunk to be read.
 #' @param metadata List produced by `.read_array_metadata()` holding the contents
 #'   of the `.zarray` file. If missing this function will be called
 #'   automatically, but it is probably preferable to pass the meta data rather
 #'   than read it repeatedly for every chunk.
-#' @param s3_client Object created by [paws.storage::s3()]. Only required for a
-#'   file on S3. Leave as `NULL` for a file on local storage.
+#' @param zarr_store An object of class `Store` representing the store where the chunk is
+#'   located.
 #'
 #' @returns An array containing the decompressed chunk values.
 #'
 #' @keywords internal
 read_chunk <- function(
-  chunk_name,
+  chunk_path,
   metadata,
   zarr_store
 ) {
   # When we get here, we know the chunk exists, so we can read it without worrying about
   # handling missing.
   if (nzchar(Sys.getenv("RARR_DEBUG"))) {
-    message(chunk_name)
+    message(chunk_path)
   }
 
-  raw_chunk <- robstore::store_get(zarr_store, chunk_name)
+  raw_chunk <- robstore::store_get(zarr_store, chunk_path)
 
   # Bytes -> Bytes codecs
   for (codec in metadata$configured_decoders[["bytes_bytes"]]) {

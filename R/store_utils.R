@@ -1,6 +1,7 @@
-.create_store <- function(path, s3_client = NULL, s3_path) {
-  zarr_path <- .normalize_array_path(path)
+.create_store <- function(path, s3_client = NULL) {
+  path <- .normalize_array_path(path)
   if (any(startsWith(path, c("s3://", "http://", "https://")))) {
+    s3_path <- parse_s3_path(path)
     if (is.null(s3_client)) {
       store <- robstore::s3_store_anonymous(
         bucket = s3_path$bucket,
@@ -16,11 +17,13 @@
         allow_http = startsWith(path, "http://")
       )
     }
+    path_from_store <- s3_path$object
   } else {
     store <- robstore::local_store(path)
+    path_from_store <- ""
   }
 
-  return(store)
+  return(list(store = store, path = path_from_store))
 }
 
 
