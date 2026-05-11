@@ -41,13 +41,23 @@
 #'
 #' @export
 read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
-  zarr_store <- .create_store(zarr_array_path, s3_client = s3_client)
+  s3_path <- parse_s3_path(zarr_array_path)
+  zarr_store <- .create_store(
+    zarr_array_path,
+    s3_client = s3_client,
+    s3_path = s3_path
+  )
+  if (!is.null(s3_path)) {
+    zarr_array_path <- s3_path$object
+  } else {
+    zarr_array_path <- ""
+  }
 
   metadata_files <- c(".zarray", "zarr.json") |>
     setNames(nm = _) |>
     vapply(
       function(file) {
-        robstore::store_exists(zarr_store, file)
+        robstore::store_exists(zarr_store, paste0(zarr_array_path, file))
       },
       logical(1L)
     )
@@ -74,7 +84,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
   metadata <- .read_array_metadata(
     zarr_array_path,
     names(metadata_files)[metadata_files],
-    s3_client = s3_client
+    zarr_store
   )
   if (metadata$node_type == "group") {
     stop(

@@ -264,7 +264,17 @@ write_zarr_array <- function(
   )
   ## read the metadata we just created
   metadata_file <- if (zarr_version == 2L) ".zarray" else "zarr.json"
-  metadata_v3 <- .read_array_metadata(path, metadata_file)
+
+  zarr_store <- .create_store(
+    zarr_array_path
+  )
+  path_from_store <- ""
+
+  metadata_v3 <- .read_array_metadata(
+    path_from_store,
+    metadata_file,
+    zarr_store
+  )
 
   metadata_v3$configured_encoders <- .configure_codecs(
     codecs = metadata_v3$codecs,
@@ -419,9 +429,12 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     )
   }
 
+  zarr_store <- .create_store(zarr_array_path)
+  path_from_store <- ""
   metadata <- .read_array_metadata(
-    zarr_array_path,
-    names(metadata_files)[metadata_files]
+    path_from_store,
+    names(metadata_files)[metadata_files],
+    zarr_store = zarr_store
   )
 
   index <- check_index(index, metadata = metadata)

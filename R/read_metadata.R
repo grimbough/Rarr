@@ -52,13 +52,23 @@ zarr_overview <- function(
   s3_client = NULL,
   as_data_frame = FALSE
 ) {
-  zarr_store <- .create_store(zarr_array_path, s3_client = s3_client)
+  s3_path <- parse_s3_path(zarr_array_path)
+  zarr_store <- .create_store(
+    zarr_array_path,
+    s3_client = s3_client,
+    s3_path = s3_path
+  )
+  if (!is.null(s3_path)) {
+    zarr_array_path <- s3_path$object
+  } else {
+    zarr_array_path <- ""
+  }
 
   metadata_files <- c(".zmetadata", ".zarray", "zarr.json") |>
     setNames(nm = _) |>
     vapply(
       function(file) {
-        robstore::store_exists(zarr_store, file)
+        robstore::store_exists(zarr_store, paste0(zarr_array_path, file))
       },
       logical(1L)
     )
@@ -93,7 +103,7 @@ zarr_overview <- function(
       zarr_path = zarr_array_path,
       metadata_file = names(group_metadata_files)[group_metadata_files],
       nodes = "array",
-      s3_client = s3_client
+      zarr_store = zarr_store
     )
   }
   if (!is.null(dot_zmeta)) {
@@ -127,7 +137,7 @@ zarr_overview <- function(
     array_metadata <- .read_array_metadata(
       zarr_path = zarr_array_path,
       metadata_file = names(array_metadata_files)[array_metadata_files],
-      s3_client = s3_client
+      zarr_store = zarr_store
     )
     res <- .rbind_array_metadata(
       array_name = basename(zarr_array_path),
@@ -251,9 +261,11 @@ zarr_overview <- function(
 #' @importFrom jsonlite read_json fromJSON
 #'
 #' @keywords internal
-.read_array_metadata <- function(zarr_path, metadata_file, s3_client = NULL) {
-  zarr_store <- .create_store(zarr_path, s3_client = s3_client)
-  metadata <- robstore::store_get(zarr_store, metadata_file) |>
+.read_array_metadata <- function(zarr_path, metadata_file, zarr_store) {
+  metadata <- robstore::store_get(
+    zarr_store,
+    paste0(zarr_path, metadata_file)
+  ) |>
     rawToChar() |>
     fromJSON(simplifyVector = FALSE)
 
@@ -412,11 +424,10 @@ zarr_overview <- function(
   zarr_path,
   metadata_file,
   nodes = c("group", "array"),
-  s3_client
+  zarr_store
 ) {
-  zarr_store <- .create_store(zarr_path, s3_client = s3_client)
   # At this stage, we are sure the file exists
-  zmeta <- robstore::store_get(zarr_store, metadata_file) |>
+  zmeta <- robstore::store_get(zarr_store, paste0(zarr_path, metadata_file)) |>
     rawToChar() |>
     fromJSON(simplifyVector = FALSE)
 
@@ -472,13 +483,23 @@ read_zarr_attributes <- function(
   missing = c("ignore", "warning", "error")
 ) {
   missing <- match.arg(missing)
-  zarr_store <- .create_store(zarr_path, s3_client)
+  s3_path <- parse_s3_path(zarr_path)
+  zarr_store <- .create_store(
+    zarr_path,
+    s3_client = s3_client,
+    s3_path = s3_path
+  )
+  if (!is.null(s3_path)) {
+    zarr_path <- s3_path$object
+  } else {
+    zarr_path <- ""
+  }
 
   exists_attribute_files <- c(".zattrs", "zarr.json") |>
     setNames(nm = _) |>
     vapply(
       function(file) {
-        robstore::store_exists(zarr_store, file)
+        robstore::store_exists(zarr_store, paste0(zarr_path, file))
       },
       logical(1L)
     )
@@ -505,12 +526,11 @@ read_zarr_attributes <- function(
     )
   }
   attribute_file <- names(exists_attribute_files)[exists_attribute_files]
-  attribute_path <- paste0(
-    zarr_path,
-    attribute_file
-  )
 
-  zattrs <- robstore::store_get(zarr_store, attribute_file) |>
+  zattrs <- robstore::store_get(
+    zarr_store,
+    paste0(zarr_path, attribute_file)
+  ) |>
     rawToChar() |>
     fromJSON(simplifyVector = FALSE)
 
