@@ -19,7 +19,7 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     if:
-      github.event.pull_request.draft == false &&
+      true &&
       (
         github.event.pull_request.author_association == 'OWNER' ||
         github.event.pull_request.author_association == 'MEMBER' ||
