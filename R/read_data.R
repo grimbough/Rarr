@@ -41,17 +41,16 @@
 #'
 #' @export
 read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
-  zarr_array_path <- .normalize_array_path(zarr_array_path)
-  ## determine if this is a local or S3 array
-  if (is.null(s3_client)) {
-    s3_client <- .create_s3_client(path = zarr_array_path)
-  }
+  zarr_store <- .create_store(zarr_array_path, s3_client = s3_client)
 
-  metadata_files <- .file_or_blob_exists(
-    zarr_array_path,
-    s3_client,
-    c(".zarray", "zarr.json")
-  )
+  metadata_files <- c(".zarray", "zarr.json") |>
+    setNames(nm = _) |>
+    vapply(
+      function(file) {
+        robstore::store_exists(zarr_store, file)
+      },
+      logical(1L)
+    )
 
   if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
     stop(
@@ -96,7 +95,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
   }
   index <- check_index(index = index, metadata = metadata)
 
-  res <- read_data(zarr_array_path, s3_client, index, metadata)
+  res <- read_data(zarr_array_path, zarr_store, index, metadata)
 
   if (!is.null(metadata$dimension_names)) {
     dimnames(res) <- setNames(
@@ -111,7 +110,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
 
 read_data <- function(
   zarr_array_path,
-  s3_client,
+  zarr_store,
   index,
   metadata
 ) {
@@ -122,12 +121,15 @@ read_data <- function(
   )
 
   chunk_names <- names(chunk_positions)
-  # In the DelayedArray framework, we can have integer(0) indices
-  # https://github.com/Huber-group-EMBL/Rarr/issues/112
-  chunk_paths <- paste0(zarr_array_path, chunk_names, recycle0 = TRUE)
 
   ## Vectorized check for chunk existence
-  chunk_exists <- .file_or_blob_exists(zarr_array_path, s3_client, chunk_names)
+  chunk_exists <- vapply(
+    chunk_names,
+    function(name) {
+      robstore::store_exists(zarr_store, name)
+    },
+    logical(1L)
+  )
   existing_idx <- which(chunk_exists)
 
   warnings <- list()
@@ -140,9 +142,8 @@ read_data <- function(
       function(i) {
         .extract_elements(
           chunk_name = chunk_names[i],
-          current_chunk_path = chunk_paths[i],
           metadata = metadata,
-          s3_client = s3_client,
+          zarr_store = zarr_store,
           chunk_positions = chunk_positions
         )
       }
@@ -179,9 +180,8 @@ read_data <- function(
 
 .extract_elements <- function(
   chunk_name,
-  current_chunk_path,
   metadata,
-  s3_client,
+  zarr_store,
   chunk_positions
 ) {
   ## find elements to select from the chunk and what in the output we replace
@@ -191,9 +191,9 @@ read_data <- function(
 
   ## read this chunk
   chunk <- read_chunk(
-    chunk_path = current_chunk_path,
+    chunk_name = chunk_name,
     metadata = metadata,
-    s3_client = s3_client
+    zarr_store = zarr_store
   )
 
   ## extract the required elements from the chunk
@@ -204,7 +204,7 @@ read_data <- function(
 
 #' Read a single Zarr chunk
 #'
-#' @param chunk_path A character vector of length 1, giving the path to the
+#' @param chunk_name A character vector of length 1, giving the name of the
 #'   chunk to be read.
 #' @param metadata List produced by `.read_array_metadata()` holding the contents
 #'   of the `.zarray` file. If missing this function will be called
@@ -217,26 +217,17 @@ read_data <- function(
 #'
 #' @keywords internal
 read_chunk <- function(
-  chunk_path,
+  chunk_name,
   metadata,
-  s3_client = NULL
+  zarr_store
 ) {
   # When we get here, we know the chunk exists, so we can read it without worrying about
   # handling missing.
   if (nzchar(Sys.getenv("RARR_DEBUG"))) {
-    message(chunk_path)
+    message(chunk_name)
   }
 
-  if (is.null(s3_client)) {
-    size <- file.size(chunk_path)
-    raw_chunk <- readBin(con = chunk_path, what = "raw", n = size)
-  } else {
-    parsed_url <- parse_s3_path(chunk_path)
-    raw_chunk <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )$Body
-  }
+  raw_chunk <- robstore::store_get(zarr_store, chunk_name)
 
   # Bytes -> Bytes codecs
   for (codec in metadata$configured_decoders[["bytes_bytes"]]) {

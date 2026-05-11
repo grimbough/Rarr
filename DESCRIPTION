@@ -37,6 +37,8 @@ Suggests:
     ZarrArray
 VignetteBuilder:
     knitr
+Remotes:
+    hypertidy/robstore
 biocViews: DataImport
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

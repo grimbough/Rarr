@@ -52,17 +52,16 @@ zarr_overview <- function(
   s3_client = NULL,
   as_data_frame = FALSE
 ) {
-  zarr_array_path <- .normalize_array_path(zarr_array_path)
+  zarr_store <- .create_store(zarr_array_path, s3_client = s3_client)
 
-  if (is.null(s3_client)) {
-    s3_client <- .create_s3_client(path = zarr_array_path)
-  }
-
-  metadata_files <- .file_or_blob_exists(
-    zarr_array_path,
-    s3_client,
-    c(".zmetadata", ".zarray", "zarr.json")
-  )
+  metadata_files <- c(".zmetadata", ".zarray", "zarr.json") |>
+    setNames(nm = _) |>
+    vapply(
+      function(file) {
+        robstore::store_exists(zarr_store, file)
+      },
+      logical(1L)
+    )
 
   array_metadata_files <- metadata_files[c(".zarray", "zarr.json")]
   group_metadata_files <- metadata_files[c(".zmetadata", "zarr.json")]
@@ -253,57 +252,10 @@ zarr_overview <- function(
 #'
 #' @keywords internal
 .read_array_metadata <- function(zarr_path, metadata_file, s3_client = NULL) {
-  zarr_path <- .normalize_array_path(zarr_path)
-  metadata_path <- paste0(zarr_path, metadata_file)
-
-  if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(metadata_path)
-
-    s3_object_exists <- .s3_object_exists(
-      s3_client,
-      parsed_url$bucket,
-      parsed_url$object
-    )
-
-    # We already checked this in zarr_overview(), but in the case of a terribly
-    # broken Zarr store, a non-existent .zarray file could be listed in the
-    # .zmetadata file.
-    if (!s3_object_exists) {
-      stop(
-        sprintf(
-          "The requested `%s` metadata file (%s) does not exist.",
-          metadata_file,
-          "possibly listed in `.zmetadata`"
-        ),
-        call. = FALSE
-      )
-    }
-
-    s3_object <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )
-
-    metadata <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-  } else {
-    zarray_exists <- file.exists(metadata_path)
-
-    # We already checked this in zarr_overview(), but in the case of a terribly
-    # broken Zarr store, a non-existent .zarray file could be listed in the
-    # .zmetadata file.
-    if (!zarray_exists) {
-      stop(
-        sprintf(
-          "The requested `%s` metadata file (%s) does not exist.",
-          metadata_file,
-          "possibly listed in `.zmetadata`"
-        ),
-        call. = FALSE
-      )
-    }
-
-    metadata <- read_json(metadata_path)
-  }
+  zarr_store <- .create_store(zarr_path, s3_client = s3_client)
+  metadata <- robstore::store_get(zarr_store, metadata_file) |>
+    rawToChar() |>
+    fromJSON(simplifyVector = FALSE)
 
   if (metadata$zarr_format == 2L) {
     ## if we do this here, we save many repeated calls to .parse_datatype
@@ -462,20 +414,11 @@ zarr_overview <- function(
   nodes = c("group", "array"),
   s3_client
 ) {
-  zarr_path <- .normalize_array_path(zarr_path)
-  zmeta_path <- paste0(zarr_path, metadata_file)
-
+  zarr_store <- .create_store(zarr_path, s3_client = s3_client)
   # At this stage, we are sure the file exists
-  if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(zmeta_path)
-    s3_object <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )
-    zmeta <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-  } else {
-    zmeta <- read_json(zmeta_path)
-  }
+  zmeta <- robstore::store_get(zarr_store, metadata_file) |>
+    rawToChar() |>
+    fromJSON(simplifyVector = FALSE)
 
   if (metadata_file == ".zmetadata") {
     arrays <- grep(
@@ -529,17 +472,16 @@ read_zarr_attributes <- function(
   missing = c("ignore", "warning", "error")
 ) {
   missing <- match.arg(missing)
-  zarr_path <- .normalize_array_path(zarr_path)
-  ## determine if this is a local or S3 array
-  if (is.null(s3_client)) {
-    s3_client <- .create_s3_client(path = zarr_path)
-  }
+  zarr_store <- .create_store(zarr_path, s3_client)
 
-  exists_attribute_files <- .file_or_blob_exists(
-    zarr_path,
-    s3_client,
-    c(".zattrs", "zarr.json")
-  )
+  exists_attribute_files <- c(".zattrs", "zarr.json") |>
+    setNames(nm = _) |>
+    vapply(
+      function(file) {
+        robstore::store_exists(zarr_store, file)
+      },
+      logical(1L)
+    )
 
   if (!any(exists_attribute_files)) {
     msg <- paste(
@@ -568,20 +510,9 @@ read_zarr_attributes <- function(
     attribute_file
   )
 
-  if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(attribute_path)
-
-    s3_object <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )
-
-    # simplifyVector = FALSE is used for consistency with read_json(),
-    # used on local files.
-    zattrs <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-  } else {
-    zattrs <- read_json(attribute_path)
-  }
+  zattrs <- robstore::store_get(zarr_store, attribute_file) |>
+    rawToChar() |>
+    fromJSON(simplifyVector = FALSE)
 
   if (attribute_file == "zarr.json") {
     zattrs <- zattrs[["attributes"]]

@@ -503,15 +503,17 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 ) {
   ## determine which elements of x are being used and where in this specific
   ## chunk they should be inserted
-  chunk_path <- file.path(zarr_array_path, chunk_name)
+  chunk_path <- paste0(zarr_array_path, chunk_name)
   chunk_info <- chunk_positions[[chunk_name]]
   idx_in_x <- chunk_info$positions
   idx_in_chunk <- chunk_info$index_in_chunk
 
-  if (.file_or_blob_exists(zarr_array_path, s3_client = NULL, chunk_name)) {
+  zarr_store <- .create_store(zarr_array_path, s3_client = NULL)
+  if (robstore::store_exists(zarr_store, chunk_name)) {
     chunk_in_mem <- read_chunk(
-      chunk_path = chunk_path,
-      metadata = metadata
+      chunk_name = chunk_name,
+      metadata = metadata,
+      zarr_store = zarr_store
     )
   } else {
     chunk_in_mem <- array(
