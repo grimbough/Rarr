@@ -4,10 +4,10 @@
 \alias{read_chunk}
 \title{Read a single Zarr chunk}
 \usage{
-read_chunk(chunk_path, metadata, s3_client = NULL)
+read_chunk(chunk_name, metadata, zarr_store)
 }
 \arguments{
-\item{chunk_path}{A character vector of length 1, giving the path to the
+\item{chunk_name}{A character vector of length 1, giving the name of the
 chunk to be read.}
 
 \item{metadata}{List produced by \code{.read_array_metadata()} holding the contents
