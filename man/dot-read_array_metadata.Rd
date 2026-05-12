@@ -4,7 +4,7 @@
 \alias{.read_array_metadata}
 \title{Read the .zarray metadata file associated with a Zarr array}
 \usage{
-.read_array_metadata(zarr_path, metadata_file, s3_client = NULL)
+.read_array_metadata(zarr_path, metadata_file, zarr_store)
 }
 \arguments{
 \item{zarr_path}{A character vector of length 1.  This provides the

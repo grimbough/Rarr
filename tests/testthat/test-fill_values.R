@@ -54,9 +54,16 @@ test_that("NA fill-values are understood correctly", {
     data_type = "double",
     fill_value = NA_real_
   )
+  zarr_na_fill_store <- .create_store(zarr_na_fill)
 
   expect_true(
-    is.na(.read_array_metadata(zarr_na_fill, "zarr.json")$fill_value)
+    is.na(
+      .read_array_metadata(
+        "",
+        "zarr.json",
+        zarr_store = zarr_na_fill_store
+      )$fill_value
+    )
   )
 
   index <- list(2:3, 2:6)

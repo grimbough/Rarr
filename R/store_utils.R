@@ -1,3 +1,96 @@
+.create_store <- function(path, s3_client = NULL) {
+  path <- .normalize_array_path(path)
+  if (any(startsWith(path, c("s3://", "http://", "https://")))) {
+    s3_path <- parse_s3_path(path)
+    if (is.null(s3_client)) {
+      store <- robstore::s3_store_anonymous(
+        bucket = s3_path$bucket,
+        region = s3_path$region,
+        endpoint = s3_path$hostname,
+        allow_http = startsWith(path, "http://")
+      )
+    } else {
+      store <- robstore::s3_store(
+        bucket = s3_path$bucket,
+        region = s3_path$region,
+        endpoint = s3_path$hostname,
+        allow_http = startsWith(path, "http://")
+      )
+    }
+    path_from_store <- s3_path$object
+  } else {
+    store <- objectstore::FilesystemStore(path)
+    path_from_store <- ""
+  }
+
+  return(list(store = store, path = path_from_store))
+}
+
+
+#' Normalize a Zarr array path
+#'
+#' Taken from https://zarr.readthedocs.io/en/stable/spec/v2.html#logical-storage-paths
+#'
+#' @param path Character vector of length 1 giving the path to be normalised.
+#'
+#' @returns A character vector of length 1 containing the normalised path.
+#'
+#' @importFrom R.utils getAbsolutePath
+#'
+#' @keywords internal
+.normalize_array_path <- function(path) {
+  ## we strip the protocol because it gets messed up by the slash removal later
+  if (any(startsWith(path, c("http://", "https://", "s3://")))) {
+    m <- regmatches(path, regexec("^((https?://)|(s3://))(.*$)", path))[[1L]]
+    root <- m[2L]
+    path <- m[5L]
+  } else {
+    ## Replace all backward slash ("\\") with forward slash ("/")
+    path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
+    path <- R.utils::getAbsolutePath(path, expandTilde = TRUE)
+    root <- sub(x = path, "(^[[:alnum:]:.]*/)?(.*)", replacement = "\\1")
+    path <- sub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\2")
+  }
+
+  ## Strip any leading "/" characters
+  path <- sub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
+  ## Strip any trailing "/" characters
+  path <- sub(x = path, pattern = "/$", replacement = "", fixed = FALSE)
+  ## Collapse any sequence of more than one "/" character into a single "/"
+  path <- gsub(x = path, pattern = "//+", replacement = "/", fixed = FALSE)
+  ## The key prefix is then obtained by appending a single "/" character to
+  ## the normalized logical path.
+  path <- paste0(root, path, "/")
+
+  return(path)
+}
+
+#' @importFrom stats setNames
+.file_or_blob_exists <- function(
+  zarr_array_path,
+  s3_client,
+  files
+) {
+  if (is.null(s3_client)) {
+    is_present <- setNames(
+      file.exists(paste0(zarr_array_path, files, recycle0 = TRUE)),
+      files
+    )
+  } else {
+    parse_url <- parse_s3_path(zarr_array_path)
+    is_present <- vapply(
+      files,
+      FUN = function(f) {
+        key <- paste0(parse_url$object, f)
+        .s3_object_exists(s3_client, parse_url$bucket, key)
+      },
+      FUN.VALUE = logical(1L)
+    )
+  }
+
+  return(is_present)
+}
+
 parse_s3_path <- function(path) {
   s3_provider <- .determine_s3_provider(path)
 

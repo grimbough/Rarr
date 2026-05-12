@@ -41,17 +41,17 @@
 #'
 #' @export
 read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
-  zarr_array_path <- .normalize_array_path(zarr_array_path)
-  ## determine if this is a local or S3 array
-  if (is.null(s3_client)) {
-    s3_client <- .create_s3_client(path = zarr_array_path)
-  }
-
-  metadata_files <- .file_or_blob_exists(
+  store_elements <- .create_store(
     zarr_array_path,
-    s3_client,
-    c(".zarray", "zarr.json")
+    s3_client = s3_client
   )
+  zarr_store <- store_elements[["store"]]
+  zarr_array_path <- store_elements[["path"]]
+
+  metadata_files <- c(".zarray", "zarr.json")
+  metadata_files <- paste0(zarr_array_path, metadata_files, recycle0 = TRUE) |>
+    objectstore::store_check_exist(zarr_store, keys = _) |>
+    setNames(metadata_files)
 
   if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
     stop(
@@ -75,7 +75,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
   metadata <- .read_array_metadata(
     zarr_array_path,
     names(metadata_files)[metadata_files],
-    s3_client = s3_client
+    zarr_store
   )
   if (metadata$node_type == "group") {
     stop(
@@ -96,7 +96,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
   }
   index <- check_index(index = index, metadata = metadata)
 
-  res <- read_data(zarr_array_path, s3_client, index, metadata)
+  res <- read_data(zarr_array_path, zarr_store, index, metadata)
 
   if (!is.null(metadata$dimension_names)) {
     dimnames(res) <- setNames(
@@ -111,7 +111,7 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
 
 read_data <- function(
   zarr_array_path,
-  s3_client,
+  zarr_store,
   index,
   metadata
 ) {
@@ -122,12 +122,10 @@ read_data <- function(
   )
 
   chunk_names <- names(chunk_positions)
-  # In the DelayedArray framework, we can have integer(0) indices
-  # https://github.com/Huber-group-EMBL/Rarr/issues/112
   chunk_paths <- paste0(zarr_array_path, chunk_names, recycle0 = TRUE)
 
   ## Vectorized check for chunk existence
-  chunk_exists <- .file_or_blob_exists(zarr_array_path, s3_client, chunk_names)
+  chunk_exists <- objectstore::store_check_exist(zarr_store, chunk_paths)
   existing_idx <- which(chunk_exists)
 
   warnings <- list()
@@ -140,9 +138,9 @@ read_data <- function(
       function(i) {
         .extract_elements(
           chunk_name = chunk_names[i],
-          current_chunk_path = chunk_paths[i],
+          chunk_path = chunk_paths[i],
           metadata = metadata,
-          s3_client = s3_client,
+          zarr_store = zarr_store,
           chunk_positions = chunk_positions
         )
       }
@@ -179,9 +177,9 @@ read_data <- function(
 
 .extract_elements <- function(
   chunk_name,
-  current_chunk_path,
+  chunk_path,
   metadata,
-  s3_client,
+  zarr_store,
   chunk_positions
 ) {
   ## find elements to select from the chunk and what in the output we replace
@@ -191,9 +189,9 @@ read_data <- function(
 
   ## read this chunk
   chunk <- read_chunk(
-    chunk_path = current_chunk_path,
+    chunk_path = chunk_path,
     metadata = metadata,
-    s3_client = s3_client
+    zarr_store = zarr_store
   )
 
   ## extract the required elements from the chunk
@@ -204,14 +202,14 @@ read_data <- function(
 
 #' Read a single Zarr chunk
 #'
-#' @param chunk_path A character vector of length 1, giving the path to the
-#'   chunk to be read.
+#' @param chunk_path A character vector of length 1, giving the path (relative to the store)
+#'   to the chunk to be read.
 #' @param metadata List produced by `.read_array_metadata()` holding the contents
 #'   of the `.zarray` file. If missing this function will be called
 #'   automatically, but it is probably preferable to pass the meta data rather
 #'   than read it repeatedly for every chunk.
-#' @param s3_client Object created by [paws.storage::s3()]. Only required for a
-#'   file on S3. Leave as `NULL` for a file on local storage.
+#' @param zarr_store An object of class `Store` representing the store where the chunk is
+#'   located.
 #'
 #' @returns An array containing the decompressed chunk values.
 #'
@@ -219,7 +217,7 @@ read_data <- function(
 read_chunk <- function(
   chunk_path,
   metadata,
-  s3_client = NULL
+  zarr_store
 ) {
   # When we get here, we know the chunk exists, so we can read it without worrying about
   # handling missing.
@@ -227,16 +225,7 @@ read_chunk <- function(
     message(chunk_path)
   }
 
-  if (is.null(s3_client)) {
-    size <- file.size(chunk_path)
-    raw_chunk <- readBin(con = chunk_path, what = "raw", n = size)
-  } else {
-    parsed_url <- parse_s3_path(chunk_path)
-    raw_chunk <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )$Body
-  }
+  raw_chunk <- objectstore::store_get(zarr_store, chunk_path)
 
   # Bytes -> Bytes codecs
   for (codec in metadata$configured_decoders[["bytes_bytes"]]) {

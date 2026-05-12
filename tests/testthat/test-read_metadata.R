@@ -188,6 +188,7 @@ test_that("missing metadata on S3 results in a clear error", {
       ),
       "The path does not contain any metadata files."
     ),
-    .s3_object_exists = function(...) FALSE
+    store_exists = function(...) FALSE,
+    .package = "robstore"
   )
 })

@@ -52,17 +52,17 @@ zarr_overview <- function(
   s3_client = NULL,
   as_data_frame = FALSE
 ) {
-  zarr_array_path <- .normalize_array_path(zarr_array_path)
-
-  if (is.null(s3_client)) {
-    s3_client <- .create_s3_client(path = zarr_array_path)
-  }
-
-  metadata_files <- .file_or_blob_exists(
+  store_elements <- .create_store(
     zarr_array_path,
-    s3_client,
-    c(".zmetadata", ".zarray", "zarr.json")
+    s3_client = s3_client
   )
+  zarr_store <- store_elements[["store"]]
+  zarr_array_path <- store_elements[["path"]]
+
+  metadata_files <- c(".zmetadata", ".zarray", "zarr.json")
+  metadata_files <- paste0(zarr_array_path, metadata_files, recycle0 = TRUE) |>
+    objectstore::store_check_exist(zarr_store, keys = _) |>
+    setNames(metadata_files)
 
   array_metadata_files <- metadata_files[c(".zarray", "zarr.json")]
   group_metadata_files <- metadata_files[c(".zmetadata", "zarr.json")]
@@ -94,7 +94,7 @@ zarr_overview <- function(
       zarr_path = zarr_array_path,
       metadata_file = names(group_metadata_files)[group_metadata_files],
       nodes = "array",
-      s3_client = s3_client
+      zarr_store = zarr_store
     )
   }
   if (!is.null(dot_zmeta)) {
@@ -128,7 +128,7 @@ zarr_overview <- function(
     array_metadata <- .read_array_metadata(
       zarr_path = zarr_array_path,
       metadata_file = names(array_metadata_files)[array_metadata_files],
-      s3_client = s3_client
+      zarr_store = zarr_store
     )
     res <- .rbind_array_metadata(
       array_name = basename(zarr_array_path),
@@ -252,58 +252,13 @@ zarr_overview <- function(
 #' @importFrom jsonlite read_json fromJSON
 #'
 #' @keywords internal
-.read_array_metadata <- function(zarr_path, metadata_file, s3_client = NULL) {
-  zarr_path <- .normalize_array_path(zarr_path)
-  metadata_path <- paste0(zarr_path, metadata_file)
-
-  if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(metadata_path)
-
-    s3_object_exists <- .s3_object_exists(
-      s3_client,
-      parsed_url$bucket,
-      parsed_url$object
-    )
-
-    # We already checked this in zarr_overview(), but in the case of a terribly
-    # broken Zarr store, a non-existent .zarray file could be listed in the
-    # .zmetadata file.
-    if (!s3_object_exists) {
-      stop(
-        sprintf(
-          "The requested `%s` metadata file (%s) does not exist.",
-          metadata_file,
-          "possibly listed in `.zmetadata`"
-        ),
-        call. = FALSE
-      )
-    }
-
-    s3_object <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )
-
-    metadata <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-  } else {
-    zarray_exists <- file.exists(metadata_path)
-
-    # We already checked this in zarr_overview(), but in the case of a terribly
-    # broken Zarr store, a non-existent .zarray file could be listed in the
-    # .zmetadata file.
-    if (!zarray_exists) {
-      stop(
-        sprintf(
-          "The requested `%s` metadata file (%s) does not exist.",
-          metadata_file,
-          "possibly listed in `.zmetadata`"
-        ),
-        call. = FALSE
-      )
-    }
-
-    metadata <- read_json(metadata_path)
-  }
+.read_array_metadata <- function(zarr_path, metadata_file, zarr_store) {
+  metadata <- objectstore::store_get(
+    zarr_store,
+    paste0(zarr_path, metadata_file)
+  ) |>
+    rawToChar() |>
+    fromJSON(simplifyVector = FALSE)
 
   if (metadata$zarr_format == 2L) {
     ## if we do this here, we save many repeated calls to .parse_datatype
@@ -460,22 +415,15 @@ zarr_overview <- function(
   zarr_path,
   metadata_file,
   nodes = c("group", "array"),
-  s3_client
+  zarr_store
 ) {
-  zarr_path <- .normalize_array_path(zarr_path)
-  zmeta_path <- paste0(zarr_path, metadata_file)
-
   # At this stage, we are sure the file exists
-  if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(zmeta_path)
-    s3_object <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )
-    zmeta <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-  } else {
-    zmeta <- read_json(zmeta_path)
-  }
+  zmeta <- objectstore::store_get(
+    zarr_store,
+    paste0(zarr_path, metadata_file)
+  ) |>
+    rawToChar() |>
+    fromJSON(simplifyVector = FALSE)
 
   if (metadata_file == ".zmetadata") {
     arrays <- grep(
@@ -529,17 +477,17 @@ read_zarr_attributes <- function(
   missing = c("ignore", "warning", "error")
 ) {
   missing <- match.arg(missing)
-  zarr_path <- .normalize_array_path(zarr_path)
-  ## determine if this is a local or S3 array
-  if (is.null(s3_client)) {
-    s3_client <- .create_s3_client(path = zarr_path)
-  }
-
-  exists_attribute_files <- .file_or_blob_exists(
+  store_elements <- .create_store(
     zarr_path,
-    s3_client,
-    c(".zattrs", "zarr.json")
+    s3_client = s3_client
   )
+  zarr_store <- store_elements[["store"]]
+  zarr_path <- store_elements[["path"]]
+
+  attr_files <- c(".zattrs", "zarr.json")
+  exists_attribute_files <- paste0(zarr_path, attr_files, recycle0 = TRUE) |>
+    objectstore::store_check_exist(zarr_store, keys = _) |>
+    setNames(attr_files)
 
   if (!any(exists_attribute_files)) {
     msg <- paste(
@@ -563,25 +511,13 @@ read_zarr_attributes <- function(
     )
   }
   attribute_file <- names(exists_attribute_files)[exists_attribute_files]
-  attribute_path <- paste0(
-    zarr_path,
-    attribute_file
-  )
 
-  if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(attribute_path)
-
-    s3_object <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )
-
-    # simplifyVector = FALSE is used for consistency with read_json(),
-    # used on local files.
-    zattrs <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-  } else {
-    zattrs <- read_json(attribute_path)
-  }
+  zattrs <- objectstore::store_get(
+    zarr_store,
+    file.path(zarr_path, attribute_file)
+  ) |>
+    rawToChar() |>
+    fromJSON(simplifyVector = FALSE)
 
   if (attribute_file == "zarr.json") {
     zattrs <- zattrs[["attributes"]]

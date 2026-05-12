@@ -8,7 +8,7 @@
   zarr_path,
   metadata_file,
   nodes = c("group", "array"),
-  s3_client
+  zarr_store
 )
 }
 \arguments{
@@ -18,9 +18,6 @@ system or on S3 storage.}
 
 \item{metadata_file}{One of \code{".zarray"} (Zarr v2) or \code{"zarr.json"} (Zarr v3)
 specifying which metadata file to read.}
-
-\item{s3_client}{A list representing an S3 client.  This should be produced
-by \code{\link[paws.storage:s3]{paws.storage::s3()}}.}
 }
 \description{
 Read consolidated metadata file

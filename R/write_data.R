@@ -264,7 +264,18 @@ write_zarr_array <- function(
   )
   ## read the metadata we just created
   metadata_file <- if (zarr_version == 2L) ".zarray" else "zarr.json"
-  metadata_v3 <- .read_array_metadata(path, metadata_file)
+
+  store_elements <- .create_store(
+    zarr_array_path
+  )
+  zarr_store <- store_elements[["store"]]
+  path_from_store <- store_elements[["path"]]
+
+  metadata_v3 <- .read_array_metadata(
+    path_from_store,
+    metadata_file,
+    zarr_store
+  )
 
   metadata_v3$configured_encoders <- .configure_codecs(
     codecs = metadata_v3$codecs,
@@ -419,9 +430,13 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     )
   }
 
+  store_elements <- .create_store(zarr_array_path)
+  zarr_store <- store_elements[["store"]]
+  path_from_store <- store_elements[["path"]]
   metadata <- .read_array_metadata(
-    zarr_array_path,
-    names(metadata_files)[metadata_files]
+    path_from_store,
+    names(metadata_files)[metadata_files],
+    zarr_store = zarr_store
   )
 
   index <- check_index(index, metadata = metadata)
@@ -501,17 +516,22 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_positions,
   metadata
 ) {
+  store_elements <- .create_store(zarr_array_path)
+  zarr_store <- store_elements[["store"]]
+  path_from_store <- store_elements[["path"]]
+
   ## determine which elements of x are being used and where in this specific
   ## chunk they should be inserted
-  chunk_path <- file.path(zarr_array_path, chunk_name)
+  chunk_path <- paste0(zarr_array_path, chunk_name)
   chunk_info <- chunk_positions[[chunk_name]]
   idx_in_x <- chunk_info$positions
   idx_in_chunk <- chunk_info$index_in_chunk
 
-  if (.file_or_blob_exists(zarr_array_path, s3_client = NULL, chunk_name)) {
+  if (objectstore::store_check_exist(zarr_store, chunk_path)) {
     chunk_in_mem <- read_chunk(
-      chunk_path = chunk_path,
-      metadata = metadata
+      chunk_name = chunk_path,
+      metadata = metadata,
+      zarr_store = zarr_store
     )
   } else {
     chunk_in_mem <- array(
