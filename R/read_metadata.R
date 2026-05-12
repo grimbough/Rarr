@@ -59,14 +59,10 @@ zarr_overview <- function(
   zarr_store <- store_elements[["store"]]
   zarr_array_path <- store_elements[["path"]]
 
-  metadata_files <- c(".zmetadata", ".zarray", "zarr.json") |>
-    setNames(nm = _) |>
-    vapply(
-      function(file) {
-        robstore::store_exists(zarr_store, paste0(zarr_array_path, file))
-      },
-      logical(1L)
-    )
+  metadata_files <- c(".zmetadata", ".zarray", "zarr.json")
+  metadata_files <- paste0(zarr_array_path, metadata_files, recycle0 = TRUE) |>
+    objectstore::store_check_exist(zarr_store, keys = _) |>
+    setNames(metadata_files)
 
   array_metadata_files <- metadata_files[c(".zarray", "zarr.json")]
   group_metadata_files <- metadata_files[c(".zmetadata", "zarr.json")]
@@ -257,7 +253,7 @@ zarr_overview <- function(
 #'
 #' @keywords internal
 .read_array_metadata <- function(zarr_path, metadata_file, zarr_store) {
-  metadata <- robstore::store_get(
+  metadata <- objectstore::store_get(
     zarr_store,
     paste0(zarr_path, metadata_file)
   ) |>
@@ -422,7 +418,10 @@ zarr_overview <- function(
   zarr_store
 ) {
   # At this stage, we are sure the file exists
-  zmeta <- robstore::store_get(zarr_store, paste0(zarr_path, metadata_file)) |>
+  zmeta <- objectstore::store_get(
+    zarr_store,
+    paste0(zarr_path, metadata_file)
+  ) |>
     rawToChar() |>
     fromJSON(simplifyVector = FALSE)
 
@@ -485,14 +484,10 @@ read_zarr_attributes <- function(
   zarr_store <- store_elements[["store"]]
   zarr_path <- store_elements[["path"]]
 
-  exists_attribute_files <- c(".zattrs", "zarr.json") |>
-    setNames(nm = _) |>
-    vapply(
-      function(file) {
-        robstore::store_exists(zarr_store, paste0(zarr_path, file))
-      },
-      logical(1L)
-    )
+  attr_files <- c(".zattrs", "zarr.json")
+  exists_attribute_files <- paste0(zarr_path, attr_files, recycle0 = TRUE) |>
+    objectstore::store_check_exist(zarr_store, keys = _) |>
+    setNames(attr_files)
 
   if (!any(exists_attribute_files)) {
     msg <- paste(
@@ -517,9 +512,9 @@ read_zarr_attributes <- function(
   }
   attribute_file <- names(exists_attribute_files)[exists_attribute_files]
 
-  zattrs <- robstore::store_get(
+  zattrs <- objectstore::store_get(
     zarr_store,
-    paste0(zarr_path, attribute_file)
+    file.path(zarr_path, attribute_file)
   ) |>
     rawToChar() |>
     fromJSON(simplifyVector = FALSE)

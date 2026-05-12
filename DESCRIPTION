@@ -25,7 +25,7 @@ Imports:
     jsonlite,
     lifecycle,
     paws.storage,
-    robstore,
+    objectstore,
     R.utils,
     rlang,
     utils
@@ -39,7 +39,7 @@ Suggests:
 VignetteBuilder:
     knitr
 Remotes:
-    hypertidy/robstore
+    Bisaloo/objectstore
 biocViews: DataImport
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

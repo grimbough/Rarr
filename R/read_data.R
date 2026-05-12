@@ -48,14 +48,10 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
   zarr_store <- store_elements[["store"]]
   zarr_array_path <- store_elements[["path"]]
 
-  metadata_files <- c(".zarray", "zarr.json") |>
-    setNames(nm = _) |>
-    vapply(
-      function(file) {
-        robstore::store_exists(zarr_store, paste0(zarr_array_path, file))
-      },
-      logical(1L)
-    )
+  metadata_files <- c(".zarray", "zarr.json")
+  metadata_files <- paste0(zarr_array_path, metadata_files, recycle0 = TRUE) |>
+    objectstore::store_check_exist(zarr_store, keys = _) |>
+    setNames(metadata_files)
 
   if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
     stop(
@@ -129,13 +125,7 @@ read_data <- function(
   chunk_paths <- paste0(zarr_array_path, chunk_names, recycle0 = TRUE)
 
   ## Vectorized check for chunk existence
-  chunk_exists <- vapply(
-    chunk_paths,
-    function(path) {
-      robstore::store_exists(zarr_store, path)
-    },
-    logical(1L)
-  )
+  chunk_exists <- objectstore::store_check_exist(zarr_store, chunk_paths)
   existing_idx <- which(chunk_exists)
 
   warnings <- list()
@@ -235,7 +225,7 @@ read_chunk <- function(
     message(chunk_path)
   }
 
-  raw_chunk <- robstore::store_get(zarr_store, chunk_path)
+  raw_chunk <- objectstore::store_get(zarr_store, chunk_path)
 
   # Bytes -> Bytes codecs
   for (codec in metadata$configured_decoders[["bytes_bytes"]]) {

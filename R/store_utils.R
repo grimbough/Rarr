@@ -19,7 +19,7 @@
     }
     path_from_store <- s3_path$object
   } else {
-    store <- robstore::local_store(path)
+    store <- objectstore::FilesystemStore(path)
     path_from_store <- ""
   }
 

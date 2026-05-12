@@ -527,7 +527,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   idx_in_x <- chunk_info$positions
   idx_in_chunk <- chunk_info$index_in_chunk
 
-  if (robstore::store_exists(zarr_store, chunk_path)) {
+  if (objectstore::store_check_exist(zarr_store, chunk_path)) {
     chunk_in_mem <- read_chunk(
       chunk_name = chunk_path,
       metadata = metadata,
