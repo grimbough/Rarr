@@ -47,36 +47,11 @@ read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
     s3_client <- .create_s3_client(path = zarr_array_path)
   }
 
-  metadata_files <- .file_or_blob_exists(
-    zarr_array_path,
-    s3_client,
-    c(".zarray", "zarr.json")
-  )
-
-  if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
-    stop(
-      "The path contains both `.zarray` (Zarr V2 specification) and ",
-      "`zarr.json` (Zarr V3 specification) metadata files.\n",
-      "An array or group must conform to either the Zarr V2 or V3 ",
-      "specification.",
-      call. = FALSE
-    )
-  }
-  if (!any(metadata_files)) {
-    stop(
-      "The path does not contain any metadata files. ",
-      "It must contain one of:\n",
-      "  - `.zarray` (Zarr V2 specification)\n",
-      "  - `zarr.json` (Zarr V3 specification)",
-      call. = FALSE
-    )
-  }
-
   metadata <- .read_array_metadata(
     zarr_array_path,
-    names(metadata_files)[metadata_files],
     s3_client = s3_client
   )
+
   if (metadata$node_type == "group") {
     stop(
       "The provided path points to a Zarr group, but `read_zarr_array()` can ",
