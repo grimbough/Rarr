@@ -43,9 +43,7 @@
 read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
   zarr_array_path <- .normalize_array_path(zarr_array_path)
   ## determine if this is a local or S3 array
-  if (is.null(s3_client)) {
-    s3_client <- .create_s3_client(path = zarr_array_path)
-  }
+  s3_client <- s3_client %||% .create_s3_client(path = zarr_array_path)
 
   metadata <- .read_array_metadata(
     zarr_array_path,
