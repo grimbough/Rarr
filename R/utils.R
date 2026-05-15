@@ -155,16 +155,16 @@ check_index <- function(index, metadata) {
 
 .parse_datatype_v3 <- function(typestr) {
   if (is.list(typestr)) {
-    if (typestr$name == "fixed-length-ucs4") {
+    if (typestr$name == "fixed_length_utf32") {
       return(list(
         base_type = "unicode",
-        nbytes = as.integer(typestr$configuration$length_bits / 8L)
+        nbytes = typestr$configuration$length_bytes
       ))
     }
-    if (typestr$name == "fixed-length-ascii") {
+    if (typestr$name == "null_terminated_bytes") {
       return(list(
         base_type = "string",
-        nbytes = as.integer(typestr$configuration$length_bits / 8L)
+        nbytes = typestr$configuration$length_bytes
       ))
     }
     stop(

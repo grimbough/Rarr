@@ -32,15 +32,15 @@
     data_type = switch(
       dt$base_type,
       "unicode" = list(
-        name = "fixed-length-ucs4",
+        name = "fixed_length_utf32",
         configuration = list(
-          length_bits = 8L * dt$nbytes
+          length_bytes = 8L * dt$nbytes
         )
       ),
       "string" = list(
-        name = "fixed-length-ascii",
+        name = "null_terminated_bytes",
         configuration = list(
-          length_bits = 8L * dt$nbytes
+          length_bytes = dt$nbytes
         )
       ),
       "bool" = "bool",
