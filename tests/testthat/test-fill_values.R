@@ -56,7 +56,7 @@ test_that("NA fill-values are understood correctly", {
   )
 
   expect_true(
-    is.na(.read_array_metadata(zarr_na_fill, "zarr.json")$fill_value)
+    is.na(.read_array_metadata(zarr_na_fill)$fill_value)
   )
 
   index <- list(2:3, 2:6)

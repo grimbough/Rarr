@@ -263,25 +263,24 @@ write_zarr_array <- function(
     zarr_version = zarr_version
   )
   ## read the metadata we just created
-  metadata_file <- if (zarr_version == 2L) ".zarray" else "zarr.json"
-  metadata_v3 <- .read_array_metadata(path, metadata_file)
+  metadata <- .read_array_metadata(path)
 
-  metadata_v3$configured_encoders <- .configure_codecs(
-    codecs = metadata_v3$codecs,
+  metadata$configured_encoders <- .configure_codecs(
+    codecs = metadata$codecs,
     operation = "encode"
   )
 
-  same_type_lower_bytesize <- metadata_v3$data_type %in%
+  same_type_lower_bytesize <- metadata$data_type %in%
     c("int8", "int16", "float32")
   lower_bytesize_type <- storage.mode(x) == "double" &&
-    metadata_v3$data_type == "float32"
+    metadata$data_type == "float32"
 
   can_overflow <- same_type_lower_bytesize || lower_bytesize_type
   if (can_overflow) {
-    x <- .truncate_overflow(x, metadata_v3$datatype$nbytes)
+    x <- .truncate_overflow(x, metadata$datatype$nbytes)
   }
 
-  if (metadata_v3$data_type == "bool" && anyNA(x)) {
+  if (metadata$data_type == "bool" && anyNA(x)) {
     warning(
       "Zarr native 'bool' data type does not support NA values. ",
       "NA values will be converted to FALSE. ",
@@ -294,7 +293,7 @@ write_zarr_array <- function(
   index <- lapply(dim(x), seq_len)
 
   ## precompute, for each chunk, the positions in `index` that belong to it
-  chunk_positions <- .chunk_positions_by_chunk(index, metadata_v3)
+  chunk_positions <- .chunk_positions_by_chunk(index, metadata)
   chunk_names <- names(chunk_positions)
   chunk_paths <- paste0(path, chunk_names)
 
@@ -307,7 +306,7 @@ write_zarr_array <- function(
     MoreArgs = list(
       x = x,
       chunk_positions = chunk_positions,
-      metadata = metadata_v3
+      metadata = metadata
     )
   )
 
@@ -395,34 +394,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
   zarr_array_path <- .normalize_array_path(zarr_array_path)
 
-  metadata_files <- setNames(
-    file.exists(paste0(zarr_array_path, c(".zarray", "zarr.json"))),
-    c(".zarray", "zarr.json")
-  )
-
-  if (metadata_files[".zarray"] && metadata_files["zarr.json"]) {
-    stop(
-      "The path contains both `.zarray` (Zarr V2 specification) and ",
-      "`zarr.json` (Zarr V3 specification) metadata files.\n",
-      "An array or group must conform to either the Zarr V2 or V3 ",
-      "specification.",
-      call. = FALSE
-    )
-  }
-  if (!any(metadata_files)) {
-    stop(
-      "The path does not contain any metadata files. ",
-      "It must contain one of:\n",
-      "  - `.zarray` (Zarr V2 specification)\n",
-      "  - `zarr.json` (Zarr V3 specification)",
-      call. = FALSE
-    )
-  }
-
-  metadata <- .read_array_metadata(
-    zarr_array_path,
-    names(metadata_files)[metadata_files]
-  )
+  metadata <- .read_array_metadata(zarr_array_path)
 
   index <- check_index(index, metadata = metadata)
 
