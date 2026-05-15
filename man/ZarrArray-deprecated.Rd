@@ -18,16 +18,3 @@ writeZarrArray(...)
 The DelayedArray backend has moved to a dedicated package: the ZarrArray package
 (\url{https://github.com/Bioconductor/ZarrArray}).
 }
-\examples{
-zarr_path <- system.file(
-  "extdata",
-  "zarr_examples",
-  "column-first",
-  "int32.zarr",
-  package = "Rarr"
-)
-ZarrArray(
-  zarr_path
-)
-
-}
