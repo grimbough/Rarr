@@ -404,9 +404,10 @@ zarr_overview <- function(
 .read_consolidated_metadata <- function(
   zarr_path,
   nodes = c("group", "array"),
-  s3_client
+  s3_client = NULL
 ) {
   zarr_path <- .normalize_array_path(zarr_path)
+  s3_client <- s3_client %||% .create_s3_client(zarr_path)
 
   metadata_file <- .file_or_blob_exists(
     zarr_path,
