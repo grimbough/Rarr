@@ -10,19 +10,6 @@
 #' (<https://github.com/Bioconductor/ZarrArray>).
 #'
 #' @param ... Passed to the new function in the ZarrArray package.
-#'
-#' @examples
-#' zarr_path <- system.file(
-#'   "extdata",
-#'   "zarr_examples",
-#'   "column-first",
-#'   "int32.zarr",
-#'   package = "Rarr"
-#' )
-#' ZarrArray(
-#'   zarr_path
-#' )
-#'
 ZarrArray <- function(...) {
   lifecycle::deprecate_warn(
     when = "1.12.0",
