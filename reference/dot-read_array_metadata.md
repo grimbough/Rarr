@@ -1,11 +1,12 @@
-# Read the .zarray metadata file associated with a Zarr array
+# Read the `.zarray` or `zarr.json` metadata file associated with a Zarr array
 
-Read the .zarray metadata file associated with a Zarr array
+Read the `.zarray` or `zarr.json` metadata file associated with a Zarr
+array
 
 ## Usage
 
 ``` r
-.read_array_metadata(zarr_path, metadata_file, s3_client = NULL)
+.read_array_metadata(zarr_path, s3_client = NULL)
 ```
 
 ## Arguments
@@ -15,11 +16,6 @@ Read the .zarray metadata file associated with a Zarr array
   A character vector of length 1. This provides the path to a Zarr array
   or group of arrays. This can either be on a local file system or on S3
   storage.
-
-- metadata_file:
-
-  One of `".zarray"` (Zarr v2) or `"zarr.json"` (Zarr v3) specifying
-  which metadata file to read.
 
 - s3_client:
 

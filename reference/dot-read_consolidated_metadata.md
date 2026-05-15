@@ -7,9 +7,8 @@ Read consolidated metadata file
 ``` r
 .read_consolidated_metadata(
   zarr_path,
-  metadata_file,
   nodes = c("group", "array"),
-  s3_client
+  s3_client = NULL
 )
 ```
 
@@ -20,11 +19,6 @@ Read consolidated metadata file
   A character vector of length 1. This provides the path to a Zarr array
   or group of arrays. This can either be on a local file system or on S3
   storage.
-
-- metadata_file:
-
-  One of `".zarray"` (Zarr v2) or `"zarr.json"` (Zarr v3) specifying
-  which metadata file to read.
 
 - s3_client:
 

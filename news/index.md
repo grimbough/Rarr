@@ -53,6 +53,13 @@
   cyclomatic complexity in every function back to \<15 and it opens the
   door to further optimizations which now only need to take place in a
   single function.
+- Some code duplication has been removed by moving metadata file
+  existence in the lower-level shared utilities
+  [`.read_array_metadata()`](https://huber-group-embl.github.io/Rarr/reference/dot-read_array_metadata.md)
+  and
+  [`.read_consolidated_metadata()`](https://huber-group-embl.github.io/Rarr/reference/dot-read_consolidated_metadata.md).
+  While this is still discouraged, this also facilitates re-use of the
+  internal functions in other packages (e.g., ZarrArray).
 
 ## Rarr 1.99
 
