@@ -167,18 +167,16 @@ parse_s3_path <- function(path) {
   parsed_url <- parse_s3_path(path)
 
   if (is.null(parsed_url)) {
-    s3_client <- NULL
-  } else {
-    s3_client <- s3(
-      config = list(
-        region = parsed_url$region,
-        endpoint = parsed_url$hostname
-      )
-    )
-
-    s3_client <- .check_credentials(s3_client, parsed_url)
+    return(NULL)
   }
-  return(s3_client)
+  s3_client <- s3(
+    config = list(
+      region = parsed_url$region,
+      endpoint = parsed_url$hostname
+    )
+  )
+
+  .check_credentials(s3_client, parsed_url)
 }
 
 .s3_object_exists <- function(s3_client, Bucket, Key) {
