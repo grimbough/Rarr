@@ -135,27 +135,17 @@ check_index <- function(index, metadata) {
         )
       )
     }
-    stop(
-      "Only base data types (not extensions) are supported for Zarr v3 arrays for now",
-      call. = FALSE
-    )
-  }
-  datatype <- list()
-
-  datatype$base_type <- sub("^([[:alpha:]]+).*", "\\1", typestr)
-
-  # FIXME: it's awkward to have to reconvert to integer after the division
-  datatype$nbytes <- as.integer(
-    as.integer(
-      sub(x = typestr, pattern = "^[^[:digit:]]+", replacement = "")
-    ) /
-      8L
-  )
-  if (is.na(datatype$nbytes)) {
-    datatype$nbytes <- 1L
+    stop("Unsupported data type: ", typestr$name, call. = FALSE)
   }
 
-  return(datatype)
+  entry <- supported_v3_types[[typestr]]
+  if (is.null(entry)) {
+    stop("Unsupported data type: ", typestr, call. = FALSE)
+  }
+  return(list(
+    base_type = entry$base_type,
+    nbytes = entry$nbytes
+  ))
 }
 
 
