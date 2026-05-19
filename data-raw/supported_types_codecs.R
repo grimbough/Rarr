@@ -24,6 +24,7 @@ SUPPORTED_V3_TYPES <- list(
   "float16" = list(base_type = "float", nbytes = 2L),
   "float32" = list(base_type = "float", nbytes = 4L),
   "float64" = list(base_type = "float", nbytes = 8L),
+  "bfloat16" = list(base_type = "bfloat", nbytes = 2L),
   "string" = list(base_type = "string", nbytes = NA_integer_)
 ) |>
   list2env(hash = TRUE, parent = emptyenv())

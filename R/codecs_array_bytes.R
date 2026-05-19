@@ -6,6 +6,16 @@ codec_bytes_decode <- function(
   endian,
   ...
 ) {
+  if (length(datatype$base_type) == 1L && datatype$base_type == "bfloat") {
+    return(.Call(
+      "type_convert_bfloat",
+      input,
+      datatype$nbytes,
+      outer_chunk_dim,
+      endian,
+      PACKAGE = "Rarr"
+    ))
+  }
   convert_bytes_to_array(
     input,
     datatype$base_type,
