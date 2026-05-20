@@ -1,20 +1,35 @@
 {
   "shape": [
-    10,
-    2
+    100
   ],
   "data_type": {
-    "name": "struct",
+    "name": "structured",
     "configuration": {
       "fields": [
-        {
-          "name": "x",
-          "data_type": "int32"
-        },
-        {
-          "name": "y",
-          "data_type": "float32"
-        }
+        [
+          "0",
+          "float32"
+        ],
+        [
+          "1",
+          "float32"
+        ],
+        [
+          "2",
+          "float32"
+        ],
+        [
+          "3",
+          "float32"
+        ],
+        [
+          "4",
+          "float32"
+        ],
+        [
+          "5",
+          "float32"
+        ]
       ]
     }
   },
@@ -22,8 +37,7 @@
     "name": "regular",
     "configuration": {
       "chunk_shape": [
-        5,
-        2
+        100
       ]
     }
   },
@@ -33,16 +47,10 @@
       "separator": "/"
     }
   },
-  "fill_value": {
-    "x": 0,
-    "y": 0.0
-  },
+  "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   "codecs": [
     {
-      "name": "bytes",
-      "configuration": {
-        "endian": "little"
-      }
+      "name": "bytes"
     },
     {
       "name": "zstd",
@@ -52,7 +60,10 @@
       }
     }
   ],
-  "attributes": {},
+  "attributes": {
+    "encoding-type": "rec-array",
+    "encoding-version": "0.2.0"
+  },
   "zarr_format": 3,
   "node_type": "array",
   "storage_transformers": []

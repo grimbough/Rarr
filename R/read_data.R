@@ -142,7 +142,10 @@ read_data <- function(
       y_name = "chunk_selections[[i]][[1]]"
     )
     eval(str2lang(cmd))
-    if (is.list(metadata$data_type) && metadata$data_type$name == "struct") {
+    if (
+      is.list(metadata$data_type) &&
+        metadata$data_type$name %in% c("struct", "structured")
+    ) {
       # Assigning a list drops the dim attribute so we have to continuously add it again
       dim(output) <- lengths(index)
     }
