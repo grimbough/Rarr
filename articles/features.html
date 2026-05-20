@@ -223,12 +223,26 @@ loss of precision due to conversion.</td>
 <td></td>
 </tr>
 <tr class="even">
-<td><code>string</code></td>
+<td>V2 <code>string</code>
+</td>
 <td align="center">✔ / ✔</td>
 <td></td>
 </tr>
 <tr class="odd">
-<td><code>Unicode</code></td>
+<td>V3 <code>null_terminated_bytes</code>
+</td>
+<td align="center">✔ / ✔</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>V2 <code>Unicode</code>
+</td>
+<td align="center">✔ / ✔</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>V3 <code>fixed_length_utf32</code>
+</td>
 <td align="center">✔ / ✔</td>
 <td></td>
 </tr>
@@ -238,8 +252,13 @@ loss of precision due to conversion.</td>
 <td></td>
 </tr>
 <tr class="odd">
-<td>Structured data types</td>
+<td>V2 structured data types</td>
 <td align="center">✔ / ❌</td>
+<td>Only one level of nesting and no arrays for now.</td>
+</tr>
+<tr class="even">
+<td>V3 structured data types</td>
+<td align="center">❌ / ❌</td>
 <td>Only one level of nesting and no arrays for now.</td>
 </tr>
 </tbody>
