@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,12 +46,18 @@
 <li>The name and configuration options for the fixed-length-ascii (<code>|S</code> in Zarr v2) and fixed-length-ucs4 (<code>&lt;U</code> or <code>&gt;U</code> in Zarr v2) data types have been updated to <code>null_terminated_bytes</code> and <code>fixed_length_utf32</code> respectively to match their newly specified format in Zarr v3.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="new-features-2-1">New features<a class="anchor" aria-label="anchor" href="#new-features-2-1"></a></h3>
+<ul><li>
+<a href="https://github.com/zarr-developers/zarr-extensions/tree/main/data-types/struct" class="external-link">Zarr v3 struct datatype</a> (equivalent to Zarr v2 structured datatype) is now supported.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="minor-improvements-2-1">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-2-1"></a></h3>
 <ul><li>
 <code>normalize_array_path()</code> has been slightly optimized for speed. It is not likely to have a significant impact if you reading a single large array but can be noticed if you reading many attributes and small arrays (as in some anndata objects).</li>
 <li>Empty chunks, i.e., chunks were all elements are equal to the fill value, are no longer written by <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>, saving disk space, and improving performance when reading it back.</li>
 <li>More blosc options (<code>clevel</code>, <code>shuffle</code>, etc.) are exposed via <code><a href="../reference/compressors.html">use_blosc()</a></code>.</li>
 <li>Reading VLen-UTF8 arrays (used by default for <code>string</code> in v3) in now much faster after rewriting the vlen-utf8 codec in C.</li>
+<li>Unsupported data types are now caught explicitly and early early in the reading pipeline rather than potentially failing or returning incorrect output later.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-1"></a></h3>
@@ -65,6 +71,7 @@
 <h3 id="internal-changes-2-1">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-2-1"></a></h3>
 <ul><li>A refactor reinforced shared the use of internal functions handling indices across <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code>, <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>, and <code><a href="../reference/update_zarr_array.html">update_zarr_array()</a></code>. Some redundant internal functions have been merged. This reduced the cyclomatic complexity in every function back to &lt;15 and it opens the door to further optimizations which now only need to take place in a single function.</li>
 <li>Some code duplication has been removed by moving metadata file existence in the lower-level shared utilities <code><a href="../reference/dot-read_array_metadata.html">.read_array_metadata()</a></code> and <code><a href="../reference/dot-read_consolidated_metadata.html">.read_consolidated_metadata()</a></code>. While this is still discouraged, this also facilitates re-use of the internal functions in other packages (e.g., ZarrArray).</li>
+<li>Parsing Zarr v2 datatypes and the bytes codec decoding operation are now handled internally by the new <a href="https://cran.r-project.org/package=grumpy" class="external-link">grumpy CRAN package</a>.</li>
 </ul></div>
 </div>
     <div class="section level2">
