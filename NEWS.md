@@ -11,6 +11,11 @@
   updated to `null_terminated_bytes` and `fixed_length_utf32` respectively to
   match their newly specified format in Zarr v3.
 
+## New features
+
+* [Zarr v3 struct datatype](https://github.com/zarr-developers/zarr-extensions/tree/main/data-types/struct)
+  (equivalent to Zarr v2 structured datatype) is now supported.
+
 ## Minor improvements
 
 * `normalize_array_path()` has been slightly optimized for speed. It is not
@@ -23,6 +28,9 @@
 * More blosc options (`clevel`, `shuffle`, etc.) are exposed via `use_blosc()`.
 * Reading VLen-UTF8 arrays (used by default for `string` in v3) in now much 
   faster after rewriting the vlen-utf8 codec in C.
+* Unsupported data types are now caught explicitly and early early in the 
+  reading pipeline rather than potentially failing or returning incorrect
+  output later.
 
 ## Bug fixes
 
@@ -46,6 +54,9 @@
   `.read_consolidated_metadata()`. While this is still discouraged, this also
   facilitates re-use of the internal functions in other packages 
   (e.g., ZarrArray).
+* Parsing Zarr v2 datatypes and the bytes codec decoding operation are now 
+  handled internally by the new 
+  [grumpy CRAN package](https://cran.r-project.org/package=grumpy).
 
 # Rarr 1.99
 
