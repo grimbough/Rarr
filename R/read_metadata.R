@@ -213,6 +213,7 @@ zarr_overview <- function(
 #' @importFrom grumpy parse_npy_datatype
 #'
 #' @keywords internal
+# nolint next: cyclocomp_linter.
 .read_array_metadata <- function(zarr_path, s3_client = NULL) {
   zarr_path <- .normalize_array_path(zarr_path)
 
