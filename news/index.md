@@ -20,6 +20,10 @@
 - [Zarr v3 struct
   datatype](https://github.com/zarr-developers/zarr-extensions/tree/main/data-types/struct)
   (equivalent to Zarr v2 structured datatype) is now supported.
+  [Deprecated Zarr v3 structured
+  datatype](https://github.com/zarr-developers/zarr-extensions/tree/main/data-types/structured)
+  is implemented as well, but only for reading, as per specification for
+  a deprecated type.
 
 ### Minor improvements
 
