@@ -59,10 +59,13 @@ datatype support.  It will be updated as progress is made.
 |`complex`            | &#x274C; / &#x274C; | |
 |`timedelta`          | &#x274C; / &#x274C; | |
 |`datetime`           | &#x274C; / &#x274C; | |
-|`string`             | &#x2714; / &#x2714; | |
-|`Unicode`            | &#x2714; / &#x2714; | |
+| V2 `string`             | &#x2714; / &#x2714; | |
+| V3 `null_terminated_bytes` | &#x2714; / &#x2714; | |
+| V2 `Unicode`            | &#x2714; / &#x2714; | |
+| V3 `fixed_length_utf32` | &#x2714; / &#x2714; | |
 |`void *`             | &#x274C; / &#x274C; | |
-| Structured data types | &#x2714; / &#x274C; | Only one level of nesting and no arrays for now. |
+| V2 structured data types | &#x2714; / &#x274C; | Only one level of nesting and no arrays for now. |
+| V3 structured data types | &#x274C; / &#x274C; | Only one level of nesting and no arrays for now. |
 
 ### Codecs
 
