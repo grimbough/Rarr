@@ -37,5 +37,9 @@ exclusions: list(
       implicit_assignment_linter = Inf,
       nonportable_path_linter = Inf,
       absolute_path_linter = Inf
+    ),
+    "data-raw" = list(
+      missing_package_linter = Inf,
+      namespace_linter = Inf
     )
   )
