@@ -31,16 +31,16 @@ test_that("unicode structured data types", {
 })
 
 test_that("v3 structured data types", {
-  v3_structured_file <- system.file(
+  v3_struct_file <- system.file(
     "extdata",
     "zarr_examples",
     "structured",
-    "structured_v3.zarr",
+    "struct_v3.zarr",
     package = "Rarr"
   )
 
   expect_silent(
-    res <- read_zarr_array(v3_structured_file)
+    res <- read_zarr_array(v3_struct_file)
   )
 
   expect_shape(res, dim = c(10, 2))
@@ -51,5 +51,24 @@ test_that("v3 structured data types", {
     # expect_named(el, c("x", "y"))
     expect_type(el[[1]], "integer")
     expect_type(el[[2]], "double")
+  }
+
+  v3_deprecated_structured_file <- system.file(
+    "extdata",
+    "zarr_examples",
+    "structured",
+    "structured_v3.zarr",
+    package = "Rarr"
+  )
+
+  expect_silent(
+    res <- read_zarr_array(v3_deprecated_structured_file)
+  )
+
+  expect_shape(res, dim = 100)
+  dim(res) <- NULL
+  for (el in res) {
+    expect_length(el, 6L)
+    expect_all_true(vapply(el, is.double, FUN.VALUE = logical(1)))
   }
 })

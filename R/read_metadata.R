@@ -305,7 +305,8 @@ zarr_overview <- function(
   }
   metadata$fill_value <- .update_fill_value(
     metadata$fill_value,
-    metadata$datatype
+    metadata$datatype,
+    metadata$data_type
   )
   if (
     is.list(metadata$data_type) &&
@@ -345,20 +346,38 @@ zarr_overview <- function(
 #'   of: NULL, "NaN", "Infinity" or "-Infinity".
 #'
 #' @keywords internal
-.update_fill_value <- function(fill_value, datatype) {
+.update_fill_value <- function(fill_value, datatype, data_type) {
   if (length(datatype$base_type) > 1L) {
-    return(mapply(
-      function(fill, bt, endian, nbytes) {
-        .update_fill_value(
-          fill,
-          list(base_type = bt, endian = endian, nbytes = nbytes)
+    if (data_type$name == "struct") {
+      return(mapply(
+        function(fill, bt, endian, nbytes) {
+          .update_fill_value(
+            fill,
+            list(base_type = bt, endian = endian, nbytes = nbytes)
+          )
+        },
+        fill_value,
+        datatype$base_type,
+        datatype$endian,
+        datatype$nbytes
+      ))
+    }
+    if (data_type$name == "structured") {
+      decoded_fill_value <- jsonlite::base64_dec(fill_value)
+      fill_value <- vector("list", length(datatype$base_type))
+      for (i in seq_along(datatype$base_type)) {
+        el_fill_value <- decoded_fill_value[seq_len(datatype$nbytes[i])]
+        fill_value[[i]] <- grumpy::convert_bytes_to_array(
+          el_fill_value,
+          datatype$base_type[i],
+          shape = NULL,
+          datatype$nbytes[i],
+          "little"
         )
-      },
-      fill_value,
-      datatype$base_type,
-      datatype$endian,
-      datatype$nbytes
-    ))
+        decoded_fill_value <- decoded_fill_value[-seq_len(datatype$nbytes[i])]
+      }
+      return(fill_value)
+    }
   }
   ## a null fill value implies no missing values.
   ## We set to NA as you can't create an array of NULL in R

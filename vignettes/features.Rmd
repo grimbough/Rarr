@@ -65,7 +65,8 @@ datatype support.  It will be updated as progress is made.
 | V3 `fixed_length_utf32` | &#x2714; / &#x2714; | |
 |`void *`             | &#x274C; / &#x274C; | |
 | V2 structured data types | &#x2714; / &#x274C; | Only one level of nesting and no arrays for now. |
-| V3 structured data types | &#x274C; / &#x274C; | Only one level of nesting and no arrays for now. |
+| V3 structured data types | &#x2714; / &#x274C; | This type is superseded by V3 struct data types.and the specification says implementation MUST NOT implement writing. |
+| V3 struct data types | &#x2714; / &#x274C; | Only one level of nesting and no arrays for now. |
 
 ### Codecs
 

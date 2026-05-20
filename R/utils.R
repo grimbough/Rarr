@@ -135,6 +135,27 @@ check_index <- function(index, metadata) {
         )
       )
     }
+    if (typestr$name == "structured") {
+      internal_types <- lapply(typestr$configuration$fields, function(field) {
+        .parse_datatype_v3(field[[2L]])
+      })
+      return(
+        list(
+          base_type = vapply(
+            internal_types,
+            `[[`,
+            "base_type",
+            FUN.VALUE = character(1L)
+          ),
+          nbytes = vapply(
+            internal_types,
+            `[[`,
+            "nbytes",
+            FUN.VALUE = integer(1L)
+          )
+        )
+      )
+    }
     stop("Unsupported data type: ", typestr$name, call. = FALSE)
   }
 
