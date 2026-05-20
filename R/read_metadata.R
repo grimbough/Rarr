@@ -346,6 +346,7 @@ zarr_overview <- function(
 #'   of: NULL, "NaN", "Infinity" or "-Infinity".
 #'
 #' @keywords internal
+#' @noRd
 .update_fill_value <- function(fill_value, datatype, data_type) {
   if (length(datatype$base_type) > 1L) {
     if (data_type$name == "struct") {
