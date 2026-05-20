@@ -10,6 +10,10 @@
   etc. is now set to `NULL` instead of missing. In practice, we expect
   this grant to be invisible to most users but it makes it easier to
   pass down missing values in Rarr reverse dependencies.
+- The name and configuration options for the fixed-length-ascii (`|S` in
+  Zarr v2) and fixed-length-ucs4 (`<U` or `>U` in Zarr v2) data types
+  have been updated to `null_terminated_bytes` and `fixed_length_utf32`
+  respectively to match their newly specified format in Zarr v3.
 
 ### Minor improvements
 
