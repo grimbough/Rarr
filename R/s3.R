@@ -13,7 +13,7 @@ parse_s3_path <- function(path) {
 }
 
 .determine_s3_provider <- function(path) {
-  if (!grepl(pattern = "(^https?://)|(^s3://)", x = path)) {
+  if (!any(startsWith(path, c("http://", "https://", "s3://")))) {
     return(NULL)
   }
 
