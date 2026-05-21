@@ -492,11 +492,10 @@ zarr_overview <- function(
   }
 
   if (metadata_file[".zmetadata"]) {
-    arrays <- grep(
+    arrays <- names(zmeta$metadata)[endsWith(
       names(zmeta$metadata),
-      pattern = "/\\.zarray$",
-      value = TRUE
-    )
+      "/.zarray"
+    )]
     zmeta$metadata[arrays] <- lapply(
       zmeta$metadata[arrays],
       function(metadata) {
