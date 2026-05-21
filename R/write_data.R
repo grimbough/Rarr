@@ -595,14 +595,15 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     stop("The dimensions of the chunk must equal the dimensions of the array.")
   }
 
-  for (i in seq_along(x_dim)) {
-    # spec says:
-    # "The chunk shape elements are non-zero when the corresponding dimensions
-    # of the arrays have non-zero length."
-    if ((x_dim[i] < chunk_dim[i]) || (chunk_dim[i] == 0L && x_dim[i] != 0L)) {
-      stop("Chunk dimensions outside the extent of the array")
-    }
+  oversized_chunk <- any(chunk_dim > x_dim)
+  if (oversized_chunk) {
+    # One valid use case is nullable arrays in anndata.
+    warning(
+      "Chunk dimensions are larger than array dimensions. ",
+      "This is allowed by the Zarr specification but may lead to inefficient storage and retrieval.\n",
+      "In most cases, this is likely to be a mistake. Please check your `chunk_dim` argument.",
+      call. = FALSE
+    )
   }
-
-  return(invisible(TRUE))
+  return(invisible(!oversized_chunk))
 }
