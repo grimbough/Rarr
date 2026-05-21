@@ -27,7 +27,7 @@
     )
   )
   array_array_codecs <- intersect(codecs_names, "transpose")
-  array_bytes_codecs <- intersect(codecs_names, c("bytes", "vlen_utf8"))
+  array_bytes_codecs <- intersect(codecs_names, c("bytes", "vlen-utf8"))
 
   unsupported_codecs <- setdiff(
     codecs_names,

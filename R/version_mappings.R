@@ -104,9 +104,6 @@
   }
 
   if (!is.null(metadata_v3$codecs[["vlen-utf8"]])) {
-    # Fix name to avoid dash in function name
-    metadata_v3$codecs[["vlen_utf8"]] <- metadata_v3$codecs[["vlen-utf8"]]
-    metadata_v3$codecs[["vlen-utf8"]] <- NULL
     # In v3, vlen-utf8 applies to 'string' type
     metadata_v3$data_type <- "string"
     metadata_v3$datatype$base_type <- "string"

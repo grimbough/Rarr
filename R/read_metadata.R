@@ -117,7 +117,7 @@ zarr_overview <- function(
   # through it if we are dealing with consolidated metadata.
   names(array_metadata$codecs) <- vapply(
     array_metadata$codecs,
-    function(x) gsub("-", "_", x$name, fixed = TRUE),
+    function(x) x$name,
     character(1L)
   )
 
@@ -267,7 +267,7 @@ zarr_overview <- function(
     # 'name' MUST be a plain string.
     names(metadata$codecs) <- vapply(
       metadata$codecs,
-      function(x) gsub("-", "_", x$name, fixed = TRUE),
+      function(x) x$name,
       character(1L)
     )
     if (length(metadata$shape) == 0L) {

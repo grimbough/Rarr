@@ -47,7 +47,7 @@ codec_bytes_encode <- function(input, datatype, endian) {
 
 
 # -- Variable-length UTF-8 ------------------------
-codec_vlen_utf8_encode <- function(input, ...) {
+`codec_vlen-utf8_encode` <- function(input, ...) {
   raw_nvalues <- writeBin(length(input), raw(), size = 4L, endian = "little")
   # charToRaw() converts NA_character_ to "NA"
   raw_strings <- lapply(input, function(x) charToRaw(enc2utf8(x)))
@@ -66,6 +66,6 @@ codec_vlen_utf8_encode <- function(input, ...) {
   return(raw_vlen_utf8)
 }
 
-codec_vlen_utf8_decode <- function(input, chunk_dim, ...) {
+`codec_vlen-utf8_decode` <- function(input, chunk_dim, ...) {
   .Call("codec_vlen_utf8_decode_c", input, chunk_dim, PACKAGE = "Rarr")
 }
