@@ -16,24 +16,10 @@ parse_s3_path <- function(path) {
   if (!any(startsWith(path, c("http://", "https://", "s3://")))) {
     return(NULL)
   }
-
-  matches <- regmatches(
-    x = path,
-    m = regexpr(
-      pattern = "(amazonaws\\.com)|(embl\\.de)",
-      text = path
-    )
-  )
-  if (!length(matches)) {
-    matches <- "other"
+  if (grepl("amazonaws.com", path, fixed = TRUE)) {
+    return("aws")
   }
-  provider <- switch(
-    matches,
-    "amazonaws.com" = "aws",
-    "embl.de" = "other",
-    "other"
-  )
-  return(provider)
+  return("other")
 }
 
 #' @keywords internal
