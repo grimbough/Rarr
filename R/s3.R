@@ -1,25 +1,11 @@
 parse_s3_path <- function(path) {
-  s3_provider <- .determine_s3_provider(path)
-
-  if (is.null(s3_provider)) {
-    parsed_url <- NULL
-  } else if (s3_provider == "aws") {
-    parsed_url <- .url_parse_aws(path)
-  } else {
-    parsed_url <- .url_parse_other(path)
-  }
-
-  return(parsed_url)
-}
-
-.determine_s3_provider <- function(path) {
   if (!any(startsWith(path, c("http://", "https://", "s3://")))) {
     return(NULL)
   }
   if (grepl("amazonaws.com", path, fixed = TRUE)) {
-    return("aws")
+    return(.url_parse_aws(path))
   }
-  return("other")
+  return(.url_parse_other(path))
 }
 
 #' @keywords internal
