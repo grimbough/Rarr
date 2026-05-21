@@ -32,6 +32,8 @@
 * Unsupported data types are now caught explicitly and early early in the 
   reading pipeline rather than potentially failing or returning incorrect
   output later.
+* Chunks larger than the whole array in one or multiple dimensions are now
+  permitted, based on a request by Artür Manukyan.
 
 ## Bug fixes
 
