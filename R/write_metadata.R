@@ -152,3 +152,120 @@ write_zarr_attributes <- function(
 
   invisible(new.zattrs)
 }
+
+#' Consolidate Zarr metadata files into a single file
+#'
+#' This function reads all the metadata files in a Zarr store and consolidates them into a single file.
+#' Thanks to this, a single request can be made to retrieve all the elements and their related metadata for a Zarr store,
+#' which is especially beneficial for remote stores like S3.
+#'
+#' @param zarr_store_path A character vector of length 1. This provides the path to a Zarr store.
+#' @inheritParams zarr_overview
+#' @param action A character string specifying the action to take with the consolidated metadata.
+#'   If `"write"` (the default), the consolidated metadata will be written back to the Zarr store.
+#'   If `"return"`, the consolidated metadata will be returned as a list without writing it back to the store.
+#'   The latter is particularly useful for non-writable stores.
+#'
+#' @returns If `action` is `"return"`, a list containing the consolidated metadata.
+#'   Otherwise, the function is called for its side effect and `NULL` is returned invisibly.
+#'
+#' @importFrom jsonlite fromJSON read_json
+#' @export
+#'
+zarr_consolidate_metadata <- function(
+  zarr_store_path,
+  s3_client = NULL,
+  action = c("write", "return")
+) {
+  action <- match.arg(action)
+
+  zarr_store_path <- .normalize_array_path(zarr_store_path)
+  s3_client <- s3_client %||% .create_s3_client(zarr_store_path)
+
+  # FIXME: this can be greatly simplified once we have the store abstraction in place.
+  if (is.null(s3_client)) {
+    child_meta <- list.files(
+      zarr_store_path,
+      recursive = TRUE,
+      include.dirs = TRUE,
+      all.files = TRUE
+    )
+  } else {
+    if (action == "write") {
+      warning(
+        "Consolidating metadata on S3 is not currently supported. Returning consolidated metadata instead.",
+        call. = FALSE
+      )
+      action <- "return"
+    }
+    child_meta <- s3_client$list_objects(zarr_store_path, recursive = TRUE)
+  }
+
+  # v2 or v3?
+  metadata_v2_files <- endsWith(child_meta, ".zarray") |
+    endsWith(child_meta, ".zgroup") |
+    endsWith(child_meta, ".zattrs")
+  metadata_v3_files <- endsWith(child_meta, "zarr.json")
+  if (any(metadata_v2_files) && any(metadata_v3_files)) {
+    stop(
+      "Found both v2 and v3 metadata files. Please resolve this conflict before consolidating metadata.",
+      call. = FALSE
+    )
+  }
+  version <- if (any(metadata_v2_files)) 2L else 3L
+  metadata_files <- child_meta[metadata_v2_files | metadata_v3_files]
+
+  consolidated <- lapply(
+    paste0(zarr_store_path, metadata_files),
+    function(path) {
+      if (is.null(s3_client)) {
+        metadata <- read_json(path)
+      } else {
+        parsed_url <- parse_s3_path(path)
+        s3_object <- s3_client$get_object(
+          Bucket = parsed_url$bucket,
+          Key = parsed_url$object
+        )
+        metadata <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
+      }
+      return(metadata)
+    }
+  )
+
+  if (version == 2L) {
+    res <- list(
+      zarr_consolidated_format = 1L,
+      metadata = setNames(consolidated, metadata_files)
+    )
+  } else {
+    attrs <- read_zarr_attributes(zarr_store_path, s3_client = s3_client)
+    res <- list(
+      zarr_format = 3L,
+      node_type = "group",
+      attributes = attrs,
+      consolidated_metadata = list(
+        kind = "inline",
+        must_understand = FALSE,
+        metadata = setNames(consolidated, dirname(metadata_files))
+      )
+    )
+  }
+
+  if (action == "return") {
+    return(res)
+  }
+
+  if (version == 2L) {
+    consolidated_path <- paste0(zarr_store_path, ".zmetadata")
+  } else {
+    consolidated_path <- paste0(zarr_store_path, "zarr.json")
+  }
+
+  write_json(
+    res,
+    consolidated_path,
+    auto_unbox = TRUE,
+    pretty = 4L,
+    null = "null"
+  )
+}
