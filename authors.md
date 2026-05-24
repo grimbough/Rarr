@@ -14,6 +14,7 @@
 - **Sharla Gelfand**. Contributor.
 
 - **German Network for Bioinformatics Infrastructure - de.NBI**. Funder.
+  [![ROR](https://raw.githubusercontent.com/ror-community/ror-logos/main/ror-icon-rgb.svg)](https://ror.org/01vmpm840)
 
 ## Citation
 
