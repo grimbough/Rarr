@@ -165,6 +165,9 @@ write_zarr_attributes <- function(
 #'   If `"write"` (the default), the consolidated metadata will be written back to the Zarr store.
 #'   If `"return"`, the consolidated metadata will be returned as a list without writing it back to the store.
 #'   The latter is particularly useful for non-writable stores.
+#' @param overwrite A logical value (default `TRUE`) indicating whether to overwrite existing
+#'   consolidated metadata when `action` is `"write"`. If `FALSE` and consolidated metadata
+#'   already exists, an error will be raised.
 #'
 #' @returns If `action` is `"return"`, a list containing the consolidated metadata.
 #'   Otherwise, the function is called for its side effect and `NULL` is returned invisibly.
@@ -204,12 +207,30 @@ write_zarr_attributes <- function(
 zarr_consolidate_metadata <- function(
   zarr_store_path,
   s3_client = NULL,
-  action = c("write", "return")
+  action = c("write", "return"),
+  overwrite = TRUE
 ) {
   action <- match.arg(action)
 
   zarr_store_path <- .normalize_array_path(zarr_store_path)
   s3_client <- s3_client %||% .create_s3_client(zarr_store_path)
+
+  if (action == "write" && !overwrite) {
+    exists <- !is.null(
+      .read_consolidated_metadata(
+        zarr_store_path,
+        s3_client = s3_client
+      )
+    )
+    if (exists) {
+      # TODO: return current consolidated metadata
+      stop(
+        "Consolidated metadata already exists. ",
+        "Set `overwrite = TRUE` to overwrite it.",
+        call. = FALSE
+      )
+    }
+  }
 
   # FIXME: this can be greatly simplified once we have the store abstraction in place.
   if (is.null(s3_client)) {
