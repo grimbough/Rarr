@@ -16,6 +16,15 @@
 * [Zarr v3 struct datatype](https://github.com/zarr-developers/zarr-extensions/tree/main/data-types/struct)
   (equivalent to Zarr v2 structured datatype) is now supported. 
   [Deprecated Zarr v3 structured datatype](https://github.com/zarr-developers/zarr-extensions/tree/main/data-types/structured) is implemented as well, but only for reading, as per specification for a deprecated type.
+* The new `zarr_consolidate_metadata()` function consolidates metadata of all
+  elements under a given group in its associated `.zmetadata` (for Zarr v2 
+  trees) or `zarr.json` (for Zarr v3 trees).
+  Creating this consolidated metadata has two benefits:
+  - better performance: the metadata of all elements under a group can be 
+    accessed more efficiently since a single file needs to be read instead of
+    multiple smaller files.
+  - easier direct access of all the elements in a remote S3 store, even though
+    Rarr doesn't have yet store-agnostic verbs to list, read, etc. elements. 
 
 ## Minor improvements
 
