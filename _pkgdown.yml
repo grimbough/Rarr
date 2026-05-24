@@ -14,6 +14,11 @@ reference:
       - write_zarr_attributes
       - update_zarr_array
       - create_empty_zarr_array
+      - zarr_consolidate_metadata
+  - title: "Zarr stores and groups utilities"
+    contents:
+      - zarr_overview
+      - zarr_consolidate_metadata
   - title: "Compression helpers"
     contents:
       - starts_with("use_")
