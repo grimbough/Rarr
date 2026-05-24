@@ -217,9 +217,12 @@ zarr_consolidate_metadata <- function(
 
   if (action == "write" && !overwrite) {
     exists <- !is.null(
-      .read_consolidated_metadata(
-        zarr_store_path,
-        s3_client = s3_client
+      suppressWarnings(
+        # We don't want to see the warning about empty consolidated metadata.
+        .read_consolidated_metadata(
+          zarr_store_path,
+          s3_client = s3_client
+        )
       )
     )
     if (exists) {
