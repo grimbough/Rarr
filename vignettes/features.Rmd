@@ -74,9 +74,9 @@ datatype support.  It will be updated as progress is made.
 
 | Library     | Status<br/>(reading / writing) | Notes |
 |-------------|:-------------------:|-------|
-|`zlib / gzip`| &#x2714; / &#x2714; | Only system default compression level (normally 6) is enabled for writing. |
-|`bzip2`      | &#x2714; / &#x2714; | Only compression level 9 is enabled for writing. |
-|`blosc`      | &#x2714; / &#x2714; | Only `lz4` compression level 5 is enabled for writing. |
+|`zlib / gzip`| &#x2714; / &#x2714; | |
+|`bzip2`      | &#x2714; / &#x2714; | |
+|`blosc`      | &#x2714; / &#x2714; | |
 |`LZMA `      | &#x2714; / &#x2714; | |
 |`LZ4`        | &#x2714; / &#x2714; | |
 |`Zstd`       | &#x2714; / &#x2714; | |
