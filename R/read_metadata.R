@@ -1,4 +1,4 @@
-#' Print a summary of a Zarr array
+#' Print a summary of a Zarr array or group
 #'
 #' When reading a Zarr array using [read_zarr_array()] it is necessary to know
 #' it's shape and size. `zarr_overview()` can be used to get a quick overview of
