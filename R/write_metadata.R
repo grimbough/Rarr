@@ -204,6 +204,7 @@ write_zarr_attributes <- function(
 #' zarr_consolidate_metadata(zarr_v2, action = "write")
 #' zarr_overview(zarr_v2)
 #'
+# nolint next: cyclocomp_linter.
 zarr_consolidate_metadata <- function(
   zarr_store_path,
   s3_client = NULL,
