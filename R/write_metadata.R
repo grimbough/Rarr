@@ -172,6 +172,35 @@ write_zarr_attributes <- function(
 #' @importFrom jsonlite fromJSON read_json
 #' @export
 #'
+#' @examples
+#' # v2
+#' zarr_v2 <- withr::local_tempfile(fileext = ".zarr")
+#' dir.create(zarr_v2)
+#' jsonlite::write_json(
+#'   list("zarr_format" = 2L),
+#'   file.path(zarr_v2, ".zgroup")
+#' )
+#' write_zarr_array(
+#'   array(1:4, dim = c(2, 2)),
+#'   file.path(zarr_v2, "array1"),
+#'   chunk_dim = c(1, 2),
+#'   zarr_version = 2L
+#' )
+#' write_zarr_array(
+#'   array(c(3.14, 42.42, 12.96, 7.89), dim = c(2, 2)),
+#'   file.path(zarr_v2, "array2"),
+#'   chunk_dim = c(1, 2),
+#'   zarr_version = 2L
+#' )
+#' write_zarr_attributes(
+#'  file.path(zarr_v2, "array1"),
+#'  list(description = "This is array 1")
+#' )
+#' zarr_consolidate_metadata(zarr_v2, action = "return")
+#'
+#' zarr_consolidate_metadata(zarr_v2, action = "write")
+#' zarr_overview(zarr_v2)
+#'
 zarr_consolidate_metadata <- function(
   zarr_store_path,
   s3_client = NULL,
