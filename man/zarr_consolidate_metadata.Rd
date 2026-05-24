@@ -7,7 +7,8 @@
 zarr_consolidate_metadata(
   zarr_store_path,
   s3_client = NULL,
-  action = c("write", "return")
+  action = c("write", "return"),
+  overwrite = TRUE
 )
 }
 \arguments{
@@ -20,6 +21,10 @@ by \code{\link[paws.storage:s3]{paws.storage::s3()}}.}
 If \code{"write"} (the default), the consolidated metadata will be written back to the Zarr store.
 If \code{"return"}, the consolidated metadata will be returned as a list without writing it back to the store.
 The latter is particularly useful for non-writable stores.}
+
+\item{overwrite}{A logical value (default \code{TRUE}) indicating whether to overwrite existing
+consolidated metadata when \code{action} is \code{"write"}. If \code{FALSE} and consolidated metadata
+already exists, an error will be raised.}
 }
 \value{
 If \code{action} is \code{"return"}, a list containing the consolidated metadata.
