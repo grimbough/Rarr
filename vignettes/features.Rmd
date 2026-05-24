@@ -44,29 +44,29 @@ datatype support.  It will be updated as progress is made.
 
 | Zarr Data Type | Status<br/>(reading / writing) | Notes |
 |----------------|:------------------------------:|-------|
-|`boolean`       | &#x2714; / &#x2714;            |       |
-|`int8`          | &#x2714; / &#x2714;            |       |
-|`uint8`         | &#x2714; / &#x2714;            |       |
-|`int16`         | &#x2714; / &#x2714;            |       |
-|`uint16`        | &#x2714; / &#x2714;            |       |
-|`int32`         | &#x2714; / &#x2714;            |       |
-|`uint32`        | &#x2714; / &#x2714;            | Values outside the range of `int32` are converted to `NA`.  Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
-|`int64` | &#x2714; / &#x2714; | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
-|`uint64`| &#x2714; / &#x2714; | Values outside the range of `int32` are converted to `NA`. Future plan is to allow conversion to `double` or use the [bit64](https://cran.r-project.org/package=bit64) package. |
-|`half` / `float16`   | &#x2714; / &#x274C; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion.  |
-|`single` / `float32` | &#x2714; / &#x2714; | Converted to `double` in R.  No effort is made to assess loss of precision due to conversion. |
-|`double` / `float64` | &#x2714; / &#x2714; | |
+|`boolean`       | &#x2714; / &#x2714;            | (via `{grumpy}`) |
+|`int8`          | &#x2714; / &#x2714;            | (via `{grumpy}`) |
+|`uint8`         | &#x2714; / &#x2714;            | (via `{grumpy}`) |
+|`int16`         | &#x2714; / &#x2714;            | (via `{grumpy}`) |
+|`uint16`        | &#x2714; / &#x2714;            | (via `{grumpy}`) |
+|`int32`         | &#x2714; / &#x2714;            | (via `{grumpy}`) |
+|`uint32`        | &#x2714; / &#x2714;            | (via `{grumpy}`) |
+|`int64`         | &#x2714; / &#x2714;            | (via `{grumpy}`) |
+|`uint64`        | &#x2714; / &#x2714;            | (via `{grumpy}`) |
+|`half` / `float16`   | &#x2714; / &#x274C; | (via `{grumpy}`) |
+|`single` / `float32` | &#x2714; / &#x2714; | (via `{grumpy}`) |
+|`double` / `float64` | &#x2714; / &#x2714; | (via `{grumpy}`) |
 |`complex`            | &#x274C; / &#x274C; | |
 |`timedelta`          | &#x274C; / &#x274C; | |
 |`datetime`           | &#x274C; / &#x274C; | |
-| V2 `string`             | &#x2714; / &#x2714; | |
-| V3 `null_terminated_bytes` | &#x2714; / &#x2714; | |
-| V2 `Unicode`            | &#x2714; / &#x2714; | |
-| V3 `fixed_length_utf32` | &#x2714; / &#x2714; | |
+| V2 `string`             | &#x2714; / &#x2714; | (via `{grumpy}`) |
+| V3 `null_terminated_bytes` | &#x2714; / &#x2714; | (via `{grumpy}`) |
+| V2 `Unicode`            | &#x2714; / &#x2714; | (via `{grumpy}`) |
+| V3 `fixed_length_utf32` | &#x2714; / &#x2714; | (via `{grumpy}`) |
 |`void *`             | &#x274C; / &#x274C; | |
-| V2 structured data types | &#x2714; / &#x274C; | Only one level of nesting and no arrays for now. |
-| V3 structured data types | &#x2714; / &#x274C; | This type is superseded by V3 struct data types.and the specification says implementation MUST NOT implement writing. |
-| V3 struct data types | &#x2714; / &#x274C; | Only one level of nesting and no arrays for now. |
+| V2 structured data types | &#x2714; / &#x274C; | (via `{grumpy}`) |
+| V3 structured data types | &#x2714; / &#x274C; | This type is superseded by V3 struct data types.and the specification says implementation MUST NOT implement writing. (via `{grumpy}`) |
+| V3 struct data types | &#x2714; / &#x274C; | (via `{grumpy}`) |
 
 ### Codecs
 
@@ -87,7 +87,7 @@ Please open an [issue](https://github.com/Huber-group-EMBL/Rarr/issues) if suppo
 
 | Codec     | Status<br/>(reading / writing) | Notes |
 |-----------|:------------------------------:|-------|
-|`endian`   | &#x2714; / &#x274C;            |       |
+|`endian`   | &#x2714; / &#x274C;            | (via `{grumpy}`) |
 |`transpose`| &#x2714; / &#x2714;            |       |
 |`VLen-UTF8`| &#x2714; / &#x2714; *          | Writing supported only via `update_zarr_array()` |
 
