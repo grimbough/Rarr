@@ -60,7 +60,7 @@
 
       <h1>Supported Zarr features in Rarr</h1>
             
-            <h4 data-toc-skip class="date">21 May 2026</h4>
+            <h4 data-toc-skip class="date">24 May 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/features.Rmd" class="external-link"><code>vignettes/features.Rmd</code></a></small>
       <div class="d-none name"><code>features.Rmd</code></div>
@@ -136,76 +136,68 @@ progress is made.</p>
 <tr class="odd">
 <td><code>boolean</code></td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td><code>int8</code></td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="odd">
 <td><code>uint8</code></td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td><code>int16</code></td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="odd">
 <td><code>uint16</code></td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td><code>int32</code></td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="odd">
 <td><code>uint32</code></td>
 <td align="center">✔ / ✔</td>
-<td>Values outside the range of <code>int32</code> are converted to
-<code>NA</code>. Future plan is to allow conversion to
-<code>double</code> or use the <a href="https://cran.r-project.org/package=bit64" class="external-link">bit64</a> package.</td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td><code>int64</code></td>
 <td align="center">✔ / ✔</td>
-<td>Values outside the range of <code>int32</code> are converted to
-<code>NA</code>. Future plan is to allow conversion to
-<code>double</code> or use the <a href="https://cran.r-project.org/package=bit64" class="external-link">bit64</a> package.</td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="odd">
 <td><code>uint64</code></td>
 <td align="center">✔ / ✔</td>
-<td>Values outside the range of <code>int32</code> are converted to
-<code>NA</code>. Future plan is to allow conversion to
-<code>double</code> or use the <a href="https://cran.r-project.org/package=bit64" class="external-link">bit64</a> package.</td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td>
 <code>half</code> / <code>float16</code>
 </td>
 <td align="center">✔ / ❌</td>
-<td>Converted to <code>double</code> in R. No effort is made to assess
-loss of precision due to conversion.</td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="odd">
 <td>
 <code>single</code> / <code>float32</code>
 </td>
 <td align="center">✔ / ✔</td>
-<td>Converted to <code>double</code> in R. No effort is made to assess
-loss of precision due to conversion.</td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td>
 <code>double</code> / <code>float64</code>
 </td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="odd">
 <td><code>complex</code></td>
@@ -226,25 +218,25 @@ loss of precision due to conversion.</td>
 <td>V2 <code>string</code>
 </td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="odd">
 <td>V3 <code>null_terminated_bytes</code>
 </td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td>V2 <code>Unicode</code>
 </td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="odd">
 <td>V3 <code>fixed_length_utf32</code>
 </td>
 <td align="center">✔ / ✔</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td><code>void *</code></td>
@@ -254,18 +246,19 @@ loss of precision due to conversion.</td>
 <tr class="odd">
 <td>V2 structured data types</td>
 <td align="center">✔ / ❌</td>
-<td>Only one level of nesting and no arrays for now.</td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td>V3 structured data types</td>
 <td align="center">✔ / ❌</td>
 <td>This type is superseded by V3 struct data types.and the
-specification says implementation MUST NOT implement writing.</td>
+specification says implementation MUST NOT implement writing. (via
+<a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="odd">
 <td>V3 struct data types</td>
 <td align="center">✔ / ❌</td>
-<td>Only one level of nesting and no arrays for now.</td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 </tbody>
 </table>
@@ -343,7 +336,7 @@ support for a required compression codec is missing.</p>
 <tr class="odd">
 <td><code>endian</code></td>
 <td align="center">✔ / ❌</td>
-<td></td>
+<td>(via <a href="https://hugogruson.fr/grumpy/" class="external-link">grumpy</a>)</td>
 </tr>
 <tr class="even">
 <td><code>transpose</code></td>
