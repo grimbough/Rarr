@@ -1,4 +1,4 @@
-# Print a summary of a Zarr array
+# Print a summary of a Zarr array or group
 
 When reading a Zarr array using
 [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md)

@@ -97,7 +97,7 @@ zarr_example <- system.file(
 #### Exploring the data
 
 We can get an summary of the array properties, such as its shape and
-datatype, using the function
+datatype, or group properties, using the function
 [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md)[^2].
 
 ``` r
@@ -574,7 +574,7 @@ contents is as expected.
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] Rarr_2.1.13      BiocStyle_2.41.0
+    ## [1] Rarr_2.1.14      BiocStyle_2.41.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] vctrs_0.7.3         crayon_1.5.3        cli_3.6.6          
@@ -596,7 +596,8 @@ contents is as expected.
 [^1]: you only need to do the installation step once
 
 [^2]: This is essentially reading and formatting the array metadata that
-    accompanies any Zarr array.
+    accompanies any Zarr array, or the consolidated metadata if present
+    in the case of a Zarr group.
 
 [^3]: **Rarr** is currently limited to writing Zarr arrays using data
     types native to R, rather than the full range provided by other
