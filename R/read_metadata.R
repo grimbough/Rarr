@@ -507,10 +507,23 @@ zarr_overview <- function(
         )
       }
     )
-    return(zmeta)
+    if (length(zmeta$metadata) == 0L) {
+      warning(
+        "The consolidated metadata file was found but was empty. ",
+        "Consider filling it with `zarr_consolidate_metadata()`.",
+        call. = FALSE
+      )
+    }
   }
   if (identical(zmeta$node_type, "group")) {
     zmeta <- zmeta$consolidated_metadata
+    if (length(zmeta$metadata) == 0L) {
+      warning(
+        "The consolidated metadata file was found but was empty. ",
+        "Consider filling it with `zarr_consolidate_metadata()`.",
+        call. = FALSE
+      )
+    }
     return(zmeta)
   }
 }

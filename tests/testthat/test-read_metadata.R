@@ -128,10 +128,8 @@ test_that("zarr_overview doesn't choke on empty consolidated metadata", {
     "empty_consolidated.zarr",
     package = "Rarr"
   )
-
-  expect_no_condition(
-    zarr_overview(zarr_empty_consolidated)
-  )
+  zarr_overview(zarr_empty_consolidated) |>
+    expect_warning("The consolidated metadata file was found but was empty.")
 })
 
 test_that("zarr_overview console output matches snapshot for v3 metadata", {
