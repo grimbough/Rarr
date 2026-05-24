@@ -30,7 +30,7 @@ Other contributors:
 \itemize{
   \item Artür Manukyan [contributor]
   \item Sharla Gelfand [contributor]
-  \item German Network for Bioinformatics Infrastructure - de.NBI [funder]
+  \item German Network for Bioinformatics Infrastructure - de.NBI (\href{https://ror.org/01vmpm840}{ROR}) [funder]
 }
 
 }
