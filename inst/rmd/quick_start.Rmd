@@ -39,9 +39,10 @@ zarr_example <- system.file(
 ```
 
 ### Exploring the data
-We can get an summary of the array properties, such as its shape and datatype,
+
+We can get an summary of the array properties, such as its shape and datatype, or group properties,
 using the function `zarr_overview()`^[This is essentially reading and formatting
-the array metadata that accompanies any Zarr array.].
+the array metadata that accompanies any Zarr array, or the consolidated metadata if present in the case of a Zarr group.].
 
 ```{r, overview-1}
 zarr_overview(zarr_example)
