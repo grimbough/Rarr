@@ -35,4 +35,5 @@ Other contributors:
 
 - Sharla Gelfand \[contributor\]
 
-- German Network for Bioinformatics Infrastructure - de.NBI \[funder\]
+- German Network for Bioinformatics Infrastructure - de.NBI
+  ([ROR](https://ror.org/01vmpm840)) \[funder\]
