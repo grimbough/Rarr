@@ -507,25 +507,20 @@ zarr_overview <- function(
         )
       }
     )
-    if (length(zmeta$metadata) == 0L) {
-      warning(
-        "The consolidated metadata file was found but was empty. ",
-        "Consider filling it with `zarr_consolidate_metadata()`.",
-        call. = FALSE
-      )
+  } else {
+    if (zmeta$node_type == "array") {
+      return(NULL)
     }
-  }
-  if (identical(zmeta$node_type, "group")) {
     zmeta <- zmeta$consolidated_metadata
-    if (length(zmeta$metadata) == 0L) {
-      warning(
-        "The consolidated metadata file was found but was empty. ",
-        "Consider filling it with `zarr_consolidate_metadata()`.",
-        call. = FALSE
-      )
-    }
-    return(zmeta)
   }
+  if (length(zmeta$metadata) == 0L) {
+    warning(
+      "The consolidated metadata file was found but was empty. ",
+      "Consider filling it with `zarr_consolidate_metadata()`.",
+      call. = FALSE
+    )
+  }
+  return(zmeta)
 }
 
 #' Read the attributes associated with a Zarr array or group
