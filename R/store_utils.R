@@ -62,6 +62,19 @@
   return(is_present)
 }
 
+.store_list <- function(path, recursive, s3_client) {
+  if (is.null(s3_client)) {
+    list.files(
+      path,
+      recursive = recursive,
+      include.dirs = TRUE,
+      all.files = TRUE
+    )
+  } else {
+    s3_client$list_objects(path, recursive = recursive)
+  }
+}
+
 #' Read a JSON file from local disk or S3
 #'
 #' @param path Full path (local or S3) to a JSON file.
