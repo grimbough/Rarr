@@ -315,18 +315,10 @@ write_zarr_array <- function(
   # "Chunks at the border of an array always have the full chunk size,
   # even when the array only covers parts of it."
   if (any(dim(chunk_in_mem) != chunk_dim)) {
-    ## create a new "complete" chunk filled with the fill value
+    ## create a new "complete" chunk filled with the fill value, then insert
+    ## our partial chunk into it
     temp_chunk <- array(metadata$fill_value, dim = chunk_dim)
-
-    ## insert our partial chunk into the new full-sized chunk
-    cmd <- .create_replace_call(
-      "temp_chunk",
-      "idx_in_chunk",
-      length(idx_in_chunk),
-      "chunk_in_mem"
-    )
-    eval(str2lang(cmd))
-    ## update the output with the new full-sized chunk
+    rlang::inject(temp_chunk[!!!idx_in_chunk] <- chunk_in_mem) # nolint: implicit_assignment_linter.
     chunk_in_mem <- temp_chunk
   }
 
@@ -459,15 +451,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   ## extract the new values from x and insert them into the chunk
-  # nolint next: object_usage_linter.
   y <- .extract_chunk(x, idx_in_x)
-  cmd <- .create_replace_call(
-    "chunk_in_mem",
-    "idx_in_chunk",
-    length(idx_in_chunk),
-    "y"
-  )
-  eval(str2lang(cmd))
+  rlang::inject(chunk_in_mem[!!!idx_in_chunk] <- y) # nolint: implicit_assignment_linter.
   ## re-compress updated chunk and write back to disk
   .compress_and_write_chunk(
     input_chunk = chunk_in_mem,
