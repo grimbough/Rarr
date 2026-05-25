@@ -204,7 +204,6 @@ write_zarr_attributes <- function(
 #' zarr_consolidate_metadata(zarr_v2, action = "write")
 #' zarr_overview(zarr_v2)
 #'
-# nolint next: cyclocomp_linter.
 zarr_consolidate_metadata <- function(
   zarr_store_path,
   s3_client = NULL,
@@ -271,19 +270,8 @@ zarr_consolidate_metadata <- function(
 
   consolidated <- lapply(
     paste0(zarr_store_path, metadata_files),
-    function(path) {
-      if (is.null(s3_client)) {
-        metadata <- read_json(path)
-      } else {
-        parsed_url <- parse_s3_path(path)
-        s3_object <- s3_client$get_object(
-          Bucket = parsed_url$bucket,
-          Key = parsed_url$object
-        )
-        metadata <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-      }
-      return(metadata)
-    }
+    .read_json_file,
+    s3_client = s3_client
   )
 
   if (version == 2L) {
