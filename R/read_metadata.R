@@ -212,7 +212,6 @@ zarr_overview <- function(
 #' @importFrom grumpy parse_npy_datatype
 #'
 #' @keywords internal
-# nolint next: cyclocomp_linter.
 .read_array_metadata <- function(zarr_path, s3_client = NULL) {
   zarr_path <- .normalize_array_path(zarr_path)
 
@@ -252,46 +251,7 @@ zarr_overview <- function(
       version_to = 3L
     )
   } else if (metadata$node_type == "array" && metadata$zarr_format == 3L) {
-    metadata$datatype <- .parse_datatype_v3(metadata$data_type)
-    # We shouldn't have any case where x$name is NULL since the v3 spec states
-    # 'name' MUST be a plain string.
-    names(metadata$codecs) <- vapply(
-      metadata$codecs,
-      function(x) x$name,
-      character(1L)
-    )
-    if (length(metadata$shape) == 0L) {
-      # Empty tuple in shape means we are dealing with a scalar.
-      metadata$shape <- 1L
-      metadata$chunk_grid <- list(
-        name = "regular",
-        configuration = list(chunk_shape = 1L)
-      )
-    }
-    # This needs to happen after we address the scalar edge case
-    if (is.null(metadata$codecs[["transpose"]])) {
-      # We need to make sure this is always present because we do the
-      # reverse of what this codec is telling us (since R uses F-order).
-      # So even when using the implicit default, we need to add it here.
-      metadata$codecs[["transpose"]] <- list(
-        name = "transpose",
-        configuration = list(order = seq_along(metadata$shape) - 1L)
-      )
-    }
-    # Set endian to NA for 1-bytes types
-    if (!is.null(metadata$codecs[["bytes"]])) {
-      endian <- metadata$codecs[["bytes"]]$configuration$endian %||%
-        NA_character_
-      # In v3 struct datatypes, endian is defined only once for the whole array but
-      # our reading infra, based on v2 actually expects it to be defined for each base type,
-      # so we need to replicate it.
-      endian <- rep(
-        endian,
-        length(metadata$datatype$base_type)
-      )
-      metadata$codecs[["bytes"]]$configuration$endian <- endian
-      metadata$datatype$endian <- endian
-    }
+    metadata <- .normalize_v3_metadata(metadata)
   }
   metadata$fill_value <- .update_fill_value(
     metadata$fill_value,
@@ -312,6 +272,72 @@ zarr_overview <- function(
       "fixed_length_utf32" = "unicode",
       "null_terminated_bytes" = "string"
     )
+  }
+
+  return(metadata)
+}
+
+#' Apply Zarr v3-specific fixups to raw array metadata
+#'
+#' Called after reading a `zarr.json` file for an array node.  Performs four
+#' normalisation steps that are needed before the metadata can be used by the
+#' rest of the package:
+#'
+#' 1. Parse the `data_type` string into an R-friendly `datatype` list.
+#' 2. Name `codecs` by their `name` field for O(1) lookup.
+#' 3. Normalise scalar arrays (empty `shape`) to shape `1`.
+#' 4. Inject a default `transpose` codec when absent (R uses F-order so we
+#'    always need to know the intended order).
+#' 5. Replicate the `endian` field across all fields of struct datatypes so
+#'    that downstream chunk-reading code can treat it uniformly.
+#'
+#' @param metadata A list as returned by [.read_json_file()] for a Zarr v3
+#'   array node (i.e. `metadata$zarr_format == 3L` and
+#'   `metadata$node_type == "array"`).
+#'
+#' @returns The modified `metadata` list.
+#'
+#' @keywords internal
+.normalize_v3_metadata <- function(metadata) {
+  metadata$datatype <- .parse_datatype_v3(metadata$data_type)
+
+  # We shouldn't have any case where x$name is NULL since the v3 spec states
+  # 'name' MUST be a plain string.
+  names(metadata$codecs) <- vapply(
+    metadata$codecs,
+    function(x) x$name,
+    character(1L)
+  )
+
+  if (length(metadata$shape) == 0L) {
+    # Empty tuple in shape means we are dealing with a scalar.
+    metadata$shape <- 1L
+    metadata$chunk_grid <- list(
+      name = "regular",
+      configuration = list(chunk_shape = 1L)
+    )
+  }
+
+  # This needs to happen after we address the scalar edge case
+  if (is.null(metadata$codecs[["transpose"]])) {
+    # We need to make sure this is always present because we do the
+    # reverse of what this codec is telling us (since R uses F-order).
+    # So even when using the implicit default, we need to add it here.
+    metadata$codecs[["transpose"]] <- list(
+      name = "transpose",
+      configuration = list(order = seq_along(metadata$shape) - 1L)
+    )
+  }
+
+  # Set endian to NA for 1-byte types; replicate across struct fields
+  if (!is.null(metadata$codecs[["bytes"]])) {
+    endian <- metadata$codecs[["bytes"]]$configuration$endian %||%
+      NA_character_
+    # In v3 struct datatypes, endian is defined only once for the whole array
+    # but our reading infra (based on v2) expects it per base type.
+    endian <- rep(endian, length(metadata$datatype$base_type))
+    metadata$codecs[["bytes"]]$configuration$endian <- endian
+    metadata$datatype$endian <- endian
   }
 
   return(metadata)
