@@ -215,6 +215,14 @@ zarr_consolidate_metadata <- function(
   zarr_store_path <- .normalize_array_path(zarr_store_path)
   s3_client <- s3_client %||% .create_s3_client(zarr_store_path)
 
+  if (!is.null(s3_client) && action == "write") {
+    warning(
+      "Consolidating metadata on S3 is not currently supported. Returning consolidated metadata instead.",
+      call. = FALSE
+    )
+    action <- "return"
+  }
+
   if (action == "write" && !overwrite) {
     exists <- !is.null(
       suppressWarnings(
@@ -235,24 +243,7 @@ zarr_consolidate_metadata <- function(
     }
   }
 
-  # FIXME: this can be greatly simplified once we have the store abstraction in place.
-  if (is.null(s3_client)) {
-    child_meta <- list.files(
-      zarr_store_path,
-      recursive = TRUE,
-      include.dirs = TRUE,
-      all.files = TRUE
-    )
-  } else {
-    if (action == "write") {
-      warning(
-        "Consolidating metadata on S3 is not currently supported. Returning consolidated metadata instead.",
-        call. = FALSE
-      )
-      action <- "return"
-    }
-    child_meta <- s3_client$list_objects(zarr_store_path, recursive = TRUE)
-  }
+  child_meta <- .store_list(zarr_store_path, recursive = TRUE, s3_client)
 
   # v2 or v3?
   metadata_v2_files <- endsWith(child_meta, ".zarray") |
