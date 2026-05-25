@@ -1,5 +1,17 @@
-## code to prepare `supported_v3_types` dataset goes here
-supported_v3_types <- list(
+CODEC_BYTES_BYTES <- c(
+  "blosc",
+  "zlib",
+  "gzip",
+  "bz2",
+  "lzma",
+  "numcodecs.lz4",
+  "lz4",
+  "zstd"
+)
+CODEC_ARRAY_ARRAY <- c("transpose")
+CODEC_ARRAY_BYTES <- c("bytes", "vlen-utf8")
+
+SUPPORTED_V3_TYPES <- list(
   "bool" = list(base_type = "bool", nbytes = 1L),
   "int8" = list(base_type = "int", nbytes = 1L),
   "int16" = list(base_type = "int", nbytes = 2L),
@@ -16,4 +28,11 @@ supported_v3_types <- list(
 ) |>
   list2env(hash = TRUE, parent = emptyenv())
 
-usethis::use_data(supported_v3_types, internal = TRUE, overwrite = TRUE)
+usethis::use_data(
+  SUPPORTED_V3_TYPES,
+  CODEC_BYTES_BYTES,
+  CODEC_ARRAY_ARRAY,
+  CODEC_ARRAY_BYTES,
+  internal = TRUE,
+  overwrite = TRUE
+)

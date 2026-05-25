@@ -130,7 +130,7 @@ zarr_overview <- function(
   codecs <- array_metadata$codecs
   compressor <- names(codecs)[match(
     TRUE,
-    names(codecs) %in% c("zstd", "blosc", "gzip")
+    names(codecs) %in% CODEC_BYTES_BYTES
   )]
   endianness <- codecs[["bytes"]][["configuration"]][["endian"]]
 

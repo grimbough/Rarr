@@ -13,21 +13,9 @@
   codecs_names <- names(codecs)
   operation <- match.arg(operation)
 
-  bytes_bytes_codecs <- intersect(
-    codecs_names,
-    c(
-      "blosc",
-      "zlib",
-      "gzip",
-      "bz2",
-      "lzma",
-      "numcodecs.lz4",
-      "lz4",
-      "zstd"
-    )
-  )
-  array_array_codecs <- intersect(codecs_names, "transpose")
-  array_bytes_codecs <- intersect(codecs_names, c("bytes", "vlen-utf8"))
+  bytes_bytes_codecs <- intersect(codecs_names, CODEC_BYTES_BYTES)
+  array_array_codecs <- intersect(codecs_names, CODEC_ARRAY_ARRAY)
+  array_bytes_codecs <- intersect(codecs_names, CODEC_ARRAY_BYTES)
 
   unsupported_codecs <- setdiff(
     codecs_names,

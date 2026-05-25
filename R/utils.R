@@ -159,7 +159,7 @@ check_index <- function(index, metadata) {
     stop("Unsupported data type: ", typestr$name, call. = FALSE)
   }
 
-  entry <- supported_v3_types[[typestr]]
+  entry <- SUPPORTED_V3_TYPES[[typestr]]
   if (is.null(entry)) {
     stop("Unsupported data type: ", typestr, call. = FALSE)
   }
