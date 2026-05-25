@@ -216,7 +216,7 @@ zarr_overview <- function(
   zarr_path <- .normalize_array_path(zarr_path)
 
   metadata_file <- c(".zarray", "zarr.json") |>
-    .file_or_blob_exists(zarr_path, s3_client, files = _)
+    .store_check_exist(zarr_path, files = _, s3_client = s3_client)
 
   if (metadata_file[".zarray"] && metadata_file["zarr.json"]) {
     stop(
@@ -474,10 +474,10 @@ zarr_overview <- function(
   zarr_path <- .normalize_array_path(zarr_path)
   s3_client <- s3_client %||% .create_s3_client(zarr_path)
 
-  metadata_file <- .file_or_blob_exists(
+  metadata_file <- .store_check_exist(
     zarr_path,
-    s3_client,
-    files = c(".zmetadata", "zarr.json")
+    files = c(".zmetadata", "zarr.json"),
+    s3_client
   )
   if (!metadata_file[".zmetadata"] && !metadata_file["zarr.json"]) {
     return(NULL)
@@ -558,10 +558,10 @@ read_zarr_attributes <- function(
   ## determine if this is a local or S3 array
   s3_client <- s3_client %||% .create_s3_client(path = zarr_path)
 
-  exists_attribute_files <- .file_or_blob_exists(
+  exists_attribute_files <- .store_check_exist(
     zarr_path,
-    s3_client,
-    c(".zattrs", "zarr.json")
+    c(".zattrs", "zarr.json"),
+    s3_client
   )
 
   if (!any(exists_attribute_files)) {

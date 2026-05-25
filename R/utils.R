@@ -147,7 +147,6 @@ check_index <- function(index, metadata) {
   ))
 }
 
-
 #' Normalize a Zarr array path
 #'
 #' Taken from https://zarr.readthedocs.io/en/stable/spec/v2.html#logical-storage-paths
@@ -211,32 +210,6 @@ check_index <- function(index, metadata) {
   } else {
     read_json(path)
   }
-}
-
-#' @importFrom stats setNames
-.file_or_blob_exists <- function(
-  zarr_array_path,
-  s3_client,
-  files
-) {
-  if (is.null(s3_client)) {
-    is_present <- setNames(
-      file.exists(paste0(zarr_array_path, files, recycle0 = TRUE)),
-      files
-    )
-  } else {
-    parse_url <- parse_s3_path(zarr_array_path)
-    is_present <- vapply(
-      files,
-      FUN = function(f) {
-        key <- paste0(parse_url$object, f)
-        .s3_object_exists(s3_client, parse_url$bucket, key)
-      },
-      FUN.VALUE = logical(1L)
-    )
-  }
-
-  return(is_present)
 }
 
 #' Precompute index positions grouped by chunk
