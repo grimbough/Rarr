@@ -209,7 +209,6 @@ zarr_overview <- function(
 #'
 #' @returns A list containing the array metadata
 #'
-#' @importFrom jsonlite read_json fromJSON
 #' @importFrom grumpy parse_npy_datatype
 #'
 #' @keywords internal
@@ -241,16 +240,7 @@ zarr_overview <- function(
 
   metadata_path <- paste0(zarr_path, names(metadata_file)[metadata_file])
 
-  if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(metadata_path)
-    s3_object <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )
-    metadata <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-  } else {
-    metadata <- read_json(metadata_path)
-  }
+  metadata <- .read_json_file(metadata_path, s3_client)
 
   if (metadata$zarr_format == 2L) {
     ## if we do this here, we save many repeated calls to .parse_npy_datatype
@@ -447,7 +437,6 @@ zarr_overview <- function(
 #'
 #' @inheritParams .read_array_metadata
 #'
-#' @importFrom jsonlite read_json fromJSON
 #' @importFrom grumpy parse_npy_datatype
 #'
 #' @keywords internal
@@ -480,16 +469,7 @@ zarr_overview <- function(
   zmeta_path <- paste0(zarr_path, names(metadata_file)[metadata_file])
 
   # At this stage, we are sure the file exists
-  if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(zmeta_path)
-    s3_object <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )
-    zmeta <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-  } else {
-    zmeta <- read_json(zmeta_path)
-  }
+  zmeta <- .read_json_file(zmeta_path, s3_client)
 
   if (metadata_file[".zmetadata"]) {
     arrays <- names(zmeta$metadata)[endsWith(
@@ -535,8 +515,6 @@ zarr_overview <- function(
 #' @returns A list containing the attributes. If the file containing attributes
 #' (`.zattrs` for Zarr v2 or `zarr.json` for Zarr v3) exists but no attributes
 #' are provided, an empty list is returned.
-#'
-#' @importFrom jsonlite read_json fromJSON
 #'
 #' @examples
 #' read_zarr_attributes(
@@ -587,20 +565,7 @@ read_zarr_attributes <- function(
     attribute_file
   )
 
-  if (!is.null(s3_client)) {
-    parsed_url <- parse_s3_path(attribute_path)
-
-    s3_object <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
-    )
-
-    # simplifyVector = FALSE is used for consistency with read_json(),
-    # used on local files.
-    zattrs <- fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
-  } else {
-    zattrs <- read_json(attribute_path)
-  }
+  zattrs <- .read_json_file(attribute_path, s3_client)
 
   if (attribute_file == "zarr.json") {
     zattrs <- zattrs[["attributes"]]

@@ -208,6 +208,33 @@ check_index <- function(index, metadata) {
   return(path)
 }
 
+#' Read a JSON file from local disk or S3
+#'
+#' @param path Full path (local or S3) to a JSON file.
+#' @param s3_client An S3 client produced by [paws.storage::s3()], or `NULL`
+#'   for local files.
+#'
+#' @returns A list as returned by [jsonlite::read_json()] /
+#'   [jsonlite::fromJSON()].
+#'
+#' @importFrom jsonlite read_json fromJSON
+#'
+#' @keywords internal
+.read_json_file <- function(path, s3_client = NULL) {
+  if (!is.null(s3_client)) {
+    parsed_url <- parse_s3_path(path)
+    s3_object <- s3_client$get_object(
+      Bucket = parsed_url$bucket,
+      Key = parsed_url$object
+    )
+    # simplifyVector = FALSE is used for consistency with read_json(),
+    # used on local files.
+    fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
+  } else {
+    read_json(path)
+  }
+}
+
 #' @importFrom stats setNames
 .file_or_blob_exists <- function(
   zarr_array_path,
