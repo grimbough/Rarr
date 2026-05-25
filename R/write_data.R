@@ -270,24 +270,7 @@ write_zarr_array <- function(
     operation = "encode"
   )
 
-  same_type_lower_bytesize <- metadata$data_type %in%
-    c("int8", "int16", "float32")
-  lower_bytesize_type <- storage.mode(x) == "double" &&
-    metadata$data_type == "float32"
-
-  can_overflow <- same_type_lower_bytesize || lower_bytesize_type
-  if (can_overflow) {
-    x <- .truncate_overflow(x, metadata$datatype$nbytes)
-  }
-
-  if (metadata$data_type == "bool" && anyNA(x)) {
-    warning(
-      "Zarr native 'bool' data type does not support NA values. ",
-      "NA values will be converted to FALSE. ",
-      "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
-      call. = FALSE
-    )
-  }
+  x <- .prepare_write_data(x, metadata)
 
   ## build index covering the entire array
   index <- lapply(dim(x), seq_len)
@@ -412,24 +395,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     stop("New data is not of the same type as the existing array.")
   }
 
-  same_type_lower_bytesize <- metadata$data_type %in%
-    c("int8", "int16", "float32")
-  lower_bytesize_type <- storage.mode(x) == "double" &&
-    metadata$data_type == "float32"
-
-  can_overflow <- same_type_lower_bytesize || lower_bytesize_type
-  if (can_overflow) {
-    x <- .truncate_overflow(x, metadata$datatype$nbytes)
-  }
-
-  if (metadata$data_type == "bool" && anyNA(x)) {
-    warning(
-      "Zarr native 'bool' data type does not support NA values. ",
-      "NA values will be converted to FALSE. ",
-      "To preserve NA values, use 'uint8' datatype in `write_zarr_array()` and `as.logical()` after reading.",
-      call. = FALSE
-    )
-  }
+  x <- .prepare_write_data(x, metadata)
 
   metadata$configured_encoders <- .configure_codecs(
     codecs = metadata$codecs,
