@@ -545,7 +545,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   compressor <- NULL
   compressor$id <- names(codecs)[match(
     TRUE,
-    names(codecs) %in% c("zstd", "blosc", "gzip", "zlib", "bz2", "lzma", "lz4")
+    names(codecs) %in% CODEC_BYTES_BYTES
   )]
   compressor_config <- codecs[[compressor$id]]$configuration
   if (is.na(compressor$id)) {
@@ -575,7 +575,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       compression = compressor_config$level
     )
     on.exit(close(con))
-  } else if (compressor$id == "lz4") {
+  } else if (compressor$id %in% c("lz4", "numcodecs.lz4")) {
     compressed_chunk <- codec_lz4_encode(raw_chunk)
   } else if (compressor$id == "zstd") {
     compressed_chunk <- codec_zstd_encode(raw_chunk, compressor_config)
