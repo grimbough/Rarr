@@ -1,3 +1,41 @@
+#' Normalize a Zarr array path
+#'
+#' Taken from https://zarr.readthedocs.io/en/stable/spec/v2.html#logical-storage-paths
+#'
+#' @param path Character vector of length 1 giving the path to be normalised.
+#'
+#' @returns A character vector of length 1 containing the normalised path.
+#'
+#' @importFrom R.utils getAbsolutePath
+#'
+#' @keywords internal
+.normalize_array_path <- function(path) {
+  ## we strip the protocol because it gets messed up by the slash removal later
+  if (any(startsWith(path, c("http://", "https://", "s3://")))) {
+    m <- regmatches(path, regexec("^((https?://)|(s3://))(.*$)", path))[[1L]]
+    root <- m[2L]
+    path <- m[5L]
+  } else {
+    ## Replace all backward slash ("\\") with forward slash ("/")
+    path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
+    path <- R.utils::getAbsolutePath(path, expandTilde = TRUE)
+    root <- sub(x = path, "(^[[:alnum:]:.]*/)?(.*)", replacement = "\\1")
+    path <- sub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\2")
+  }
+
+  ## Strip any leading "/" characters
+  path <- sub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
+  ## Strip any trailing "/" characters
+  path <- sub(x = path, pattern = "/$", replacement = "", fixed = FALSE)
+  ## Collapse any sequence of more than one "/" character into a single "/"
+  path <- gsub(x = path, pattern = "//+", replacement = "/", fixed = FALSE)
+  ## The key prefix is then obtained by appending a single "/" character to
+  ## the normalized logical path.
+  path <- paste0(root, path, "/")
+
+  return(path)
+}
+
 #' @importFrom stats setNames
 .store_check_exist <- function(
   zarr_array_path,
@@ -22,4 +60,31 @@
   }
 
   return(is_present)
+}
+
+#' Read a JSON file from local disk or S3
+#'
+#' @param path Full path (local or S3) to a JSON file.
+#' @param s3_client An S3 client produced by [paws.storage::s3()], or `NULL`
+#'   for local files.
+#'
+#' @returns A list as returned by [jsonlite::read_json()] /
+#'   [jsonlite::fromJSON()].
+#'
+#' @importFrom jsonlite read_json fromJSON
+#'
+#' @keywords internal
+.read_json_file <- function(path, s3_client = NULL) {
+  if (!is.null(s3_client)) {
+    parsed_url <- parse_s3_path(path)
+    s3_object <- s3_client$get_object(
+      Bucket = parsed_url$bucket,
+      Key = parsed_url$object
+    )
+    # simplifyVector = FALSE is used for consistency with read_json(),
+    # used on local files.
+    fromJSON(rawToChar(s3_object$Body), simplifyVector = FALSE)
+  } else {
+    read_json(path)
+  }
 }
