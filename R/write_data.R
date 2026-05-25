@@ -438,7 +438,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   idx_in_x <- chunk_info$positions
   idx_in_chunk <- chunk_info$index_in_chunk
 
-  if (.file_or_blob_exists(zarr_array_path, s3_client = NULL, chunk_name)) {
+  if (.store_check_exist(zarr_array_path, chunk_name, s3_client = NULL)) {
     chunk_in_mem <- read_chunk(
       chunk_path = chunk_path,
       metadata = metadata

@@ -100,7 +100,7 @@ read_data <- function(
   chunk_paths <- paste0(zarr_array_path, chunk_names, recycle0 = TRUE)
 
   ## Vectorized check for chunk existence
-  chunk_exists <- .file_or_blob_exists(zarr_array_path, s3_client, chunk_names)
+  chunk_exists <- .store_check_exist(zarr_array_path, chunk_names, s3_client)
   existing_idx <- which(chunk_exists)
 
   warnings <- list()
