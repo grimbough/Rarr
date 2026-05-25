@@ -135,13 +135,7 @@ read_data <- function(
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
     index_in_result <- chunk_selections[[i]][[2L]]
-    cmd <- .create_replace_call(
-      x_name = "output",
-      idx_name = "index_in_result",
-      idx_length = length(index_in_result),
-      y_name = "chunk_selections[[i]][[1]]"
-    )
-    eval(str2lang(cmd))
+    rlang::inject(output[!!!index_in_result] <- chunk_selections[[i]][[1L]]) # nolint: implicit_assignment_linter.
     if (
       is.list(metadata$data_type) &&
         metadata$data_type$name %in% c("struct", "structured")
