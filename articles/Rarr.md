@@ -331,7 +331,7 @@ zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
     ## No. of Chunks: 2 (2 x 1)
     ## Data Type: int32
     ## Endianness: little
-    ## Compressor: None
+    ## Compressor: bz2
 
 Behind the scenes **Rarr** makes use of the **paws** suite of packages
 (<https://paws-r.github.io/>) to interact with S3 storage. A
@@ -553,7 +553,7 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-05-22 r90067)
+    ## R Under development (unstable) (2026-05-23 r90071)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
