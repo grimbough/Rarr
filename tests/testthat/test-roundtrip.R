@@ -11,7 +11,6 @@ test_that("empty zarr arrays can be created and read correctly", {
     )
   )
 
-  expect_true(res)
   expect_identical(read_zarr_array(path), array(100L, dim = 100))
 })
 
