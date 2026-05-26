@@ -153,7 +153,7 @@ create_empty_zarr_array <- function(
   dim,
   chunk_dim,
   data_type,
-  order = "F",
+  order = c("F", "C"),
   compressor = use_zstd(),
   fill_value,
   nchar = NULL,
@@ -167,6 +167,7 @@ create_empty_zarr_array <- function(
       call. = FALSE
     )
   }
+  order <- match.arg(order)
 
   dt <- .check_datatype(
     data_type = data_type,
@@ -233,7 +234,7 @@ write_zarr_array <- function(
   zarr_array_path,
   chunk_dim,
   data_type = storage.mode(x),
-  order = "F",
+  order = c("F", "C"),
   compressor = use_zstd(),
   fill_value,
   nchar,
