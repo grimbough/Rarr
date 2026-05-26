@@ -1,15 +1,15 @@
 # nolint next: cyclocomp_linter.
-.check_datatype <- function(data_type, fill_value, nchar = NULL) {
+.check_datatype <- function(data_type, fill_value = NULL, nchar = NULL) {
   # TODO: Error if fill_value is incompatible with data_type in Zarr v3.
   # V3 spec says:
   # "The permitted values depend on the data type.
   # Fill values for core data types are listed in Permitted fill values."
-  if (missing(data_type) && missing(fill_value)) {
+  if (missing(data_type) && is.null(fill_value)) {
     stop(
       "Data type cannot be determined if both 'data_type' and 'fill_value' arguments are missing."
     )
   }
-  if (missing(data_type) && !missing(fill_value)) {
+  if (missing(data_type) && !is.null(fill_value)) {
     ## if we only have a fill value, infer the data type from that
     data_type <- storage.mode(fill_value)
   }
@@ -49,8 +49,8 @@
   }
 
   ## set a default fill value if needed
-  if (missing(fill_value)) {
-    fill_value <- switch(
+  fill_value <- fill_value %||%
+    switch(
       data_type,
       "|i1" = 0L,
       "<i2" = 0L,
@@ -68,7 +68,6 @@
       "|b1" = FALSE,
       NULL
     )
-  }
 
   if (data_type %in% c("|S", "<U", ">U")) {
     if (is.null(nchar) || nchar < 1L) {
@@ -156,7 +155,7 @@ create_empty_zarr_array <- function(
   data_type,
   order = c("F", "C"),
   compressor = use_zstd(),
-  fill_value,
+  fill_value = NULL,
   nchar = NULL,
   dimension_separator = if (zarr_version == 2L) "." else "/",
   dimension_names = NULL,
@@ -237,7 +236,7 @@ write_zarr_array <- function(
   data_type = storage.mode(x),
   order = c("F", "C"),
   compressor = use_zstd(),
-  fill_value,
+  fill_value = NULL,
   nchar,
   dimension_separator = if (zarr_version == 2L) "." else "/",
   zarr_version = 3L
