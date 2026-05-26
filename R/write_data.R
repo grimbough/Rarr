@@ -161,6 +161,13 @@ create_empty_zarr_array <- function(
   dimension_names = NULL,
   zarr_version = 3L
 ) {
+  if (!is.null(dimension_names) && length(dimension_names) != length(dim)) {
+    stop(
+      "`dimension_names` must have the same length as `dim`.",
+      call. = FALSE
+    )
+  }
+
   dt <- .check_datatype(
     data_type = data_type,
     fill_value = fill_value,
