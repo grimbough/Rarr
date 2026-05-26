@@ -2,11 +2,9 @@
 
 ## Zarr version
 
-Support for [Zarr version
-3](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html) is
-actively being worked on, and some features are likely to be missing.
-
-It is known that the sharding codec is not yet implemented.
+Rarr supports both Zarr version 2 and Zarr version 3 but some version 3
+features are still a work in progress. In particular, it is known that
+the sharding codec is not yet implemented.
 
 ## Reading and Writing
 
