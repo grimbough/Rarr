@@ -9,9 +9,9 @@ create_empty_zarr_array(
   dim,
   chunk_dim,
   data_type,
-  order = "F",
+  order = c("F", "C"),
   compressor = use_zstd(),
-  fill_value,
+  fill_value = NULL,
   nchar = NULL,
   dimension_separator = if (zarr_version == 2L) "." else "/",
   dimension_names = NULL,
@@ -62,9 +62,10 @@ in the names of the chunk files.  Valid options are limited to "." and "/".}
 either \code{2} or \code{3}. The default is \code{3}.}
 }
 \value{
-If successful returns (invisibly) \code{TRUE}.  However this function is
-primarily called for the size effect of initialising a Zarr array location
-and creating the \code{.zarray} metadata.
+This function is primarily called for the side effect of
+initialising a Zarr array location and creating the \code{.zarray} or
+\code{zarr.json} metadata file.
+Returns (invisibly) the normalized path it wrote the metadata to.
 }
 \description{
 Create an (empty) Zarr array
