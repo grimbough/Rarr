@@ -133,9 +133,10 @@
 #' @param zarr_version The version of the Zarr specification to use. Currently,
 #'   either `2` or `3`. The default is `3`.
 #'
-#' @returns If successful returns (invisibly) `TRUE`.  However this function is
-#'   primarily called for the size effect of initialising a Zarr array location
-#'   and creating the `.zarray` metadata.
+#' @returns This function is primarily called for the side effect of
+#'   initialising a Zarr array location and creating the `.zarray` or
+#'   `zarr.json` metadata file.
+#'   Returns (invisibly) the normalized path it wrote the metadata to.
 #'
 #' @seealso [write_zarr_array()], [update_zarr_array()]
 #'
@@ -198,7 +199,7 @@ create_empty_zarr_array <- function(
     zarr_version = zarr_version
   )
 
-  return(invisible(TRUE))
+  return(invisible(path))
 }
 
 #' Write an R array to Zarr
@@ -248,7 +249,6 @@ write_zarr_array <- function(
       call. = FALSE
     )
   }
-  path <- .normalize_array_path(zarr_array_path)
 
   if (storage.mode(x) == "character" && missing(nchar)) {
     # +1 to add NUL terminator
@@ -257,8 +257,8 @@ write_zarr_array <- function(
     nchar <- max(c(0L, base::nchar(x)), na.rm = TRUE) + 1L
   }
 
-  create_empty_zarr_array(
-    zarr_array_path = path,
+  path <- create_empty_zarr_array(
+    zarr_array_path = zarr_array_path,
     dim = dim(x),
     dimension_names = names(dimnames(x)),
     chunk_dim = chunk_dim,
@@ -270,7 +270,9 @@ write_zarr_array <- function(
     dimension_separator = dimension_separator,
     zarr_version = zarr_version
   )
-  ## read the metadata we just created
+  # FIXME: it's not optimal to write and read again because we do multiple
+  # steps to get it ready for writing, and then ready to use internally.
+  # Related to https://github.com/Huber-group-EMBL/Rarr/issues/60.
   metadata <- .read_array_metadata(path)
 
   metadata$configured_encoders <- .configure_codecs(
