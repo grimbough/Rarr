@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.14</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.15</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,7 @@
 <li>Reading VLen-UTF8 arrays (used by default for <code>string</code> in v3) in now much faster after rewriting the vlen-utf8 codec in C.</li>
 <li>Unsupported data types are now caught explicitly and early early in the reading pipeline rather than potentially failing or returning incorrect output later.</li>
 <li>Chunks larger than the whole array in one or multiple dimensions are now permitted, based on a request by Artür Manukyan.</li>
+<li>0 is now a valid, and the default, compression level for Zstd. In practice, it doesn’t have any effect because level 0 currently corresponds to level 3.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-1"></a></h3>

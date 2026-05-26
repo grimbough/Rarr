@@ -55,6 +55,9 @@
   incorrect output later.
 - Chunks larger than the whole array in one or multiple dimensions are
   now permitted, based on a request by Artür Manukyan.
+- 0 is now a valid, and the default, compression level for Zstd. In
+  practice, it doesn’t have any effect because level 0 currently
+  corresponds to level 3.
 
 ### Bug fixes
 

@@ -24,7 +24,7 @@ use_lzma(level = 9L)
 
 use_lz4()
 
-use_zstd(level = 3L)
+use_zstd(level = 0L)
 ```
 
 ## Arguments
@@ -67,7 +67,8 @@ use_zstd(level = 3L)
   Specify the compression level to use. The range of possible values is
   dependant on the compression tool being used. For example, for
   `use_zlib()` this argument can be between 1 & 9, while for
-  `use_zstd()`the valid range is 1 to 22.
+  `use_zstd()`the valid range is 0 (default; level chosen automatically)
+  to 22.
 
 ## Value
 
