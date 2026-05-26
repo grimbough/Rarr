@@ -161,11 +161,6 @@ create_empty_zarr_array <- function(
   dimension_names = NULL,
   zarr_version = 3L
 ) {
-  path <- .normalize_array_path(zarr_array_path)
-  if (!dir.exists(path)) {
-    dir.create(path)
-  }
-
   dt <- .check_datatype(
     data_type = data_type,
     fill_value = fill_value,
@@ -175,6 +170,11 @@ create_empty_zarr_array <- function(
   fill_value <- dt$fill_value
 
   .check_chunk_shape(x_dim = dim, chunk_dim = chunk_dim)
+
+  path <- .normalize_array_path(zarr_array_path)
+  if (!dir.exists(path)) {
+    dir.create(path)
+  }
 
   ## create the metadata file
   .write_zarr_metadata(
