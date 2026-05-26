@@ -50,9 +50,9 @@
 <span>  <span class="va">zarr_array_path</span>,</span>
 <span>  <span class="va">chunk_dim</span>,</span>
 <span>  data_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mode.html" class="external-link">storage.mode</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
-<span>  order <span class="op">=</span> <span class="st">"F"</span>,</span>
+<span>  order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
 <span>  compressor <span class="op">=</span> <span class="fu"><a href="compressors.html">use_zstd</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="va">fill_value</span>,</span>
+<span>  fill_value <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">nchar</span>,</span>
 <span>  dimension_separator <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">zarr_version</span> <span class="op">==</span> <span class="fl">2L</span><span class="op">)</span> <span class="st">"."</span> <span class="kw">else</span> <span class="st">"/"</span>,</span>
 <span>  zarr_version <span class="op">=</span> <span class="fl">3L</span></span>

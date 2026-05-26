@@ -10,9 +10,9 @@ create_empty_zarr_array(
   dim,
   chunk_dim,
   data_type,
-  order = "F",
+  order = c("F", "C"),
   compressor = use_zstd(),
-  fill_value,
+  fill_value = NULL,
   nchar = NULL,
   dimension_separator = if (zarr_version == 2L) "." else "/",
   dimension_names = NULL,
@@ -88,9 +88,9 @@ create_empty_zarr_array(
 
 ## Value
 
-If successful returns (invisibly) `TRUE`. However this function is
-primarily called for the size effect of initialising a Zarr array
-location and creating the `.zarray` metadata.
+This function is primarily called for the side effect of initialising a
+Zarr array location and creating the `.zarray` or `zarr.json` metadata
+file. Returns (invisibly) the normalized path it wrote the metadata to.
 
 ## See also
 

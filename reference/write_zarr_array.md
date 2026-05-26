@@ -10,9 +10,9 @@ write_zarr_array(
   zarr_array_path,
   chunk_dim,
   data_type = storage.mode(x),
-  order = "F",
+  order = c("F", "C"),
   compressor = use_zstd(),
-  fill_value,
+  fill_value = NULL,
   nchar,
   dimension_separator = if (zarr_version == 2L) "." else "/",
   zarr_version = 3L

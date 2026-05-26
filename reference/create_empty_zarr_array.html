@@ -50,9 +50,9 @@
 <span>  <span class="va">dim</span>,</span>
 <span>  <span class="va">chunk_dim</span>,</span>
 <span>  <span class="va">data_type</span>,</span>
-<span>  order <span class="op">=</span> <span class="st">"F"</span>,</span>
+<span>  order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
 <span>  compressor <span class="op">=</span> <span class="fu"><a href="compressors.html">use_zstd</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="va">fill_value</span>,</span>
+<span>  fill_value <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  nchar <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dimension_separator <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">zarr_version</span> <span class="op">==</span> <span class="fl">2L</span><span class="op">)</span> <span class="st">"."</span> <span class="kw">else</span> <span class="st">"/"</span>,</span>
 <span>  dimension_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -130,9 +130,10 @@ either <code>2</code> or <code>3</code>. The default is <code>3</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>If successful returns (invisibly) <code>TRUE</code>.  However this function is
-primarily called for the size effect of initialising a Zarr array location
-and creating the <code>.zarray</code> metadata.</p>
+    <p>This function is primarily called for the side effect of
+initialising a Zarr array location and creating the <code>.zarray</code> or
+<code>zarr.json</code> metadata file.
+Returns (invisibly) the normalized path it wrote the metadata to.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
