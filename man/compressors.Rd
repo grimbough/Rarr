@@ -29,7 +29,7 @@ use_lzma(level = 9L)
 
 use_lz4()
 
-use_zstd(level = 3L)
+use_zstd(level = 0L)
 }
 \arguments{
 \item{cname}{Blosc is a 'meta-compressor' providing access to several
@@ -57,7 +57,7 @@ indicate bit-wise shuffling.}
 \item{level}{Specify the compression level to use.  The range of possible
 values is dependant on the compression tool being used.  For example, for
 \code{use_zlib()} this argument can be between 1 & 9, while for \code{use_zstd()}the
-valid range is 1 to 22.}
+valid range is 0 (default; level chosen automatically) to 22.}
 }
 \value{
 A list containing the details of the selected compression tool. This

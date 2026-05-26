@@ -54,7 +54,7 @@
       [1] "zstd"
       
       $metadata$`array1/.zarray`$compressor$level
-      [1] 3
+      [1] 0
       
       
       
@@ -103,7 +103,7 @@
       [1] "zstd"
       
       $metadata$`array2/.zarray`$compressor$level
-      [1] 3
+      [1] 0
       
       
       
@@ -206,7 +206,7 @@
       
       $consolidated_metadata$metadata$array1$codecs[[3]]$configuration
       $consolidated_metadata$metadata$array1$codecs[[3]]$configuration$level
-      [1] 3
+      [1] 0
       
       
       
@@ -295,7 +295,7 @@
       
       $consolidated_metadata$metadata$array2$codecs[[3]]$configuration
       $consolidated_metadata$metadata$array2$codecs[[3]]$configuration$level
-      [1] 3
+      [1] 0
       
       
       

@@ -6,7 +6,7 @@
 #' @param level Specify the compression level to use.  The range of possible
 #' values is dependant on the compression tool being used.  For example, for
 #' `use_zlib()` this argument can be between 1 & 9, while for `use_zstd()`the
-#' valid range is 1 to 22.
+#' valid range is 0 (default; level chosen automatically) to 22.
 #'
 #' @returns A list containing the details of the selected compression tool. This
 #'   will be written to the .zarray metadata when the Zarr array is created.
@@ -129,9 +129,11 @@ use_lz4 <- function() {
 
 #' @rdname compressors
 #' @export
-use_zstd <- function(level = 3L) {
-  if (level < 1L || level > 22L) {
-    stop("Zstd level must be between 1 and 22.")
+use_zstd <- function(level = 0L) {
+  # Question: we could potentially save level 0 in the metadata as the actual
+  # value picked by the zstd library. For now, we follow zarr python approach.
+  if (level < 0L || level > 22L) {
+    stop("Zstd level must be between 0 and 22.")
   }
   res <- list(id = "zstd", level = as.integer(level))
   return(res)
