@@ -4,7 +4,7 @@
 \alias{.read_array_metadata}
 \title{Read the \code{.zarray} or \code{zarr.json} metadata file associated with a Zarr array}
 \usage{
-.read_array_metadata(zarr_path, s3_client = NULL)
+.read_array_metadata(zarr_path, s3_client = NULL, ...)
 }
 \arguments{
 \item{zarr_path}{A character vector of length 1.  This provides the
@@ -13,6 +13,8 @@ system or on S3 storage.}
 
 \item{s3_client}{A list representing an S3 client.  This should be produced
 by \code{\link[paws.storage:s3]{paws.storage::s3()}}.}
+
+\item{...}{Temporary fix for backwards compatibility. Will be removed soon.}
 }
 \value{
 A list containing the array metadata
