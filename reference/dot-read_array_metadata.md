@@ -6,7 +6,7 @@ array
 ## Usage
 
 ``` r
-.read_array_metadata(zarr_path, s3_client = NULL)
+.read_array_metadata(zarr_path, s3_client = NULL, ...)
 ```
 
 ## Arguments
@@ -21,6 +21,10 @@ array
 
   A list representing an S3 client. This should be produced by
   [`paws.storage::s3()`](https://paws-r.r-universe.dev/paws.storage/reference/s3.html).
+
+- ...:
+
+  Temporary fix for backwards compatibility. Will be removed soon.
 
 ## Value
 

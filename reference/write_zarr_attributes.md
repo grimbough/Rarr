@@ -48,6 +48,6 @@ to `new.zattrs`.
 ``` r
 z1 <- withr::local_tempdir(fileext = ".zarr")
 write_zarr_attributes(z1, list(date = "2025-01-01", author = "Jane Doe"))
-#> Warning: cannot open file '/tmp/Rtmp5BBYG9/file1e273ba90c1d.zarr//zarr.json': No such file or directory
+#> Warning: cannot open file '/tmp/Rtmpxszeu0/file1e141f91b62a.zarr//zarr.json': No such file or directory
 #> Error in file(con, "w"): cannot open the connection
 ```
