@@ -45,7 +45,7 @@ test_that("-Inf fill-values are understood correctly", {
 })
 
 test_that("NA fill-values are understood correctly", {
-  zarr_na_fill <- withr::local_tempfile(fileext = ".zarr")
+  zarr_na_fill <- withr::local_tempfile(fileext = ".zarr/")
 
   create_empty_zarr_array(
     zarr_na_fill,
