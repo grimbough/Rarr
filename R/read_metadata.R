@@ -216,8 +216,6 @@ zarr_overview <- function(
 .read_array_metadata <- function(zarr_path, s3_client = NULL, ...) {
   # FIXME: remove ... argument after https://github.com/Bioconductor/ZarrArray/pull/7
   # is merged
-  zarr_path <- .normalize_array_path(zarr_path)
-
   metadata_file <- c(".zarray", "zarr.json") |>
     .store_check_exist(zarr_path, files = _, s3_client = s3_client)
 
@@ -474,7 +472,6 @@ zarr_overview <- function(
   nodes = c("group", "array"),
   s3_client = NULL
 ) {
-  zarr_path <- .normalize_array_path(zarr_path)
   s3_client <- s3_client %||% .create_s3_client(zarr_path)
 
   metadata_file <- .store_check_exist(
