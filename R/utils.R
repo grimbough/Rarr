@@ -1,7 +1,7 @@
 #' @keywords internal
 check_index <- function(index, metadata) {
   ## check we have the correct number of dimensions
-  if (isFALSE(length(index) == length(metadata$shape))) {
+  if (length(index) != length(metadata$shape)) {
     stop(
       "The number of dimensions provided to 'index' does not match the shape of the array"
     )

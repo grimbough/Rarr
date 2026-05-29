@@ -315,6 +315,7 @@ write_zarr_array <- function(
   chunk_in_mem <- .extract_chunk(x, idx_in_array)
 
   # FIXME: can this check be faster?
+  # isTRUE() because metadata$fill_value can be NA.
   if (isTRUE(all(chunk_in_mem == metadata$fill_value))) {
     ## if the chunk only contains the fill value, we can skip writing it
     return(invisible(TRUE))
