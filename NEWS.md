@@ -10,6 +10,9 @@
   v2) and fixed-length-ucs4 (`<U` or `>U` in Zarr v2) data types have been 
   updated to `null_terminated_bytes` and `fixed_length_utf32` respectively to
   match their newly specified format in Zarr v3.
+* Structured data types (record arrays) now always return lists as the internal
+  elements, instead of vectors as previously. This allows structured data types
+  to contain different data types in a single element.
 
 ## New features
 
