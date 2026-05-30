@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +44,7 @@
 <h3 id="breaking-changes-2-1">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-1"></a></h3>
 <ul><li>(Minor:) <code>s3_client =</code> argument default value in <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code>, <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code>, etc. is now set to <code>NULL</code> instead of missing. In practice, we expect this grant to be invisible to most users but it makes it easier to pass down missing values in Rarr reverse dependencies.</li>
 <li>The name and configuration options for the fixed-length-ascii (<code>|S</code> in Zarr v2) and fixed-length-ucs4 (<code>&lt;U</code> or <code>&gt;U</code> in Zarr v2) data types have been updated to <code>null_terminated_bytes</code> and <code>fixed_length_utf32</code> respectively to match their newly specified format in Zarr v3.</li>
+<li>Structured data types (record arrays) now always return lists as the internal elements, instead of vectors as previously. This allows structured data types to contain different data types in a single element.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-2-1">New features<a class="anchor" aria-label="anchor" href="#new-features-2-1"></a></h3>
