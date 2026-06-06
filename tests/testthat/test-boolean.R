@@ -40,6 +40,20 @@ test_that("boolean zarr array can be written", {
     content_bool_array,
     roundtrip_bool_array
   )
+
+  content_bool_array_na <- matrix(c(TRUE, NA, TRUE, FALSE), nrow = 2)
+  write_zarr_array(
+    content_bool_array_na,
+    bool_zarr,
+    chunk_dim = c(2, 2),
+    compressor = NULL
+  ) |>
+    expect_warning("not support NA values")
+
+  read_zarr_array(bool_zarr) |>
+    expect_identical(
+      content_bool_array
+    )
 })
 
 test_that("v2 and v3 return identical results", {
