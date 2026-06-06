@@ -77,7 +77,10 @@ use_blosc <- function(
   shuffle <- match.arg(shuffle)
 
   if (clevel < 0L || clevel > 9L) {
-    stop("'clevel' must be an integer between 0 and 9")
+    stop(
+      "Blosc compresssion `clevel` value must be an integer between 0 and 9",
+      call. = FALSE
+    )
   }
   clevel <- as.integer(clevel)
 
@@ -133,7 +136,10 @@ use_zstd <- function(level = 0L) {
   # Question: we could potentially save level 0 in the metadata as the actual
   # value picked by the zstd library. For now, we follow zarr python approach.
   if (level < 0L || level > 22L) {
-    stop("Zstd level must be between 0 and 22.")
+    stop(
+      "Zstd compression `level` value must be an integer between 0 and 22.",
+      call. = FALSE
+    )
   }
   res <- list(id = "zstd", level = as.integer(level))
   return(res)
