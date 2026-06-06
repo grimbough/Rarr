@@ -755,3 +755,8 @@
     The path contains both `.zarray` (Zarr V2 specification) and `zarr.json` (Zarr V3 specification) metadata files.
     An array or group must conform to either the Zarr V2 or V3 specification.
 
+---
+
+    The path contains both `.zmetadata` (Zarr V2 specification) and `zarr.json` (Zarr V3 specification) consolidated metadata files.
+    An array or group must conform to either the Zarr V2 or V3 specification.
+
