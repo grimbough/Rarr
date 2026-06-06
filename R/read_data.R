@@ -193,10 +193,6 @@ read_chunk <- function(
 ) {
   # When we get here, we know the chunk exists, so we can read it without worrying about
   # handling missing.
-  if (nzchar(Sys.getenv("RARR_DEBUG"))) {
-    message(chunk_path)
-  }
-
   if (is.null(s3_client)) {
     size <- file.size(chunk_path)
     raw_chunk <- readBin(con = chunk_path, what = "raw", n = size)
