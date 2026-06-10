@@ -13,6 +13,9 @@
 * Structured data types (record arrays) now always return lists as the internal
   elements, instead of vectors as previously. This allows structured data types
   to contain different data types in a single element.
+* Unless `data_type` is specified explicitly, integers are now written using 
+  the smallest possible bitsize based on the array `x` range in 
+  `write_zarr_array()`.
 
 ## New features
 
@@ -27,7 +30,7 @@
     accessed more efficiently since a single file needs to be read instead of
     multiple smaller files.
   - easier direct access of all the elements in a remote S3 store, even though
-    Rarr doesn't have yet store-agnostic verbs to list, read, etc. elements. 
+    Rarr doesn't have yet store-agnostic verbs to list, read, etc. elements.
 
 ## Minor improvements
 
