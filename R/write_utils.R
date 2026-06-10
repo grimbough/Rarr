@@ -56,3 +56,31 @@
   }
   return(x)
 }
+
+.guess_int_size <- function(x, data_type) {
+  if (anyNA(x)) {
+    # Lower bitsize types cannot represent NA values.
+    return("<i4")
+  }
+  # There is no situation where we may return i8 or u8 because these large integers cannot exist in R.
+  # FIXME: potential optimization, avoid checking for overflow later if we used this function.
+  max_value <- max(x, na.rm = TRUE)
+  min_value <- min(x, na.rm = TRUE)
+
+  if (min_value < 0L) {
+    if (min_value >= -128L && max_value <= 127L) {
+      return("|i1")
+    } else if (min_value >= -32768L && max_value <= 32767L) {
+      return("<i2")
+    } else {
+      return("<i4")
+    }
+  }
+  if (max_value <= 255L) {
+    return("|u1")
+  } else if (max_value <= 65535L) {
+    return("<u2")
+  } else {
+    return("<u4")
+  }
+}
