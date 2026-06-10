@@ -32,7 +32,7 @@
       
       
       $metadata$`array1/.zarray`$dtype
-      [1] "<i4"
+      [1] "|u1"
       
       $metadata$`array1/.zarray`$fill_value
       [1] 0
@@ -196,7 +196,7 @@
       
       $consolidated_metadata$metadata$array1$codecs[[2]]$configuration
       $consolidated_metadata$metadata$array1$codecs[[2]]$configuration$endian
-      [1] "little"
+      NULL
       
       
       
@@ -212,7 +212,7 @@
       
       
       $consolidated_metadata$metadata$array1$data_type
-      [1] "int32"
+      [1] "uint8"
       
       $consolidated_metadata$metadata$array1$attributes
       $consolidated_metadata$metadata$array1$attributes$description

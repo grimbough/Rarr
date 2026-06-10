@@ -255,6 +255,9 @@ write_zarr_array <- function(
     # base::nchar() to avoid collision with var name
     nchar <- max(c(0L, base::nchar(x)), na.rm = TRUE) + 1L
   }
+  if (data_type == "integer") {
+    data_type <- .guess_int_size(x, data_type)
+  }
 
   path <- create_empty_zarr_array(
     zarr_array_path = zarr_array_path,
