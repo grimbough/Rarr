@@ -104,7 +104,7 @@ zarr_consolidate_metadata(zarr_v2, action = "return")
 #> 
 #> 
 #> $metadata$`array1/.zarray`$dtype
-#> [1] "<i4"
+#> [1] "|u1"
 #> 
 #> $metadata$`array1/.zarray`$fill_value
 #> [1] 0
@@ -184,18 +184,18 @@ zarr_consolidate_metadata(zarr_v2, action = "return")
 zarr_consolidate_metadata(zarr_v2, action = "write")
 zarr_overview(zarr_v2)
 #> Type: Group of Arrays
-#> Path: /tmp/RtmpiiICEJ/file1e6840942f92.zarr
+#> Path: /tmp/Rtmp2W6bUA/file2516411e7908.zarr
 #> Arrays:
 #> ---
-#>   Path: /tmp/RtmpiiICEJ/file1e6840942f92.zarr/array1
+#>   Path: /tmp/Rtmp2W6bUA/file2516411e7908.zarr/array1
 #>   Shape: 2 x 2
 #>   Chunk Shape: 1 x 2
 #>   No. of Chunks: 2 (2 x 1)
-#>   Data Type: int32
-#>   Endianness: little
+#>   Data Type: uint8
+#>   Endianness: NA
 #>   Compressor: zstd
 #> ---
-#>   Path: /tmp/RtmpiiICEJ/file1e6840942f92.zarr/array2
+#>   Path: /tmp/Rtmp2W6bUA/file2516411e7908.zarr/array2
 #>   Shape: 2 x 2
 #>   Chunk Shape: 1 x 2
 #>   No. of Chunks: 2 (2 x 1)

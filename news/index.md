@@ -18,6 +18,9 @@
   internal elements, instead of vectors as previously. This allows
   structured data types to contain different data types in a single
   element.
+- Unless `data_type` is specified explicitly, integers are now written
+  using the smallest possible bitsize based on the array `x` range in
+  [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md).
 
 ### New features
 
