@@ -40,11 +40,12 @@ touchstone::benchmark_run(
 touchstone::benchmark_run(
   {
     library(Rarr)
-    x_int8 <- array(1:1e3, dim = c(10, 10, 10))
+    x_int8 <- array(1:2e2, dim = c(2, 10, 10))
   },
   write_int8 = write_zarr_array(
     x = x_int8,
     zarr_array_path = "int8.zarr",
+    data_type = "|i1",
     chunk_dim = c(2, 2, 5),
     compressor = NULL
   ),
@@ -60,6 +61,7 @@ touchstone::benchmark_run(
   write_int16 = write_zarr_array(
     x = x_int16,
     zarr_array_path = "int16.zarr",
+    data_type = "<i2",
     chunk_dim = c(2, 2, 5),
     compressor = NULL
   ),
@@ -75,6 +77,7 @@ touchstone::benchmark_run(
   write_int32 = write_zarr_array(
     x = x_int32,
     zarr_array_path = "int32.zarr",
+    data_type = "<i4",
     chunk_dim = c(2, 2, 5),
     compressor = NULL
   ),
@@ -195,6 +198,7 @@ touchstone::benchmark_run(
     write_int32 = write_zarr_array(
       x = x_int32,
       zarr_array_path = "int32.zarr",
+      data_type = "<i4",
       chunk_dim = c(2, 2, 5),
       compressor = NULL
     )
@@ -421,6 +425,7 @@ touchstone::benchmark_run(
     write_zarr_array(
       array(1:1e6, dim = c(100, 100, 100)),
       "zstd.zarr",
+      data_type = "<i4",
       chunk_dim = c(10, 10, 10),
       compressor = use_zstd(level = 22)
     )
@@ -436,6 +441,7 @@ touchstone::benchmark_run(
   write_blosc_lz4 = write_zarr_array(
     array(1:1e6, dim = c(100, 100, 100)),
     "blosc_lz4.zarr",
+    data_type = "<i4",
     chunk_dim = c(10, 10, 10),
     compressor = use_blosc(cname = "lz4")
   ),
@@ -448,6 +454,7 @@ touchstone::benchmark_run(
     write_zarr_array(
       array(1:1e6, dim = c(100, 100, 100)),
       "blosc_lz4.zarr",
+      data_type = "<i4",
       chunk_dim = c(10, 10, 10),
       compressor = use_blosc(cname = "lz4")
     )
@@ -492,6 +499,7 @@ touchstone::benchmark_run(
     write_zarr_array(
       array(1:1e3, dim = c(10, 10, 10)),
       "transpose.zarr",
+      data_type = "<i4",
       chunk_dim = c(2, 2, 5),
       order = "C",
       compressor = NULL
