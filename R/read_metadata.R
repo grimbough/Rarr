@@ -274,7 +274,7 @@ zarr_overview <- function(
       "null_terminated_bytes" = "string"
     )
   }
-
+  metadata <- list2env(metadata, hash = TRUE, parent = emptyenv())
   return(metadata)
 }
 
