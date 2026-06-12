@@ -6,10 +6,10 @@ codec_blosc_decode <- function(bytes, ...) {
   )
 }
 
-codec_blosc_encode <- function(input, compressor_config, ...) {
+codec_blosc_encode <- function(bytes, compressor_config, ...) {
   .Call(
     "compress_chunk_BLOSC",
-    input,
+    bytes,
     compressor_config$typesize,
     compressor_config$cname,
     compressor_config$clevel,
@@ -60,12 +60,12 @@ codec_lz4_decode <- function(bytes, ...) {
   )
 }
 
-codec_lz4_encode <- function(input, ...) {
+codec_lz4_encode <- function(bytes, ...) {
   ## numpy stores the original size of the buffer in the first 4 bytes after
   ## compression. We should do that too for compatibility
   c(
-    writeBin(length(input), raw(), size = 4L, endian = "little"),
-    .Call("compress_chunk_LZ4", input, PACKAGE = "Rarr")
+    writeBin(length(bytes), raw(), size = 4L, endian = "little"),
+    .Call("compress_chunk_LZ4", bytes, PACKAGE = "Rarr")
   )
 }
 
@@ -77,10 +77,10 @@ codec_zstd_decode <- function(bytes, ...) {
   )
 }
 
-codec_zstd_encode <- function(input, compressor_config, ...) {
+codec_zstd_encode <- function(bytes, compressor_config, ...) {
   .Call(
     "compress_chunk_ZSTD",
-    input,
+    bytes,
     as.integer(compressor_config$level),
     PACKAGE = "Rarr"
   )
