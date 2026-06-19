@@ -6,7 +6,8 @@ codec_blosc_decode <- function(bytes, ...) {
   )
 }
 
-codec_blosc_encode <- function(bytes, compressor_config, ...) {
+codec_blosc_encode <- function(bytes, ...) {
+  compressor_config <- list(...)
   .Call(
     "compress_chunk_BLOSC",
     bytes,
@@ -30,6 +31,13 @@ codec_zlib_decode <- codec_gzip_decode <- function(bytes, ...) {
   )
 }
 
+codec_zlib_encode <- codec_gzip_encode <- function(bytes, ...) {
+  memCompress(
+    from = bytes,
+    type = "gzip"
+  )
+}
+
 codec_bz2_decode <- function(bytes, ...) {
   memDecompress(
     from = bytes,
@@ -38,11 +46,25 @@ codec_bz2_decode <- function(bytes, ...) {
   )
 }
 
+codec_bz2_encode <- function(bytes, ...) {
+  memCompress(
+    from = bytes,
+    type = "bzip2"
+  )
+}
+
 codec_lzma_decode <- function(bytes, ...) {
   memDecompress(
     from = bytes,
     type = "xz",
     asChar = FALSE
+  )
+}
+
+codec_lzma_encode <- function(bytes, ...) {
+  memCompress(
+    from = bytes,
+    type = "xz"
   )
 }
 
@@ -77,7 +99,8 @@ codec_zstd_decode <- function(bytes, ...) {
   )
 }
 
-codec_zstd_encode <- function(bytes, compressor_config, ...) {
+codec_zstd_encode <- function(bytes, ...) {
+  compressor_config <- list(...)
   .Call(
     "compress_chunk_ZSTD",
     bytes,

@@ -514,11 +514,6 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   chunk_path,
   metadata
 ) {
-  ## check the chunk path exists, and create if not
-  if (!dir.exists(dirname(chunk_path))) {
-    dir.create(dirname(chunk_path), recursive = TRUE, showWarnings = FALSE)
-  }
-
   # Array to array codecs
   for (codec in metadata$configured_encoders[["array_array"]]) {
     input_chunk <- do.call(codec, list(input_chunk))
@@ -527,53 +522,16 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   for (codec in metadata$configured_encoders[["array_bytes"]]) {
     raw_chunk <- codec(as.vector(input_chunk), metadata$datatype)
   }
-
   # Bytes to bytes codecs
-  codecs <- metadata$codecs
-  compressor <- NULL
-  compressor$id <- names(codecs)[match(
-    TRUE,
-    names(codecs) %in% CODEC_BYTES_BYTES
-  )]
-  compressor_config <- codecs[[compressor$id]]$configuration
-  if (is.na(compressor$id)) {
-    compressed_chunk <- raw_chunk
-  } else if (compressor$id == "blosc") {
-    compressed_chunk <- codec_blosc_encode(raw_chunk, compressor_config)
-  } else if (compressor$id == "zlib") {
-    compressed_chunk <- memCompress(from = raw_chunk, type = "gzip")
-  } else if (compressor$id == "gzip") {
-    con <- gzfile(
-      chunk_path,
-      open = "wb",
-      compression = compressor_config$level
-    )
-    on.exit(close(con))
-  } else if (compressor$id == "bz2") {
-    con <- bzfile(
-      chunk_path,
-      open = "wb",
-      compression = compressor_config$level
-    )
-    on.exit(close(con))
-  } else if (compressor$id == "lzma") {
-    con <- xzfile(
-      chunk_path,
-      open = "wb",
-      compression = compressor_config$level
-    )
-    on.exit(close(con))
-  } else if (compressor$id %in% c("lz4", "numcodecs.lz4")) {
-    compressed_chunk <- codec_lz4_encode(raw_chunk)
-  } else if (compressor$id == "zstd") {
-    compressed_chunk <- codec_zstd_encode(raw_chunk, compressor_config)
+  for (codec in metadata$configured_encoders[["bytes_bytes"]]) {
+    raw_chunk <- codec(bytes = raw_chunk)
   }
 
-  if (compressor$id %in% c("gzip", "bz2", "lzma")) {
-    writeBin(raw_chunk, con = con, useBytes = TRUE)
-  } else {
-    writeBin(compressed_chunk, con = chunk_path)
+  ## check the chunk path exists, and create if not
+  if (!dir.exists(dirname(chunk_path))) {
+    dir.create(dirname(chunk_path), recursive = TRUE, showWarnings = FALSE)
   }
+  writeBin(raw_chunk, con = chunk_path)
 
   return(invisible(TRUE))
 }
