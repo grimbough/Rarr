@@ -183,7 +183,7 @@ check_index <- function(index, metadata) {
   key_strings <- .create_chunk_names(as.matrix(chunk_keys), metadata)
   index0 <- relist(index0, index)
   setNames(
-    lapply(seq_len(nrow(chunk_keys)), function(i) {
+    lapply(seq_along(key_strings), function(i) {
       positions <- mapply(
         \(d, k) d[[k]],
         per_dim,
