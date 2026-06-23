@@ -6,6 +6,9 @@ author:
     affiliation:
       - EMBL Heidelberg
     email: hugo.gruson@embl.de
+  - name: Mike Smith
+    affiliation:
+      - EMBL Heidelberg
 package: "`r BiocStyle::pkg_ver('Rarr')`"
 vignette: >
   %\VignetteIndexEntry{"Working with **remote** Zarr arrays in R"}
