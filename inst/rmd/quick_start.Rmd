@@ -74,72 +74,7 @@ read_zarr_array(zarr_example, index = index)
 
 ## Reading from S3 storage {#read-s3}
 
-Reading files in S3 storage works in a very similar fashion to local disk.  This
-time the path needs to be a URL to the Zarr array.
-We can again use `zarr_overview()` to quickly retrieve the array metadata.
-
-```{r, read-from-s3-shown, echo = TRUE, eval = FALSE}
-s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-zarr_overview(s3_address)
-```
-
-```{r, read-from-s3, echo = FALSE, eval = TRUE}
-s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-s3_client <- paws.storage::s3(
-  config = list(
-    credentials = list(anonymous = TRUE),
-    region = "auto",
-    endpoint = "https://uk1s3.embassy.ebi.ac.uk"
-  )
-)
-zarr_overview(s3_address, s3_client = s3_client)
-```
-
-The output above indicates that the array is stored in 50 chunks, each
-containing a slice of the overall data. In the example below we use the `index`
-argument to extract the first and tenth slices from the array. Choosing to read only
-2 of the 50 slices is much faster than if we opted to download the entire array
-before accessing the data.
-
-```{r, get-slices-not-run, echo = TRUE, eval = FALSE }
-z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
-```
-
-```{r, get-slices, echo = FALSE, eval = TRUE }
-z2 <- read_zarr_array(
-  s3_address,
-  index = list(c(1, 10), NULL, NULL),
-  s3_client = s3_client
-)
-```
-
-We then plot our two slices on top of one another using the `image()` function.
-
-```{r, plot-raster, echo = 2:9, cache = TRUE, out.width="30%", eval = TRUE}
-par(mar = c(0, 0, 0, 0))
-## plot the first slice in blue
-image(
-  log2(z2[1, , ]),
-  col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3],
-  axes = FALSE
-)
-## overlay the tenth slice in green
-image(
-  log2(z2[2, , ]),
-  col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3],
-  axes = FALSE,
-  add = TRUE
-)
-```
-
-**Note:** if you receive the error message
-`"Error in stop(aws_error(request$error)) : bad error message"` it is likely you
-have some AWS credentials available in to your R session, which are being
-inappropriately used to access this public bucket.  Please see the section
-\@ref(s3-client) for details on how to set credentials for a specific
-request.
+Read the dedicated ["Working with **remote** Zarr arrays in R" vignette](https://huber-group-embl.github.io/Rarr/articles/S3.html) for more information on reading Zarr arrays from S3 storage.
 
 ## Writing to a Zarr array
 
