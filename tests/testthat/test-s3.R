@@ -13,6 +13,7 @@ test_that("Anonymous S3 access is detected properly", {
 test_that("Authenticated S3 access works", {
   skip_if_offline("s3.embl.de")
   skip_on_bioc()
+  skip_on_ci()
 
   withr::with_envvar(
     c(
@@ -33,6 +34,7 @@ test_that("Authenticated S3 access works", {
 test_that("Denied access errors return clear error messages", {
   skip_if_offline("s3.embl.de")
   skip_on_bioc()
+  skip_on_ci()
 
   # This is a real zarr store, but we don't have access
   expect_error(
@@ -44,6 +46,7 @@ test_that("Denied access errors return clear error messages", {
 test_that("JSON metadata is not unboxed", {
   skip_if_offline("livingobjects.ebi.ac.uk")
   skip_on_bioc()
+  skip_on_ci()
 
   # We don't want to save the metadata and test this locally. It has to be tested on a real S3 store because it relates
   # to a bug in the code branch.
