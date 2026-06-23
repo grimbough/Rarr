@@ -31,7 +31,7 @@ Reading Zarr arrays is reasonably well supported. Writing is available, but is m
 | Store Type       | Status<br/>(reading / writing) | Notes |
 |------------------|:------------------------------:|-------|
 |`FilesystemStore` | &#x2714; / &#x2714;            |       |
-|`S3Store`         | &#x2714; / &#x274C;            |       |
+|`S3Store`         | &#x2714; / &#x274C;            | Read more in the [S3 vignette](vignettes/S3.html) |
 
 ### Data Types
 
