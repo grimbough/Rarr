@@ -43,7 +43,7 @@
       metadata_v2,
       file.path(array_path, ".zarray"),
       auto_unbox = TRUE,
-      pretty = 4L,
+      pretty = TRUE,
       null = "null"
     )
     return(invisible(TRUE))
@@ -66,7 +66,7 @@
       metadata_v3,
       file.path(array_path, "zarr.json"),
       auto_unbox = TRUE,
-      pretty = 4L,
+      pretty = TRUE,
       null = "null"
     )
   }
@@ -128,7 +128,7 @@ write_zarr_attributes <- function(
       new.zattrs,
       file.path(zarr_path, ".zattrs"),
       auto_unbox = TRUE,
-      pretty = 4L,
+      pretty = TRUE,
       null = "null"
     )
   } else if (zarr_version == 3L) {
@@ -145,7 +145,7 @@ write_zarr_attributes <- function(
       metadata,
       file.path(zarr_path, "zarr.json"),
       auto_unbox = TRUE,
-      pretty = 4L,
+      pretty = TRUE,
       null = "null"
     )
   }
@@ -298,7 +298,7 @@ zarr_consolidate_metadata <- function(
     res,
     consolidated_path,
     auto_unbox = TRUE,
-    pretty = 4L,
+    pretty = TRUE,
     null = "null"
   )
 }
