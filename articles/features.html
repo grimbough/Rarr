@@ -36,6 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/design.html">Design principles for the Rarr package</a></li>
     <li><a class="dropdown-item" href="../articles/features.html">Supported Zarr features in Rarr</a></li>
+    <li><a class="dropdown-item" href="../articles/S3.html">Working with **remote** Zarr arrays in R</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -60,7 +61,7 @@
 
       <h1>Supported Zarr features in Rarr</h1>
             
-            <h4 data-toc-skip class="date">10 June 2026</h4>
+            <h4 data-toc-skip class="date">23 June 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/features.Rmd" class="external-link"><code>vignettes/features.Rmd</code></a></small>
       <div class="d-none name"><code>features.Rmd</code></div>
@@ -92,6 +93,11 @@ development.</p>
 <h3 id="stores">Stores<a class="anchor" aria-label="anchor" href="#stores"></a>
 </h3>
 <table class="table">
+<colgroup>
+<col width="31%">
+<col width="56%">
+<col width="12%">
+</colgroup>
 <thead><tr class="header">
 <th>Store Type</th>
 <th align="center">Status<br>(reading / writing)</th>
@@ -106,7 +112,8 @@ development.</p>
 <tr class="even">
 <td><code>S3Store</code></td>
 <td align="center">✔ / ❌</td>
-<td></td>
+<td>Read more in the <a href="vignettes/S3.html">S3 vignette</a>
+</td>
 </tr>
 </tbody>
 </table>

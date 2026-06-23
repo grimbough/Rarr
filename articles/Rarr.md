@@ -29,9 +29,7 @@ directly.
 Currently, there are also limitations on the Zarr datatypes that can be
 accessed using **Rarr**. For now most numeric types can be read into R,
 although in some instances e.g. 64-bit integers there is potential for
-loss of information. Writing is more limited with support only for
-datatypes that are supported natively in R and only using the
-column-first representation.
+loss of information.
 
 ### Example data
 
@@ -153,68 +151,9 @@ read_zarr_array(zarr_example, index = index)
 
 ### Reading from S3 storage
 
-Reading files in S3 storage works in a very similar fashion to local
-disk. This time the path needs to be a URL to the Zarr array. We can
-again use
-[`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md)
-to quickly retrieve the array metadata.
-
-``` r
-
-s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-zarr_overview(s3_address)
-```
-
-    ## Type: Array
-    ## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0
-    ## Shape: 50 x 494 x 464
-    ## Chunk Shape: 1 x 494 x 464
-    ## No. of Chunks: 50 (50 x 1 x 1)
-    ## Data Type: float64
-    ## Endianness: little
-    ## Compressor: blosc
-
-The output above indicates that the array is stored in 50 chunks, each
-containing a slice of the overall data. In the example below we use the
-`index` argument to extract the first and tenth slices from the array.
-Choosing to read only 2 of the 50 slices is much faster than if we opted
-to download the entire array before accessing the data.
-
-``` r
-
-z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
-```
-
-We then plot our two slices on top of one another using the
-[`image()`](https://rdrr.io/r/graphics/image.html) function.
-
-``` r
-
-## plot the first slice in blue
-image(
-  log2(z2[1, , ]),
-  col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3],
-  axes = FALSE
-)
-## overlay the tenth slice in green
-image(
-  log2(z2[2, , ]),
-  col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3],
-  axes = FALSE,
-  add = TRUE
-)
-```
-
-![](Rarr_files/figure-html/plot-raster-1.png)
-
-**Note:** if you receive the error message
-`"Error in stop(aws_error(request$error)) : bad error message"` it is
-likely you have some AWS credentials available in to your R session,
-which are being inappropriately used to access this public bucket.
-Please see the section @ref(s3-client) for details on how to set
-credentials for a specific request.
+Read the dedicated [“Working with **remote** Zarr arrays in R”
+vignette](https://huber-group-embl.github.io/Rarr/articles/S3.html) for
+more information on reading Zarr arrays from S3 storage.
 
 ### Writing to a Zarr array
 
@@ -294,126 +233,6 @@ zarr_overview(zarr_example, as_data_frame = TRUE)
     ##   data_type endianness compressor        dim chunk_dim nchunks
     ## 1     int32     little      blosc 30, 20, 10 10, 10, 5 3, 2, 2
 
-### Using credentials to access S3 buckets
-
-If you’re accessing data in a private S3 bucket, you can set the
-environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to
-store your credentials. For example, lets try reading a file in a
-private S3 bucket:
-
-``` r
-
-zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
-```
-
-    ## Error:
-    ## ! AccessDenied (HTTP 403). Access Denied.
-
-We can see the “Access Denied” message in our output, indicating that we
-don’t have permission to access this resource as an anonymous user.
-However, if we use the key pair below, which gives read-only access to
-the objects in the `rarr-testing` bucket, we’re now able to interrogate
-the files with functions in *Rarr*.
-
-``` r
-
-Sys.setenv(
-  "AWS_ACCESS_KEY_ID" = "bYUBYVg1AsEreuDgtg5K",
-  "AWS_SECRET_ACCESS_KEY" = "r8FrLXc9dseD6V1P3htsu7ZBzP7Gszsd3sM1G4KX"
-)
-zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
-```
-
-    ## Type: Array
-    ## Path: https://s3.embl.de/rarr-testing/bzip2.zarr
-    ## Shape: 20 x 10
-    ## Chunk Shape: 10 x 10
-    ## No. of Chunks: 2 (2 x 1)
-    ## Data Type: int32
-    ## Endianness: little
-    ## Compressor: bz2
-
-Behind the scenes **Rarr** makes use of the **paws** suite of packages
-(<https://paws-r.github.io/>) to interact with S3 storage. A
-comprehensive overview of the multiple ways credentials can be set and
-used by **paws** can be found at
-<https://github.com/paws-r/paws/blob/main/docs/credentials.md>. If
-setting environment variables as above doesn’t work or is inappropriate
-for your use case please refer to that document for other options.
-
-### Creating an S3 client
-
-Although **Rarr** will try its best to find appropriate credentials and
-settings to access a bucket, it is not always successful. Once such
-example is when you have AWS credentials set somewhere and you try to
-access a public bucket. We can see an example of this below, where we
-access the same public bucket used in @ref(read-s3), but it now fails
-because we have set the `AWS_ACCESS_KEY_ID` environment variable in the
-previous section.
-
-``` r
-
-s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-zarr_overview(s3_address)
-```
-
-    ## 
-
-You might encounter similar problems if you’re trying to access multiple
-buckets each of which require different credentials. The solution here
-is to create an “s3_client” using
-[`paws.storage::s3()`](https://paws-r.r-universe.dev/paws.storage/reference/s3.html),
-which contains all the required details for accessing a particular
-bucket. Doing so will prevent **Rarr** from trying to determine things
-on its own, and gives you complete control over the settings used to
-communicate with the S3 bucket. Here’s an example that will let us
-access the failing bucket by creating a client with anonymous
-credentials.
-
-``` r
-
-s3_client <- paws.storage::s3(
-  config = list(
-    credentials = list(anonymous = TRUE),
-    region = "auto",
-    endpoint = "https://uk1s3.embassy.ebi.ac.uk"
-  )
-)
-```
-
-If you’re accessing a public bucket, the most important step is to
-provide a `credentials` list with `anonymous = TRUE`. Doing so ensures
-that no attempts to find other credentials are made, and prevents the
-problems seen above. If you’re using files on Amazon AWS storage you’ll
-need to set the `region` to whatever is appropriate for your data
-e.g. `"us-east-2"`, `"eu-west-3"`, etc. For other S3 providers that
-don’t have regions use the value `"auto"` as in the example below.
-Finally the `endpoint` argument is the full hostname of the server where
-your files can be found. For more information on creating an S3 client
-see the [**paws.storage**
-documentation](https://paws-r.github.io/docs/s3/).
-
-We can then pass our s3_client to
-[`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md)
-and it now works successfully.
-
-``` r
-
-zarr_overview(s3_address, s3_client = s3_client)
-```
-
-    ## Type: Array
-    ## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0
-    ## Shape: 50 x 494 x 464
-    ## Chunk Shape: 1 x 494 x 464
-    ## No. of Chunks: 50 (50 x 1 x 1)
-    ## Data Type: float64
-    ## Endianness: little
-    ## Compressor: blosc
-
-Most functions in **Rarr** have the `s3_client` argument and it can be
-applied in the same way.
-
 ### Writing subsets of data
 
 One of the key features of the Zarr specification is that the arrays are
@@ -459,14 +278,12 @@ new array, and the shape of the chunks it should be split into. These
 two arguments must be compatible with one another i.e. have the same
 number of dimensions and no value in `chunk_dim` should exceed the
 corresponding value in `dim`. The `data_type` argument defines what type
-of values will be stored in the array. This is currently limited to:
-`"integer"`, `"double"`, and `"string"`[^3]. Finally we use the
-`fill_value` argument to provide our default value for the uninitialized
-chunks. The next few lines check what’s actually been created on our
-file system. First, we use
-[`list.files()`](https://rdrr.io/r/base/list.files.html) to confirm that
-that only file that’s been created is the `.zarray` metadata; there are
-no chunk files. Then we use
+of values will be stored in the array. Finally we use the `fill_value`
+argument to provide our default value for the uninitialized chunks. The
+next few lines check what’s actually been created on our file system.
+First, we use [`list.files()`](https://rdrr.io/r/base/list.files.html)
+to confirm that that only file that’s been created is the `zarr.json`
+metadata; there are no chunk files. Then we use
 [`table()`](https://rdrr.io/r/base/table.html) to check the contents of
 the array, and confirm that when it’s read the resulting array in R is
 full of 7s, our fill value.
@@ -553,7 +370,7 @@ contents is as expected.
 
 ### Session info
 
-    ## R Under development (unstable) (2026-06-08 r90120)
+    ## R Under development (unstable) (2026-06-21 r90185)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
@@ -577,28 +394,23 @@ contents is as expected.
     ## [1] Rarr_2.1.18      BiocStyle_2.40.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] jsonlite_2.0.0      compiler_4.7.0      BiocManager_1.30.27
-    ##  [4] crayon_1.5.3        Rcpp_1.1.1-1.1      xml2_1.5.2         
-    ##  [7] jquerylib_0.1.4     systemfonts_1.3.2   textshaping_1.0.5  
-    ## [10] yaml_2.3.12         fastmap_1.2.0       R6_2.6.1           
-    ## [13] curl_7.1.0          httr2_1.2.2         knitr_1.51         
-    ## [16] paws.storage_0.10.0 bookdown_0.46       desc_1.4.3         
-    ## [19] pillar_1.11.1       bslib_0.11.0        paws.common_0.8.9  
-    ## [22] R.utils_2.13.0      rlang_1.2.0         cachem_1.1.0       
-    ## [25] grumpy_0.1.1        xfun_0.58           fs_2.1.0           
-    ## [28] sass_0.4.10         otel_0.2.0          cli_3.6.6          
-    ## [31] pkgdown_2.2.0       magrittr_2.0.5      digest_0.6.39      
-    ## [34] rappdirs_0.3.4      lifecycle_1.0.5     vctrs_0.7.3        
-    ## [37] R.methodsS3_1.8.2   R.oo_1.27.1         evaluate_1.0.5     
-    ## [40] glue_1.8.1          codetools_0.2-20    ragg_1.5.2         
-    ## [43] rmarkdown_2.31      tools_4.7.0         htmltools_0.5.9
+    ##  [1] crayon_1.5.3        cli_3.6.6           knitr_1.51         
+    ##  [4] rlang_1.2.0         xfun_0.59           otel_0.2.0         
+    ##  [7] textshaping_1.0.5   jsonlite_2.0.0      glue_1.8.1         
+    ## [10] grumpy_0.1.1        htmltools_0.5.9     ragg_1.5.2         
+    ## [13] sass_0.4.10         rappdirs_0.3.4      rmarkdown_2.31     
+    ## [16] evaluate_1.0.5      jquerylib_0.1.4     fastmap_1.2.0      
+    ## [19] yaml_2.3.12         lifecycle_1.0.5     httr2_1.2.2        
+    ## [22] bookdown_0.47       BiocManager_1.30.27 compiler_4.7.0     
+    ## [25] fs_2.1.0            Rcpp_1.1.1-1.1      R.oo_1.27.1        
+    ## [28] R.utils_2.13.0      systemfonts_1.3.2   digest_0.6.39      
+    ## [31] R6_2.6.1            curl_7.1.0          paws.common_0.8.10 
+    ## [34] paws.storage_0.10.0 magrittr_2.0.5      R.methodsS3_1.8.2  
+    ## [37] bslib_0.11.0        tools_4.7.0         pkgdown_2.2.0      
+    ## [40] cachem_1.1.0        desc_1.4.3
 
 [^1]: you only need to do the installation step once
 
 [^2]: This is essentially reading and formatting the array metadata that
     accompanies any Zarr array, or the consolidated metadata if present
     in the case of a Zarr group.
-
-[^3]: **Rarr** is currently limited to writing Zarr arrays using data
-    types native to R, rather than the full range provided by other
-    implementations.
