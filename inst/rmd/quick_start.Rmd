@@ -54,6 +54,7 @@ example, we can see in the output above that the data type (`int32`) corresponds
 to what we expect.
 
 ### Reading the Zarr array
+
 The summary information retrieved above is required, as to read the array with
 **Rarr** you need to know the shape and size of the array (unless you want to
 read the entire array).  From the previous output we can see our example array

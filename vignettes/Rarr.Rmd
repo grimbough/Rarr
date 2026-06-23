@@ -50,8 +50,6 @@ arrays can be read individually by providing the path to them directly.
 Currently, there are also limitations on the Zarr datatypes that can be accessed
 using **Rarr**.  For now most numeric types can be read into R, although in some
 instances e.g. 64-bit integers there is potential for loss of information.
-Writing is more limited with support only for datatypes that are supported
-natively in R and only using the column-first representation.
 
 ## Example data
 
@@ -76,6 +74,7 @@ list.dirs(
 # Additional details
 
 ## Working with Zarr metadata
+
 By default the `zarr_overview()` function prints a summary of the array to
 screen, so you can get a quick idea of the array properties.  However, there are
 times when it might be useful to compute on that metadata, in which case
@@ -127,13 +126,11 @@ and the shape of the chunks it should be split into.  These two arguments must
 be compatible with one another i.e. have the same number of dimensions and no
 value in `chunk_dim` should exceed the corresponding value in `dim`.  The
 `data_type` argument defines what type of values will be stored in the array.
-This is currently limited to: `"integer"`, `"double"`, and `"string"`^[**Rarr**
-is currently limited to writing Zarr arrays using data types native to R, rather
-than the full range provided by other implementations.].  Finally we use the
-`fill_value` argument to provide our default value for the uninitialized chunks.
+Finally we use the `fill_value` argument to provide our default value for the
+uninitialized chunks.
 The next few lines check what's actually been created on our file system.
 First, we use `list.files()` to confirm that that only file that's been created
-is the `.zarray` metadata; there are no chunk files.  Then we use `table()` to
+is the `zarr.json` metadata; there are no chunk files.  Then we use `table()` to
 check the contents of the array, and confirm that when it's read the resulting
 array in R is full of 7s, our fill value.
 
