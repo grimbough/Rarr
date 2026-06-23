@@ -184,10 +184,10 @@ zarr_consolidate_metadata(zarr_v2, action = "return")
 zarr_consolidate_metadata(zarr_v2, action = "write")
 zarr_overview(zarr_v2)
 #> Type: Group of Arrays
-#> Path: /tmp/RtmpAEhRPN/file1e57131ce460.zarr
+#> Path: /tmp/RtmpnaTVnu/file1e4e4eb75286.zarr
 #> Arrays:
 #> ---
-#>   Path: /tmp/RtmpAEhRPN/file1e57131ce460.zarr/array1
+#>   Path: /tmp/RtmpnaTVnu/file1e4e4eb75286.zarr/array1
 #>   Shape: 2 x 2
 #>   Chunk Shape: 1 x 2
 #>   No. of Chunks: 2 (2 x 1)
@@ -195,7 +195,7 @@ zarr_overview(zarr_v2)
 #>   Endianness: NA
 #>   Compressor: zstd
 #> ---
-#>   Path: /tmp/RtmpAEhRPN/file1e57131ce460.zarr/array2
+#>   Path: /tmp/RtmpnaTVnu/file1e4e4eb75286.zarr/array2
 #>   Shape: 2 x 2
 #>   Chunk Shape: 1 x 2
 #>   No. of Chunks: 2 (2 x 1)
