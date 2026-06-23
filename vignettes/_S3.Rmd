@@ -1,6 +1,6 @@
 ---
 title: "Working with **remote** Zarr arrays in R"
-date: "23 June 2026"
+date: "`r BiocStyle::doc_date()`"
 author:
   - name: Hugo Gruson
     affiliation:
@@ -9,7 +9,7 @@ author:
   - name: Mike Smith
     affiliation:
       - EMBL Heidelberg
-package: "Rarr 2.1.18"
+package: "`r BiocStyle::pkg_ver('Rarr')`"
 vignette: >
   %\VignetteIndexEntry{"Working with **remote** Zarr arrays in R"}
   %\VignetteEngine{knitr::rmarkdown}
@@ -23,10 +23,11 @@ output:
 knitr::knit("vignettes/_S3.Rmd", output = "vignettes/S3.Rmd")
 -->
 
+```{r, echo = FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
 
-
-
-``` r
+```{r}
 library(Rarr)
 ```
 
@@ -36,29 +37,16 @@ Reading files in S3 storage works in a very similar fashion to local disk.  This
 time the path needs to be a URL to the Zarr array.
 We can again use `zarr_overview()` to quickly retrieve the array metadata.
 
-
-``` r
+```{r, read-from-s3-shown}
 s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
 zarr_overview(s3_address)
 ```
 
-```
-## Type: Array
-## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0
-## Shape: 50 x 494 x 464
-## Chunk Shape: 1 x 494 x 464
-## No. of Chunks: 50 (50 x 1 x 1)
-## Data Type: float64
-## Endianness: little
-## Compressor: blosc
-```
-
 You can also pass an S3 client to the function, which is useful if you need to set credentials or other options for accessing the bucket. See the section \@ref(s3-client) for more details.
-If absent, *[Rarr](https://bioconductor.org/packages/3.24/Rarr)* will try to find credentials and other settings on its own, which may not always be successful.
+If absent, `r BiocStyle::Biocpkg('Rarr')` will try to find credentials and other settings on its own, which may not always be successful.
 This is equivalent to the previous code block:
 
-
-``` r
+```{r, read-from-s3}
 s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
 s3_client <- paws.storage::s3(
   config = list(
@@ -70,25 +58,13 @@ s3_client <- paws.storage::s3(
 zarr_overview(s3_address, s3_client = s3_client)
 ```
 
-```
-## Type: Array
-## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0
-## Shape: 50 x 494 x 464
-## Chunk Shape: 1 x 494 x 464
-## No. of Chunks: 50 (50 x 1 x 1)
-## Data Type: float64
-## Endianness: little
-## Compressor: blosc
-```
-
 The output above indicates that the array is stored in 50 chunks, each
 containing a slice of the overall data. In the example below we use the `index`
 argument to extract the first and tenth slices from the array. Choosing to read only
 2 of the 50 slices is much faster than if we opted to download the entire array
 before accessing the data.
 
-
-``` r
+```{r, get-slices}
 z2 <- read_zarr_array(
   s3_address,
   index = list(c(1, 10), NULL, NULL)
@@ -97,8 +73,7 @@ z2 <- read_zarr_array(
 
 We then plot our two slices on top of one another using the `image()` function.
 
-
-``` r
+```{r, plot-raster}
 ## plot the first slice in blue
 image(
   log2(z2[1, , ]),
@@ -116,8 +91,6 @@ image(
 )
 ```
 
-![plot of chunk plot-raster](figure/plot-raster-1.png)
-
 **Note:** if you receive the error message
 `"Error in stop(aws_error(request$error)) : bad error message"` it is likely you
 have some AWS credentials available in to your R session, which are being
@@ -131,14 +104,8 @@ If you're accessing data in a private S3 bucket, you can set the environment
 variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to store your
 credentials.  For example, lets try reading a file in a private S3 bucket:
 
-
-``` r
+```{r, s3-forbidden,  error=TRUE}
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
-```
-
-```
-## Error:
-## ! AccessDenied (HTTP 403). Access Denied.
 ```
 
 We can see the "Access Denied" message in our output, indicating that we don't
@@ -146,24 +113,12 @@ have permission to access this resource as an anonymous user.  However, if we us
 below, which gives read-only access to the objects in the `rarr-testing` bucket,
 we're now able to interrogate the files with functions in *Rarr*.
 
-
-``` r
+```{r}
 Sys.setenv(
   "AWS_ACCESS_KEY_ID" = "bYUBYVg1AsEreuDgtg5K",
   "AWS_SECRET_ACCESS_KEY" = "r8FrLXc9dseD6V1P3htsu7ZBzP7Gszsd3sM1G4KX"
 )
 zarr_overview("https://s3.embl.de/rarr-testing/bzip2.zarr")
-```
-
-```
-## Type: Array
-## Path: https://s3.embl.de/rarr-testing/bzip2.zarr
-## Shape: 20 x 10
-## Chunk Shape: 10 x 10
-## No. of Chunks: 2 (2 x 1)
-## Data Type: int32
-## Endianness: little
-## Compressor: bz2
 ```
 
 Behind the scenes **Rarr** makes use of the **paws** suite of packages
@@ -183,14 +138,9 @@ can see an example of this below, where we access the same public bucket used in
 environment variable in the previous section.
 
 
-
-``` r
+```{r, bad-s3, error = TRUE}
 s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
 zarr_overview(s3_address)
-```
-
-```
-## 
 ```
 
 You might encounter similar problems if you're trying to access multiple buckets
@@ -201,8 +151,7 @@ to determine things on its own, and gives you complete control over the settings
 used to communicate with the S3 bucket. Here's an example that will let us
 access the failing bucket by creating a client with anonymous credentials.
 
-
-``` r
+```{r, paws-s3-client}
 s3_client <- paws.storage::s3(
   config = list(
     credentials = list(anonymous = TRUE),
@@ -226,20 +175,8 @@ documentation](https://paws-r.github.io/docs/s3/).
 We can then pass our s3_client to `zarr_overview()` and it now works
 successfully.
 
-
-``` r
+```{r, works-again}
 zarr_overview(s3_address, s3_client = s3_client)
-```
-
-```
-## Type: Array
-## Path: https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0
-## Shape: 50 x 494 x 464
-## Chunk Shape: 1 x 494 x 464
-## No. of Chunks: 50 (50 x 1 x 1)
-## Data Type: float64
-## Endianness: little
-## Compressor: blosc
 ```
 
 Most functions in **Rarr** have the `s3_client` argument and it
