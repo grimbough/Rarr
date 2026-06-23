@@ -104,7 +104,7 @@ identical(read_zarr_array(blosc_path), read_zarr_array(bzip2_path))
 
 ## the size of the files on disk are not the same
 sum(file.size(list.files(blosc_path, full.names = TRUE)))
-#> [1] 5115
+#> [1] 4879
 sum(file.size(list.files(bzip2_path, full.names = TRUE)))
-#> [1] 4976
+#> [1] 4772
 ```
