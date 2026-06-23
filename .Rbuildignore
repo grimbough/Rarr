@@ -22,3 +22,4 @@ LICENSE.md
 ^pkgdown$
 ^touchstone$
 ^\.lintr$
+^vignettes/_.*Rmd$
