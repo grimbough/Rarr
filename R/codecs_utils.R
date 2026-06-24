@@ -38,7 +38,14 @@
 
   if ("transpose" %in% array_array_codecs) {
     # R is already F ordered, so we reverse the order in config
-    cfg <- rev(unlist(codecs$transpose$configuration$order)) + 1L
+    cfg <- unlist(codecs$transpose$configuration$order) + 1L
+    if ("sharding_indexed" %notin% array_bytes_codecs) {
+      # For sharding_indexed, the bytes->array function already transposes the
+      # array, so we don't need to reverse the order here.
+      # FIXME: I'm probably overcomplicating this. A better process within the
+      # sharding codec would avoid the special case here.
+      cfg <- rev(cfg)
+    }
     if (is.unsorted(cfg)) {
       array_array_env[["transpose"]] <- switch(
         operation,
