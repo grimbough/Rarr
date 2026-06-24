@@ -77,7 +77,8 @@ codec_sharding_indexed_decode <- function(
   ...
 ) {
   config <- list(...)
-  index_shape <- c(shard_dim / unlist(config$chunk_shape), 2L)
+  chunk_dim <- unlist(config$chunk_shape)
+  index_shape <- c(2L, shard_dim / chunk_dim)
   index_length <- prod(index_shape)
   index_nbytes <- index_length * 8L
   # FIXME: any way for this to be cleaner?
@@ -106,8 +107,6 @@ codec_sharding_indexed_decode <- function(
   )
   dim(index) <- index_shape
 
-  chunk_dim <- unlist(config$chunk_shape)
-
   configured_decoders <- config$codecs |>
     setNames(vapply(
       config$codecs,
@@ -119,7 +118,7 @@ codec_sharding_indexed_decode <- function(
   chunks_raw <- input[-seq(index_start, length.out = index_nbytes)]
   chunks <- apply(
     index,
-    seq_along(shard_dim) + 1L,
+    seq(2L, length(dim(index))),
     function(x) {
       chunk_offset <- x[[1L]]
       chunk_nbytes <- x[[2L]]
