@@ -106,6 +106,7 @@ codec_sharding_indexed_decode <- function(
     endian = "little"
   )
   dim(index) <- index_shape
+  index <- codec_transpose_decode(index, c(1L, rev(seq_along(dim(index))[-1L])))
 
   configured_decoders <- config$codecs |>
     setNames(vapply(
