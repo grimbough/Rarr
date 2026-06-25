@@ -203,6 +203,7 @@ read_data <- function(
 #' @returns An array containing the decompressed chunk values.
 #'
 #' @keywords internal
+#' @noRd
 read_chunk <- function(
   chunk_bytes,
   chunk_dim,
