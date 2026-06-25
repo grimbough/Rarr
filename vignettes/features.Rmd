@@ -20,7 +20,7 @@ output:
 
 ## Zarr version
 
-Rarr supports both Zarr version 2 and Zarr version 3 but some version 3 features are still a work in progress. In particular, it is known that the sharding codec is not yet implemented.
+Rarr supports both Zarr version 2 and Zarr version 3.
 
 ## Reading and Writing
 
@@ -88,6 +88,7 @@ Please open an [issue](https://github.com/Huber-group-EMBL/Rarr/issues) if suppo
 |`endian`   | &#x2714; / &#x274C;            | (via `{grumpy}`) |
 |`transpose`| &#x2714; / &#x2714;            |       |
 |`VLen-UTF8`| &#x2714; / &#x2714; *          | Writing supported only via `update_zarr_array()` |
+|`sharding_indexed` | &#x2714; / &#x274C;    |  |
 
 ### Optional fields or features
 
