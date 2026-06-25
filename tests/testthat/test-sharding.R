@@ -20,4 +20,9 @@ test_that("read sharded files", {
     arr[, 1L, 1L],
     rep_len(1L, 30L)
   )
+
+  expect_identical(
+    arr[2L:30L, 2L:20L, 2L:10L],
+    array(0L, dim = c(29L, 19L, 9L))
+  )
 })
