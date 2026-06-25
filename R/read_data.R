@@ -183,7 +183,8 @@ read_data <- function(
     chunk_bytes = raw_chunk,
     chunk_dim = chunk_dim,
     decoders = metadata$configured_decoders,
-    datatype = metadata$datatype
+    datatype = metadata$datatype,
+    fill_value = metadata$fill_value
   )
 
   ## extract the required elements from the chunk
@@ -206,7 +207,8 @@ read_chunk <- function(
   chunk_bytes,
   chunk_dim,
   decoders,
-  datatype
+  datatype,
+  fill_value
 ) {
   # Bytes -> Bytes codecs
   for (codec in decoders[["bytes_bytes"]]) {
@@ -220,7 +222,8 @@ read_chunk <- function(
     converted_chunk <- codec(
       chunk_bytes,
       chunk_dim,
-      datatype
+      datatype,
+      fill_value
     )
   }
   # Array -> Array codecs

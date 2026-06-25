@@ -3,7 +3,8 @@ codec_bytes_decode <- function(
   input,
   chunk_dim,
   datatype,
-  endian
+  endian,
+  ...
 ) {
   convert_bytes_to_array(
     input,
@@ -74,6 +75,7 @@ codec_sharding_indexed_decode <- function(
   input,
   shard_dim,
   datatype,
+  fill_value,
   ...
 ) {
   config <- list(...)
@@ -136,12 +138,12 @@ codec_sharding_indexed_decode <- function(
         chunk_raw,
         chunk_dim = chunk_dim,
         decoders = configured_decoders,
-        datatype = datatype
+        datatype = datatype,
+        fill_value = fill_value
       )
     }
   )
-  # FIXME: replace NA by fill value
-  shard <- array(NA, dim = shard_dim)
+  shard <- array(fill_value, dim = shard_dim)
   non_empty_coords <- which(
     asplit(index, 1L)[[2L]] > 0L,
     arr.ind = TRUE
