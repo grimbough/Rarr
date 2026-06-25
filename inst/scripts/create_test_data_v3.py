@@ -257,7 +257,7 @@ z['y'] = np.array([0.34, 0.67, 0.12, 0.89, 0.45, 0.23, 0.78, 0.56, 0.90, 0.11, 0
 
 # Sharded array
 z = zarr.create_array(
-    'inst/extdata/zarr_examples/sharding/int32_sharded_v3.zarr',
+    'inst/extdata/zarr_examples/sharding/int32_sharded.zarr',
     shape=(30, 20, 10),
     chunks=(2, 4, 5),   # inner chunk shape within each shard
     shards=(10, 20, 5),  # shard shape
@@ -270,3 +270,14 @@ z[:] = 0
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 1
 
+# Sharded array (index at the start)
+z = zarr.create_array(
+    'inst/extdata/zarr_examples/sharding/int32_sharded_index_at_start.zarr',
+    shape=(30, 20, 10),
+    dtype='i4',
+    serializer=zarr.codecs.ShardingCodec(chunk_shape = (2, 4, 5), index_location = 'start', codecs = [zarr.codecs.TransposeCodec(order=[2, 1, 0]), zarr.codecs.BytesCodec()]),
+    overwrite=True
+)
+z[:] = 0
+z[0, :, 0] = np.arange(start=1, stop=21)
+z[:, 0, 0] = 1

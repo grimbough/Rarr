@@ -3,7 +3,7 @@ test_that("read sharded files", {
     "extdata",
     "zarr_examples",
     "sharding",
-    "int32_sharded_v3.zarr",
+    "int32_sharded.zarr",
     package = "Rarr"
   )
 
@@ -24,5 +24,19 @@ test_that("read sharded files", {
   expect_identical(
     arr[2L:30L, 2L:20L, 2L:10L],
     array(0L, dim = c(29L, 19L, 9L))
+  )
+
+  # Index location doesn't matter
+  sharded_index_start <- system.file(
+    "extdata",
+    "zarr_examples",
+    "sharding",
+    "int32_sharded_index_at_start.zarr",
+    package = "Rarr"
+  )
+
+  expect_identical(
+    read_zarr_array(sharded_index_start),
+    arr
   )
 })

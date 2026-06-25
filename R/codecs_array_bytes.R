@@ -83,12 +83,12 @@ codec_sharding_indexed_decode <- function(
   index_shape <- c(2L, shard_dim / chunk_dim)
   index_length <- prod(index_shape)
   index_nbytes <- index_length * 8L
-  # FIXME: any way for this to be cleaner?
-  if (
-    any(
-      vapply(config$index_codecs, function(x) x$name, character(1L)) == "crc32c"
-    )
-  ) {
+  names(config$index_codecs) <- vapply(
+    config$index_codecs,
+    function(x) x$name,
+    character(1L)
+  )
+  if ("crc32c" %in% names(config$index_codecs)) {
     index_nbytes <- index_nbytes + 4L
   }
 
@@ -105,7 +105,8 @@ codec_sharding_indexed_decode <- function(
     what = "integer",
     n = index_length,
     size = 8L,
-    endian = "little"
+    endian = config$index_codecs$bytes$configuration[["endian"]] %||%
+      .Platform$endian
   )
   dim(index) <- index_shape
   index <- codec_transpose_decode(index, c(1L, rev(seq_along(dim(index))[-1L])))
@@ -118,7 +119,6 @@ codec_sharding_indexed_decode <- function(
     )) |>
     .configure_codecs(operation = "decode")
 
-  chunks_raw <- input[-seq(index_start, length.out = index_nbytes)]
   chunks <- apply(
     index,
     seq(2L, length(dim(index))),
@@ -128,8 +128,9 @@ codec_sharding_indexed_decode <- function(
       if (chunk_nbytes <= 0L) {
         return()
       }
-      # FIXME: offset by index nbytes if index is at the start
-      chunk_raw <- chunks_raw[seq(
+      # Offset caused by index being at the start is already contained in the
+      # offset returned by index.
+      chunk_raw <- input[seq(
         chunk_offset + 1L,
         chunk_offset + chunk_nbytes
       )]
