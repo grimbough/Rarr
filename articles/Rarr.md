@@ -391,7 +391,7 @@ contents is as expected.
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] Rarr_2.1.18      BiocStyle_2.40.0
+    ## [1] Rarr_2.1.19      BiocStyle_2.40.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] crayon_1.5.3        cli_3.6.6           knitr_1.51         
@@ -400,7 +400,7 @@ contents is as expected.
     ## [10] grumpy_0.1.1        htmltools_0.5.9     ragg_1.5.2         
     ## [13] sass_0.4.10         rappdirs_0.3.4      rmarkdown_2.31     
     ## [16] evaluate_1.0.5      jquerylib_0.1.4     fastmap_1.2.0      
-    ## [19] yaml_2.3.12         lifecycle_1.0.5     httr2_1.2.2        
+    ## [19] yaml_2.3.12         lifecycle_1.0.5     httr2_1.2.3        
     ## [22] bookdown_0.47       BiocManager_1.30.27 compiler_4.7.0     
     ## [25] fs_2.1.0            Rcpp_1.1.1-1.1      R.oo_1.27.1        
     ## [28] R.utils_2.13.0      systemfonts_1.3.2   digest_0.6.39      

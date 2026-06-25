@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.18</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.19</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@
 
       <h1>Supported Zarr features in Rarr</h1>
             
-            <h4 data-toc-skip class="date">23 June 2026</h4>
+            <h4 data-toc-skip class="date">25 June 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/features.Rmd" class="external-link"><code>vignettes/features.Rmd</code></a></small>
       <div class="d-none name"><code>features.Rmd</code></div>
@@ -79,9 +79,7 @@
 <div class="section level2">
 <h2 id="zarr-version">Zarr version<a class="anchor" aria-label="anchor" href="#zarr-version"></a>
 </h2>
-<p>Rarr supports both Zarr version 2 and Zarr version 3 but some version
-3 features are still a work in progress. In particular, it is known that
-the sharding codec is not yet implemented.</p>
+<p>Rarr supports both Zarr version 2 and Zarr version 3.</p>
 </div>
 <div class="section level2">
 <h2 id="reading-and-writing">Reading and Writing<a class="anchor" aria-label="anchor" href="#reading-and-writing"></a>
@@ -347,6 +345,11 @@ support for a required compression codec is missing.</p>
 <td align="center">✔ / ✔ *</td>
 <td>Writing supported only via <code><a href="../reference/update_zarr_array.html">update_zarr_array()</a></code>
 </td>
+</tr>
+<tr class="even">
+<td><code>sharding_indexed</code></td>
+<td align="center">✔ / ❌</td>
+<td></td>
 </tr>
 </tbody>
 </table>

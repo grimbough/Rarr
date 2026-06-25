@@ -2,9 +2,7 @@
 
 ## Zarr version
 
-Rarr supports both Zarr version 2 and Zarr version 3 but some version 3
-features are still a work in progress. In particular, it is known that
-the sharding codec is not yet implemented.
+Rarr supports both Zarr version 2 and Zarr version 3.
 
 ## Reading and Writing
 
