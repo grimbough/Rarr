@@ -288,7 +288,7 @@ write_zarr_array <- function(
   index <- lapply(dim(x), seq_len)
 
   ## precompute, for each chunk, the positions in `index` that belong to it
-  chunk_positions <- .chunk_positions_by_chunk(index, metadata)
+  chunk_positions <- .chunk_positions_by_chunk(index, metadata, chunk_dim)
   chunk_names <- names(chunk_positions)
   chunk_paths <- paste0(path, chunk_names)
 
@@ -415,12 +415,13 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   x <- array(x, dim = lengths(index))
 
   ## precompute, for each chunk, the positions in `index` that belong to it
+  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
   chunk_positions <- .chunk_positions_by_chunk(
     index,
-    metadata
+    metadata,
+    chunk_dim
   )
   chunk_names <- names(chunk_positions)
-  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bpmapply() ?
