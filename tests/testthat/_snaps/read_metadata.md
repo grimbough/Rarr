@@ -11,6 +11,7 @@
       Data Type: int64
       Endianness: little
       Compressor: zstd
+      Attributes: no
 
 # zarr_overview works with consolidated metadata store
 
@@ -317,6 +318,156 @@
       147       <NA>      blosc       5490, 5490        915, 915          6, 6
       148     little      blosc             5490            5490             1
       149     little      blosc             5490            5490             1
+          attributes
+      1         TRUE
+      2         TRUE
+      3         TRUE
+      4         TRUE
+      5         TRUE
+      6         TRUE
+      7         TRUE
+      8         TRUE
+      9         TRUE
+      10        TRUE
+      11        TRUE
+      12        TRUE
+      13        TRUE
+      14        TRUE
+      15        TRUE
+      16        TRUE
+      17        TRUE
+      18        TRUE
+      19        TRUE
+      20        TRUE
+      21        TRUE
+      22        TRUE
+      23        TRUE
+      24        TRUE
+      25        TRUE
+      26        TRUE
+      27        TRUE
+      28        TRUE
+      29        TRUE
+      30        TRUE
+      31        TRUE
+      32        TRUE
+      33        TRUE
+      34        TRUE
+      35        TRUE
+      36        TRUE
+      37        TRUE
+      38        TRUE
+      39        TRUE
+      40        TRUE
+      41        TRUE
+      42        TRUE
+      43        TRUE
+      44        TRUE
+      45        TRUE
+      46        TRUE
+      47        TRUE
+      48        TRUE
+      49        TRUE
+      50        TRUE
+      51        TRUE
+      52        TRUE
+      53        TRUE
+      54        TRUE
+      55        TRUE
+      56        TRUE
+      57        TRUE
+      58        TRUE
+      59        TRUE
+      60        TRUE
+      61        TRUE
+      62        TRUE
+      63        TRUE
+      64        TRUE
+      65        TRUE
+      66        TRUE
+      67        TRUE
+      68        TRUE
+      69        TRUE
+      70        TRUE
+      71        TRUE
+      72        TRUE
+      73        TRUE
+      74        TRUE
+      75        TRUE
+      76        TRUE
+      77        TRUE
+      78        TRUE
+      79        TRUE
+      80        TRUE
+      81        TRUE
+      82        TRUE
+      83        TRUE
+      84        TRUE
+      85        TRUE
+      86        TRUE
+      87        TRUE
+      88        TRUE
+      89        TRUE
+      90        TRUE
+      91        TRUE
+      92        TRUE
+      93        TRUE
+      94        TRUE
+      95        TRUE
+      96        TRUE
+      97        TRUE
+      98        TRUE
+      99        TRUE
+      100       TRUE
+      101       TRUE
+      102       TRUE
+      103       TRUE
+      104       TRUE
+      105       TRUE
+      106       TRUE
+      107       TRUE
+      108       TRUE
+      109       TRUE
+      110       TRUE
+      111       TRUE
+      112       TRUE
+      113       TRUE
+      114       TRUE
+      115       TRUE
+      116       TRUE
+      117       TRUE
+      118       TRUE
+      119       TRUE
+      120       TRUE
+      121       TRUE
+      122       TRUE
+      123       TRUE
+      124       TRUE
+      125       TRUE
+      126       TRUE
+      127       TRUE
+      128       TRUE
+      129       TRUE
+      130       TRUE
+      131       TRUE
+      132       TRUE
+      133       TRUE
+      134       TRUE
+      135       TRUE
+      136       TRUE
+      137       TRUE
+      138       TRUE
+      139       TRUE
+      140       TRUE
+      141       TRUE
+      142       TRUE
+      143       TRUE
+      144       TRUE
+      145       TRUE
+      146       TRUE
+      147       TRUE
+      148       TRUE
+      149       TRUE
 
 # zarr_overview console output matches snapshot for consolidated store
 
@@ -334,6 +485,7 @@
         Data Type: float64
         Endianness: little
         Compressor: blosc
+        Attributes: no
       ---
       Path: <path>
         Shape: 2 x 2
@@ -342,6 +494,7 @@
         Data Type: float64
         Endianness: little
         Compressor: blosc
+        Attributes: no
       ---
       Path: <path>
         Shape: 3 x 3 x 3
@@ -350,6 +503,7 @@
         Data Type: float64
         Endianness: little
         Compressor: blosc
+        Attributes: no
 
 # zarr_overview works with consolidated v3 metadata
 
@@ -367,6 +521,7 @@
         Data Type: uint8
         Endianness: NA
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 3 x 22543 x 5790
@@ -375,6 +530,7 @@
         Data Type: uint8
         Endianness: NA
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 3 x 11271 x 2895
@@ -383,6 +539,7 @@
         Data Type: uint8
         Endianness: NA
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 3 x 5635 x 1447
@@ -391,6 +548,7 @@
         Data Type: uint8
         Endianness: NA
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 3 x 2817 x 723
@@ -399,6 +557,7 @@
         Data Type: uint8
         Endianness: NA
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 4 x 17098 x 51187
@@ -407,6 +566,7 @@
         Data Type: uint16
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 4 x 8549 x 25593
@@ -415,6 +575,7 @@
         Data Type: uint16
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 4 x 4274 x 12796
@@ -423,6 +584,7 @@
         Data Type: uint16
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 4 x 2137 x 6398
@@ -431,6 +593,7 @@
         Data Type: uint16
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 4 x 1068 x 3199
@@ -439,6 +602,7 @@
         Data Type: uint16
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 17098 x 51187
@@ -447,6 +611,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 8549 x 25593
@@ -455,6 +620,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 4274 x 12796
@@ -463,6 +629,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 2137 x 6398
@@ -471,6 +638,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 1068 x 3199
@@ -479,6 +647,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 17098 x 51187
@@ -487,6 +656,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 8549 x 25593
@@ -495,6 +665,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 4274 x 12796
@@ -503,6 +674,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 2137 x 6398
@@ -511,6 +683,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 1068 x 3199
@@ -519,6 +692,7 @@
         Data Type: uint32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 
@@ -527,6 +701,7 @@
         Data Type: bool
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -535,6 +710,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -543,6 +719,7 @@
         Data Type: float64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -551,6 +728,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -559,6 +737,7 @@
         Data Type: int64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -567,6 +746,7 @@
         Data Type: int64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -575,6 +755,7 @@
         Data Type: int64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -583,6 +764,7 @@
         Data Type: int64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -591,6 +773,7 @@
         Data Type: float64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -599,6 +782,7 @@
         Data Type: float64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -607,6 +791,7 @@
         Data Type: int64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -615,6 +800,7 @@
         Data Type: int64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -623,6 +809,7 @@
         Data Type: int64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -631,6 +818,7 @@
         Data Type: float64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254 x 2
@@ -639,6 +827,7 @@
         Data Type: float64
         Endianness: little
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 377
@@ -647,6 +836,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 377
@@ -655,6 +845,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 377
@@ -663,6 +854,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 377
@@ -671,6 +863,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 4900367
@@ -679,6 +872,7 @@
         Data Type: float32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 4900367
@@ -687,6 +881,7 @@
         Data Type: int32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 162255
@@ -695,6 +890,7 @@
         Data Type: int32
         Endianness: little
         Compressor: zstd
+        Attributes: no
       ---
       Path: <path>
         Shape: 1
@@ -703,6 +899,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 162254
@@ -711,6 +908,7 @@
         Data Type: int8
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 
@@ -719,6 +917,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 
@@ -727,6 +926,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
       ---
       Path: <path>
         Shape: 
@@ -735,6 +935,7 @@
         Data Type: string
         Endianness: NA
         Compressor: zstd
+        Attributes: yes
 
 # zarr_overview console output matches snapshot for v3 metadata
 
@@ -749,6 +950,7 @@
       Data Type: int64
       Endianness: little
       Compressor: zstd
+      Attributes: no
 
 # zarr_overview throws error for mixed v2/v3 zarr
 
