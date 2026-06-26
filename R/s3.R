@@ -31,7 +31,7 @@ parse_s3_path <- function(path) {
     )
   ) {
     ## virtual-host style address
-    tmp <- curl::curl_parse_url(url)
+    tmp <- curl::curl_parse_url(url, params = FALSE)
     bucket <- sub(
       x = tmp$host,
       pattern = "^([a-z0-9\\.-]*)\\.s3.*",
@@ -62,7 +62,7 @@ parse_s3_path <- function(path) {
 
 #' @keywords internal
 .url_parse_other <- function(url) {
-  parsed_url <- curl::curl_parse_url(url)
+  parsed_url <- curl::curl_parse_url(url, params = FALSE)
   path_parts <- regmatches(
     parsed_url$path,
     regexec("^/?([a-z0-9:\\.-]*)/(.*)", parsed_url$path, ignore.case = TRUE)
