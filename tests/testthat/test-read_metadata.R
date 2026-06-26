@@ -10,7 +10,7 @@ test_that("zarr_overview returns data.frame for single array", {
   # Return results as a data.frame
   df <- zarr_overview(zarr_c, as_data_frame = TRUE)
   expect_s3_class(df, "data.frame")
-  expect_identical(dim(df), c(1L, 7L))
+  expect_identical(dim(df), c(1L, 8L))
 })
 
 test_that("zarr_overview console output matches snapshot for single array", {
@@ -40,7 +40,7 @@ test_that("zarr_overview works with consolidated metadata store", {
 
   df <- zarr_overview(zarr_store_consolidated, as_data_frame = TRUE)
   expect_s3_class(df, "data.frame")
-  expect_identical(dim(df), c(3L, 7L))
+  expect_identical(dim(df), c(3L, 8L))
   expect_identical(
     colnames(df),
     c(
@@ -50,7 +50,8 @@ test_that("zarr_overview works with consolidated metadata store", {
       "compressor",
       "dim",
       "chunk_dim",
-      "nchunks"
+      "nchunks",
+      "attributes"
     )
   )
 
@@ -117,7 +118,7 @@ test_that("zarr_overview works with v3 metadata", {
 
   df <- zarr_overview(zarr_v3, as_data_frame = TRUE)
   expect_s3_class(df, "data.frame")
-  expect_identical(dim(df), c(1L, 7L))
+  expect_identical(dim(df), c(1L, 8L))
 })
 
 test_that("zarr_overview doesn't choke on empty consolidated metadata", {

@@ -69,9 +69,20 @@ zarr_overview <- function(
     arrays <- names(dot_zmeta$metadata)[is_array]
     tmp <- lapply(
       arrays,
-      FUN = .rbind_array_metadata,
-      metadata = dot_zmeta$metadata,
-      zarr_array_path = zarr_array_path
+      FUN = function(x) {
+        if (endsWith(x, "/.zarray")) {
+          v2_attrs <- sub(".zarray", ".zattrs", x, fixed = TRUE)
+          has_attrs <- length(dot_zmeta$metadata[[v2_attrs]]) > 0L
+        } else {
+          has_attrs <- length(dot_zmeta$metadata[[x]]$attributes) > 0L
+        }
+        .rbind_array_metadata(
+          array_name = x,
+          metadata = dot_zmeta$metadata,
+          zarr_array_path = zarr_array_path,
+          has_attrs = has_attrs
+        )
+      }
     )
     res <- do.call(rbind.data.frame, tmp)
     if (as_data_frame) {
@@ -92,10 +103,15 @@ zarr_overview <- function(
       zarr_path = zarr_array_path,
       s3_client = s3_client
     )
+    array_attrs <- read_zarr_attributes(
+      zarr_path = zarr_array_path,
+      s3_client = s3_client
+    )
     res <- .rbind_array_metadata(
       array_name = basename(zarr_array_path),
       metadata = array_metadata,
-      zarr_array_path = dirname(zarr_array_path)
+      zarr_array_path = dirname(zarr_array_path),
+      has_attrs = length(array_attrs) > 0L
     )
     if (as_data_frame) {
       return(res)
@@ -106,7 +122,12 @@ zarr_overview <- function(
   }
 }
 
-.rbind_array_metadata <- function(array_name, metadata, zarr_array_path) {
+.rbind_array_metadata <- function(
+  array_name,
+  metadata,
+  zarr_array_path,
+  has_attrs
+) {
   if (array_name %in% names(metadata)) {
     array_metadata <- metadata[[array_name]]
     array_name <- dirname(array_name)
@@ -149,6 +170,7 @@ zarr_overview <- function(
   res$dim <- list(data_shape)
   res$chunk_dim <- list(chunk_shape)
   res$nchunks <- list(nchunks)
+  res$attributes <- has_attrs
   return(res)
 }
 
@@ -160,7 +182,8 @@ zarr_overview <- function(
     "No. of Chunks",
     "Data Type",
     "Endianness",
-    "Compressor"
+    "Compressor",
+    "Attributes"
   )
   fields <- paste0(indent, fields, ": %s")
   formatted <- sprintf(
@@ -194,6 +217,11 @@ zarr_overview <- function(
       is.na(array_metadata_df$compressor),
       "None",
       array_metadata_df$compressor
+    ),
+    ifelse(
+      array_metadata_df$attributes,
+      "yes",
+      "no"
     )
   )
   cat(formatted, sep = "\n---\n")
