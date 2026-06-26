@@ -80,6 +80,7 @@ codec_sharding_indexed_decode <- function(
 ) {
   config <- list(...)
   chunk_dim <- unlist(config$chunk_shape)
+  nb_dims <- length(shard_dim)
   index_shape <- c(2L, shard_dim / chunk_dim)
   index_length <- prod(index_shape)
   index_nbytes <- index_length * 8L
@@ -93,12 +94,11 @@ codec_sharding_indexed_decode <- function(
   }
 
   index_location <- config$index_location %||% "end"
-  index_start <- if (index_location == "end") {
-    length(input) - index_nbytes + 1L
+  if (index_location == "end") {
+    index_raw <- input[seq.int(to = length(input), length.out = index_nbytes)]
   } else {
-    1L
+    index_raw <- input[seq_len(index_nbytes)]
   }
-  index_raw <- input[seq.int(index_start, length.out = index_nbytes)]
 
   index <- readBin(
     index_raw,
@@ -109,7 +109,7 @@ codec_sharding_indexed_decode <- function(
       .Platform$endian
   )
   dim(index) <- index_shape
-  index <- codec_transpose_decode(index, c(1L, rev(seq_along(dim(index))[-1L])))
+  index <- codec_transpose_decode(index, c(1L, rev(seq_len(nb_dims) + 1L)))
 
   configured_decoders <- config$codecs |>
     setNames(vapply(
@@ -121,7 +121,7 @@ codec_sharding_indexed_decode <- function(
 
   chunks <- apply(
     index,
-    seq.int(2L, length(dim(index))),
+    seq_len(nb_dims) + 1L,
     function(x) {
       chunk_offset <- x[[1L]]
       chunk_nbytes <- x[[2L]]
@@ -132,7 +132,7 @@ codec_sharding_indexed_decode <- function(
       # offset returned by index.
       chunk_raw <- input[seq.int(
         chunk_offset + 1L,
-        chunk_offset + chunk_nbytes
+        length.out = chunk_nbytes
       )]
       # FIXME: Once stores are implemented, treat this as a memory store and use `read_data()` directly
       read_chunk(
