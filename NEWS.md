@@ -32,6 +32,8 @@
   - easier direct access of all the elements in a remote S3 store, even though
     Rarr doesn't have yet store-agnostic verbs to list, read, etc. elements.
 * The `sharding_indexed` codec is now supported to read sharded Zarr arrays.
+* `zarr_overview()` now returns a new logical field `attributes` indicating
+  whether each array has associated attributes.
 
 ## Minor improvements
 
