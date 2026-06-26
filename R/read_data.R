@@ -88,6 +88,15 @@ read_data <- function(
   index,
   metadata
 ) {
+  if (!is.null(s3_client)) {
+    parsed_s3_url <- parse_s3_path(zarr_array_path)
+    bucket <- parsed_s3_url$bucket
+    root <- parsed_s3_url$object
+  } else {
+    bucket <- NULL
+    root <- zarr_array_path
+  }
+
   ## precompute, for each chunk, the positions in `index` that belong to it
   chunk_positions <- .chunk_positions_by_chunk(
     index,
@@ -97,7 +106,7 @@ read_data <- function(
   chunk_names <- names(chunk_positions)
   # In the DelayedArray framework, we can have integer(0) indices
   # https://github.com/Huber-group-EMBL/Rarr/issues/112
-  chunk_paths <- paste0(zarr_array_path, chunk_names, recycle0 = TRUE)
+  chunk_paths <- paste0(root, chunk_names, recycle0 = TRUE)
 
   ## Vectorized check for chunk existence
   chunk_exists <- .store_check_exist(zarr_array_path, chunk_names, s3_client)
@@ -117,6 +126,7 @@ read_data <- function(
           metadata = metadata,
           chunk_dim = unlist(metadata$chunk_grid$configuration$chunk_shape),
           s3_client = s3_client,
+          s3_bucket = bucket,
           chunk_positions = chunk_positions
         )
       }
@@ -154,6 +164,7 @@ read_data <- function(
   metadata,
   chunk_dim,
   s3_client,
+  s3_bucket,
   chunk_positions
 ) {
   ## find elements to select from the chunk and what in the output we replace
@@ -171,10 +182,9 @@ read_data <- function(
     size <- file.size(current_chunk_path)
     raw_chunk <- readBin(con = current_chunk_path, what = "raw", n = size)
   } else {
-    parsed_url <- parse_s3_path(current_chunk_path)
     raw_chunk <- s3_client$get_object(
-      Bucket = parsed_url$bucket,
-      Key = parsed_url$object
+      Bucket = s3_bucket,
+      Key = current_chunk_path
     )$Body
   }
 
