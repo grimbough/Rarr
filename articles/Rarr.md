@@ -111,6 +111,7 @@ zarr_overview(zarr_example)
     ## Data Type: int32
     ## Endianness: little
     ## Compressor: blosc
+    ## Attributes: no
 
 You can use this to check that the location is a valid Zarr array, and
 that the shape and datatype of the array content are what you are
@@ -230,8 +231,8 @@ zarr_overview(zarr_example, as_data_frame = TRUE)
 
     ##                                                                                 path
     ## 1 /home/runner/work/_temp/Library/Rarr/extdata/zarr_examples/column-first/int32.zarr
-    ##   data_type endianness compressor        dim chunk_dim nchunks
-    ## 1     int32     little      blosc 30, 20, 10 10, 10, 5 3, 2, 2
+    ##   data_type endianness compressor        dim chunk_dim nchunks attributes
+    ## 1     int32     little      blosc 30, 20, 10 10, 10, 5 3, 2, 2      FALSE
 
 ### Writing subsets of data
 
@@ -391,7 +392,7 @@ contents is as expected.
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] Rarr_2.1.19      BiocStyle_2.40.0
+    ## [1] Rarr_2.1.20      BiocStyle_2.40.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] crayon_1.5.3        cli_3.6.6           knitr_1.51         

@@ -80,6 +80,7 @@ zarr_overview(zarr_array_path = z1)
 #> Data Type: int32
 #> Endianness: little
 #> Compressor: blosc
+#> Attributes: no
 
 ## using a file on S3 storage
 # \donttest{
@@ -93,5 +94,6 @@ zarr_overview(z2)
 #> Data Type: int32
 #> Endianness: little
 #> Compressor: blosc
+#> Attributes: yes
 # }
 ```

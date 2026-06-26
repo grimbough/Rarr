@@ -44,6 +44,9 @@
     etc. elements.
 - The `sharding_indexed` codec is now supported to read sharded Zarr
   arrays.
+- [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md)
+  now returns a new logical field `attributes` indicating whether each
+  array has associated attributes.
 
 ### Minor improvements
 
