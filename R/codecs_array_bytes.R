@@ -98,7 +98,7 @@ codec_sharding_indexed_decode <- function(
   } else {
     1L
   }
-  index_raw <- input[seq(index_start, length.out = index_nbytes)]
+  index_raw <- input[seq.int(index_start, length.out = index_nbytes)]
 
   index <- readBin(
     index_raw,
@@ -121,7 +121,7 @@ codec_sharding_indexed_decode <- function(
 
   chunks <- apply(
     index,
-    seq(2L, length(dim(index))),
+    seq.int(2L, length(dim(index))),
     function(x) {
       chunk_offset <- x[[1L]]
       chunk_nbytes <- x[[2L]]
@@ -130,7 +130,7 @@ codec_sharding_indexed_decode <- function(
       }
       # Offset caused by index being at the start is already contained in the
       # offset returned by index.
-      chunk_raw <- input[seq(
+      chunk_raw <- input[seq.int(
         chunk_offset + 1L,
         chunk_offset + chunk_nbytes
       )]
@@ -154,7 +154,7 @@ codec_sharding_indexed_decode <- function(
     coords_in_shard <- non_empty_coords[i, ]
     index_in_result <- mapply(
       FUN = function(coord, chunk_dim) {
-        seq((coord - 1L) * chunk_dim + 1L, length.out = chunk_dim)
+        seq.int((coord - 1L) * chunk_dim + 1L, length.out = chunk_dim)
       },
       coords_in_shard,
       chunk_dim = chunk_dim,
