@@ -1,7 +1,8 @@
 #' @keywords internal
 check_index <- function(index, metadata) {
+  index_len <- length(index)
   ## check we have the correct number of dimensions
-  if (length(index) != length(metadata$shape)) {
+  if (index_len != length(metadata$shape)) {
     stop(
       "The number of dimensions provided to 'index' does not match the shape of the array"
     )
@@ -9,8 +10,8 @@ check_index <- function(index, metadata) {
 
   ## If any dimensions are NULL transform into the entirety of that dimension
   ## Otherwise check provided indices are valid
-  failed <- rep_len(FALSE, length(index))
-  for (i in seq_along(index)) {
+  failed <- rep_len(FALSE, index_len)
+  for (i in seq_len(index_len)) {
     if (is.null(index[[i]])) {
       index[[i]] <- seq_len(metadata$shape[[i]])
     } else if (any(index[[i]] < 1L) || any(index[[i]] > metadata$shape[[i]])) {
@@ -171,6 +172,7 @@ check_index <- function(index, metadata) {
 #' @importFrom utils relist
 #'
 #' @keywords internal
+#' @noRd
 .chunk_positions_by_chunk <- function(
   index,
   metadata,
