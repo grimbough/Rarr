@@ -98,9 +98,11 @@ read_data <- function(
   }
 
   ## precompute, for each chunk, the positions in `index` that belong to it
+  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
   chunk_positions <- .chunk_positions_by_chunk(
     index,
-    metadata
+    metadata,
+    chunk_dim
   )
 
   chunk_names <- names(chunk_positions)
@@ -124,7 +126,7 @@ read_data <- function(
           chunk_name = chunk_names[i],
           current_chunk_path = chunk_paths[i],
           metadata = metadata,
-          chunk_dim = unlist(metadata$chunk_grid$configuration$chunk_shape),
+          chunk_dim = chunk_dim,
           s3_client = s3_client,
           s3_bucket = bucket,
           chunk_positions = chunk_positions

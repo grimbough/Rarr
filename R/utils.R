@@ -157,6 +157,8 @@ check_index <- function(index, metadata) {
 #'   requested array indices (1-based).
 #' @param metadata List of array metadata as returned by `.read_array_metadata()`.
 #'   Used to derive chunk name keys via `.create_chunk_names()`.
+#' @param chunk_dim Integer vector of length equal to the number of dimensions
+#'   of the array, specifying the size of each chunk in each dimension.
 #'
 #' @returns A named list keyed by chunk names (same format as
 #'   `.create_chunk_names()`, e.g. `"c/0/1/0"` for Zarr V3).  Each element is
@@ -169,13 +171,14 @@ check_index <- function(index, metadata) {
 #' @importFrom utils relist
 #'
 #' @keywords internal
-.chunk_positions_by_chunk <- function(index, metadata) {
-  chunk_shape <- as.integer(unlist(
-    metadata$chunk_grid$configuration$chunk_shape
-  ))
+.chunk_positions_by_chunk <- function(
+  index,
+  metadata,
+  chunk_dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
+) {
   index0 <- as.integer(unlist(index)) - 1L
 
-  per_dim <- (index0 %/% rep(chunk_shape, times = lengths(index))) |>
+  per_dim <- (index0 %/% rep(chunk_dim, times = lengths(index))) |>
     relist(index) |>
     lapply(function(x) split(seq_along(x), x))
 
@@ -194,7 +197,7 @@ check_index <- function(index, metadata) {
         \(idx, pos, cs) idx[pos] %% cs,
         index0,
         positions,
-        chunk_shape,
+        chunk_dim,
         SIMPLIFY = FALSE
       )
       index_in_chunk <- relist(unlist(index0_in_chunk) + 1L, index0_in_chunk)
