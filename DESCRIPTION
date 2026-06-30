@@ -12,7 +12,7 @@ Authors@R: c(
            comment = c(ROR = "01vmpm840"))
   )
 Description: The Zarr specification defines a format for chunked,
-    compressed, N-dimensional arrays.  It's design allows efficient access
+    compressed, N-dimensional arrays.  Its design allows efficient access
     to subsets of the stored array, and supports both local and cloud
     storage systems.  Rarr aims to implement this specification in R with
     minimal reliance on an external tools or libraries.
