@@ -1,5 +1,5 @@
 Package: Rarr
-Title: Read Zarr Files in R
+Title: A Simple and Performant Native R Reader & Writer for Zarr Arrays
 Version: 2.1.20
 Authors@R: c(
     person("Mike", "Smith", role = c("aut", "ccp"),
