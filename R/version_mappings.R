@@ -84,7 +84,7 @@
 
   # Transpose codec only makes sense for more than 1 dimension
   if (length(metadata_v3$shape) > 1L) {
-    metadata_v3$codecs$transpose = list(
+    metadata_v3$codecs$transpose <- list(
       name = "transpose",
       configuration = list(
         order = switch(
