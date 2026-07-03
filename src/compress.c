@@ -64,7 +64,7 @@ SEXP compress_chunk_LZ4(SEXP input) {
   dsize = LZ4_compress_default((char *)p_input, (char *)p_output, input_size, output_size);
   
   if(dsize <= 0) {
-    error("LZ4 decompression error - error code: %d\n", dsize);
+    error("LZ4 compression error - error code: %d\n", dsize);
   }
   
   /* shrink our output vector to include only the compressed bytes */
@@ -98,7 +98,7 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
   size_t dsize = ZSTD_compress(p_output, output_size, p_input, input_size, compressionLevel);
   
   if(ZSTD_isError(dsize)) {
-    error("zstd decompression error - error code: %zu\n", dsize);
+    error("zstd compression error - error code: %zu\n", dsize);
   }
   
   /* shrink our output vector to include only the compressed bytes */
