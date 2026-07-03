@@ -36,16 +36,17 @@ SEXP compress_chunk_BLOSC(
   if(dsize > 0) {
     /* shrink our output buffer to contain only the compressed bytes */
     R_resizeVector(output, dsize);
-  } else if(dsize == 0) {
+    UNPROTECT(1);
+    return output;
+  }
+  if(dsize == 0) {
     /* if compression results in a bigger chunk, just use the original input */
-    p_output = (void *)p_input;
-  }  else {
-    /* something terrible happened */
-    error("BLOSC compression error - error code: %d\n", dsize);
+    UNPROTECT(1);
+    return input;
   }
 
-  UNPROTECT(1);
-  return output;
+  /* something terrible happened */
+  error("BLOSC compression error - error code: %d\n", dsize);
 } 
 
 SEXP compress_chunk_LZ4(SEXP input) {
