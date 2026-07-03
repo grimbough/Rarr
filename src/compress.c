@@ -95,10 +95,10 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
   SEXP output = PROTECT(R_allocResizableVector(RAWSXP, output_size));
   p_output = RAW(output);
   
-  int dsize = ZSTD_compress(p_output, output_size, p_input, input_size, compressionLevel);
+  size_t dsize = ZSTD_compress(p_output, output_size, p_input, input_size, compressionLevel);
   
   if(ZSTD_isError(dsize)) {
-    error("zstd decompression error - error code: %d\n", dsize);
+    error("zstd decompression error - error code: %zu\n", dsize);
   }
   
   /* shrink our output vector to include only the compressed bytes */
