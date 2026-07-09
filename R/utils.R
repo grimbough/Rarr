@@ -14,7 +14,7 @@ check_index <- function(index, metadata) {
   for (i in seq_len(index_len)) {
     if (is.null(index[[i]])) {
       index[[i]] <- seq_len(metadata$shape[[i]])
-    } else if (any(index[[i]] < 1L) || any(index[[i]] > metadata$shape[[i]])) {
+    } else if (min(index[[i]]) < 1L || max(index[[i]]) > metadata$shape[[i]]) {
       failed[i] <- TRUE
     } else {
       index[[i]] <- as.integer(index[[i]])
