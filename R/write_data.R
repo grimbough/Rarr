@@ -472,8 +472,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   }
 
   ## extract the new values from x and insert them into the chunk
-  y <- .extract_chunk(x, idx_in_x)
-  rlang::inject(chunk_in_mem[!!!idx_in_chunk] <- y) # nolint: implicit_assignment_linter.
+  rlang::inject(chunk_in_mem[!!!idx_in_chunk] <- x[!!!idx_in_x]) # nolint: implicit_assignment_linter.
   ## re-compress updated chunk and write back to disk
   .compress_and_write_chunk(
     input_chunk = chunk_in_mem,
