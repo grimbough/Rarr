@@ -1,7 +1,7 @@
-# Rarr: Read Zarr Files in R
+# Rarr: A Simple and Performant Native R Reader & Writer for Zarr Arrays
 
 The Zarr specification defines a format for chunked, compressed,
-N-dimensional arrays. It's design allows efficient access to subsets of
+N-dimensional arrays. Its design allows efficient access to subsets of
 the stored array, and supports both local and cloud storage systems.
 Rarr aims to implement this specification in R with minimal reliance on
 an external tools or libraries.

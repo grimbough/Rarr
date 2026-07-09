@@ -396,18 +396,18 @@ contents is as expected.
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] crayon_1.5.3        cli_3.6.6           knitr_1.51         
-    ##  [4] rlang_1.2.0         xfun_0.59           otel_0.2.0         
+    ##  [4] rlang_1.3.0         xfun_0.59           otel_0.2.0         
     ##  [7] textshaping_1.0.5   jsonlite_2.0.0      glue_1.8.1         
     ## [10] grumpy_0.1.1        htmltools_0.5.9     ragg_1.5.2         
     ## [13] sass_0.4.10         rappdirs_0.3.4      rmarkdown_2.31     
     ## [16] evaluate_1.0.5      jquerylib_0.1.4     fastmap_1.2.0      
     ## [19] yaml_2.3.12         lifecycle_1.0.5     httr2_1.2.3        
     ## [22] bookdown_0.47       BiocManager_1.30.27 compiler_4.7.0     
-    ## [25] fs_2.1.0            Rcpp_1.1.1-1.1      R.oo_1.27.1        
+    ## [25] fs_2.1.0            Rcpp_1.1.2          R.oo_1.27.1        
     ## [28] R.utils_2.13.0      systemfonts_1.3.2   digest_0.6.39      
     ## [31] R6_2.6.1            curl_7.1.0          paws.common_0.8.10 
     ## [34] paws.storage_0.10.0 magrittr_2.0.5      R.methodsS3_1.8.2  
-    ## [37] bslib_0.11.0        tools_4.7.0         pkgdown_2.2.0      
+    ## [37] bslib_0.11.0        tools_4.7.0         pkgdown_2.2.1      
     ## [40] cachem_1.1.0        desc_1.4.3
 
 [^1]: you only need to do the installation step once
