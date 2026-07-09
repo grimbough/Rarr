@@ -396,7 +396,7 @@ contents is as expected.
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] crayon_1.5.3        cli_3.6.6           knitr_1.51         
-    ##  [4] rlang_1.3.0         xfun_0.59           otel_0.2.0         
+    ##  [4] rlang_1.3.0         xfun_0.60           otel_0.2.0         
     ##  [7] textshaping_1.0.5   jsonlite_2.0.0      glue_1.8.1         
     ## [10] grumpy_0.1.1        htmltools_0.5.9     ragg_1.5.2         
     ## [13] sass_0.4.10         rappdirs_0.3.4      rmarkdown_2.31     
