@@ -178,15 +178,43 @@ check_index <- function(index, metadata) {
   metadata,
   chunk_dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
 ) {
-  index0 <- as.integer(unlist(index)) - 1L
+  # FIXME:
+  # - make this work for compat sequence that don't start at one
+  # - fold the second step (index_in_chunk) here
+  if (
+    all(vapply(index, is.compact, logical(1L))) &&
+      all(vapply(index, min, integer(1L)) == 1L)
+  ) {
+    shape <- metadata$shape
+    index0 <- lapply(
+      index,
+      \(i) (min(i) - 1L):(max(i) - 1L)
+    )
+    per_dim <- mapply(
+      \(i, cs) {
+        split(
+          i,
+          rep(
+            ((min(i) - 1L) %/% cs):((max(i) - 1L) %/% cs),
+            each = cs,
+            length.out = length(i)
+          )
+        )
+      },
+      index,
+      chunk_dim,
+      SIMPLIFY = FALSE
+    )
+  } else {
+    index0 <- as.integer(unlist(index)) - 1L
 
-  per_dim <- (index0 %/% rep(chunk_dim, times = lengths(index))) |>
-    relist(index) |>
-    lapply(function(x) split(seq_along(x), x))
-
+    per_dim <- (index0 %/% rep(chunk_dim, times = lengths(index))) |>
+      relist(index) |>
+      lapply(function(x) split(seq_along(x), x))
+    index0 <- relist(index0, index)
+  }
   chunk_keys <- do.call(expand.grid, lapply(per_dim, names))
   key_strings <- .create_chunk_names(as.matrix(chunk_keys), metadata)
-  index0 <- relist(index0, index)
   setNames(
     lapply(seq_along(key_strings), function(i) {
       positions <- mapply(
@@ -207,4 +235,8 @@ check_index <- function(index, metadata) {
     }),
     key_strings
   )
+}
+
+is.compact <- function(x) {
+  .Call("is_compact", x, PACKAGE = "Rarr")
 }

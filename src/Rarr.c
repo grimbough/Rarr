@@ -2,6 +2,7 @@
 #include "decompress.h"
 #include "compress.h"
 #include "codec_vlen-utf8.h"
+#include "utils.h"
 
 static const R_CallMethodDef callMethods[] = {
   {"decompress_chunk_BLOSC", (DL_FUNC) &decompress_chunk_BLOSC, 1},
@@ -13,6 +14,8 @@ static const R_CallMethodDef callMethods[] = {
   {"compress_chunk_ZSTD", (DL_FUNC) &compress_chunk_ZSTD, 2},
 
   {"codec_vlen_utf8_decode_c", (DL_FUNC) &codec_vlen_utf8_decode_c, 2},
+
+  {"is_compact", (DL_FUNC) &is_compact, 1},
   {NULL, NULL, 0}
 };
 
