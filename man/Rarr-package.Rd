@@ -4,9 +4,9 @@
 \name{Rarr-package}
 \alias{Rarr}
 \alias{Rarr-package}
-\title{Rarr: Read Zarr Files in R}
+\title{Rarr: A Simple and Performant Native R Reader & Writer for Zarr Arrays}
 \description{
-The Zarr specification defines a format for chunked, compressed, N-dimensional arrays. It's design allows efficient access to subsets of the stored array, and supports both local and cloud storage systems. Rarr aims to implement this specification in R with minimal reliance on an external tools or libraries.
+The Zarr specification defines a format for chunked, compressed, N-dimensional arrays. Its design allows efficient access to subsets of the stored array, and supports both local and cloud storage systems. Rarr aims to implement this specification in R with minimal reliance on an external tools or libraries.
 }
 \seealso{
 Useful links:
