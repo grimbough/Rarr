@@ -70,6 +70,11 @@
 - 0 is now a valid, and the default, compression level for Zstd. In
   practice, it doesn’t have any effect because level 0 currently
   corresponds to level 3.
+- Performance has been improved for writing and in the case where the
+  `index` argument in
+  [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md)
+  is a continuous sequence. One such example is when the entire array is
+  read (`index` argument missing).
 
 ### Bug fixes
 
