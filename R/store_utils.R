@@ -18,7 +18,7 @@
   } else {
     ## Replace all backward slash ("\\") with forward slash ("/")
     path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
-    path <- R.utils::getAbsolutePath(path, expandTilde = TRUE)
+    path <- getAbsolutePath(path, expandTilde = TRUE)
     root <- sub(x = path, "(^[[:alnum:]:.]*/)?(.*)", replacement = "\\1")
     path <- sub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\2")
   }

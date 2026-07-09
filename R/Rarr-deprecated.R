@@ -10,8 +10,10 @@
 #' (<https://github.com/Bioconductor/ZarrArray>).
 #'
 #' @param ... Passed to the new function in the ZarrArray package.
+#'
+#' @importFrom lifecycle deprecate_warn
 ZarrArray <- function(...) {
-  lifecycle::deprecate_warn(
+  deprecate_warn(
     when = "1.12.0",
     what = "ZarrArray()",
     with = "ZarrArray::ZarrArray()",
@@ -29,7 +31,7 @@ ZarrArray <- function(...) {
 #' @export
 #' @rdname ZarrArray-deprecated
 writeZarrArray <- function(...) {
-  lifecycle::deprecate_warn(
+  deprecate_warn(
     when = "1.12.0",
     what = "writeZarrArray()",
     with = "ZarrArray::writeZarrArray()",

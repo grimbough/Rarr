@@ -413,7 +413,7 @@ zarr_overview <- function(
       fill_value <- vector("list", length(datatype$base_type))
       for (i in seq_along(datatype$base_type)) {
         el_fill_value <- decoded_fill_value[seq_len(datatype$nbytes[i])]
-        fill_value[[i]] <- grumpy::convert_bytes_to_array(
+        fill_value[[i]] <- convert_bytes_to_array(
           el_fill_value,
           datatype$base_type[i],
           shape = NULL,
