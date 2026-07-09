@@ -1,8 +1,9 @@
 #' @keywords internal
 check_index <- function(index, metadata) {
   index_len <- length(index)
+  shape <- metadata$shape
   ## check we have the correct number of dimensions
-  if (index_len != length(metadata$shape)) {
+  if (index_len != length(shape)) {
     stop(
       "The number of dimensions provided to 'index' does not match the shape of the array"
     )
@@ -13,8 +14,11 @@ check_index <- function(index, metadata) {
   failed <- rep_len(FALSE, index_len)
   for (i in seq_len(index_len)) {
     if (is.null(index[[i]])) {
-      index[[i]] <- seq_len(metadata$shape[[i]])
-    } else if (min(index[[i]]) < 1L || max(index[[i]]) > metadata$shape[[i]]) {
+      index[[i]] <- seq_len(shape[[i]])
+    } else if (
+      length(index[[i]]) > 0L &&
+        (min(index[[i]]) < 1L || max(index[[i]]) > shape[[i]])
+    ) {
       failed[i] <- TRUE
     } else {
       index[[i]] <- as.integer(index[[i]])
