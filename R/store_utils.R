@@ -24,7 +24,9 @@
   }
 
   ## Strip any leading "/" characters
-  path <- sub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
+  if (startsWith(path, "/")) {
+    path <- substring(path, 2L)
+  }
   ## Collapse any sequence of more than one "/" character into a single "/"
   path <- gsub(x = path, pattern = "//+", replacement = "/", fixed = FALSE)
   ## The key prefix is then obtained by appending a single "/" character to
