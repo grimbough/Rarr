@@ -11,16 +11,16 @@
 #' @keywords internal
 .normalize_array_path <- function(path) {
   ## we strip the protocol because it gets messed up by the slash removal later
-  if (any(startsWith(path, c("http://", "https://", "s3://")))) {
-    m <- regmatches(path, regexec("^((https?://)|(s3://))(.*$)", path))[[1L]]
-    root <- m[2L]
-    path <- m[5L]
+  supported_protocols <- c("http://", "https://", "s3://")
+  if (any(startsWith(path, supported_protocols))) {
+    root <- supported_protocols[startsWith(path, supported_protocols)]
+    path <- substring(path, nchar(root) + 1L)
   } else {
     ## Replace all backward slash ("\\") with forward slash ("/")
     path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
     path <- getAbsolutePath(path, expandTilde = TRUE)
     root <- sub(x = path, "(^[[:alnum:]:.]*/)?(.*)", replacement = "\\1")
-    path <- sub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\2")
+    path <- substring(path, nchar(root) + 1L)
   }
 
   ## Strip any leading "/" characters
