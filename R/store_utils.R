@@ -14,14 +14,13 @@
   supported_protocols <- c("http://", "https://", "s3://")
   if (any(startsWith(path, supported_protocols))) {
     root <- supported_protocols[startsWith(path, supported_protocols)]
-    path <- substring(path, nchar(root) + 1L)
   } else {
     ## Replace all backward slash ("\\") with forward slash ("/")
     path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
     path <- getAbsolutePath(path, expandTilde = TRUE)
     root <- sub(x = path, "(^[[:alnum:]:.]*/)?(.*)", replacement = "\\1")
-    path <- substring(path, nchar(root) + 1L)
   }
+  path <- substring(path, nchar(root) + 1L)
 
   ## Strip any leading "/" characters
   if (startsWith(path, "/")) {
