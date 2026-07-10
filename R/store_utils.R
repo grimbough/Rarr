@@ -25,13 +25,15 @@
 
   ## Strip any leading "/" characters
   path <- sub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
-  ## Strip any trailing "/" characters
-  path <- sub(x = path, pattern = "/$", replacement = "", fixed = FALSE)
   ## Collapse any sequence of more than one "/" character into a single "/"
   path <- gsub(x = path, pattern = "//+", replacement = "/", fixed = FALSE)
   ## The key prefix is then obtained by appending a single "/" character to
   ## the normalized logical path.
-  path <- paste0(root, path, "/")
+  if (endsWith(path, "/")) {
+    path <- paste0(root, path)
+  } else {
+    path <- paste0(root, path, "/")
+  }
 
   return(path)
 }
