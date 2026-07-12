@@ -9,16 +9,16 @@ write_zarr_array(
   zarr_array_path,
   chunk_dim,
   data_type = storage.mode(x),
-  order = "F",
-  compressor = use_zlib(),
-  fill_value,
+  order = c("F", "C"),
+  compressor = use_zstd(),
+  fill_value = NULL,
   nchar,
-  dimension_separator = "."
+  dimension_separator = if (zarr_version == 2L) "." else "/",
+  zarr_version = 3L
 )
 }
 \arguments{
-\item{x}{The R array (or object that can be coerced to an array) that will be
-written to the Zarr array.}
+\item{x}{The R array that will be written to the Zarr array.}
 
 \item{zarr_array_path}{Character vector of length 1 giving the path to the
 new Zarr array.}
@@ -39,7 +39,7 @@ are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify
 'row' or 'C' will specify "row-major" order.}
 
 \item{compressor}{What (if any) compression tool should be applied to the
-array chunks.  The default is to use \code{zlib} compression. Supplying \code{NULL}
+array chunks.  The default is to use \code{zstd} compression. Supplying \code{NULL}
 will disable chunk compression. See \link{compressors} for more details.}
 
 \item{fill_value}{The default value for uninitialized portions of the array.
@@ -54,6 +54,9 @@ so no data are truncated. However this may be slow and providing a value to
 
 \item{dimension_separator}{The character used to to separate the dimensions
 in the names of the chunk files.  Valid options are limited to "." and "/".}
+
+\item{zarr_version}{The version of the Zarr specification to use. Currently,
+either \code{2} or \code{3}. The default is \code{3}.}
 }
 \value{
 The function is primarily called for the side effect of writing to
@@ -61,6 +64,10 @@ disk. Returns (invisibly) \code{TRUE} if the array is successfully written.
 }
 \description{
 Write an R array to Zarr
+}
+\note{
+If \code{x} has \code{dimnames}, \code{names(dimnames(x))} will be stored as the
+\code{dimension_names} field in the Zarr metadata.
 }
 \examples{
 

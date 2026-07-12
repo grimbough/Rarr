@@ -1,7 +1,9 @@
 #' @keywords internal
 check_index <- function(index, metadata) {
+  index_len <- length(index)
+  shape <- metadata$shape
   ## check we have the correct number of dimensions
-  if (isFALSE(length(index) == length(metadata$shape))) {
+  if (index_len != length(shape)) {
     stop(
       "The number of dimensions provided to 'index' does not match the shape of the array"
     )
@@ -9,12 +11,17 @@ check_index <- function(index, metadata) {
 
   ## If any dimensions are NULL transform into the entirety of that dimension
   ## Otherwise check provided indices are valid
-  failed <- rep_len(FALSE, length(index))
-  for (i in seq_along(index)) {
+  failed <- rep_len(FALSE, index_len)
+  for (i in seq_len(index_len)) {
     if (is.null(index[[i]])) {
-      index[[i]] <- seq_len(metadata$shape[[i]])
-    } else if (any(index[[i]] < 1) || any(index[[i]] > metadata$shape[[i]])) {
+      index[[i]] <- seq_len(shape[[i]])
+    } else if (
+      length(index[[i]]) > 0L &&
+        (min(index[[i]]) < 1L || max(index[[i]]) > shape[[i]])
+    ) {
       failed[i] <- TRUE
+    } else {
+      index[[i]] <- as.integer(index[[i]])
     }
   }
 
@@ -28,139 +35,204 @@ check_index <- function(index, metadata) {
   return(index)
 }
 
-#' Create a string of the form `x[idx[[1]], idx[[2]]] <- y` for an array `x`
-#' where the number of dimensions is variable.
-#'
-#' @param x_name Name of the object to have items replaced
-#' @param idx_name Name of the list containing the indices
-#' @param idx_length Length of the list specified in `idx_name`
-#' @param y_name Name of the object containing the replacement items
-#'
-#' @returns A character vector of length one containing the replacement
-#'   commands. This is expected to be passed to `parse() |> eval()`.
-#'
-#' @keywords internal
-.create_replace_call <- function(x_name, idx_name, idx_length, y_name) {
-  args <- sprintf("%s[[%d]]", idx_name, seq_len(idx_length))
-  args <- paste(args, collapse = ",")
-  cmd <- sprintf("%s[%s] <- %s", x_name, args, y_name)
-
-  return(cmd)
-}
-
-#' Parse the data type encoding string
-#'
-#' @param typestr The datatype encoding string.  This is in the Numpy array
-#' typestr format.
-#'
-#' @returns A list of length 4 containing the details of the data type.
-#'
-#' @keywords internal
-.parse_datatype <- function(typestr) {
-  datatype <- list()
-  datatype_parts <- strsplit(typestr, "", fixed = TRUE)[[1]]
-
-  datatype$endian <- switch(
-    datatype_parts[1],
-    "<" = "little",
-    ">" = "big",
-    "|" = NA
-  )
-
-  datatype$base_type <- switch(
-    datatype_parts[2],
-    "b" = "bool",
-    "i" = "int",
-    "u" = "uint",
-    "f" = "float",
-    "c" = "complex",
-    "m" = "timedelta",
-    "M" = "datetime",
-    "S" = "string",
-    "U" = "unicode",
-    "V" = "other",
-    "O" = "py_object"
-  )
-
-  datatype$nbytes <- as.integer(
-    gsub(x = typestr, pattern = "^[<>|][[:alpha:]]", replacement = "")
-  )
-
-  if (datatype$base_type == "unicode") {
-    datatype$nbytes <- datatype$nbytes * 4
+.create_chunk_names <- function(chunk_indices, metadata) {
+  # In the DelayedArray framework, we can have integer(0) indices
+  # https://github.com/Huber-group-EMBL/Rarr/issues/112.
+  if (nrow(chunk_indices) == 0L) {
+    return(character(0L))
   }
 
-  datatype$is_signed <- datatype$base_type != "uint"
+  dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
 
-  return(datatype)
-}
+  # This is faster than vapply()
+  chunk_names <- as.vector(apply(
+    chunk_indices,
+    1L,
+    paste,
+    collapse = dim_separator
+  ))
 
-
-#' Normalize a Zarr array path
-#'
-#' Taken from https://zarr.readthedocs.io/en/stable/spec/v2.html#logical-storage-paths
-#'
-#' @param path Character vector of length 1 giving the path to be normalised.
-#'
-#' @returns A character vector of length 1 containing the normalised path.
-#'
-#' @keywords internal
-.normalize_array_path <- function(path) {
-  ## we strip the protocol because it gets messed up by the slash removal later
-  if (grepl(x = path, pattern = "^((https?://)|(s3://)).*$")) {
-    root <- gsub(
-      x = path,
-      pattern = "^((https?://)|(s3://)).*$",
-      replacement = "\\1"
-    )
-    path <- gsub(
-      x = path,
-      pattern = "^((https?://)|(s3://))(.*$)",
-      replacement = "\\4"
-    )
-  } else {
-    ## Replace all backward slash ("\\") with forward slash ("/")
-    path <- gsub(x = path, pattern = "\\", replacement = "/", fixed = TRUE)
-    path <- R.utils::getAbsolutePath(path, expandTilde = TRUE)
-    root <- gsub(x = path, "(^[[:alnum:]:.]*/)?(.*)", replacement = "\\1")
-    path <- gsub(x = path, "(^[[:alnum:]:.]*/)(.*)", replacement = "\\2")
+  if (metadata[["zarr_format"]] == 3L) {
+    if (identical(metadata[["shape"]], 1L) && length(chunk_names) > 0L) {
+      chunk_names <- "c"
+    } else {
+      # In the DelayedArray framework, we can have integer(0) indices
+      # https://github.com/Huber-group-EMBL/Rarr/issues/112
+      chunk_names <- paste(
+        "c",
+        chunk_names,
+        sep = dim_separator,
+        recycle0 = TRUE
+      )
+    }
   }
 
-  ## Strip any leading "/" characters
-  path <- gsub(x = path, pattern = "^/", replacement = "", fixed = FALSE)
-  ## Strip any trailing "/" characters
-  path <- gsub(x = path, pattern = "/$", replacement = "", fixed = FALSE)
-  ## Collapse any sequence of more than one "/" character into a single "/"
-  path <- gsub(x = path, pattern = "//*", replacement = "/", fixed = FALSE)
-  ## The key prefix is then obtained by appending a single "/" character to
-  ## the normalized logical path.
-  path <- paste0(root, path, "/")
-
-  return(path)
+  return(chunk_names)
 }
 
-#' @importFrom stats setNames
-.file_or_blob_exists <- function(
-  zarr_array_path,
-  s3_client,
-  files
+#' Subset extraction for an array with a variable number of dimensions.
+#'
+#' @param x Array to extract from.
+#' @param idx List of index vectors, one per dimension.
+#'
+#' @returns The extracted sub-array (with `drop = FALSE`).
+#'
+#' @keywords internal
+.extract_chunk <- function(x, idx) {
+  # do.call() has the same performance if we ever need to drop rlang dependency
+  # but this is more aesthetically pleasing and rlang is likely to always be
+  # somewhere in the dependency tree.
+  rlang::inject(x[!!!idx, drop = FALSE])
+}
+
+.parse_datatype_v3 <- function(typestr) {
+  if (is.list(typestr)) {
+    if (typestr$name == "fixed_length_utf32") {
+      return(list(
+        base_type = "unicode",
+        nbytes = typestr$configuration$length_bytes
+      ))
+    }
+    if (typestr$name == "null_terminated_bytes") {
+      return(list(
+        base_type = "string",
+        nbytes = typestr$configuration$length_bytes
+      ))
+    }
+    if (typestr$name == "struct") {
+      internal_types <- lapply(typestr$configuration$fields, function(field) {
+        .parse_datatype_v3(field$data_type)
+      })
+      return(
+        list(
+          base_type = vapply(
+            internal_types,
+            `[[`,
+            "base_type",
+            FUN.VALUE = character(1L)
+          ),
+          nbytes = vapply(
+            internal_types,
+            `[[`,
+            "nbytes",
+            FUN.VALUE = integer(1L)
+          )
+        )
+      )
+    }
+    if (typestr$name == "structured") {
+      internal_types <- lapply(typestr$configuration$fields, function(field) {
+        .parse_datatype_v3(field[[2L]])
+      })
+      return(
+        list(
+          base_type = vapply(
+            internal_types,
+            `[[`,
+            "base_type",
+            FUN.VALUE = character(1L)
+          ),
+          nbytes = vapply(
+            internal_types,
+            `[[`,
+            "nbytes",
+            FUN.VALUE = integer(1L)
+          )
+        )
+      )
+    }
+    stop("Unsupported data type: ", typestr$name, call. = FALSE)
+  }
+
+  entry <- SUPPORTED_V3_TYPES[[typestr]]
+  if (is.null(entry)) {
+    stop("Unsupported data type: ", typestr, call. = FALSE)
+  }
+  return(list(
+    base_type = entry$base_type,
+    nbytes = entry$nbytes
+  ))
+}
+
+#' Precompute index positions grouped by chunk
+#'
+#' For each chunk touched by `index`, returns the positions (1-based) within
+#' each dimension of `index` that fall inside that chunk, together with the
+#' within-chunk indices needed to extract values from the chunk array.
+#'
+#' @param index A list of integer vectors, one per dimension, giving the
+#'   requested array indices (1-based).
+#' @param metadata List of array metadata as returned by `.read_array_metadata()`.
+#'   Used to derive chunk name keys via `.create_chunk_names()`.
+#' @param chunk_dim Integer vector of length equal to the number of dimensions
+#'   of the array, specifying the size of each chunk in each dimension.
+#'
+#' @returns A named list keyed by chunk names (same format as
+#'   `.create_chunk_names()`, e.g. `"c/0/1/0"` for Zarr V3).  Each element is
+#'   a list with two components:
+#'   * `positions`: a per-dimension list of integer vectors of positions into
+#'     the corresponding `index` vector that map to that chunk.
+#'   * `index_in_chunk`: a per-dimension list of 1-based integer vectors
+#'     giving the within-chunk coordinates corresponding to `positions`.
+#'
+#' @importFrom utils relist
+#'
+#' @keywords internal
+#' @noRd
+.chunk_positions_by_chunk <- function(
+  index,
+  metadata,
+  chunk_dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
 ) {
-  if (is.null(s3_client)) {
-    is_present <- setNames(
-      file.exists(paste0(zarr_array_path, files)),
-      files
+  index0 <- lapply(index, reindex, from = 1L, to = 0L)
+  # FIXME:
+  # - make this work for compat sequence that don't start at one
+  # - fold the second step (index_in_chunk) here
+  if (
+    all(vapply(index, is.compact, logical(1L))) &&
+      all(vapply(index, min, integer(1L)) == 1L)
+  ) {
+    per_dim <- mapply(
+      \(i, cs) {
+        split(
+          i,
+          rep(
+            ((min(i) - 1L) %/% cs):((max(i) - 1L) %/% cs),
+            each = cs,
+            length.out = length(i)
+          )
+        )
+      },
+      index,
+      chunk_dim,
+      SIMPLIFY = FALSE
     )
   } else {
-    parse_url <- parse_s3_path(zarr_array_path)
-    is_present <- vapply(
-      files,
-      FUN = function(f) {
-        key <- paste0(parse_url$object, f)
-        .s3_object_exists(s3_client, parse_url$bucket, key)
-      },
-      FUN.VALUE = logical(1)
-    )
+    index0 <- unlist(index0)
+    per_dim <- (index0 %/% rep(chunk_dim, times = lengths(index))) |>
+      relist(index) |>
+      lapply(function(x) split(seq_along(x), x))
+    index0 <- relist(index0, index)
   }
-
-  return(is_present)
+  chunk_keys <- do.call(expand.grid, lapply(per_dim, names))
+  key_strings <- .create_chunk_names(as.matrix(chunk_keys), metadata)
+  setNames(
+    lapply(seq_along(key_strings), function(i) {
+      positions <- mapply(
+        \(d, k) d[[k]],
+        per_dim,
+        chunk_keys[i, ],
+        SIMPLIFY = FALSE
+      )
+      index_in_chunk <- mapply(
+        \(idx, pos, cs) reindex(idx[pos] %% cs, from = 0L, to = 1L),
+        index0,
+        positions,
+        chunk_dim,
+        SIMPLIFY = FALSE
+      )
+      list(positions = positions, index_in_chunk = index_in_chunk)
+    }),
+    key_strings
+  )
 }

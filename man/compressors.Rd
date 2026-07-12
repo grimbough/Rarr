@@ -11,7 +11,13 @@
 \alias{use_zstd}
 \title{Define compression tool and settings}
 \usage{
-use_blosc(cname = "lz4")
+use_blosc(
+  cname = c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy"),
+  clevel = 5L,
+  shuffle = c("shuffle", "noshuffle", "bitshuffle"),
+  typesize = NULL,
+  blocksize = 0L
+)
 
 use_zlib(level = 6L)
 
@@ -23,18 +29,35 @@ use_lzma(level = 9L)
 
 use_lz4()
 
-use_zstd(level = 3)
+use_zstd(level = 0L)
 }
 \arguments{
 \item{cname}{Blosc is a 'meta-compressor' providing access to several
 compression algorithms.  This argument defines which compression tool
-should be used.  Valid options are: 'lz4', 'lz4hc', 'blosclz', 'zstd',
-'zlib', 'snappy'.}
+should be used.  Valid options are: \code{"lz4"}, \code{"lz4hc"}, \code{"blosclz"},
+\code{"zstd"}, \code{"zlib"}, \code{"snappy"}.}
+
+\item{clevel}{An integer from 0 to 9 which controls the speed and level of
+compression. A level of 1 is the fastest compression method and produces
+the least compressions, while 9 is slowest and produces the most compression.
+Compression is turned off completely when level is 0. Defaults to 5.}
+
+\item{shuffle}{Specifies the type of shuffling to perform, if any, prior to
+compression. Must be one of \code{"noshuffle"}, to indicate no shuffling;
+\code{"shuffle"} (default), to indicate byte-wise shuffling; \code{"bitshuffle"}, to
+indicate bit-wise shuffling.}
+
+\item{typesize}{The data type size in bytes used by Blosc shuffling. If
+\code{NULL} (default), this will be inferred from the array datatype. Ignored if
+\code{shuffle = "noshuffle"}.}
+
+\item{blocksize}{The requested size of the compressed blocks in bytes. Use 0
+(default) to let Blosc choose automatically.}
 
 \item{level}{Specify the compression level to use.  The range of possible
 values is dependant on the compression tool being used.  For example, for
 \code{use_zlib()} this argument can be between 1 & 9, while for \code{use_zstd()}the
-valid range is 1 to 22.}
+valid range is 0 (default; level chosen automatically) to 22.}
 }
 \value{
 A list containing the details of the selected compression tool. This

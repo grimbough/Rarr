@@ -68,7 +68,14 @@ test_that("int64 zarr arrays handle out-of-range values", {
   expect_true(all(is.na(row_major)))
 })
 
-test_that("int64 v3 zarr arrays throw appropriate error", {
+test_that("v2 and v3 return identical results", {
+  zarr_v2 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "int64.zarr",
+    package = "Rarr"
+  )
   zarr_v3 <- system.file(
     "extdata",
     "zarr_examples",
@@ -77,8 +84,29 @@ test_that("int64 v3 zarr arrays throw appropriate error", {
     package = "Rarr"
   )
 
-  expect_error(
-    read_zarr_array(zarr_v3),
-    "Zarr v3 arrays"
+  i64_v2 <- read_zarr_array(zarr_v2)
+  i64_v3 <- read_zarr_array(zarr_v3)
+
+  expect_identical(i64_v2, i64_v3)
+})
+
+test_that("int64 zarr array can be written", {
+  int64_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_int64_array <- array(1:24, dim = c(4, 3, 2))
+
+  write_zarr_array(
+    content_int64_array,
+    int64_zarr,
+    data_type = "<i8",
+    chunk_dim = c(2, 2, 1),
+    compressor = NULL
+  )
+
+  roundtrip_int64_array <- read_zarr_array(int64_zarr)
+
+  expect_identical(
+    content_int64_array,
+    roundtrip_int64_array
   )
 })

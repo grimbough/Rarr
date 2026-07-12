@@ -8,8 +8,9 @@ commands below.
 
 ```{r, installation, eval = FALSE}
 ## we need BiocManager to perform the installation
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 ## install Rarr
 BiocManager::install("Rarr")
 ```
@@ -29,25 +30,31 @@ To demonstrate reading a local file, we'll pick the example file containing
 
 ```{r, use-example}
 zarr_example <- system.file(
-  "extdata", "zarr_examples", "column-first", "int32.zarr",
+  "extdata",
+  "zarr_examples",
+  "column-first",
+  "int32.zarr",
   package = "Rarr"
 )
 ```
 
 ### Exploring the data
-We can get an summary of the array properties, such as its shape and datatype,
+
+We can get an summary of the array properties, such as its shape and datatype, or group properties,
 using the function `zarr_overview()`^[This is essentially reading and formatting
-the array metadata that accompanies any Zarr array.].
+the array metadata that accompanies any Zarr array, or the consolidated metadata if present in the case of a Zarr group.].
 
 ```{r, overview-1}
 zarr_overview(zarr_example)
 ```
+
 You can use this to check that the location is a valid Zarr array, and that the
 shape and datatype of the array content are what you are expecting.  For
 example, we can see in the output above that the data type (`int32`) corresponds
 to what we expect.
 
 ### Reading the Zarr array
+
 The summary information retrieved above is required, as to read the array with
 **Rarr** you need to know the shape and size of the array (unless you want to
 read the entire array).  From the previous output we can see our example array
@@ -68,60 +75,7 @@ read_zarr_array(zarr_example, index = index)
 
 ## Reading from S3 storage {#read-s3}
 
-Reading files in S3 storage works in a very similar fashion to local disk.  This
-time the path needs to be a URL to the Zarr array.
-We can again use `zarr_overview()` to quickly retrieve the array metadata.
-
-```{r, read-from-s3-shown, echo = TRUE, eval = FALSE}
-s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-zarr_overview(s3_address)
-```
-
-```{r, read-from-s3, echo = FALSE, eval = TRUE}
-s3_address <- "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0076A/10501752.zarr/0"
-s3_client <- paws.storage::s3(config = list(
-  credentials = list(anonymous = TRUE),
-  region = "auto",
-  endpoint = "https://uk1s3.embassy.ebi.ac.uk"))
-zarr_overview(s3_address, s3_client = s3_client)
-```
-
-The output above indicates that the array is stored in 50 chunks, each
-containing a slice of the overall data. In the example below we use the `index`
-argument to extract the first and tenth slices from the array. Choosing to read only
-2 of the 50 slices is much faster than if we opted to download the entire array
-before accessing the data.
-
-```{r, get-slices-not-run, echo = TRUE, eval = FALSE }
-z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL))
-```
-
-```{r, get-slices, echo = FALSE, eval = TRUE }
-z2 <- read_zarr_array(s3_address, index = list(c(1, 10), NULL, NULL), s3_client = s3_client)
-```
-
-We then plot our two slices on top of one another using the `image()` function.
-
-```{r, plot-raster, echo = 2:9, cache = TRUE, out.width="30%", eval = TRUE}
-par(mar = c(0, 0, 0, 0))
-## plot the first slice in blue
-image(log2(z2[1, , ]),
-  col = hsv(h = 0.6, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE
-)
-## overlay the tenth slice in green
-image(log2(z2[2, , ]),
-  col = hsv(h = 0.3, v = 1, s = 1, alpha = 0:100 / 100),
-  asp = dim(z2)[2] / dim(z2)[3], axes = FALSE, add = TRUE
-)
-```
-
-**Note:** if you receive the error message
-`"Error in stop(aws_error(request$error)) : bad error message"` it is likely you
-have some AWS credentials available in to your R session, which are being
-inappropriately used to access this public bucket.  Please see the section
-\@ref(s3-client) for details on how to set credentials for a specific
-request.
+Read the dedicated ["Working with **remote** Zarr arrays in R" vignette](https://huber-group-embl.github.io/Rarr/articles/S3.html) for more information on reading Zarr arrays from S3 storage.
 
 ## Writing to a Zarr array
 
@@ -137,7 +91,11 @@ x <- array(1:600, dim = c(10, 10, 6))
 
 ```{r}
 path_to_new_zarr <- file.path(tempdir(), "new.zarr")
-write_zarr_array(x = x, zarr_array_path = path_to_new_zarr, chunk_dim = c(10, 5, 1))
+write_zarr_array(
+  x = x,
+  zarr_array_path = path_to_new_zarr,
+  chunk_dim = c(10, 5, 1)
+)
 ```
 
 We can check that the contents of the Zarr array is what we're expecting.  Since

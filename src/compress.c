@@ -1,57 +1,74 @@
 #include "compress.h"
 
-SEXP compress_chunk_BLOSC(SEXP input, SEXP type_size) {
+SEXP compress_chunk_BLOSC(
+  SEXP input,
+  SEXP type_size,
+  SEXP cname,
+  SEXP clevel,
+  SEXP shuffle,
+  SEXP blocksize
+) {
   
-  void* p_input = RAW(input);
-  void *p_output;
-  SEXP output;
-  int dsize;
-  int clevel = 5;
-  size_t typesize = (size_t)INTEGER(type_size)[0];
+  const void* p_input = RAW(input);
+
+  const char *compressor_name = CHAR(STRING_ELT(cname, 0));
+  const int compression_level = INTEGER(clevel)[0];
+  const int shuffle_mode = INTEGER(shuffle)[0];
+  const size_t typesize = (size_t)INTEGER(type_size)[0];
+  const size_t block_size = (size_t)INTEGER(blocksize)[0];
   
-  output = PROTECT(allocVector(RAWSXP, LENGTH(input)+BLOSC_MAX_OVERHEAD));
-  p_output = RAW(output);
+  SEXP output = PROTECT(R_allocResizableVector(RAWSXP, xlength(input)+BLOSC_MAX_OVERHEAD));
+  void *p_output = RAW(output);
 
   blosc_init();
-  blosc_set_compressor("lz4");
-  dsize = blosc_compress(clevel, BLOSC_SHUFFLE, typesize, LENGTH(input), 
-                         p_input, p_output, LENGTH(output));
+  blosc_set_compressor(compressor_name);
+  blosc_set_blocksize(block_size);
+  int dsize = blosc_compress(
+    compression_level, 
+    shuffle_mode, 
+    typesize,
+    xlength(input), 
+    p_input, 
+    p_output, 
+    xlength(output)
+  );
 
   if(dsize > 0) {
     /* shrink our output buffer to contain only the compressed bytes */
-    SET_LENGTH(output, dsize);
-  } else if(dsize == 0) {
+    R_resizeVector(output, dsize);
+    UNPROTECT(1);
+    return output;
+  }
+  if(dsize == 0) {
     /* if compression results in a bigger chunk, just use the original input */
-    p_output = p_input;
-  }  else {
-    /* something terrible happened */
-    error("BLOSC compression error - error code: %d\n", dsize);
+    UNPROTECT(1);
+    return input;
   }
 
-  UNPROTECT(1);
-  return output;
+  /* something terrible happened */
+  error("BLOSC compression error - error code: %d\n", dsize);
 } 
 
 SEXP compress_chunk_LZ4(SEXP input) {
   
-  void* p_input = (void *)RAW(input);
+  const void* p_input = RAW(input);
   void* p_output; 
-  int input_size = (int) xlength(input);
-  int output_size = LZ4_compressBound(input_size);
+  const int input_size = (int) xlength(input);
+  const int output_size = LZ4_compressBound(input_size);
   SEXP output;
   int dsize;
   
-  output = PROTECT(allocVector(RAWSXP, output_size));
+  output = PROTECT(R_allocResizableVector(RAWSXP, output_size));
   p_output = RAW(output);
 
   dsize = LZ4_compress_default((char *)p_input, (char *)p_output, input_size, output_size);
   
   if(dsize <= 0) {
-    error("LZ4 decompression error - error code: %d\n", dsize);
+    error("LZ4 compression error - error code: %d\n", dsize);
   }
   
   /* shrink our output vector to include only the compressed bytes */
-  SET_LENGTH(output, dsize);
+  R_resizeVector(output, dsize);
 
   UNPROTECT(1);
   return output;
@@ -69,42 +86,34 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
                                     const void* src, size_t srcSize,
                                     int compressionLevel); */
   
-  void* p_input = (void *)RAW(input);
+  const void* p_input = RAW(input);
   void* p_output; 
-  size_t input_size = (size_t) xlength(input);
-  size_t output_size = (size_t) ZSTD_compressBound(input_size);
-  int compressionLevel = INTEGER(compression_level)[0];
+  const size_t input_size = (size_t) xlength(input);
+  const size_t output_size = (size_t) ZSTD_compressBound(input_size);
+  const int compressionLevel = INTEGER(compression_level)[0];
   
-  SEXP output = PROTECT(allocVector(RAWSXP, output_size));
+  SEXP output = PROTECT(R_allocResizableVector(RAWSXP, output_size));
   p_output = RAW(output);
   
-  int dsize = ZSTD_compress(p_output, output_size, p_input, input_size, compressionLevel);
+  size_t dsize = ZSTD_compress(p_output, output_size, p_input, input_size, compressionLevel);
   
   if(ZSTD_isError(dsize)) {
-    error("zstd decompression error - error code: %d\n", dsize);
+    error("zstd compression error - error code: %zu\n", dsize);
   }
   
   /* shrink our output vector to include only the compressed bytes */
-  SET_LENGTH(output, dsize);
+  R_resizeVector(output, dsize);
   
   UNPROTECT(1);
   return output;
 } 
- 
-/* not required as R has a native decompressor for ZLIB */
-// SEXP decompress_chunk_ZLIB(SEXP input, SEXP _outbuffersize) {
-//   
-//   void* p_input = RAW(input);
-//   void *p_output;
-// 
-//   size_t outbufsize;
-//   SEXP output;
-// 
-//   outbufsize = INTEGER(_outbuffersize)[0];
-//   output = PROTECT(allocVector(RAWSXP, outbufsize));
-//   p_output = RAW(output);
-//   uncompress(p_output, &outbufsize, p_input, xlength(input));
-// 
-//   UNPROTECT(1);
-//   return output;
-// } 
+
+/* From https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Some-backports-1 */
+#if R_VERSION < R_Version(4, 6, 0)
+SEXP R_allocResizableVector(SEXPTYPE type, R_xlen_t maxlen) {
+  SEXP ret = Rf_allocVector(type, maxlen);
+  SET_TRUELENGTH(ret, maxlen);
+  SET_GROWABLE_BIT(ret);
+  return ret;
+}
+#endif

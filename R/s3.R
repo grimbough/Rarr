@@ -1,80 +1,45 @@
 parse_s3_path <- function(path) {
-  s3_provider <- .determine_s3_provider(path)
-
-  if (is.null(s3_provider)) {
-    parsed_url <- NULL
-  } else if (s3_provider == "aws") {
-    parsed_url <- .url_parse_aws(path)
-  } else {
-    parsed_url <- .url_parse_other(path)
-  }
-
-  return(parsed_url)
-}
-
-.determine_s3_provider <- function(path) {
-  if (!grepl(pattern = "(^https?://)|(^s3://)", x = path)) {
+  if (!any(startsWith(path, c("http://", "https://", "s3://")))) {
     return(NULL)
   }
-
-  matches <- regmatches(
-    x = path,
-    m = regexpr(
-      pattern = "(amazonaws\\.com)|(embl\\.de)",
-      text = path
-    )
-  )
-  if (!length(matches)) {
-    matches <- "other"
+  if (grepl("amazonaws.com", path, fixed = TRUE)) {
+    return(.url_parse_aws(path))
   }
-  provider <- switch(
-    matches,
-    "amazonaws.com" = "aws",
-    "embl.de" = "other",
-    "other"
-  )
-  return(provider)
+  return(.url_parse_other(path))
 }
 
 #' @keywords internal
 .url_parse_aws <- function(url) {
-  tmp <- curl::curl_parse_url(url)
-
   if (grepl(pattern = "^https?://s3\\.", x = url, ignore.case = TRUE)) {
     ## path style address
-    bucket <- gsub(
-      x = tmp$path,
-      pattern = "^/?([a-z0-9\\.-]*)/.*",
-      replacement = "\\1",
-      ignore.case = TRUE
-    )
-    object <- gsub(
-      x = tmp$path,
-      pattern = "^/?([a-z0-9\\.-]*)/(.*)",
-      replacement = "\\2",
-      ignore.case = TRUE
-    )
-    region <- gsub(
-      x = url,
-      pattern = "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/.*$",
-      replacement = "\\1"
-    )
+    url_parts <- regmatches(
+      url,
+      regexec(
+        "^https?://s3\\.([a-z0-9-]*)\\.amazonaws\\.com/?([a-z0-9\\.-]*)/(.*)",
+        url,
+        ignore.case = TRUE
+      )
+    )[[1L]]
+    region <- url_parts[2L]
+    bucket <- url_parts[3L]
+    object <- url_parts[4L]
   } else if (
     grepl(
-      pattern = "^https?://[a-z0-9\\.-]*.s3\\.",
+      pattern = "^https?://[a-z0-9\\.-]*\\.s3\\.",
       x = url,
       ignore.case = TRUE
     )
   ) {
     ## virtual-host style address
-    bucket <- gsub(
+    tmp <- curl::curl_parse_url(url, params = FALSE)
+    bucket <- sub(
       x = tmp$host,
       pattern = "^([a-z0-9\\.-]*)\\.s3.*",
       replacement = "\\1",
       ignore.case = TRUE
     )
-    object <- gsub("^/?(.*)", "\\1", tmp$path)
-    region <- gsub(
+    object <- sub("^/?(.*)", "\\1", tmp$path)
+    region <- sub(
       x = tmp$host,
       pattern = "^.*\\.s3\\.([a-z0-9-]*)\\.amazonaws\\.com$",
       replacement = "\\1",
@@ -97,19 +62,13 @@ parse_s3_path <- function(path) {
 
 #' @keywords internal
 .url_parse_other <- function(url) {
-  parsed_url <- curl::curl_parse_url(url)
-  bucket <- gsub(
-    x = parsed_url$path,
-    pattern = "^/?([[a-z0-9:\\.-]*)/.*",
-    replacement = "\\1",
-    ignore.case = TRUE
-  )
-  object <- gsub(
-    x = parsed_url$path,
-    pattern = "^/?([a-z0-9:\\.-]*)/(.*)",
-    replacement = "\\2",
-    ignore.case = TRUE
-  )
+  parsed_url <- curl::curl_parse_url(url, params = FALSE)
+  path_parts <- regmatches(
+    parsed_url$path,
+    regexec("^/?([a-z0-9:\\.-]*)/(.*)", parsed_url$path, ignore.case = TRUE)
+  )[[1L]]
+  bucket <- path_parts[2L]
+  object <- path_parts[3L]
   hostname <- paste0(parsed_url$scheme, "://", parsed_url$host)
 
   if (!is.null(parsed_url$port)) {
@@ -136,11 +95,10 @@ parse_s3_path <- function(path) {
 #' If no valid credentials are found this function will error, which is expected
 #' and is caught by `.check_credentials`.
 #'
-#' @importFrom methods formalArgs
 #' @keywords internal
 .get_credentials <- function(credentials) {
   for (provider in credentials$provider) {
-    args <- formalArgs(provider)
+    args <- names(formals(provider))
     if (is.null(args)) {
       creds <- provider()
     } else {
@@ -181,25 +139,24 @@ parse_s3_path <- function(path) {
   parsed_url <- parse_s3_path(path)
 
   if (is.null(parsed_url)) {
-    s3_client <- NULL
-  } else {
-    s3_client <- s3(
-      config = list(
-        region = parsed_url$region,
-        endpoint = parsed_url$hostname
-      )
-    )
-
-    s3_client <- .check_credentials(s3_client, parsed_url)
+    return(NULL)
   }
-  return(s3_client)
+  s3_client <- s3(
+    config = list(
+      region = parsed_url$region,
+      endpoint = parsed_url$hostname
+    )
+  )
+
+  .check_credentials(s3_client, parsed_url)
 }
 
 .s3_object_exists <- function(s3_client, Bucket, Key) {
   exists <- s3_client$list_objects_v2(
     Bucket = Bucket,
     Prefix = Key
-  )$KeyCount > 0
+  )$KeyCount >
+    0L
 
   return(exists)
 }

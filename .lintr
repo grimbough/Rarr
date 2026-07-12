@@ -1,14 +1,15 @@
 linters: all_linters(
-    packages = c("lintr"),
+    packages = "lintr",
+    from_json_simplify_linter = Rarr:::from_json_simplify_linter(),
     pipe_consistency_linter(pipe = "|>"),
     object_name_linter = NULL,
-    implicit_integer_linter = NULL,
     todo_comment_linter = NULL,
     library_call_linter = NULL,
     undesirable_function_linter(
       modify_defaults(
         default_undesirable_functions,
         citEntry = "use the more modern bibentry() function",
+        mapply = NULL,
         library = NULL # too many false positive in too many files
       ),
       symbol_is_undesirable = FALSE
@@ -24,9 +25,8 @@ linters: all_linters(
     routine_registration_linter = NULL,
     return_linter = NULL,
     object_overwrite_linter = NULL,
-    # Minimum R version support, as described in the blueprints.
-    # Waiting on the better solution here:
-    backport_linter("oldrel-4")
+    backport_linter("4.1.0"),
+    cyclocomp_linter(15L)
   )
 exclusions: list(
     "inst",
@@ -37,5 +37,9 @@ exclusions: list(
       implicit_assignment_linter = Inf,
       nonportable_path_linter = Inf,
       absolute_path_linter = Inf
+    ),
+    "data-raw" = list(
+      missing_package_linter = Inf,
+      namespace_linter = Inf
     )
   )

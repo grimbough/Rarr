@@ -4,7 +4,7 @@
 \alias{read_zarr_array}
 \title{Read a Zarr array}
 \usage{
-read_zarr_array(zarr_array_path, index, s3_client)
+read_zarr_array(zarr_array_path, index, s3_client = NULL)
 }
 \arguments{
 \item{zarr_array_path}{Path to a Zarr array. A character vector of length 1.

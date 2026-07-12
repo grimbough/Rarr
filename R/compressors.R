@@ -6,7 +6,7 @@
 #' @param level Specify the compression level to use.  The range of possible
 #' values is dependant on the compression tool being used.  For example, for
 #' `use_zlib()` this argument can be between 1 & 9, while for `use_zstd()`the
-#' valid range is 1 to 22.
+#' valid range is 0 (default; level chosen automatically) to 22.
 #'
 #' @returns A list containing the details of the selected compression tool. This
 #'   will be written to the .zarray metadata when the Zarr array is created.
@@ -47,26 +47,50 @@ NULL
 #'
 #' @param cname Blosc is a 'meta-compressor' providing access to several
 #'   compression algorithms.  This argument defines which compression tool
-#'   should be used.  Valid options are: 'lz4', 'lz4hc', 'blosclz', 'zstd',
-#'   'zlib', 'snappy'.
+#'   should be used.  Valid options are: `"lz4"`, `"lz4hc"`, `"blosclz"`,
+#'   `"zstd"`, `"zlib"`, `"snappy"`.
+#' @param clevel An integer from 0 to 9 which controls the speed and level of
+#'   compression. A level of 1 is the fastest compression method and produces
+#'   the least compressions, while 9 is slowest and produces the most compression.
+#'   Compression is turned off completely when level is 0. Defaults to 5.
+#' @param shuffle Specifies the type of shuffling to perform, if any, prior to
+#'   compression. Must be one of `"noshuffle"`, to indicate no shuffling;
+#'   `"shuffle"` (default), to indicate byte-wise shuffling; `"bitshuffle"`, to
+#'   indicate bit-wise shuffling.
+#' @param typesize The data type size in bytes used by Blosc shuffling. If
+#'   `NULL` (default), this will be inferred from the array datatype. Ignored if
+#'   `shuffle = "noshuffle"`.
+#' @param blocksize The requested size of the compressed blocks in bytes. Use 0
+#'   (default) to let Blosc choose automatically.
 #'
 #' @export
-use_blosc <- function(cname = "lz4") {
-  valid_options <- c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy")
+use_blosc <- function(
+  cname = c("lz4", "lz4hc", "blosclz", "zstd", "zlib", "snappy"),
+  clevel = 5L,
+  shuffle = c("shuffle", "noshuffle", "bitshuffle"),
+  typesize = NULL,
+  blocksize = 0L
+) {
   cname <- tolower(cname)
-  if (!cname %in% valid_options) {
+  cname <- match.arg(cname)
+
+  shuffle <- match.arg(shuffle)
+
+  if (clevel < 0L || clevel > 9L) {
     stop(
-      "'cname argument must be one of '",
-      paste(valid_options, collapse = "', '"),
-      "'"
+      "Blosc compresssion `clevel` value must be an integer between 0 and 9",
+      call. = FALSE
     )
   }
+  clevel <- as.integer(clevel)
 
   res <- list(
     id = "blosc",
     cname = cname,
-    clevel = 5,
-    shuffle = as.integer(TRUE)
+    clevel = as.integer(clevel),
+    shuffle = shuffle,
+    typesize = typesize,
+    blocksize = as.integer(blocksize)
   )
   return(res)
 }
@@ -95,22 +119,27 @@ use_bz2 <- function(level = 6L) {
 #' @rdname compressors
 #' @export
 use_lzma <- function(level = 9L) {
-  res <- list(id = "lzma", format = 1, level = as.integer(level))
+  res <- list(id = "lzma", format = 1L, level = as.integer(level))
   return(res)
 }
 
 #' @rdname compressors
 #' @export
 use_lz4 <- function() {
-  res <- list(id = "lz4", acceleration = 1)
+  res <- list(id = "lz4", acceleration = 1L)
   return(res)
 }
 
 #' @rdname compressors
 #' @export
-use_zstd <- function(level = 3) {
-  if (level < 1 || level > 22) {
-    stop("Zstd level must be between 1 and 22.")
+use_zstd <- function(level = 0L) {
+  # Question: we could potentially save level 0 in the metadata as the actual
+  # value picked by the zstd library. For now, we follow zarr python approach.
+  if (level < 0L || level > 22L) {
+    stop(
+      "Zstd compression `level` value must be an integer between 0 and 22.",
+      call. = FALSE
+    )
   }
   res <- list(id = "zstd", level = as.integer(level))
   return(res)

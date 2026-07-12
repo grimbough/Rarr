@@ -29,7 +29,7 @@ jobs:
       config: ${{ steps.read_touchstone_config.outputs.config }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -55,10 +55,11 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: lorenzwalthert/touchstone/actions/receive@c470b4489d6b553800657abcef5c28a46f1b49f5
+      - uses: lorenzwalthert/touchstone/actions/receive@7e6072a25d1f8d72649188bc711113039ef94b75
         with:
           cache-version: 1
           touchstone_ref: ${{ matrix.config.touchstone_ref }}
           benchmarking_repo: ${{ matrix.config.benchmarking_repo }}
           benchmarking_ref: ${{ matrix.config.benchmarking_ref }}
           benchmarking_path: ${{ matrix.config.benchmarking_path }}
+          r-version: ${{ matrix.config.r }}

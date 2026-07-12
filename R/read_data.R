@@ -40,27 +40,27 @@
 #' }
 #'
 #' @export
-read_zarr_array <- function(zarr_array_path, index, s3_client) {
+read_zarr_array <- function(zarr_array_path, index, s3_client = NULL) {
   zarr_array_path <- .normalize_array_path(zarr_array_path)
   ## determine if this is a local or S3 array
-  if (missing(s3_client)) {
-    s3_client <- .create_s3_client(path = zarr_array_path)
-  }
-
-  metadata_file <- .file_or_blob_exists(
-    zarr_array_path,
-    s3_client,
-    c(".zarray", "zarr.json")
-  )
-
-  if (metadata_file["zarr.json"]) {
-    stop("Reading Zarr v3 arrays is not currently supported", call. = FALSE)
-  }
+  s3_client <- s3_client %||% .create_s3_client(path = zarr_array_path)
 
   metadata <- .read_array_metadata(
     zarr_array_path,
-    ".zarray",
     s3_client = s3_client
+  )
+
+  if (metadata$node_type == "group") {
+    stop(
+      "The provided path points to a Zarr group, but `read_zarr_array()` can ",
+      "only read arrays. Please provide the path to an array within the group.",
+      call. = FALSE
+    )
+  }
+
+  metadata$configured_decoders <- .configure_codecs(
+    metadata$codecs,
+    operation = "decode"
   )
 
   ## if no index provided we will return everything
@@ -69,399 +69,180 @@ read_zarr_array <- function(zarr_array_path, index, s3_client) {
   }
   index <- check_index(index = index, metadata = metadata)
 
-  required_chunks <- as.matrix(find_chunks_needed(metadata, index))
+  res <- read_data(zarr_array_path, s3_client, index, metadata)
 
-  res <- read_data(required_chunks, zarr_array_path, s3_client, index, metadata)
-
-  if (isTRUE(res$warn > 0)) {
-    warning(
-      "Integer overflow detected in at least one chunk.\n",
-      "Overflowing values have been replaced with NA",
-      call. = FALSE
+  if (!is.null(metadata$dimension_names)) {
+    dimnames(res) <- setNames(
+      vector("list", length = length(dim(res))),
+      metadata$dimension_names
     )
   }
 
-  return(res$output)
-}
-
-.extract_elements <- function(
-  i,
-  metadata,
-  index,
-  required_chunks,
-  zarr_array_path,
-  s3_client,
-  chunk_idx
-) {
-  ## find elements to select from the chunk and what in the output we replace
-  index_in_result <- index_in_chunk <- list()
-  alt_chunk_dim <- unlist(metadata$chunks)
-
-  for (j in seq_len(ncol(required_chunks))) {
-    index_in_result[[j]] <- which(chunk_idx[[j]] == required_chunks[i, j])
-    ## are we requesting values outside the array due to overhanging chunks?
-    outside_extent <- index_in_result[[j]] > metadata$shape[[j]]
-    if (any(outside_extent)) {
-      index_in_result[[j]] <- index_in_result[[j]][-outside_extent]
-    }
-    if (any(index_in_result[[j]] == metadata$shape[[j]])) {
-      alt_chunk_dim[j] <- length(index_in_result[[j]])
-    }
-
-    index_in_chunk[[j]] <- ((index[[j]][index_in_result[[j]]] - 1) %%
-      metadata$chunks[[j]]) +
-      1
-  }
-
-  ## read this chunk
-  chunk <- read_chunk(
-    zarr_array_path,
-    chunk_id = required_chunks[i, ],
-    metadata = metadata,
-    s3_client = s3_client,
-    alt_chunk_dim = alt_chunk_dim
-  )
-  warn <- chunk$warning[1]
-  chunk_data <- chunk$chunk_data
-
-  ## extract the required elements from the chunk
-  selection <- R.utils::extract(
-    chunk_data,
-    indices = index_in_chunk,
-    drop = FALSE
-  )
-
-  return(list(selection, index_in_result, warning = warn))
+  return(res)
 }
 
 
-#' @importFrom R.utils extract
 read_data <- function(
-  required_chunks,
   zarr_array_path,
   s3_client,
   index,
   metadata
 ) {
-  warn <- 0L
+  if (!is.null(s3_client)) {
+    parsed_s3_url <- parse_s3_path(zarr_array_path)
+    bucket <- parsed_s3_url$bucket
+    root <- parsed_s3_url$object
+  } else {
+    bucket <- NULL
+    root <- zarr_array_path
+  }
 
-  ## determine which chunk each of the requests indices belongs to
-  # nolint next: undesirable_function_linter.
-  chunk_idx <- mapply(
-    \(x, y) {
-      (x - 1) %/% y
-    },
+  ## precompute, for each chunk, the positions in `index` that belong to it
+  chunk_dim <- unlist(metadata$chunk_grid$configuration$chunk_shape)
+  chunk_positions <- .chunk_positions_by_chunk(
     index,
-    metadata$chunks,
-    SIMPLIFY = FALSE
+    metadata,
+    chunk_dim
   )
 
+  chunk_names <- names(chunk_positions)
+  # In the DelayedArray framework, we can have integer(0) indices
+  # https://github.com/Huber-group-EMBL/Rarr/issues/112
+  chunk_paths <- paste0(root, chunk_names, recycle0 = TRUE)
+
+  ## Vectorized check for chunk existence
+  chunk_exists <- .store_check_exist(zarr_array_path, chunk_names, s3_client)
+  existing_idx <- which(chunk_exists)
+
+  warnings <- list()
   ## hopefully we can eventually do this in parallel
-  chunk_selections <- lapply(
-    seq_len(nrow(required_chunks)),
-    FUN = .extract_elements,
-    metadata = metadata,
-    index = index,
-    required_chunks = required_chunks,
-    zarr_array_path = zarr_array_path,
-    s3_client = s3_client,
-    chunk_idx = chunk_idx
+  chunk_selections <- withCallingHandlers(
+    lapply(
+      # We skip missing chunks here since they will just be filled with the fill value
+      # when initializing the consolidated array.
+      existing_idx,
+      function(i) {
+        .extract_elements(
+          chunk_name = chunk_names[i],
+          current_chunk_path = chunk_paths[i],
+          metadata = metadata,
+          chunk_dim = chunk_dim,
+          s3_client = s3_client,
+          s3_bucket = bucket,
+          chunk_positions = chunk_positions
+        )
+      }
+    ),
+    warning = function(w) {
+      warnings <<- c(warnings, list(w)) # nolint: undesirable_operator_linter.
+      invokeRestart("muffleWarning")
+    }
   )
+  for (w in unique(warnings)) {
+    warning(w)
+  }
 
   ## predefine our array to be populated from the read chunks
   output <- array(metadata$fill_value, dim = lengths(index))
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {
-    index_in_result <- chunk_selections[[i]][[2]]
-    cmd <- .create_replace_call(
-      x_name = "output",
-      idx_name = "index_in_result",
-      idx_length = length(index_in_result),
-      y_name = "chunk_selections[[i]][[1]]"
-    )
-    eval(parse(text = cmd))
-    warn <- max(warn, chunk_selections[[i]]$warning[1])
+    index_in_result <- chunk_selections[[i]][[2L]]
+    rlang::inject(output[!!!index_in_result] <- chunk_selections[[i]][[1L]]) # nolint: implicit_assignment_linter.
+    if (
+      is.list(metadata$data_type) &&
+        metadata$data_type$name %in% c("struct", "structured")
+    ) {
+      # Assigning a list drops the dim attribute so we have to continuously add it again
+      dim(output) <- lengths(index)
+    }
   }
-  return(list(output = output, warn = warn))
+  return(output)
 }
 
-find_chunks_needed <- function(metadata, index) {
-  index_chunks <- list()
-  for (i in seq_along(index)) {
-    index_chunks[[i]] <- unique((index[[i]] - 1) %/% metadata$chunks[[i]])
+.extract_elements <- function(
+  chunk_name,
+  current_chunk_path,
+  metadata,
+  chunk_dim,
+  s3_client,
+  s3_bucket,
+  chunk_positions
+) {
+  ## find elements to select from the chunk and what in the output we replace
+  chunk_info <- chunk_positions[[chunk_name]]
+  index_in_result <- chunk_info$positions
+  index_in_chunk <- chunk_info$index_in_chunk
+
+  # When we get here, we know the chunk exists, so we can read it without worrying about
+  # handling missing.
+  if (nzchar(Sys.getenv("RARR_DEBUG"))) {
+    message(current_chunk_path)
   }
 
-  required_chunks <- expand.grid(index_chunks)
-  return(required_chunks)
-}
+  if (is.null(s3_client)) {
+    size <- file.size(current_chunk_path)
+    raw_chunk <- readBin(con = current_chunk_path, what = "raw", n = size)
+  } else {
+    raw_chunk <- s3_client$get_object(
+      Bucket = s3_bucket,
+      Key = current_chunk_path
+    )$Body
+  }
 
-#' Determine the size of chunk in bytes after decompression
-#'
-#' @param datatype A list of details for the array datatype.  Expected to be
-#' produced by [.parse_datatype()].
-#' @param dimensions A list containing the dimensions of the chunk.  Expected
-#' to be found in a list produced by [.read_array_metadata()].
-#'
-#' @returns An integer giving the size of the chunk in bytes
-#'
-#' @keywords internal
-get_decompressed_chunk_size <- function(datatype, dimensions) {
-  buffer_size <- prod(unlist(dimensions), datatype$nbytes)
-  return(as.integer(buffer_size))
+  ## read this chunk
+  chunk <- read_chunk(
+    chunk_bytes = raw_chunk,
+    chunk_dim = chunk_dim,
+    decoders = metadata$configured_decoders,
+    datatype = metadata$datatype,
+    fill_value = metadata$fill_value
+  )
+
+  ## extract the required elements from the chunk
+  # FIXME: optimization: skip this step if we are taking everything in the chunk
+  chunk <- .extract_chunk(chunk, index_in_chunk)
+  return(list(chunk, index_in_result))
 }
 
 #' Read a single Zarr chunk
 #'
-#' @param zarr_array_path A character vector of length 1, giving the path to the
-#'   Zarr array
-#' @param chunk_id A numeric vector or single data.frame row with length equal
-#'   to the number of dimensions of a chunk.
-#' @param metadata List produced by `.read_array_metadata()` holding the contents
-#'   of the `.zarray` file. If missing this function will be called
-#'   automatically, but it is probably preferable to pass the meta data rather
-#'   than read it repeatedly for every chunk.
-#' @param s3_client Object created by [paws.storage::s3()]. Only required for a
-#'   file on S3. Leave as `NULL` for a file on local storage.
-#' @param alt_chunk_dim The dimensions of the array that should be created from
-#'   this chunk.  Normally this will be the same as the chunk shape in
-#'   `metadata`, but when dealing with edge chunks, which may overlap the true
-#'   extent of the array the returned array should be smaller than the chunk
-#'   shape.
+#' @param chunk_bytes A raw vector containing the bytes of the chunk to be read.
+#' @param chunk_dim The dimensions of the chunk to be read. A numeric vector.
+#' @param decoders A list of configured decoders for the array.
+#' @param datatype A list describing the datatype of the array.
 #'
-#' @returns A list of length 2.  The entries should be names "chunk_data" and
-#'   "warning". The first is an array containing the decompressed chunk values,
-#'   the second is an integer indicating whether there were any overflow
-#'   warnings generated will reading the chunk into an R datatype.
+#' @returns An array containing the decompressed chunk values.
 #'
 #' @keywords internal
+#' @noRd
 read_chunk <- function(
-  zarr_array_path,
-  chunk_id,
-  metadata,
-  s3_client = NULL,
-  alt_chunk_dim = NULL
+  chunk_bytes,
+  chunk_dim,
+  decoders,
+  datatype,
+  fill_value
 ) {
-  if (missing(metadata)) {
-    metadata <- .read_array_metadata(
-      zarr_array_path,
-      ".zarray",
-      s3_client = s3_client
+  # Bytes -> Bytes codecs
+  for (codec in decoders[["bytes_bytes"]]) {
+    chunk_bytes <- codec(
+      bytes = chunk_bytes
     )
   }
 
-  dim_separator <- metadata$dimension_separator %||% "."
-  chunk_id <- paste(chunk_id, collapse = dim_separator)
-
-  chunk_file <- paste0(zarr_array_path, chunk_id)
-
-  if (nzchar(Sys.getenv("RARR_DEBUG"))) {
-    message(chunk_file)
-  }
-
-  if (is.null(s3_client)) {
-    size <- file.size(chunk_file)
-    if (file.exists(chunk_file)) {
-      compressed_chunk <- readBin(con = chunk_file, what = "raw", n = size)
-    } else {
-      compressed_chunk <- NULL
-    }
-  } else {
-    parsed_url <- parse_s3_path(chunk_file)
-
-    if (.s3_object_exists(s3_client, parsed_url$bucket, parsed_url$object)) {
-      compressed_chunk <- s3_client$get_object(
-        Bucket = parsed_url$bucket,
-        Key = parsed_url$object
-      )$Body
-    } else {
-      compressed_chunk <- NULL
-    }
-  }
-
-  ## either decompress and format the chunk data
-  ## or create a new chunk based on the fill value
-  if (!is.null(compressed_chunk)) {
-    decompressed_chunk <- .decompress_chunk(compressed_chunk, metadata)
-    decompressed_chunk <- codec_endian_decode(
-      decompressed_chunk,
-      metadata$datatype$endian,
-      ifelse(
-        # For unicode, nbytes actually is sizeof(int) * nchar
-        metadata$datatype$base_type == "unicode",
-        4L,
-        metadata$datatype$nbytes
-      )
-    )
-    converted_chunk <- .format_chunk(
-      decompressed_chunk,
-      metadata,
-      alt_chunk_dim
-    )
-    # FIXME: run array -> array codecs here
-  } else {
-    converted_chunk <- list(
-      "chunk_data" = array(metadata$fill_value, dim = unlist(metadata$chunks)),
-      "warning" = 0L
-    )
-  }
-
-  return(converted_chunk)
-}
-
-#' Format the decompressed chunk as an array of the correct type
-#'
-#' When a chunk is decompressed it is returned as a vector of raw bytes.  This
-#' function uses the array metadata to select how to convert the bytes into the
-#' final datatype and then converts the resulting output into an array of the
-#' appropriate dimensions, including re-ordering if the original data is in
-#' row-major order.
-#'
-#' @param decompressed_chunk Raw vector holding the decompressed bytes for this
-#'   chunk.
-#' @param metadata List produced by `.read_array_metadata()` holding the contents
-#'   of the `.zarray` file.
-#' @param alt_chunk_dim The dimensions of the array that should be created from
-#'   this chunk.  Normally this will be the same as the chunk shape in
-#'   `metadata`, but when dealing with edge chunks, which may overlap the true
-#'   extent of the array, the returned array should be smaller than the chunk
-#'   shape.
-#'
-#' @returns A list of length 2.  The first element is the formatted chunk data.
-#'   The second is an integer of length 1, indicating if warnings were
-#'   encountered when converting types
-#'
-#'   If "chunk_data" is larger than the space remaining in destination array
-#'   i.e. it contains the overflowing elements, these will be trimmed when the
-#'   chunk is returned to `read_data()`
-#'
-#' @keywords internal
-.format_chunk <- function(decompressed_chunk, metadata, alt_chunk_dim) {
-  datatype <- metadata$datatype
-
-  ## It doesn't seem clear if the on disk chunk will contain the overflow
-  ## values or not, so we try both approaches.
-  actual_chunk_size <- length(decompressed_chunk) / datatype$nbytes
-  if (
-    (datatype$base_type == "py_object") ||
-      (actual_chunk_size == prod(unlist(metadata$chunks)))
-  ) {
-    chunk_dim <- unlist(metadata$chunks)
-  } else if (actual_chunk_size == prod(alt_chunk_dim)) {
-    chunk_dim <- alt_chunk_dim
-  } else {
-    stop("Decompressed data doesn't match expected chunk size.")
-  }
-
-  if (datatype$base_type == "string") {
-    converted_chunk <- .format_string(decompressed_chunk, datatype)
-    dim(converted_chunk[[1]]) <- chunk_dim
-  } else if (datatype$base_type == "unicode") {
-    converted_chunk <- .format_unicode(decompressed_chunk, datatype)
-    dim(converted_chunk[[1]]) <- chunk_dim
-  } else if (datatype$base_type == "py_object") {
-    converted_chunk <- .format_object(decompressed_chunk, metadata, datatype)
-    dim(converted_chunk[[1]]) <- chunk_dim
-  } else {
-    output_type <- switch(
-      datatype$base_type,
-      "bool" = 0L,
-      "int" = 1L,
-      "uint" = 1L,
-      "float" = 2L
-    )
-    converted_chunk <- .Call(
-      "type_convert_chunk",
-      decompressed_chunk,
-      output_type,
-      datatype$nbytes,
-      datatype$is_signed,
+  # Bytes -> Array codecs
+  for (codec in decoders[["array_bytes"]]) {
+    converted_chunk <- codec(
+      chunk_bytes,
       chunk_dim,
-      PACKAGE = "Rarr"
+      datatype,
+      fill_value
     )
   }
-
-  if (metadata$order == "C") {
-    converted_chunk[[1]] <- codec_transpose_encode(
-      converted_chunk[[1]],
-      rev(seq_along(chunk_dim))
-    )
+  # Array -> Array codecs
+  for (codec in decoders[["array_array"]]) {
+    converted_chunk <- do.call(codec, list(converted_chunk))
   }
 
-  names(converted_chunk) <- c("chunk_data", "warning")
   return(converted_chunk)
-}
-
-#' Decompress a chunk in memory
-#'
-#' R has internal decompression tools for zlib, bz2 and lzma compression.  We
-#' use external libraries bundled with the package for blosc and lz4
-#' decompression.
-#'
-#' @param compressed_chunk Raw vector holding the compressed bytes for this
-#'   chunk.
-#' @param metadata List produced by `.read_array_metadata()` with the contents of
-#'   the `.zarray` file.
-#'
-#' @returns An array with the number of dimensions specified in the Zarr
-#'   metadata.  In most cases it will have the same size as the Zarr chunk,
-#'   however in the case of edge chunks, which overlap the extent of the array,
-#'   the returned chunk will be smaller.
-#'
-#' @importFrom utils tail
-#' @keywords internal
-.decompress_chunk <- function(compressed_chunk, metadata) {
-  decompressor <- metadata$compressor$id
-  datatype <- metadata$datatype
-  buffer_size <- get_decompressed_chunk_size(
-    datatype,
-    dimensions = metadata$chunks
-  )
-
-  if (is.null(decompressor)) {
-    decompressed_chunk <- compressed_chunk
-  } else if (decompressor == "blosc") {
-    decompressed_chunk <- .Call(
-      "decompress_chunk_BLOSC",
-      compressed_chunk,
-      PACKAGE = "Rarr"
-    )
-  } else if (decompressor %in% c("zlib", "gzip")) {
-    decompressed_chunk <- memDecompress(
-      from = compressed_chunk,
-      type = "gzip",
-      asChar = FALSE
-    )
-  } else if (decompressor == "bz2") {
-    decompressed_chunk <- memDecompress(
-      from = compressed_chunk,
-      type = "bzip2",
-      asChar = FALSE
-    )
-  } else if (decompressor == "lzma") {
-    decompressed_chunk <- memDecompress(
-      from = compressed_chunk,
-      type = "xz",
-      asChar = FALSE
-    )
-  } else if (decompressor == "lz4") {
-    ## numpy codecs stores the original size of the buffer in the first 4 bytes
-    decompressed_chunk <- .Call(
-      "decompress_chunk_LZ4",
-      tail(x = compressed_chunk, n = -4L),
-      buffer_size,
-      PACKAGE = "Rarr"
-    )
-  } else if (decompressor == "zstd") {
-    decompressed_chunk <- .Call(
-      "decompress_chunk_ZSTD",
-      compressed_chunk,
-      buffer_size,
-      PACKAGE = "Rarr"
-    )
-  } else {
-    stop("Unsupported compression tool")
-  }
-
-  return(decompressed_chunk)
 }

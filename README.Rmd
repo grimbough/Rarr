@@ -1,6 +1,5 @@
 ---
 title: "Zarr arrays with Rarr"
-author: "Mike L. Smith"
 output:
   github_document:
     toc: true
@@ -10,7 +9,8 @@ output:
 <!-- badges: start -->
 | GitHub Actions | Bioconductor Build Sysytem | Test Coverage |
 |:--------------:|:-------------:|:-----:|
-| [![Package Checks](https://github.com/grimbough/Rarr/actions/workflows/main.yml/badge.svg)](https://github.com/grimbough/Rarr/actions/workflows/main.yml) | [![Bioconductor Status](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/) | [![Codecov test coverage](https://codecov.io/gh/Huber-group-EMBL/Rarr/graph/badge.svg)](https://app.codecov.io/gh/Huber-group-EMBL/Rarr) |
+| [![R-CMD-check](https://github.com/Huber-group-EMBL/Rarr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Huber-group-EMBL/Rarr/actions/workflows/R-CMD-check.yaml) | [![Bioconductor Status](https://bioconductor.org/shields/build/devel/bioc/Rarr.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/Rarr/) | [![Codecov test coverage](https://codecov.io/gh/Huber-group-EMBL/Rarr/graph/badge.svg)](https://app.codecov.io/gh/Huber-group-EMBL/Rarr) |
+
 <!-- badges: end -->
 
 ```{r, config, echo = FALSE}
@@ -33,9 +33,6 @@ the Zarr arrays. Additional compression libraries (e.g. blosc) are bundled with
 
 ## Limitations with **Rarr**
 
-**Rarr currently only works with [Zarr specification version 2](https://zarr-specs.readthedocs.io/en/latest/v2/v2.0.html).
-Support for [version 3](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html) is actively being worked on.**
-
 If you know about Zarr arrays already, you'll probably be aware they can be
 stored in hierarchical groups, where additional meta data can explain the
 relationship between the arrays.  Currently, **Rarr** is not designed to be
@@ -45,8 +42,6 @@ arrays can be read individually by providing the path to them directly.
 Currently, there are also limitations on the Zarr datatypes that can be accessed
 using **Rarr**.  For now most numeric types can be read into R, although in some
 instances e.g. 64-bit integers there is potential for loss of information.
-Writing is more limited with support only for datatypes that are supported
-natively in R and only using the column-first representation.
 
 See the dedicated ["Supported Zarr features" vignette](https://huber-group-embl.github.io/Rarr/articles/features.html) for more information.
 

@@ -42,3 +42,25 @@ test_that("float16 zarr arrays can be read correctly", {
 
   expect_identical(column_major[3, 2:4, ], c(NaN, Inf, -Inf))
 })
+
+test_that("v2 and v3 return identical results", {
+  zarr_v2 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "float16.zarr",
+    package = "Rarr"
+  )
+  zarr_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "float16_v3.zarr",
+    package = "Rarr"
+  )
+
+  expect_no_condition(f16_v2 <- read_zarr_array(zarr_v2))
+  expect_no_condition(f16_v3 <- read_zarr_array(zarr_v3))
+
+  expect_identical(f16_v2, f16_v3)
+})

@@ -39,3 +39,46 @@ test_that("uint64 zarr arrays produce NA for out-of-range values", {
   )
   expect_true(all(is.na(column_major)))
 })
+
+test_that("v2 and v3 return identical results", {
+  zarr_v2 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "uint64.zarr",
+    package = "Rarr"
+  )
+  zarr_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "uint64_v3.zarr",
+    package = "Rarr"
+  )
+
+  u64_v2 <- read_zarr_array(zarr_v2)
+  u64_v3 <- read_zarr_array(zarr_v3)
+
+  expect_identical(u64_v2, u64_v3)
+})
+
+test_that("uint64 zarr array can be written", {
+  uint64_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_uint64_array <- array(1:24, dim = c(4, 3, 2))
+
+  write_zarr_array(
+    content_uint64_array,
+    uint64_zarr,
+    data_type = "<u8",
+    chunk_dim = c(2, 2, 1),
+    compressor = NULL
+  )
+
+  roundtrip_uint64_array <- read_zarr_array(uint64_zarr)
+
+  expect_identical(
+    content_uint64_array,
+    roundtrip_uint64_array
+  )
+})

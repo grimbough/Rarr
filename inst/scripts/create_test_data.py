@@ -72,19 +72,21 @@ z[:, 0, 0] = -1
 
 #######################
 
-z = zarr.open('/data/column-first/int64.zarr', mode='w', shape=(30, 20, 10),
-               chunks=(10, 10, 5), dtype='i8', order="C")
+z = zarr.open('inst/extdata/zarr_examples/column-first/int64.zarr', mode='w', shape=(30, 20, 10),
+               chunks=(10, 10, 5), dtype='i8', order="C", zarr_format=2)
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 1
 z[29,19,9] = pow(2,32)
+z[28,19,9] = pow(2,32)
 z[29,19,8] = -pow(2,32)
 
 
-z = zarr.open('/data/row-first/int64.zarr', mode='w', shape=(30, 20, 10),
-               chunks=(10, 10, 5), dtype='i8', order="F")
+z = zarr.open('inst/extdata/zarr_examples/row-first/int64.zarr', mode='w', shape=(30, 20, 10),
+               chunks=(10, 10, 5), dtype='i8', order="F", zarr_format=2)
 z[0, :, 0] = np.arange(start=1, stop=21)
 z[:, 0, 0] = 1
 z[29,19,9] = pow(2,32)
+z[28,19,9] = pow(2,32)
 z[29,19,8] = -pow(2,32)
 
 #######################
@@ -210,17 +212,15 @@ greetings = ['¡Hola mundo!', 'Hej Världen!', 'Servus Woid!', 'Hei maailma!',
              'こんにちは世界', '世界，你好！', 'Helló, világ!', 'Zdravo svete!',
              'เฮลโลเวิลด์']
              
-z = zarr.open('/data/column-first/Unicode.zarr', mode='w', shape=(12, 12),
-              chunks=(6, 6), order="F", fill_value = "",
-              dtype='U20',
-              compressor = zarr.Zlib(level = 6))
+z = zarr.open('inst/extdata/zarr_examples/column-first/Unicode.zarr', mode='w', shape=(12, 12),
+              chunks=(6, 6), order="C", fill_value = "",
+              dtype='U20', zarr_format=2)
 z[:,0] = greetings
 z[0,:] = greetings
 
-z = zarr.open('/data/column-first/vlenUTF8.zarr', mode='w', shape=(12, 12),
-              chunks=(6, 6), order="F", fill_value = "",
-              dtype=str,
-              compressor = zarr.Zlib())
+z = zarr.open('inst/extdata/zarr_examples/column-first/vlenUTF8.zarr', mode='w', shape=(12, 12),
+              chunks=(6, 6), order="C", fill_value = "",
+              dtype=str, zarr_format=2)
 z[:,0] = greetings
 z[0,:] = greetings
 

@@ -4,7 +4,12 @@
 \alias{write_zarr_attributes}
 \title{Read the .zattrs file associated with a Zarr array or group}
 \usage{
-write_zarr_attributes(zarr_path, new.zattrs = list(), overwrite = TRUE)
+write_zarr_attributes(
+  zarr_path,
+  new.zattrs = list(),
+  overwrite = TRUE,
+  zarr_version = if (has_metadata_v2) 2L else 3L
+)
 }
 \arguments{
 \item{zarr_path}{A character vector of length 1. This provides the
@@ -13,6 +18,15 @@ path to a Zarr array or group.}
 \item{new.zattrs}{a list inserted to .zattrs at the \code{path}.}
 
 \item{overwrite}{if \code{TRUE} (the default), existing .zattrs elements will be overwritten by \code{new.zattrs}.}
+
+\item{zarr_version}{The version of the Zarr specification to use. If a
+metadata file already exists, the version will be inferred from the file.
+Otherwise, the default is \code{3}.}
+}
+\value{
+Invisibly, the updated attributes as a named list.
+This is equivalent to (but faster than) using \code{read_zarr_attributes()} after writing.
+If no attributes were present before, this is identical to \code{new.zattrs}.
 }
 \description{
 Read the .zattrs file associated with a Zarr array or group

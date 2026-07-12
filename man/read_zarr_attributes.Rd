@@ -4,7 +4,11 @@
 \alias{read_zarr_attributes}
 \title{Read the attributes associated with a Zarr array or group}
 \usage{
-read_zarr_attributes(zarr_path, s3_client = NULL)
+read_zarr_attributes(
+  zarr_path,
+  s3_client = NULL,
+  missing = c("ignore", "warning", "error")
+)
 }
 \arguments{
 \item{zarr_path}{A character vector of length 1.  This provides the
@@ -13,6 +17,14 @@ system or on S3 storage.}
 
 \item{s3_client}{A list representing an S3 client.  This should be produced
 by \code{\link[paws.storage:s3]{paws.storage::s3()}}.}
+
+\item{missing}{A character vector of length 1. This determines the behaviour
+when no file containing attributes is found. This can be one of:
+\itemize{
+\item "ignore" (the default): an empty list is returned silently
+\item "warning": a warning is issued and an empty list is returned.
+\item "error": an error is raised.
+}}
 }
 \value{
 A list containing the attributes. If the file containing attributes
@@ -21,4 +33,10 @@ are provided, an empty list is returned.
 }
 \description{
 Read the attributes associated with a Zarr array or group
+}
+\examples{
+read_zarr_attributes(
+  "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.4/idr0048A/9846152.zarr"
+)
+
 }

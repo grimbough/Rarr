@@ -57,3 +57,25 @@ test_that("float32 zarr arrays can be written", {
     tolerance = 1e-7
   )
 })
+
+test_that("v2 and v3 return identical results", {
+  zarr_v2 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "float32.zarr",
+    package = "Rarr"
+  )
+  zarr_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "float32_v3.zarr",
+    package = "Rarr"
+  )
+
+  expect_no_condition(f32_v2 <- read_zarr_array(zarr_v2))
+  expect_no_condition(f32_v3 <- read_zarr_array(zarr_v3))
+
+  expect_identical(f32_v2, f32_v3)
+})

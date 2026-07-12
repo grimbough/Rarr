@@ -2,9 +2,9 @@
 % Please edit documentation in R/read_metadata.R
 \name{zarr_overview}
 \alias{zarr_overview}
-\title{Print a summary of a Zarr array}
+\title{Print a summary of a Zarr array or group}
 \usage{
-zarr_overview(zarr_array_path, s3_client, as_data_frame = FALSE)
+zarr_overview(zarr_array_path, s3_client = NULL, as_data_frame = FALSE)
 }
 \arguments{
 \item{zarr_array_path}{A character vector of length 1.  This provides the

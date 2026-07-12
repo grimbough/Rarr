@@ -1,0 +1,70 @@
+{
+  "shape": [
+    100
+  ],
+  "data_type": {
+    "name": "structured",
+    "configuration": {
+      "fields": [
+        [
+          "0",
+          "float32"
+        ],
+        [
+          "1",
+          "float32"
+        ],
+        [
+          "2",
+          "float32"
+        ],
+        [
+          "3",
+          "float32"
+        ],
+        [
+          "4",
+          "float32"
+        ],
+        [
+          "5",
+          "float32"
+        ]
+      ]
+    }
+  },
+  "chunk_grid": {
+    "name": "regular",
+    "configuration": {
+      "chunk_shape": [
+        100
+      ]
+    }
+  },
+  "chunk_key_encoding": {
+    "name": "default",
+    "configuration": {
+      "separator": "/"
+    }
+  },
+  "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "codecs": [
+    {
+      "name": "bytes"
+    },
+    {
+      "name": "zstd",
+      "configuration": {
+        "level": 0,
+        "checksum": false
+      }
+    }
+  ],
+  "attributes": {
+    "encoding-type": "rec-array",
+    "encoding-version": "0.2.0"
+  },
+  "zarr_format": 3,
+  "node_type": "array",
+  "storage_transformers": []
+}

@@ -1,4 +1,137 @@
-# Rarr 1.11
+# Rarr 2.1
+
+## Breaking changes
+
+* (Minor:) `s3_client =` argument default value in `read_zarr_array()`, 
+  `zarr_overview()`, etc. is now set to `NULL` instead of missing. In practice,
+  we expect this grant to be invisible to most users but it makes it easier
+  to pass down missing values in Rarr reverse dependencies.
+* The name and configuration options for the fixed-length-ascii (`|S` in Zarr
+  v2) and fixed-length-ucs4 (`<U` or `>U` in Zarr v2) data types have been 
+  updated to `null_terminated_bytes` and `fixed_length_utf32` respectively to
+  match their newly specified format in Zarr v3.
+* Structured data types (record arrays) now always return lists as the internal
+  elements, instead of vectors as previously. This allows structured data types
+  to contain different data types in a single element.
+* Unless `data_type` is specified explicitly, integers are now written using 
+  the smallest possible bitsize based on the array `x` range in 
+  `write_zarr_array()`.
+
+## New features
+
+* [Zarr v3 struct datatype](https://github.com/zarr-developers/zarr-extensions/tree/main/data-types/struct)
+  (equivalent to Zarr v2 structured datatype) is now supported. 
+  [Deprecated Zarr v3 structured datatype](https://github.com/zarr-developers/zarr-extensions/tree/main/data-types/structured) is implemented as well, but only for reading, as per specification for a deprecated type.
+* The new `zarr_consolidate_metadata()` function consolidates metadata of all
+  elements under a given group in its associated `.zmetadata` (for Zarr v2 
+  trees) or `zarr.json` (for Zarr v3 trees).
+  Creating this consolidated metadata has two benefits:
+  - better performance: the metadata of all elements under a group can be 
+    accessed more efficiently since a single file needs to be read instead of
+    multiple smaller files.
+  - easier direct access of all the elements in a remote S3 store, even though
+    Rarr doesn't have yet store-agnostic verbs to list, read, etc. elements.
+* The `sharding_indexed` codec is now supported to read sharded Zarr arrays.
+* `zarr_overview()` now returns a new logical field `attributes` indicating
+  whether each array has associated attributes.
+
+## Minor improvements
+
+* `normalize_array_path()` has been slightly optimized for speed. It is not
+  likely to have a significant impact if you reading a single large array but
+  can be noticed if you reading many attributes and small arrays (as in some
+  anndata objects).
+* Empty chunks, i.e., chunks were all elements are equal to the fill value,
+  are no longer written by `write_zarr_array()`, saving disk space, and 
+  improving performance when reading it back.
+* More blosc options (`clevel`, `shuffle`, etc.) are exposed via `use_blosc()`.
+* Reading VLen-UTF8 arrays (used by default for `string` in v3) in now much 
+  faster after rewriting the vlen-utf8 codec in C.
+* Unsupported data types are now caught explicitly and early early in the 
+  reading pipeline rather than potentially failing or returning incorrect
+  output later.
+* Chunks larger than the whole array in one or multiple dimensions are now
+  permitted, based on a request by Artür Manukyan.
+* 0 is now a valid, and the default, compression level for Zstd. In practice,
+  it doesn't have any effect because level 0 currently corresponds to level 3.
+* Performance has been improved for writing and in the case where the `index`
+  argument in `read_zarr_array()` is a continuous sequence. One such example
+  is when the entire array is read (`index` argument missing).
+
+
+## Bug fixes
+
+* Using blosc compression via variable-length types such as when using the 
+  vlen-utf8 filter / codec, is no longer causing R to crash.
+* `zarr_overview()` and `read_zarr_array()` on Zarr v3 files hosted on S3. 
+  Thanks to a report and a patch by Artür Manukyan.
+* `create_empty_zarr_array()` and by extension `write_zarr_array()` now use
+  the correct data type (`bool`) in metadata for boolean arrays. Thanks to
+  a report by Artür Manukyan.
+
+## Internal changes
+
+* A refactor reinforced shared the use of internal functions handling indices
+  across `read_zarr_array()`, `write_zarr_array()`, and `update_zarr_array()`.
+  Some redundant internal functions have been merged. This reduced the 
+  cyclomatic complexity in every function back to <15 and it opens the door to
+  further optimizations which now only need to take place in a single function.
+* Some code duplication has been removed by moving metadata file existence in
+  the lower-level shared utilities `.read_array_metadata()` and 
+  `.read_consolidated_metadata()`. While this is still discouraged, this also
+  facilitates re-use of the internal functions in other packages 
+  (e.g., ZarrArray).
+* Parsing Zarr v2 datatypes and the bytes codec decoding operation are now 
+  handled internally by the new 
+  [grumpy CRAN package](https://cran.r-project.org/package=grumpy).
+
+# Rarr 1.99
+
+## Breaking changes
+
+* The DelayedArray backend (`writeZarrArray()` and `ZarrArray()` functions)
+  has been migrated to a separate, dedicated package.
+  This reduces the number of dependencies from 37 to 24.
+  This also greatly improves performance in for the standard case (when the
+  DelayedArray backend is not used).
+* `write_zarr_array()` now writes Zarr v3 by default. Writing Zarr v2 is still
+  possible by explicitly setting the argument `zarr_version = 2`.
+
+## New features
+
+* Zarr v3 arrays with data types and codecs that already existed in v2 
+  can now be read via `read_zarr_array()`, and written via `write_zarr_array()`.
+* Zarr v3 consolidated metadata is now returned by `zarr_overview()`, the
+  same way it was already previously done for v2 consolidated metadata.
+* More data types are available when writing Zarr arrays:
+  * boolean / logical
+  * int8
+  * int16
+  * int64 (up to values that can be represented as R integers)
+  * uint8
+  * uint16
+  * uint32 (up to values that can be represented as R integers)
+  * uint64 (up to values that can be represented as R integers)
+  * float32 / single
+* Scalar arrays (i.e., arrays with zero dimensions) can now be read.
+  Thanks to Artür Manukyan for the bug report.
+* Zarr attributes can now be read by passing an s3 URL directly as
+  the first argument of `read_zarr_attributes()`. This makes 
+  `read_zarr_attributes()` consistent with `read_zarr_array()` and
+  `zarr_overview()`.
+* "Simple" structured data types (i.e., only one level of nesting and 
+  no arrays) can now be read from Zarr v2 arrays.
+* `simplifyVector = FALSE` is added to `fromJSON` in `read_zarr_attributes()`, 
+  thus attributes of both local and s3 zarr stores are read identically.
+* The `dimension_names` optional field is support in both v2 (not strictly
+  part of the spec) and v3. It is mapped to `names(dimnames(.))` in R.
+* `NA_real_` is now an allowed fill value in `write_zarr_array()` when
+  writing numeric arrays, following a request from Hervé Pagès.
+* Fill values stored as their byte representation are now understood
+  when reading Zarr arrays.
+* `write_zarr_array()` now supports writing `NA_character_`, which means
+  it is possible to preserve `NA`s when roundtriping an R character 
+  array, based on a request from Hervé Pagès.
 
 ## Minor improvements
 
@@ -6,11 +139,21 @@
   in Rarr, available at
   <https://huber-group-embl.github.io/Rarr/articles/features.html>.
   This makes it more easily discoverable on the Bioconductor landing page.
-* More data types are available when writing Zarr arrays:
-  * boolean / logical
-  * int8
-  * int16
-  * float32 / single
+* Rarr initializes empty/missing chunks only once per read operation, which
+  significantly improves performance when reading arrays with many missing chunks.
+* Reading fixed-length string and unicode arrays is now ~20% faster.
+* The `shape` and `chunks` fields in v2 metadata are now always encoded as
+  JSON arrays, even when they contain a single element. This makes Rarr more 
+  compatible with other Zarr implementations. Thanks to Artür Manukyan for the
+  bug report and pull request.
+* Empty zarr arrays (i.e., arrays with `shape` and `chunks` equal zero)
+  can now be written.
+* Compression for writing Zarr arrays now default to zstd rather than zlib.
+  zstd achieves similar or better compression levels while being much faster
+  at compressing (= writing Zarr arrays) and decompressing (= reading Zarr 
+  arrays). This matches the default used by Zarr Python implementation.
+* `write_zarr_array()` now fails early with an explicit error message when
+  `x` is not an array.
 
 ## Bug fixes
 
@@ -21,6 +164,9 @@
 * `zarr_overview()` no longer fails on consolidated metadata containing uncompressed
   arrays. This was introduced in https://github.com/Huber-group-EMBL/Rarr/pull/45.
   Thanks to Sharla Gelfand for reporting the issue and providing test data. 
+* the `fill_value` is now correctly interpreted when reading Zarr v2 string or 
+  unicode arrays. This is visible for example when trying to read missing chunks
+  from such arrays. Thanks to Artür Manukyan for the bug report.
 
 ## Internal changes
 
@@ -33,6 +179,11 @@
 * Bundled libraries have been updated:
   * blosc 1.20.1 -> 1.21.6
   * snappy 1.1.1 -> 1.2.2
+  * zstd 1.5.5 -> 1.5.7
+  * lz4 1.9.2 -> 1.10.0
+* Resizable vector in C code for compression now uses the official exported R C
+  API, instead of internal R functions.
+* The `const` qualifier is used where appropriate in the C code.
 
 # Rarr 1.9
 

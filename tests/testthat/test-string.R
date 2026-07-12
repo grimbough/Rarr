@@ -42,7 +42,7 @@ test_that("string zarr arrays can be read correctly", {
     res <- write_zarr_array(
       x = column_major,
       zarr_array_path = path,
-      chunk_dim = c(2, 5, 1)
+      chunk_dim = c(5, 2, 1)
     )
   )
   expect_identical(read_zarr_array(path), column_major)
@@ -53,7 +53,7 @@ test_that("string zarr arrays can be read correctly", {
     res <- write_zarr_array(
       x = column_major,
       zarr_array_path = path,
-      chunk_dim = c(2, 5, 1),
+      chunk_dim = c(5, 2, 1),
       nchar = 1
     )
   )
@@ -65,7 +65,7 @@ test_that("string zarr arrays can be read correctly", {
     create_empty_zarr_array(
       zarr_array_path = path,
       dim = dim(column_major),
-      chunk_dim = c(2, 5, 1),
+      chunk_dim = c(5, 2, 1),
       data_type = storage.mode(column_major)
     )
   )
@@ -129,4 +129,93 @@ test_that("string zarr arrays can be read correctly", {
   x[, 1] <- greetings
   update_zarr_array(zarr_array_path = path, x, index = list(1:12, 1:12))
   expect_identical(read_zarr_array(path), x)
+})
+
+test_that("v2 and v3 return identical results", {
+  zarr_v2 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "string.zarr",
+    package = "Rarr"
+  )
+  zarr_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "string_v3.zarr",
+    package = "Rarr"
+  )
+
+  expect_no_condition(s_v2 <- read_zarr_array(zarr_v2))
+  expect_no_condition(s_v3 <- read_zarr_array(zarr_v3))
+
+  expect_identical(s_v2, s_v3)
+
+  zarr_vlen_utf8_v2 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "vlenUTF8.zarr",
+    package = "Rarr"
+  )
+  zarr_vlen_utf8_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "vlenUTF8_v3.zarr",
+    package = "Rarr"
+  )
+  expect_no_condition(vlen_utf8_v2 <- read_zarr_array(zarr_vlen_utf8_v2))
+  expect_no_condition(vlen_utf8_v3 <- read_zarr_array(zarr_vlen_utf8_v3))
+
+  expect_identical(vlen_utf8_v2, vlen_utf8_v3)
+})
+
+test_that("roundtrip unicode", {
+  path <- withr::local_tempfile(fileext = ".zarr")
+  greetings <- array(
+    c(
+      '¡Hola mundo!',
+      'Hej Världen!',
+      'Servus Woid!',
+      'Hei maailma!',
+      'Xin chào thế giới',
+      'Njatjeta Botë!',
+      'Γεια σου κόσμε!',
+      'こんにちは世界',
+      '世界，你好！',
+      'Helló, világ!',
+      'Zdravo svete!',
+      'เฮลโลเวิลด์'
+    ),
+    dim = c(12, 1)
+  )
+  write_zarr_array(
+    greetings,
+    path,
+    chunk_dim = c(6, 1),
+    data_type = "<U"
+  )
+  expect_identical(
+    read_zarr_array(path),
+    greetings
+  )
+})
+
+test_that("fill_value is converted to string", {
+  # https://github.com/Huber-group-EMBL/Rarr/issues/94
+  path <- withr::local_tempfile(fileext = ".zarr")
+  expect_silent(
+    create_empty_zarr_array(
+      zarr_array_path = path,
+      dim = c(4, 4),
+      chunk_dim = c(2, 2),
+      data_type = "character",
+      fill_value = 0,
+      nchar = 10,
+      zarr_version = 2
+    )
+  )
+  expect_identical(read_zarr_array(path), matrix("0", nrow = 4, ncol = 4))
 })

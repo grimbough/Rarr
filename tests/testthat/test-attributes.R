@@ -5,7 +5,8 @@ test_that("zarr attributes can be written and read", {
   res <- write_zarr_array(
     x = x,
     zarr_array_path = path,
-    chunk_dim = c(2, 5)
+    chunk_dim = c(2, 5),
+    zarr_version = 2
   )
 
   # add .zattrs to /
@@ -149,5 +150,13 @@ test_that("read_zarr_attributes errors clearly for invalid mixed arrays", {
 
   expect_snapshot_error(
     read_zarr_attributes(invalid_zarr)
+  )
+})
+
+test_that("read_zarr_attributes from s3", {
+  expect_snapshot(
+    read_zarr_attributes(
+      "https://uk1s3.embassy.ebi.ac.uk/idr/zarr/v0.3/9836842.zarr/"
+    )
   )
 })

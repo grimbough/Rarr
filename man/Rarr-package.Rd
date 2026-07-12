@@ -4,9 +4,9 @@
 \name{Rarr-package}
 \alias{Rarr}
 \alias{Rarr-package}
-\title{Rarr: Read Zarr Files in R}
+\title{Rarr: A Simple and Performant Native R Reader & Writer for Zarr Arrays}
 \description{
-The Zarr specification defines a format for chunked, compressed, N-dimensional arrays. It's design allows efficient access to subsets of the stored array, and supports both local and cloud storage systems. Rarr aims to implement this specification in R with minimal reliance on an external tools or libraries.
+The Zarr specification defines a format for chunked, compressed, N-dimensional arrays. Its design allows efficient access to subsets of the stored array, and supports both local and cloud storage systems. Rarr aims to implement this specification in R with minimal reliance on an external tools or libraries.
 }
 \seealso{
 Useful links:
@@ -22,6 +22,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Hugo Gruson \email{hugo.gruson@embl.de} (\href{https://orcid.org/0000-0002-4094-1476}{ORCID})
   \item Mike Smith (\href{https://orcid.org/0000-0002-7800-3848}{ORCID}) (Maintainer from 2022 to 2025.) [conceptor]
 }
 
@@ -29,7 +30,7 @@ Other contributors:
 \itemize{
   \item Artür Manukyan [contributor]
   \item Sharla Gelfand [contributor]
-  \item German Network for Bioinformatics Infrastructure - de.NBI [funder]
+  \item German Network for Bioinformatics Infrastructure - de.NBI (\href{https://ror.org/01vmpm840}{ROR}) [funder]
 }
 
 }

@@ -1,14 +1,21 @@
 .convert_metadata_version <- function(metadata, version_from, version_to) {
-  if (version_from != 2 || version_to != 3) {
+  if (version_from != 2L || version_to != 3L) {
     stop(
       "Only conversion from version 2 to version 3 is supported.",
       call. = FALSE
     )
   }
 
-  dt <- .parse_datatype(metadata$dtype)
+  dt <- metadata$datatype
+
+  if (length(metadata$shape) == 0L) {
+    # Empty tuple in shape means we are dealing with a scalar.
+    metadata$shape <- metadata$chunks <- 1L
+  }
 
   metadata_v3 <- list(
+    node_type = "array",
+    zarr_format = 2L,
     datatype = dt,
     shape = metadata$shape,
     chunk_grid = list(
@@ -22,35 +29,96 @@
         separator = metadata$dimension_separator %||% "."
       )
     ),
-    data_type = paste0(dt$base_type, 8 * dt$nbytes),
     fill_value = metadata$fill_value,
-    codecs = list(
-      bytes = list(
-        name = "bytes",
-        configuration = c("endian" = dt$endian %||% NA_character_)
-      ),
-      transpose = list(
-        name = "transpose",
-        configuration = list(
-          order = switch(
-            metadata$order,
-            "F" = seq_along(metadata$shape) - 1, # zero indexed
-            "C" = rev(seq_along(metadata$shape)) - 1
-          )
-        )
-      )
-      # TODO: add filters
-    )
+    codecs = list()
   )
 
-  if (!is.null(metadata$compressor$id)) {
-    metadata_v3$codecs[[metadata$compressor$id]] <-
-      list(
-        name = metadata$compressor$id,
-        configuration = list(
-          metadata$compressor[names(metadata$compressor) != "id"]
+  if (length(dt$base_type) > 1L) {
+    metadata_v3$data_type <- list(
+      name = "struct",
+      configuration = list(
+        fields = mapply(
+          function(base_type, nbytes) {
+            switch(
+              base_type,
+              "unicode" = list(
+                name = "fixed-length-ucs4",
+                configuration = list(
+                  length_bits = 8L * nbytes
+                )
+              ),
+              "string" = list(
+                name = "fixed-length-ascii",
+                configuration = list(
+                  length_bits = 8L * nbytes
+                )
+              ),
+              paste0(base_type, 8L * nbytes)
+            )
+          },
+          dt$base_type,
+          dt$nbytes,
+          SIMPLIFY = FALSE
         )
       )
+    )
+  } else {
+    metadata_v3$data_type <- switch(
+      dt$base_type,
+      "unicode" = list(
+        name = "fixed_length_utf32",
+        configuration = list(
+          length_bytes = 8L * dt$nbytes
+        )
+      ),
+      "string" = list(
+        name = "null_terminated_bytes",
+        configuration = list(
+          length_bytes = dt$nbytes
+        )
+      ),
+      "bool" = "bool",
+      paste0(dt$base_type, 8L * dt$nbytes)
+    )
+  }
+
+  # Transpose codec only makes sense for more than 1 dimension
+  if (length(metadata_v3$shape) > 1L) {
+    metadata_v3$codecs$transpose <- list(
+      name = "transpose",
+      configuration = list(
+        order = switch(
+          metadata$order,
+          # default in numpy is "C"
+          "C" = seq_along(metadata$shape) - 1L, # zero indexed
+          "F" = rev(seq_along(metadata$shape)) - 1L
+        )
+      )
+    )
+  }
+
+  for (filter in metadata$filters) {
+    metadata_v3$codecs[[filter$id]] <- list(
+      name = filter$id
+    )
+  }
+
+  if (!is.null(metadata_v3$codecs[["vlen-utf8"]])) {
+    # In v3, vlen-utf8 applies to 'string' type
+    metadata_v3$data_type <- "string"
+    metadata_v3$datatype$base_type <- "string"
+  } else {
+    metadata_v3$codecs$bytes <- list(
+      name = "bytes",
+      configuration = list("endian" = dt$endian %||% NA_character_)
+    )
+  }
+
+  if (!is.null(metadata$compressor$id)) {
+    metadata_v3$codecs[[metadata$compressor$id]] <- list(
+      name = metadata$compressor$id,
+      configuration = metadata$compressor[names(metadata$compressor) != "id"]
+    )
   }
 
   return(metadata_v3)

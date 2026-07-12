@@ -9,11 +9,13 @@ create_empty_zarr_array(
   dim,
   chunk_dim,
   data_type,
-  order = "F",
-  compressor = use_zlib(),
-  fill_value,
+  order = c("F", "C"),
+  compressor = use_zstd(),
+  fill_value = NULL,
   nchar = NULL,
-  dimension_separator = "."
+  dimension_separator = if (zarr_version == 2L) "." else "/",
+  dimension_names = NULL,
+  zarr_version = 3L
 )
 }
 \arguments{
@@ -39,7 +41,7 @@ are 'column', 'row', 'F' & 'C'.  'column' or 'F' will specify
 'row' or 'C' will specify "row-major" order.}
 
 \item{compressor}{What (if any) compression tool should be applied to the
-array chunks.  The default is to use \code{zlib} compression. Supplying \code{NULL}
+array chunks.  The default is to use \code{zstd} compression. Supplying \code{NULL}
 will disable chunk compression. See \link{compressors} for more details.}
 
 \item{fill_value}{The default value for uninitialized portions of the array.
@@ -52,11 +54,18 @@ character array, but it is ignored for other data types.}
 
 \item{dimension_separator}{The character used to to separate the dimensions
 in the names of the chunk files.  Valid options are limited to "." and "/".}
+
+\item{dimension_names}{Optional character vector with the same length as
+\code{dim}.}
+
+\item{zarr_version}{The version of the Zarr specification to use. Currently,
+either \code{2} or \code{3}. The default is \code{3}.}
 }
 \value{
-If successful returns (invisibly) \code{TRUE}.  However this function is
-primarily called for the size effect of initialising a Zarr array location
-and creating the \code{.zarray} metadata.
+This function is primarily called for the side effect of
+initialising a Zarr array location and creating the \code{.zarray} or
+\code{zarr.json} metadata file.
+Returns (invisibly) the normalized path it wrote the metadata to.
 }
 \description{
 Create an (empty) Zarr array

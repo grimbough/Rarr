@@ -11,13 +11,18 @@ reference:
   - title: "Write Zarr data"
     contents:
       - write_zarr_array
-      - writeZarrArray
       - write_zarr_attributes
       - update_zarr_array
       - create_empty_zarr_array
-  - title: "Custom classes"
+      - zarr_consolidate_metadata
+  - title: "Zarr stores and groups utilities"
     contents:
-      - ZarrArray-class
+      - zarr_overview
+      - zarr_consolidate_metadata
   - title: "Compression helpers"
     contents:
       - starts_with("use_")
+  - title: "Deprecated functions"
+    contents:
+      - ZarrArray
+      - writeZarrArray

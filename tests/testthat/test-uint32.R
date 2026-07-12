@@ -41,3 +41,46 @@ test_that("uint32 zarr arrays can be read correctly", {
   expect_true(all(is.na(column_major)))
   expect_true(all(is.na(row_major)))
 })
+
+test_that("v2 and v3 return identical results", {
+  zarr_v2 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "uint32.zarr",
+    package = "Rarr"
+  )
+  zarr_v3 <- system.file(
+    "extdata",
+    "zarr_examples",
+    "column-first",
+    "uint32_v3.zarr",
+    package = "Rarr"
+  )
+
+  u32_v2 <- read_zarr_array(zarr_v2)
+  u32_v3 <- read_zarr_array(zarr_v3)
+
+  expect_identical(u32_v2, u32_v3)
+})
+
+test_that("uint32 zarr array can be written", {
+  uint32_zarr <- withr::local_tempfile(fileext = ".zarr")
+
+  content_uint32_array <- array(1:24, dim = c(4, 3, 2))
+
+  write_zarr_array(
+    content_uint32_array,
+    uint32_zarr,
+    data_type = "<u4",
+    chunk_dim = c(2, 2, 1),
+    compressor = NULL
+  )
+
+  roundtrip_uint32_array <- read_zarr_array(uint32_zarr)
+
+  expect_identical(
+    content_uint32_array,
+    roundtrip_uint32_array
+  )
+})

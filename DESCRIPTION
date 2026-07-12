@@ -1,6 +1,6 @@
 Package: Rarr
-Title: Read Zarr Files in R
-Version: 1.11.8
+Title: A Simple and Performant Native R Reader & Writer for Zarr Arrays
+Version: 2.1.21
 Authors@R: c(
     person("Mike", "Smith", role = c("aut", "ccp"),
            comment = c(ORCID = "0000-0002-7800-3848", "Maintainer from 2022 to 2025.")),
@@ -8,10 +8,11 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-4094-1476")),
     person("Artür", "Manukyan", role = "ctb"),
     person("Sharla", "Gelfand", role = "ctb"),
-    person("German Network for Bioinformatics Infrastructure - de.NBI", role = "fnd")
+    person("German Network for Bioinformatics Infrastructure - de.NBI", role = "fnd",
+           comment = c(ROR = "01vmpm840"))
   )
 Description: The Zarr specification defines a format for chunked,
-    compressed, N-dimensional arrays.  It's design allows efficient access
+    compressed, N-dimensional arrays.  Its design allows efficient access
     to subsets of the stored array, and supports both local and cloud
     storage systems.  Rarr aims to implement this specification in R with
     minimal reliance on an external tools or libraries.
@@ -19,27 +20,28 @@ License: MIT + file LICENSE
 URL: https://huber-group-embl.github.io/Rarr/, https://github.com/Huber-group-EMBL/Rarr
 BugReports: https://github.com/Huber-group-EMBL/Rarr/issues
 Depends:
-    BiocGenerics,
-    DelayedArray,
-    R (>= 4.1.0)
+    R (>= 4.2.0)
 Imports:
     curl,
+    grumpy,
     jsonlite,
-    methods,
+    lifecycle,
     paws.storage,
     R.utils,
+    rlang,
     utils
 Suggests:
     BiocStyle,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    withr
+    withr,
+    ZarrArray
 VignetteBuilder:
     knitr
 biocViews: DataImport
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 SystemRequirements: GNU make
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

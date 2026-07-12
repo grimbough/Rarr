@@ -2,25 +2,24 @@
 % Please edit documentation in R/read_metadata.R
 \name{.read_array_metadata}
 \alias{.read_array_metadata}
-\title{Read the .zarray metadata file associated with a Zarr array}
+\title{Read the \code{.zarray} or \code{zarr.json} metadata file associated with a Zarr array}
 \usage{
-.read_array_metadata(zarr_path, metadata_file, s3_client = NULL)
+.read_array_metadata(zarr_path, s3_client = NULL, ...)
 }
 \arguments{
 \item{zarr_path}{A character vector of length 1.  This provides the
 path to a Zarr array or group of arrays. This can either be on a local file
 system or on S3 storage.}
 
-\item{metadata_file}{One of \code{".zarray"} (Zarr v2) or \code{"zarr.json"} (Zarr v3)
-specifying which metadata file to read.}
-
 \item{s3_client}{A list representing an S3 client.  This should be produced
 by \code{\link[paws.storage:s3]{paws.storage::s3()}}.}
+
+\item{...}{Temporary fix for backwards compatibility. Will be removed soon.}
 }
 \value{
 A list containing the array metadata
 }
 \description{
-Read the .zarray metadata file associated with a Zarr array
+Read the \code{.zarray} or \code{zarr.json} metadata file associated with a Zarr array
 }
 \keyword{internal}
