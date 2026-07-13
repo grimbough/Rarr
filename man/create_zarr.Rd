@@ -4,11 +4,14 @@
 \alias{create_zarr}
 \title{create_zarr}
 \usage{
-create_zarr(zarr_path, version = 3L)
+create_zarr(zarr_path, zarr_version = 3L)
 }
 \arguments{
 \item{zarr_path}{Character vector of length 1 giving the path to the new
 Zarr store.}
+
+\item{zarr_version}{The version of the Zarr specification to use. Currently,
+either \code{2} or \code{3}. The default is \code{3}.}
 }
 \description{
 Create a new zarr store.

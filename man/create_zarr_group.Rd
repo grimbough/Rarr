@@ -4,13 +4,16 @@
 \alias{create_zarr_group}
 \title{create_zarr_group}
 \usage{
-create_zarr_group(zarr_path, group, version)
+create_zarr_group(zarr_path, group, zarr_version)
 }
 \arguments{
 \item{zarr_path}{Character vector of length 1 giving the path to the
 Zarr group.}
 
 \item{group}{Character vector of length 1 giving the name of the zarr group}
+
+\item{zarr_version}{The version of the Zarr specification to use. Currently,
+either \code{2} or \code{3}. The default is \code{3}.}
 }
 \description{
 Create a new group in an existing Zarr store.

@@ -1,16 +1,16 @@
 library(testthat)
 library(jsonlite)
 
-for (version in c(2L, 3L)) {
+for (zarr_version in c(2L, 3L)) {
   test_that("create zarr and groups", {
     output_zarr <- tempfile(fileext = ".zarr")
-    metadata_file <- ifelse(version == 2L, ".zgroup", "zarr.json")
+    metadata_file <- ifelse(zarr_version == 2L, ".zgroup", "zarr.json")
 
     # open zarr
-    create_zarr(zarr_path = output_zarr, version = version)
+    create_zarr(zarr_path = output_zarr, zarr_version = zarr_version)
     expect_true(dir.exists(output_zarr))
     expect_true(file.exists(file.path(output_zarr, metadata_file)))
-    if (version == 3L) {
+    if (zarr_version == 3L) {
       md <- read_json(file.path(output_zarr, metadata_file))
       expect_in("node_type", names(md))
     }
@@ -20,8 +20,8 @@ for (version in c(2L, 3L)) {
     expect_true(dir.exists(file.path(output_zarr, "group1")))
     expect_true(file.exists(file.path(output_zarr, "group1", metadata_file)))
 
-    # attempt to change the version of the group throws a warning
-    opposite_version <- ifelse(version == 2L, 3L, 2L)
+    # attempt to change the zarr_version of the group throws a warning
+    opposite_zarr_version <- ifelse(zarr_version == 2L, 3L, 2L)
     opposite_metadata_file <- ifelse(
       metadata_file == ".zgroup",
       "zarr.json",
@@ -31,13 +31,13 @@ for (version in c(2L, 3L)) {
       create_zarr_group(
         zarr_path = output_zarr,
         group = "group_ver",
-        version = opposite_version
+        zarr_version = opposite_zarr_version
       ),
       "Thus, version will be fixed to"
     )
     expect_true(dir.exists(file.path(output_zarr, "group_ver")))
     md <- read_json(file.path(output_zarr, metadata_file))
-    expect_equal(md[["zarr_format"]], version)
+    expect_equal(md[["zarr_format"]], zarr_version)
     expect_true(file.exists(file.path(output_zarr, "group1", metadata_file)))
 
     # create nested two groups
@@ -76,11 +76,10 @@ for (version in c(2L, 3L)) {
   })
 }
 
-test_that("create_zarr rejects unsupported version", {
+test_that("create_zarr rejects unsupported zarr_version", {
   output_zarr <- tempfile(fileext = ".zarr")
   expect_error(
-    create_zarr(zarr_path = output_zarr, version = "v4"),
-    # create_zarr(dir = td, prefix = name, version = "v4"),
+    create_zarr(zarr_path = output_zarr, zarr_version = "v4"),
     "Incorrect Zarr version specified"
   )
 })

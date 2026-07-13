@@ -23,24 +23,24 @@
 create_zarr_group <- function(
   zarr_path,
   group,
-  version
+  zarr_version
 ) {
   zarr_path <- .normalize_array_path(zarr_path)
 
   # if zarr store does not exist, make one,
-  # otherwise parse version
+  # otherwise parse zarr_version
   if (dir.exists(zarr_path)) {
     metadata <- .read_group_metadata(zarr_path)
     zarr_format <- metadata$zarr_format
-    if (missing(version)) {
-      version <- 3L
-      if (zarr_format != version) {
-        version <- zarr_format
+    if (missing(zarr_version)) {
+      zarr_version <- 3L
+      if (zarr_format != zarr_version) {
+        zarr_version <- zarr_format
       }
-    } else if (zarr_format != version) {
+    } else if (zarr_format != zarr_version) {
       warning(
-        "Requested `version` is ",
-        version,
+        "Requested `zarr_version` is ",
+        zarr_version,
         " but the Zarr store in ",
         zarr_path,
         " is written in version ",
@@ -51,11 +51,11 @@ create_zarr_group <- function(
         " instead!",
         call. = FALSE
       )
-      version <- zarr_format
+      zarr_version <- zarr_format
     }
   } else {
     dir.create(zarr_path, showWarnings = FALSE)
-    .write_group_metadata(zarr_path, version)
+    .write_group_metadata(zarr_path, zarr_version)
   }
 
   # Split "a/b/c" into c("a", "b", "c")
@@ -77,14 +77,14 @@ create_zarr_group <- function(
       create_zarr_group(
         zarr_path = zarr_path,
         group = split_group[2L],
-        version = version
+        zarr_version = zarr_version
       )
     }
   }
 
   target_zarr_path <- file.path(zarr_path, split_group[1L])
   dir.create(target_zarr_path, showWarnings = FALSE)
-  .write_group_metadata(target_zarr_path, version)
+  .write_group_metadata(target_zarr_path, zarr_version)
 }
 
 #' create_zarr
@@ -102,11 +102,11 @@ create_zarr_group <- function(
 #' dir.exists(new_zarr_path)
 #'
 #' @export
-create_zarr <- function(zarr_path, version = 3L) {
+create_zarr <- function(zarr_path, zarr_version = 3L) {
   create_zarr_group(
     zarr_path = zarr_path,
     group = "/",
-    version = version
+    zarr_version = zarr_version
   )
 }
 
@@ -133,11 +133,11 @@ create_zarr <- function(zarr_path, version = 3L) {
 }
 
 #' @importFrom jsonlite write_json
-.write_group_metadata <- function(zarr_path, version = 2L) {
+.write_group_metadata <- function(zarr_path, zarr_version = 2L) {
   zarr_path <- normalizePath(zarr_path)
-  metadata <- list(zarr_format = version)
+  metadata <- list(zarr_format = zarr_version)
   switch(
-    as.character(version),
+    as.character(zarr_version),
     `2` = {
       metadata_file <- file.path(zarr_path, ".zgroup")
     },
