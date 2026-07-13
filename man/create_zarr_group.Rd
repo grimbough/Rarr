@@ -4,15 +4,27 @@
 \alias{create_zarr_group}
 \title{create_zarr_group}
 \usage{
-create_zarr_group(store, name, version = "v2")
+create_zarr_group(zarr_path, group, version)
 }
 \arguments{
-\item{store}{the location of (zarr) store}
+\item{zarr_path}{Character vector of length 1 giving the path to the
+Zarr group.}
 
-\item{name}{name of the group}
-
-\item{version}{zarr version}
+\item{group}{Character vector of length 1 giving the name of the zarr group}
 }
 \description{
-create zarr groups
+Create a new group in an existing Zarr store.
+}
+\examples{
+
+# create new zarr
+dir.create(td <- tempfile())
+new_zarr_path <- file.path(td, "test.zarr")
+create_zarr(zarr_path = new_zarr_path)
+dir.exists(new_zarr_path)
+
+# create new group
+create_zarr_group(new_zarr_path, group = "foo")
+dir.exists(file.path(new_zarr_path, "foo"))
+
 }

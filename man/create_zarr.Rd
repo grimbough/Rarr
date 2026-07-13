@@ -4,22 +4,19 @@
 \alias{create_zarr}
 \title{create_zarr}
 \usage{
-create_zarr(store, version = "v2")
+create_zarr(zarr_path, version = 3L)
 }
 \arguments{
-\item{version}{zarr version}
-
-\item{dir}{the location of zarr store}
-
-\item{prefix}{prefix of the zarr store}
+\item{zarr_path}{Character vector of length 1 giving the path to the new
+Zarr store.}
 }
 \description{
-create zarr store
+Create a new zarr store.
 }
 \examples{
 dir.create(td <- tempfile())
-store <- file.path(td, "test.zarr")
-create_zarr(store = store)
-dir.exists(store)
+new_zarr_path <- file.path(td, "test.zarr")
+create_zarr(zarr_path = new_zarr_path)
+dir.exists(new_zarr_path)
 
 }
