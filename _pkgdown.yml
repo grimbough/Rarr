@@ -15,6 +15,8 @@ reference:
       - update_zarr_array
       - create_empty_zarr_array
       - zarr_consolidate_metadata
+      - create_zarr_group
+      - create_zarr
   - title: "Zarr stores and groups utilities"
     contents:
       - zarr_overview
