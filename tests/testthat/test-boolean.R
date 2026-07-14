@@ -48,6 +48,15 @@ test_that("boolean zarr array can be written", {
     chunk_dim = c(2, 2),
     compressor = NULL
   ) |>
+    expect_error("non-empty")
+
+  bool_zarr_na <- withr::local_tempfile(fileext = ".zarr")
+  write_zarr_array(
+    content_bool_array_na,
+    bool_zarr_na,
+    chunk_dim = c(2, 2),
+    compressor = NULL
+  ) |>
     expect_warning("not support NA values")
 
   read_zarr_array(bool_zarr) |>
