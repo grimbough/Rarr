@@ -180,7 +180,23 @@ create_empty_zarr_array <- function(
   .check_chunk_shape(x_dim = dim, chunk_dim = chunk_dim)
 
   path <- .normalize_array_path(zarr_array_path)
-  if (!dir.exists(path)) {
+  path_exists <- dir.exists(path)
+  contents <- list.files(
+    path,
+    all.files = TRUE,
+    no.. = TRUE,
+    include.dirs = TRUE
+  )
+  path_is_empty <- length(contents) == 0L
+  if (path_exists && !path_is_empty) {
+    stop(
+      "The specified `zarr_array_path` already exists and is non-empty. ",
+      "Please provide a new `path` for the Zarr array.\n",
+      "Attributes must be added AFTER the Zarr array is created.",
+      call. = FALSE
+    )
+  }
+  if (!path_exists) {
     dir.create(path)
   }
 
