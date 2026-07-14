@@ -233,17 +233,16 @@ zarr_overview <- function(
 #'   path to a Zarr array or group of arrays. This can either be on a local file
 #'   system or on S3 storage.
 #' @param s3_client A list representing an S3 client.  This should be produced
-#'   by [paws.storage::s3()].
-#' @param ... Temporary fix for backwards compatibility. Will be removed soon.
+#' by [paws.storage::s3()].
 #'
 #' @returns A list containing the array metadata
 #'
 #' @importFrom grumpy parse_npy_datatype
 #'
 #' @keywords internal
-.read_array_metadata <- function(zarr_path, s3_client = NULL, ...) {
-  # FIXME: remove ... argument after https://github.com/Bioconductor/ZarrArray/pull/7
-  # is merged
+.read_array_metadata <- function(zarr_path, s3_client = NULL) {
+  zarr_path <- .normalize_array_path(zarr_path)
+
   metadata_file <- c(".zarray", "zarr.json") |>
     .store_check_exist(zarr_path, files = _, s3_client = s3_client)
 

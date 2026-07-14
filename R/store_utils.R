@@ -65,12 +65,6 @@
   return(is_present)
 }
 
-# For backward compatibility with ZarrArray.
-# Removed after https://github.com/Bioconductor/ZarrArray/pull/7 is merged.
-.file_or_blob_exists <- function(path, s3_client, files) {
-  .store_check_exist(path, files, s3_client)
-}
-
 .store_list <- function(path, recursive, s3_client) {
   if (is.null(s3_client)) {
     list.files(
