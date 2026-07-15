@@ -185,6 +185,8 @@ zarr_overview <- function(
     "Compressor",
     "Attributes"
   )
+  compressor <- array_metadata_df$compressor
+  compressor[is.na(compressor)] <- "None"
   fields <- paste0(indent, fields, ": %s")
   formatted <- sprintf(
     paste(fields, collapse = "\n"),
@@ -213,16 +215,10 @@ zarr_overview <- function(
     ),
     array_metadata_df$data_type,
     array_metadata_df$endianness,
-    ifelse(
-      is.na(array_metadata_df$compressor),
-      "None",
-      array_metadata_df$compressor
-    ),
-    ifelse(
-      array_metadata_df$attributes,
-      "yes",
-      "no"
-    )
+    compressor,
+    # Equivalent but ~5x faster than
+    # ifelse(array_metadata_df$attributes, "yes", "no")
+    c("yes", "no")[2L - array_metadata_df$attributes]
   )
   cat(formatted, sep = "\n---\n")
 }

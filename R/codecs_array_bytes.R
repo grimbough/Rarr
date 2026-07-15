@@ -19,7 +19,7 @@ codec_bytes_encode <- function(input, datatype, endian) {
   if (is.character(input)) {
     ## we need to create fixed length strings either via padding or trimming
     if (datatype$base_type == "unicode") {
-      to <- ifelse(endian == "little", "UCS-4LE", "UCS-4BE")
+      to <- if (endian == "little") "UCS-4LE" else "UCS-4BE"
       raw_list <- iconv(input, to = to, toRaw = TRUE)
     } else {
       raw_list <- iconv(input, toRaw = TRUE)
