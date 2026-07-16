@@ -216,8 +216,7 @@ zarr_overview <- function(
     array_metadata_df$data_type,
     array_metadata_df$endianness,
     compressor,
-    # Equivalent but ~5x faster than
-    # ifelse(array_metadata_df$attributes, "yes", "no")
+    # Equivalent but ~5x faster than ifelse(attributes, "yes", "no")
     c("yes", "no")[2L - array_metadata_df$attributes]
   )
   cat(formatted, sep = "\n---\n")
