@@ -59,6 +59,8 @@ test_that("integer(0) indexing works correctly", {
 })
 
 test_that("out of order indices are handled correctly", {
+  # Used in ZarrArray for example.
+  # See https://github.com/Huber-group-EMBL/Rarr/issues/211
   zarr_v2 <- system.file(
     package = "Rarr",
     "extdata",
@@ -79,7 +81,7 @@ test_that("out of order indices are handled correctly", {
     res2[c(2, 1), c(2, 1), c(2, 1)]
   )
 
-  # Compact indice ranges
+  # Compact index ranges
   expect_no_condition(
     res3 <- read_zarr_array(zarr_v2, list(3:1, 2:1, 1:3))
   )
