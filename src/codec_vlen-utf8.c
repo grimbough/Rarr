@@ -41,7 +41,7 @@ SEXP codec_vlen_utf8_decode_c(SEXP input, SEXP chunk_dim) {
 
   /* Set dim attribute if chunk_dim is not NULL / NA */
   if (!isNull(chunk_dim) && xlength(chunk_dim) > 0) {
-    setAttrib(data, R_DimSymbol, chunk_dim);
+    Rf_dimgets(data, chunk_dim);
   }
 
   UNPROTECT(1);
