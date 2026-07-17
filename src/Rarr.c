@@ -16,6 +16,7 @@ static const R_CallMethodDef callMethods[] = {
   {"codec_vlen_utf8_decode_c", (DL_FUNC) &codec_vlen_utf8_decode_c, 2},
 
   {"is_compact", (DL_FUNC) &is_compact, 1},
+  {"chop_vec", (DL_FUNC) &chop_vec, 2},
   {NULL, NULL, 0}
 };
 
