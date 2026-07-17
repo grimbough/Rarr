@@ -197,3 +197,22 @@ test_that("update v3 array", {
   expect_identical(res[, 1, 1], x)
   expect_identical(res[, 1:20, 2:10], array(0L, dim = c(30, 20, 9)))
 })
+
+test_that("update existing chunk", {
+  # https://github.com/Huber-group-EMBL/Rarr/issues/213
+  zarr_path <- tempfile(fileext = ".zarr")
+  create_empty_zarr_array(
+    zarr_path,
+    dim = c(8, 10),
+    chunk_dim = c(4, 5),
+    data_type = "integer"
+  )
+  data <- matrix(101:106, nrow = 2)
+  update_zarr_array(zarr_path, data, index = list(1:2, 1:3))
+  expect_no_condition(
+    update_zarr_array(zarr_path, data, index = list(3:4, 1:3))
+  )
+  expect_snapshot(
+    read_zarr_array(zarr_path)
+  )
+})
