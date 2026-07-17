@@ -52,9 +52,10 @@ codec_bytes_encode <- function(input, datatype, endian) {
   raw_nvalues <- writeBin(length(input), raw(), size = 4L, endian = "little")
   # charToRaw() converts NA_character_ to "NA"
   raw_strings <- lapply(input, function(x) charToRaw(enc2utf8(x)))
-  raw_string_lens <- lapply(lengths(raw_strings), function(x) {
-    writeBin(x, raw(), size = 4L, endian = "little")
-  })
+  raw_string_lens <- split(
+    writeBin(lengths(raw_strings), raw(), size = 4L),
+    rep(seq_along(raw_strings), each = 4L)
+  )
 
   raw_vlen_utf8 <- c(
     raw_nvalues,
