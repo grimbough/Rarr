@@ -462,7 +462,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       chunk_bytes = raw_chunk,
       chunk_dim = chunk_dim,
       decoders = metadata$configured_decoders,
-      datatype = metadata$datatype
+      datatype = metadata$datatype,
+      fill_value = metadata$fill_value
     )
   } else {
     chunk_in_mem <- array(
