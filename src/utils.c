@@ -22,7 +22,11 @@ SEXP chop_vec(SEXP x, SEXP _size) {
       size = n - start;
     }
     el = allocVector(TYPEOF(x), size);
-    memcpy(INTEGER(el), INTEGER(x) + start, size * sizeof(int));
+    if (TYPEOF(x) == INTSXP) {
+      memcpy(INTEGER(el), INTEGER(x) + start, size * sizeof(int));
+    } else if (TYPEOF(x) == RAWSXP) {
+      memcpy(RAW(el), RAW(x) + start, size);
+    }
     SET_VECTOR_ELT(result, i, el);
     start += size;
   }
