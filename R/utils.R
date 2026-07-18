@@ -185,6 +185,9 @@ check_index <- function(index, metadata) {
   chunk_dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
 ) {
   index0 <- lapply(index, reindex, from = 1L, to = 0L)
+  if (!is.integer(chunk_dim)) {
+    chunk_dim <- as.integer(chunk_dim)
+  }
   # FIXME:
   # - make this work for compat sequence that don't start at one
   # - fold the second step (index_in_chunk) here
@@ -194,14 +197,13 @@ check_index <- function(index, metadata) {
   ) {
     per_dim <- mapply(
       \(i, cs) {
-        split(
+        res <- .Call(
+          "chop_vec",
           i,
-          rep(
-            ((min(i) - 1L) %/% cs):((max(i) - 1L) %/% cs),
-            each = cs,
-            length.out = length(i)
-          )
+          cs,
+          PACKAGE = "Rarr"
         )
+        setNames(res, seq_along(res) - 1L)
       },
       index,
       chunk_dim,
