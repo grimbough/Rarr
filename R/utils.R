@@ -207,7 +207,7 @@ check_index <- function(index, metadata) {
           cs,
           PACKAGE = "Rarr"
         )
-        setNames(res, seq_along(res) - 1L)
+        setNames(res, 0L:(length(res) - 1L))
       },
       index,
       chunk_dim,
