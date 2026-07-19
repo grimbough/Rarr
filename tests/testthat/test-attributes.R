@@ -160,3 +160,32 @@ test_that("read_zarr_attributes from s3", {
     )
   )
 })
+
+test_that("behaviour on missing attributes", {
+  expect_warning(
+    read_zarr_attributes(
+      system.file(
+        "extdata",
+        "zarr_examples",
+        "column-first",
+        "boolean.zarr",
+        package = "Rarr"
+      ),
+      missing = "warning"
+    ),
+    "No file that could contain attributes"
+  )
+  expect_error(
+    read_zarr_attributes(
+      system.file(
+        "extdata",
+        "zarr_examples",
+        "column-first",
+        "boolean.zarr",
+        package = "Rarr"
+      ),
+      missing = "error"
+    ),
+    "No file that could contain attributes"
+  )
+})
