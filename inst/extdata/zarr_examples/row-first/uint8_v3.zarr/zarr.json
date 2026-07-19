@@ -4,7 +4,7 @@
     20,
     10
   ],
-  "data_type": "int8",
+  "data_type": "uint8",
   "chunk_grid": {
     "name": "regular",
     "configuration": {
