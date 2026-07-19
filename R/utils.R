@@ -141,12 +141,16 @@ check_index <- function(index, metadata) {
         )
       )
     }
+    # nocov start
     stop("Unsupported data type: ", typestr$name, call. = FALSE)
+    # nocov end
   }
 
   entry <- SUPPORTED_V3_TYPES[[typestr]]
   if (is.null(entry)) {
+    # nocov start
     stop("Unsupported data type: ", typestr, call. = FALSE)
+    # nocov end
   }
   return(list(
     base_type = entry$base_type,

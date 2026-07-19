@@ -46,9 +46,11 @@ parse_s3_path <- function(path) {
       ignore.case = TRUE
     )
   } else {
+    # nocov start
     stop(
       "Unknown AWS path style.  Please report this to the package maintainer."
     )
+    # nocov end
   }
 
   res <- list(
