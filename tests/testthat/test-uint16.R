@@ -18,9 +18,9 @@ test_that("uint16 zarr arrays can be read correctly", {
   expect_identical(dim(column_major), c(30L, 20L, 1L))
 
   ## first row should be sequence 1 to 20
-  expect_identical(column_major[1, , ], c(-1L, 2:20))
+  expect_identical(column_major[1, , ], c(1:20))
   ## first column should be all 1s
-  expect_identical(column_major[, 1, ], rep(-1L, 30))
+  expect_identical(column_major[, 1, ], rep(1L, 30))
 })
 
 test_that("v2 and v3 return identical results", {

@@ -29,10 +29,10 @@ test_that("int8 zarr arrays can be read correctly", {
   expect_identical(dim(column_major), c(30L, 20L, 1L))
 
   # First row should be sequence 1 to 20
-  expect_identical(column_major[1, , ], 1:20)
+  expect_identical(column_major[1, , ], c(-1L, 2:20))
 
   # First column should be all 1s
-  expect_identical(column_major[, 1, ], rep(1L, 30))
+  expect_identical(column_major[, 1, ], rep(-1L, 30))
 })
 
 test_that("i8 zarr array can be written", {
