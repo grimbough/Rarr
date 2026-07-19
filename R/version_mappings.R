@@ -17,6 +17,13 @@
     node_type = "array",
     zarr_format = 2L,
     datatype = dt,
+    data_type = .convert_dtype_version(
+      dt$base_type,
+      dt$nbytes,
+      dt$endian,
+      version_from,
+      version_to
+    ),
     shape = metadata$shape,
     chunk_grid = list(
       name = "regular",
@@ -32,55 +39,6 @@
     fill_value = metadata$fill_value,
     codecs = list()
   )
-
-  if (length(dt$base_type) > 1L) {
-    metadata_v3$data_type <- list(
-      name = "struct",
-      configuration = list(
-        fields = mapply(
-          function(base_type, nbytes) {
-            switch(
-              base_type,
-              "unicode" = list(
-                name = "fixed-length-ucs4",
-                configuration = list(
-                  length_bits = 8L * nbytes
-                )
-              ),
-              "string" = list(
-                name = "fixed-length-ascii",
-                configuration = list(
-                  length_bits = 8L * nbytes
-                )
-              ),
-              paste0(base_type, 8L * nbytes)
-            )
-          },
-          dt$base_type,
-          dt$nbytes,
-          SIMPLIFY = FALSE
-        )
-      )
-    )
-  } else {
-    metadata_v3$data_type <- switch(
-      dt$base_type,
-      "unicode" = list(
-        name = "fixed_length_utf32",
-        configuration = list(
-          length_bytes = 8L * dt$nbytes
-        )
-      ),
-      "string" = list(
-        name = "null_terminated_bytes",
-        configuration = list(
-          length_bytes = dt$nbytes
-        )
-      ),
-      "bool" = "bool",
-      paste0(dt$base_type, 8L * dt$nbytes)
-    )
-  }
 
   # Transpose codec only makes sense for more than 1 dimension
   if (length(metadata_v3$shape) > 1L) {
@@ -122,4 +80,56 @@
   }
 
   return(metadata_v3)
+}
+
+.convert_dtype_version <- function(
+  base_type,
+  nbytes,
+  endian,
+  version_from,
+  version_to
+) {
+  if (version_from != 2L || version_to != 3L) {
+    stop(
+      "Only conversion from version 2 to version 3 is supported.",
+      call. = FALSE
+    )
+  }
+  if (length(base_type) > 1L) {
+    return(
+      list(
+        name = "struct",
+        configuration = list(
+          fields = mapply(
+            .convert_dtype_version,
+            base_type,
+            nbytes,
+            endian,
+            MoreArgs = list(
+              version_from = version_from,
+              version_to = version_to
+            ),
+            SIMPLIFY = FALSE
+          )
+        )
+      )
+    )
+  }
+  switch(
+    base_type,
+    "unicode" = list(
+      name = "fixed_length_utf32",
+      configuration = list(
+        length_bytes = 8L * nbytes
+      )
+    ),
+    "string" = list(
+      name = "null_terminated_bytes",
+      configuration = list(
+        length_bytes = nbytes
+      )
+    ),
+    "bool" = "bool",
+    paste0(base_type, 8L * nbytes)
+  )
 }
