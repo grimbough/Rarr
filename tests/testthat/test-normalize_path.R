@@ -62,3 +62,12 @@ test_that("normalize_array_path treats relative paths consistently", {
     .normalize_array_path("./baz.zarr")
   )
 })
+
+test_that("normalize_array_path on S3", {
+  expect_identical(
+    .normalize_array_path(
+      "https://noaa-nwm-retro-v2-zarr-pds.s3.amazonaws.com/feature_id"
+    ),
+    "https://noaa-nwm-retro-v2-zarr-pds.s3.amazonaws.com/feature_id/"
+  )
+})
