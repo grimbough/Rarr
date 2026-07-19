@@ -22,10 +22,11 @@ SEXP chop_vec(SEXP x, SEXP _size) {
       size = n - start;
     }
     el = allocVector(TYPEOF(x), size);
+    // TODO: figure out how to use GET_REGION_PTR macro
     if (TYPEOF(x) == INTSXP) {
-      memcpy(INTEGER(el), INTEGER(x) + start, size * sizeof(int));
+      INTEGER_GET_REGION(x, start, size, INTEGER(el));
     } else if (TYPEOF(x) == RAWSXP) {
-      memcpy(RAW(el), RAW(x) + start, size);
+      RAW_GET_REGION(x, start, size, RAW(el));
     }
     SET_VECTOR_ELT(result, i, el);
     start += size;
