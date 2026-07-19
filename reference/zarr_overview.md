@@ -79,7 +79,7 @@ zarr_overview(zarr_array_path = z1)
 #> No. of Chunks: 12 (3 x 2 x 2)
 #> Data Type: int32
 #> Endianness: little
-#> Compressor: blosc
+#> Compressor: zstd
 #> Attributes: no
 
 ## using a file on S3 storage

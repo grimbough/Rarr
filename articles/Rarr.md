@@ -110,7 +110,7 @@ zarr_overview(zarr_example)
     ## No. of Chunks: 12 (3 x 2 x 2)
     ## Data Type: int32
     ## Endianness: little
-    ## Compressor: blosc
+    ## Compressor: zstd
     ## Attributes: no
 
 You can use this to check that the location is a valid Zarr array, and
@@ -232,7 +232,7 @@ zarr_overview(zarr_example, as_data_frame = TRUE)
     ##                                                                                 path
     ## 1 /home/runner/work/_temp/Library/Rarr/extdata/zarr_examples/column-first/int32.zarr
     ##   data_type endianness compressor        dim chunk_dim nchunks attributes
-    ## 1     int32     little      blosc 30, 20, 10 10, 10, 5 3, 2, 2      FALSE
+    ## 1     int32     little       zstd 30, 20, 10 10, 10, 5 3, 2, 2      FALSE
 
 ### Writing subsets of data
 

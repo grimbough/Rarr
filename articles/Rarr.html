@@ -63,7 +63,7 @@
                         <h4 data-toc-skip class="author">Mike L.
 Smith</h4>
                         
-            <h4 data-toc-skip class="date">17 July 2026</h4>
+            <h4 data-toc-skip class="date">19 July 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/vignettes/Rarr.Rmd" class="external-link"><code>vignettes/Rarr.Rmd</code></a></small>
       <div class="d-none name"><code>Rarr.Rmd</code></div>
@@ -179,7 +179,7 @@ if present in the case of a Zarr group.&lt;/p&gt;"><sup>2</sup></a>.</p>
 <span><span class="co">## No. of Chunks: 12 (3 x 2 x 2)</span></span>
 <span><span class="co">## Data Type: int32</span></span>
 <span><span class="co">## Endianness: little</span></span>
-<span><span class="co">## Compressor: blosc</span></span>
+<span><span class="co">## Compressor: zstd</span></span>
 <span><span class="co">## Attributes: no</span></span></code></pre>
 <p>You can use this to check that the location is a valid Zarr array,
 and that the shape and datatype of the array content are what you are
@@ -277,7 +277,7 @@ containing the array details.</p>
 <pre><code><span><span class="co">##                                                                                 path</span></span>
 <span><span class="co">## 1 /home/runner/work/_temp/Library/Rarr/extdata/zarr_examples/column-first/int32.zarr</span></span>
 <span><span class="co">##   data_type endianness compressor        dim chunk_dim nchunks attributes</span></span>
-<span><span class="co">## 1     int32     little      blosc 30, 20, 10 10, 10, 5 3, 2, 2      FALSE</span></span></code></pre>
+<span><span class="co">## 1     int32     little       zstd 30, 20, 10 10, 10, 5 3, 2, 2      FALSE</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="writing-subsets-of-data">Writing subsets of data<a class="anchor" aria-label="anchor" href="#writing-subsets-of-data"></a>
