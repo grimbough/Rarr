@@ -1,9 +1,11 @@
 .convert_metadata_version <- function(metadata, version_from, version_to) {
   if (version_from != 2L || version_to != 3L) {
+    # nocov start
     stop(
       "Only conversion from version 2 to version 3 is supported.",
       call. = FALSE
     )
+    # nocov end
   }
 
   dt <- metadata$datatype
@@ -90,10 +92,12 @@
   version_to
 ) {
   if (version_from != 2L || version_to != 3L) {
+    # nocov start
     stop(
       "Only conversion from version 2 to version 3 is supported.",
       call. = FALSE
     )
+    # nocov end
   }
   if (length(base_type) > 1L) {
     return(
