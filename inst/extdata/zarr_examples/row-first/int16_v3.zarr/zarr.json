@@ -4,7 +4,7 @@
     20,
     10
   ],
-  "data_type": "int8",
+  "data_type": "int16",
   "chunk_grid": {
     "name": "regular",
     "configuration": {
@@ -34,7 +34,10 @@
       }
     },
     {
-      "name": "bytes"
+      "name": "bytes",
+      "configuration": {
+        "endian": "little"
+      }
     },
     {
       "name": "zstd",
