@@ -138,6 +138,9 @@
       $consolidated_metadata$metadata$array1$zarr_format
       [1] 3
       
+      $consolidated_metadata$metadata$array1$data_type
+      [1] "uint8"
+      
       $consolidated_metadata$metadata$array1$shape
       $consolidated_metadata$metadata$array1$shape[[1]]
       [1] 2
@@ -211,9 +214,6 @@
       
       
       
-      $consolidated_metadata$metadata$array1$data_type
-      [1] "uint8"
-      
       $consolidated_metadata$metadata$array1$attributes
       $consolidated_metadata$metadata$array1$attributes$description
       [1] "This is array 1"
@@ -226,6 +226,9 @@
       
       $consolidated_metadata$metadata$array2$zarr_format
       [1] 3
+      
+      $consolidated_metadata$metadata$array2$data_type
+      [1] "float64"
       
       $consolidated_metadata$metadata$array2$shape
       $consolidated_metadata$metadata$array2$shape[[1]]
@@ -299,9 +302,6 @@
       
       
       
-      
-      $consolidated_metadata$metadata$array2$data_type
-      [1] "float64"
       
       
       $consolidated_metadata$metadata$.
