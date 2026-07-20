@@ -36,36 +36,40 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Contributing to Rarr</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/CONTRIBUTING.md" class="external-link"><code>CONTRIBUTING.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Huber-group-EMBL/Rarr/blob/devel/.github/CONTRIBUTING.md" class="external-link"><code>.github/CONTRIBUTING.md</code></a></small>
     </div>
 
 <div id="contributing-to-rarr" class="section level1">
 
-<p>This document outlines how to propose a change to Rarr.</p>
+<p>There are many ways you can contribute to Rarr. All contributions are very much welcome and only some of them require deep technical knowledge. If you have something you would like to contribute, but you are not sure how, please don’t hesitate to reach out by opening an <a href="https://github.com/Huber-group-EMBL/Rarr/issues" class="external-link">issue</a> or sending an email.</p>
 <div class="section level2">
-<h2 id="fixing-typos">Fixing typos<a class="anchor" aria-label="anchor" href="#fixing-typos"></a></h2>
-<p>You can fix typos, spelling mistakes, or grammatical errors in the documentation directly using the GitHub web interface. You can do this by clicking on the pen icon, which will then fork the project to your account and allow you to propose the changes. Please note we use <a href="https://roxygen2.r-lib.org/articles/roxygen2.html" class="external-link">roxygen2 comments</a> to generate the manual pages, meaning you’ll need to edit the <code>.R</code>, not the <code>.Rd</code> file. You can find the <code>.R</code> file that generates the <code>.Rd</code> by reading the comment in the first line. Part of the vignette is used in multiple places, and can be found in the non-standard <code>/inst/rmd</code> location, rather than the <code>/vignettes</code> folder.</p>
+<h2 id="speaking_head-spreading-the-word">🗣️ Spreading the word<a class="anchor" aria-label="anchor" href="#speaking_head-spreading-the-word"></a></h2>
+<p>The easiest (and possibly one of the most useful) way you can contribute to Rarr is by spreading the word. Please <a href="https://huber-group-embl.github.io/Rarr/authors.html">cite it</a> in your publications and tell your friends and colleagues about it!</p>
+<p>If you like it, please also consider adding a <a href="https://docs.github.com/en/get-started/exploring-projects-on-github/saving-repositories-with-stars" class="external-link">star on GitHub</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="bigger-changes">Bigger changes<a class="anchor" aria-label="anchor" href="#bigger-changes"></a></h2>
-<p>If you want to make a bigger change, it’s a good idea to first file an issue and make sure someone from the Rarr team agrees that it’s needed. If you’ve found a bug, please file an issue that illustrates the bug with a minimal reproducible example. You can use the <a href="https://www.tidyverse.org/help/#reprex" class="external-link">reprex</a> package to achieve this.</p>
-<div class="section level3">
-<h3 id="pull-request-process">Pull request process<a class="anchor" aria-label="anchor" href="#pull-request-process"></a></h3>
-<ul><li><p>Fork the package from this repository and then clone the fork onto your computer.</p></li>
-<li><p>Install all development dependencies with <code>devtools::install_dev_deps()</code>, and then make sure the package passes R CMD check by running <code>devtools::check()</code>. If R CMD check doesn’t pass cleanly, it’s a good idea to ask for help before continuing.</p></li>
-<li><p>Create a Git branch for your pull request (PR). Choose a name for the new branch that describes the change you are introducing.</p></li>
-<li><p>Make your changes, commit to git, and then create a pull request on GitHub. The title of your PR should briefly describe the change. The body of your PR should reference the relevant issue by mentioning somewhere in the description <code>#issue-number</code>.</p></li>
-<li><p>For user-facing changes, add a bullet to the top of <code>NEWS.md</code> (i.e. just below the first header). Try to follow the style described in <a href="https://style.tidyverse.org/news.html" class="external-link uri">https://style.tidyverse.org/news.html</a>.</p></li>
-</ul></div>
-<div class="section level3">
-<h3 id="code-style">Code style<a class="anchor" aria-label="anchor" href="#code-style"></a></h3>
-<ul><li><p>We use <a href="https://cran.r-project.org/package=roxygen2" class="external-link">roxygen2</a>, with <a href="https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html" class="external-link">Markdown syntax</a>, for documentation.</p></li>
-<li><p>We use <a href="https://cran.r-project.org/package=testthat" class="external-link">testthat</a> for unit tests. Contributions with test cases included are easier to accept. Test files can be found in <code>/inst/extdata/zarr_examples</code>. If you do not find a file with the features you need for your test look in the folder <code>/inst/scripts/</code> to find the Dockerfile and Python script used to create the test files.</p></li>
-</ul></div>
+<h2 id="writing_hand-fixing-typos">✍️ Fixing typos<a class="anchor" aria-label="anchor" href="#writing_hand-fixing-typos"></a></h2>
+<p>Small typos or grammatical errors in documentation may be edited directly using the GitHub web interface, so long as the changes are made in the <em>source</em> file. In other words, please edit a <code>.R</code> file in the <code>R/</code> folder, and not the <code>.Rd</code> files in the <code>man/</code> folder. This is because this package uses <a href="https://roxygen2.r-lib.org/" class="external-link">roxygen2</a> to automatically rebuild the <code>.Rd</code> files.</p>
 </div>
 <div class="section level2">
-<h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a></h2>
-<p>Please note that the Rarr project adheres to the <a href="https://bioconductor.github.io/bioc_coc_multilingual/" class="external-link">Bioconductor Code of Conduct</a>. By contributing to this project you agree to abide by its terms.</p>
+<h2 id="disappointed_relieved-reporting-bugs">😥 Reporting bugs<a class="anchor" aria-label="anchor" href="#disappointed_relieved-reporting-bugs"></a></h2>
+<p>If you think you found a bug in Rarr, even if you’re unsure, please let us know. The best way is to open an issue on GitHub: <a href="https://github.com/Huber-group-EMBL/Rarr/issues" class="external-link uri">https://github.com/Huber-group-EMBL/Rarr/issues</a>.</p>
+<p>Please try to create a <a href="https://reprex.tidyverse.org/" class="external-link">reprex</a> with the minimal amount of code required to reproduce the bug you encountered.</p>
+<p>Please also include your session info (e.g. via the R command <code><a href="https://sessioninfo.r-lib.org/reference/session_info.html" class="external-link">sessioninfo::session_info()</a></code>).</p>
+<p>Finally, if your issue relates to reading a specific file, remember to include said file.</p>
+</div>
+<div class="section level2">
+<h2 id="new-adding-or-requesting-new-extensions">🆕 Adding or requesting new extensions<a class="anchor" aria-label="anchor" href="#new-adding-or-requesting-new-extensions"></a></h2>
+<p>If you find a file that Rarr cannot read yet, please open an issue or send an email with an example file. If the data itself cannot be shared, please at least including the metadata (<code>zarr.json</code> or <code>.zattrs</code>)</p>
+<p>If there is a file that Rarr cannot write yet, please send a link to the relevant specification or extension document.</p>
+</div>
+<div class="section level2">
+<h2 id="ballot_box-voting-for-new-features">🗳️ Voting for new features<a class="anchor" aria-label="anchor" href="#ballot_box-voting-for-new-features"></a></h2>
+<p>Whenever possible, upcoming plans for Rarr as announced as GitHub issues. If you are particularly interested in a specific feature and you would like to hel prioritise it, please use <a href="https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/" class="external-link">the GitHub reactions feature</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="open_book-code-of-conduct">📖 Code of Conduct<a class="anchor" aria-label="anchor" href="#open_book-code-of-conduct"></a></h2>
+<p>Please note that Rarr has adopted <a href="https://bioconductor.github.io/bioc_coc_multilingual/" class="external-link">Bioconductor Code of Conduct</a>. By contributing to this project you agree to abide by its terms.</p>
 </div>
 </div>
 

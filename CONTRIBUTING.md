@@ -1,67 +1,64 @@
 # Contributing to Rarr
 
-This document outlines how to propose a change to Rarr.
+There are many ways you can contribute to Rarr. All contributions are
+very much welcome and only some of them require deep technical
+knowledge. If you have something you would like to contribute, but you
+are not sure how, please don’t hesitate to reach out by opening an
+[issue](https://github.com/Huber-group-EMBL/Rarr/issues) or sending an
+email.
 
-## Fixing typos
+## 🗣️ Spreading the word
 
-You can fix typos, spelling mistakes, or grammatical errors in the
-documentation directly using the GitHub web interface. You can do this
-by clicking on the pen icon, which will then fork the project to your
-account and allow you to propose the changes. Please note we use
-[roxygen2 comments](https://roxygen2.r-lib.org/articles/roxygen2.html)
-to generate the manual pages, meaning you’ll need to edit the `.R`, not
-the `.Rd` file. You can find the `.R` file that generates the `.Rd` by
-reading the comment in the first line. Part of the vignette is used in
-multiple places, and can be found in the non-standard `/inst/rmd`
-location, rather than the `/vignettes` folder.
+The easiest (and possibly one of the most useful) way you can contribute
+to Rarr is by spreading the word. Please [cite
+it](https://huber-group-embl.github.io/Rarr/authors.html) in your
+publications and tell your friends and colleagues about it!
 
-## Bigger changes
+If you like it, please also consider adding a [star on
+GitHub](https://docs.github.com/en/get-started/exploring-projects-on-github/saving-repositories-with-stars).
 
-If you want to make a bigger change, it’s a good idea to first file an
-issue and make sure someone from the Rarr team agrees that it’s needed.
-If you’ve found a bug, please file an issue that illustrates the bug
-with a minimal reproducible example. You can use the
-[reprex](https://www.tidyverse.org/help/#reprex) package to achieve
-this.
+## ✍️ Fixing typos
 
-### Pull request process
+Small typos or grammatical errors in documentation may be edited
+directly using the GitHub web interface, so long as the changes are made
+in the *source* file. In other words, please edit a `.R` file in the
+`R/` folder, and not the `.Rd` files in the `man/` folder. This is
+because this package uses [roxygen2](https://roxygen2.r-lib.org/) to
+automatically rebuild the `.Rd` files.
 
-- Fork the package from this repository and then clone the fork onto
-  your computer.
+## 😥 Reporting bugs
 
-- Install all development dependencies with
-  `devtools::install_dev_deps()`, and then make sure the package passes
-  R CMD check by running `devtools::check()`. If R CMD check doesn’t
-  pass cleanly, it’s a good idea to ask for help before continuing.
+If you think you found a bug in Rarr, even if you’re unsure, please let
+us know. The best way is to open an issue on GitHub:
+<https://github.com/Huber-group-EMBL/Rarr/issues>.
 
-- Create a Git branch for your pull request (PR). Choose a name for the
-  new branch that describes the change you are introducing.
+Please try to create a [reprex](https://reprex.tidyverse.org/) with the
+minimal amount of code required to reproduce the bug you encountered.
 
-- Make your changes, commit to git, and then create a pull request on
-  GitHub. The title of your PR should briefly describe the change. The
-  body of your PR should reference the relevant issue by mentioning
-  somewhere in the description `#issue-number`.
+Please also include your session info (e.g. via the R command
+[`sessioninfo::session_info()`](https://sessioninfo.r-lib.org/reference/session_info.html)).
 
-- For user-facing changes, add a bullet to the top of `NEWS.md`
-  (i.e. just below the first header). Try to follow the style described
-  in <https://style.tidyverse.org/news.html>.
+Finally, if your issue relates to reading a specific file, remember to
+include said file.
 
-### Code style
+## 🆕 Adding or requesting new extensions
 
-- We use [roxygen2](https://cran.r-project.org/package=roxygen2), with
-  [Markdown
-  syntax](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html),
-  for documentation.
+If you find a file that Rarr cannot read yet, please open an issue or
+send an email with an example file. If the data itself cannot be shared,
+please at least including the metadata (`zarr.json` or `.zattrs`)
 
-- We use [testthat](https://cran.r-project.org/package=testthat) for
-  unit tests. Contributions with test cases included are easier to
-  accept. Test files can be found in `/inst/extdata/zarr_examples`. If
-  you do not find a file with the features you need for your test look
-  in the folder `/inst/scripts/` to find the Dockerfile and Python
-  script used to create the test files.
+If there is a file that Rarr cannot write yet, please send a link to the
+relevant specification or extension document.
 
-## Code of Conduct
+## 🗳️ Voting for new features
 
-Please note that the Rarr project adheres to the [Bioconductor Code of
+Whenever possible, upcoming plans for Rarr as announced as GitHub
+issues. If you are particularly interested in a specific feature and you
+would like to hel prioritise it, please use [the GitHub reactions
+feature](https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/).
+
+## 📖 Code of Conduct
+
+Please note that Rarr has adopted [Bioconductor Code of
 Conduct](https://bioconductor.github.io/bioc_coc_multilingual/). By
 contributing to this project you agree to abide by its terms.
