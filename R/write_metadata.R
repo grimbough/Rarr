@@ -140,8 +140,8 @@ write_zarr_attributes <- function(
         "Attributes can only be written to a Zarr array or group that already",
         " has a `zarr.json` file.\n",
         "Please create the Zarr array (with `write_zarr_array()` or ",
-        "`create_empty_zarr_array()`) or group first BEFORE adding ",
-        "attributes.",
+        "`create_empty_zarr_array()`) or group (with `write_zarr_group()`) ",
+        "first BEFORE adding attributes.",
         call. = FALSE
       )
     }
@@ -305,5 +305,79 @@ zarr_consolidate_metadata <- function(
     auto_unbox = TRUE,
     pretty = TRUE,
     null = "null"
+  )
+}
+
+#' Initialize a Zarr group
+#'
+#' @param zarr_path A character vector of length 1. This provides the
+#'   path to a Zarr store.
+#' @param group A character vector of length 1. This provides the name of the
+#'   group to create. If `""`, the root group will be created.
+#' @param zarr_version The version of the Zarr specification to use. If a
+#'   metadata file already exists, the version will be inferred from the file.
+#'   Otherwise, the default is `3`.
+#'
+#' @details Nested groups are created recursively. For example, if
+#'   `group = "foo/bar"`, then the group `foo` will be created first,
+#'   followed by the group `bar` inside of it.
+#'
+#' @export
+#'
+#' @examples
+#' zarr_v2 <- withr::local_tempfile(fileext = ".zarr")
+#' write_zarr_group(zarr_v2, "test/deep/nested/group", zarr_version = 2L)
+#'
+write_zarr_group <- function(
+  zarr_path,
+  group,
+  zarr_version = if (has_metadata_v2) 2L else 3L
+) {
+  has_metadata_v2 <- any(file.exists(file.path(
+    zarr_path,
+    c(".zarray", ".zgroup", ".zattrs")
+  )))
+  stopifnot(
+    "`zarr_version` must be 2 or 3" = zarr_version %in% c(2L, 3L)
+  )
+
+  zarr_path <- .normalize_array_path(zarr_path)
+  group_path <- paste0(zarr_path, group)
+  parent_group_path <- dirname(group_path)
+
+  metadata_file <- c(".zgroup", "zarr.json")[zarr_version - 1L]
+
+  if (
+    !dir.exists(parent_group_path) ||
+      !file.exists(file.path(parent_group_path, metadata_file))
+  ) {
+    write_zarr_group(zarr_path, parent_group_path, zarr_version)
+  }
+
+  if (!dir.exists(group_path)) {
+    dir.create(group_path)
+  }
+
+  meta <- list(zarr_format = zarr_version)
+  group_metadata <- file.path(group_path, metadata_file)
+
+  if (zarr_version == 3L) {
+    if (
+      file.exists(group_metadata) &&
+        .read_json_file(group_metadata)$node_type != "group"
+    ) {
+      stop(
+        "Cannot write group metadata to a non-group Zarr array",
+        call. = FALSE
+      )
+    }
+    meta$node_type <- "group"
+  }
+
+  write_json(
+    meta,
+    file.path(group_path, metadata_file),
+    auto_unbox = TRUE,
+    pretty = TRUE
   )
 }
