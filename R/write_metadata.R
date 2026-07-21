@@ -136,8 +136,13 @@ write_zarr_attributes <- function(
     if (file.exists(file.path(zarr_path, "zarr.json"))) {
       metadata <- read_json(file.path(zarr_path, "zarr.json"))
     } else {
-      metadata <- list(
-        "zarr_format" = 3L
+      stop(
+        "Attributes can only be written to a Zarr array or group that already",
+        " has a `zarr.json` file.\n",
+        "Please create the Zarr array (with `write_zarr_array()` or ",
+        "`create_empty_zarr_array()`) or group first BEFORE adding ",
+        "attributes.",
+        call. = FALSE
       )
     }
     metadata$attributes <- new.zattrs
