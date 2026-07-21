@@ -143,7 +143,12 @@ read_data <- function(
   }
 
   ## predefine our array to be populated from the read chunks
-  output <- array(metadata$fill_value, dim = lengths(index))
+  output <- .Call(
+    "init_array",
+    metadata$fill_value,
+    lengths(index),
+    PACKAGE = "Rarr"
+  )
 
   ## proceed in serial and update the output with each chunk selection in turn
   for (i in seq_along(chunk_selections)) {

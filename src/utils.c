@@ -34,3 +34,59 @@ SEXP chop_vec(SEXP x, SEXP _size) {
   UNPROTECT(1);
   return result;
 }
+
+// This custom functions allows us to initialize an array with a fill value.
+// The base array() function either init to NA or will recycle.
+// In our case, we know fill_value will always be a single value.
+SEXP init_array(SEXP fill_value, SEXP dim) {
+  SEXP result = PROTECT(allocArray(TYPEOF(fill_value), dim));
+  R_xlen_t n = XLENGTH(result);
+  switch (TYPEOF(fill_value)) {
+    case INTSXP: {
+      int fill = INTEGER(fill_value)[0];
+      for (R_xlen_t i = 0; i < n; i++) {
+        INTEGER(result)[i] = fill;
+      }
+      break;
+    }
+    case RAWSXP: {
+      Rbyte fill = RAW(fill_value)[0];
+      for (R_xlen_t i = 0; i < n; i++) {
+        RAW(result)[i] = fill;
+      }
+      break;
+    }
+    case REALSXP: {
+      double fill = REAL(fill_value)[0];
+      for (R_xlen_t i = 0; i < n; i++) {
+        REAL(result)[i] = fill;
+      }
+      break;
+    }
+    case LGLSXP: {
+      bool fill = LOGICAL(fill_value)[0];
+      for (R_xlen_t i = 0; i < n; i++) {
+        LOGICAL(result)[i] = fill;
+      }
+      break;
+    }
+    case STRSXP: {
+      SEXP fill = STRING_ELT(fill_value, 0);
+      for (R_xlen_t i = 0; i < n; i++) {
+        SET_STRING_ELT(result, i, fill);
+      }
+      break;
+    }
+    case VECSXP: {
+      SEXP fill = VECTOR_ELT(fill_value, 0);
+      for (R_xlen_t i = 0; i < n; i++) {
+        SET_VECTOR_ELT(result, i, fill);
+      }
+      break;
+    }
+    default:
+      error("Unsupported fill value type");
+  }
+  UNPROTECT(1);
+  return result;
+}
