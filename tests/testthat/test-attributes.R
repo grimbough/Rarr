@@ -189,3 +189,10 @@ test_that("behaviour on missing attributes", {
     "No file that could contain attributes"
   )
 })
+
+test_that("write_zarr_attributes does not create zarr.json", {
+  path <- withr::local_tempdir(fileext = ".zarr")
+  zattrs <- list(foo = "foo", bar = "bar")
+  write_zarr_attributes(zarr_path = path, new.zattrs = zattrs) |>
+    expect_error("BEFORE adding attributes")
+})
