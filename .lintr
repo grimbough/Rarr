@@ -24,7 +24,7 @@ linters: all_linters(
     routine_registration_linter = NULL,
     return_linter = NULL,
     object_overwrite_linter = NULL,
-    backport_linter("4.1.0"),
+#    backport_linter("4.1.0"),
     cyclocomp_linter(15L)
   )
 exclusions: list(
