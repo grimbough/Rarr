@@ -333,10 +333,10 @@ write_zarr_group <- function(
   group,
   zarr_version = if (has_metadata_v2) 2L else 3L
 ) {
-  has_metadata_v2 <- any(file.exists(file.path(
+  has_metadata_v2 <- any(.store_check_exist(
     zarr_path,
-    c(".zarray", ".zgroup", ".zattrs")
-  )))
+    METADATA_V2_FILES
+  ))
   stopifnot(
     "`zarr_version` must be 2 or 3" = zarr_version %in% c(2L, 3L)
   )
@@ -347,10 +347,7 @@ write_zarr_group <- function(
 
   metadata_file <- c(".zgroup", "zarr.json")[zarr_version - 1L]
 
-  if (
-    !dir.exists(parent_group_path) ||
-      !file.exists(file.path(parent_group_path, metadata_file))
-  ) {
+  if (!.store_check_exist(parent_group_path, metadata_file)) {
     write_zarr_group(zarr_path, parent_group_path, zarr_version)
   }
 
