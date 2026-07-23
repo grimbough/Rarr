@@ -28,11 +28,23 @@ SUPPORTED_V3_TYPES <- list(
 ) |>
   list2env(hash = TRUE, parent = emptyenv())
 
+METADATA_V2_FILES <- c(
+  ".zarray",
+  ".zgroup",
+  ".zattrs",
+  ".zmetadata"
+)
+METADATA_V3_FILES <- c(
+  "zarr.json"
+)
+
 usethis::use_data(
   SUPPORTED_V3_TYPES,
   CODEC_BYTES_BYTES,
   CODEC_ARRAY_ARRAY,
   CODEC_ARRAY_BYTES,
+  METADATA_V2_FILES,
+  METADATA_V3_FILES,
   internal = TRUE,
   overwrite = TRUE
 )
