@@ -43,7 +43,7 @@
 .store_check_exist <- function(
   zarr_array_path,
   files,
-  s3_client
+  s3_client = NULL
 ) {
   if (is.null(s3_client)) {
     is_present <- setNames(
@@ -65,7 +65,7 @@
   return(is_present)
 }
 
-.store_list <- function(path, recursive, s3_client) {
+.store_list <- function(path, recursive, s3_client = NULL) {
   if (is.null(s3_client)) {
     list.files(
       path,
