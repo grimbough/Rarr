@@ -120,6 +120,11 @@ write_zarr_attributes <- function(
     "list elements should be named" = !is.null(names(new.zattrs))
   )
   zarr_path <- .normalize_array_path(zarr_path)
+  attrs_path <- if (zarr_version == 2L) {
+    paste0(zarr_path, ".zattrs")
+  } else {
+    paste0(zarr_path, "zarr.json")
+  }
 
   if ("" %in% names(new.zattrs)) {
     message("Ignoring unnamed list elements")
@@ -135,13 +140,7 @@ write_zarr_attributes <- function(
   }
 
   if (zarr_version == 2L) {
-    write_json(
-      new.zattrs,
-      file.path(zarr_path, ".zattrs"),
-      auto_unbox = TRUE,
-      pretty = TRUE,
-      null = "null"
-    )
+    metadata <- new.zattrs
   } else if (zarr_version == 3L) {
     if (!has_metadata_v3) {
       stop(
@@ -156,15 +155,14 @@ write_zarr_attributes <- function(
     # FIXME: we really want a partial write to the json file
     metadata <- read_json(file.path(zarr_path, "zarr.json"))
     metadata$attributes <- new.zattrs
-    write_json(
-      metadata,
-      file.path(zarr_path, "zarr.json"),
-      auto_unbox = TRUE,
-      pretty = TRUE,
-      null = "null"
-    )
   }
-
+  write_json(
+    metadata,
+    attrs_path,
+    auto_unbox = TRUE,
+    pretty = TRUE,
+    null = "null"
+  )
   invisible(new.zattrs)
 }
 
