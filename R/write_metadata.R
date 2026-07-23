@@ -100,10 +100,21 @@ write_zarr_attributes <- function(
   overwrite = TRUE,
   zarr_version = if (has_metadata_v2) 2L else 3L
 ) {
-  has_metadata_v2 <- any(file.exists(file.path(
+  metadata_v2 <- .store_check_exist(
     zarr_path,
-    c(".zarray", ".zgroup", ".zattrs")
-  )))
+    METADATA_V2_FILES
+  )
+  has_metadata_v2 <- any(metadata_v2)
+  has_metadata_v3 <- .store_check_exist(zarr_path, METADATA_V3_FILES)
+  if (has_metadata_v2 && has_metadata_v3) {
+    stop(
+      "Found ",
+      toString(paste0("`", names(metadata_v2[metadata_v2]), "`")),
+      " (Zarr V2 specification) and `zarr.json` (Zarr V3 specification). ",
+      "Please resolve this conflict before writing attributes.",
+      call. = FALSE
+    )
+  }
   stopifnot(
     "`zarr_version` must be 2 or 3" = zarr_version %in% c(2L, 3L),
     "list elements should be named" = !is.null(names(new.zattrs))
@@ -132,10 +143,7 @@ write_zarr_attributes <- function(
       null = "null"
     )
   } else if (zarr_version == 3L) {
-    # FIXME: we really want a partial write to the json file
-    if (file.exists(file.path(zarr_path, "zarr.json"))) {
-      metadata <- read_json(file.path(zarr_path, "zarr.json"))
-    } else {
+    if (!has_metadata_v3) {
       stop(
         "Attributes can only be written to a Zarr array or group that already",
         " has a `zarr.json` file.\n",
@@ -145,6 +153,8 @@ write_zarr_attributes <- function(
         call. = FALSE
       )
     }
+    # FIXME: we really want a partial write to the json file
+    metadata <- read_json(file.path(zarr_path, "zarr.json"))
     metadata$attributes <- new.zattrs
     write_json(
       metadata,
