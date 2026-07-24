@@ -541,4 +541,17 @@ touchstone::benchmark_run(
   n = 25
 )
 
+touchstone::benchmark_run(
+  {
+    library(Rarr)
+    unlink("groups.zarr", recursive = TRUE)
+    dir.create("groups.zarr")
+  },
+  create_groups = write_zarr_group(
+    "groups.zarr",
+    "this/is/a/deeply/nested/group"
+  ),
+  n = 25
+)
+
 touchstone::benchmark_analyze()
