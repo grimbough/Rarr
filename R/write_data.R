@@ -593,5 +593,9 @@ update_zarr_array <- function(zarr_array_path, x, index) {
       call. = FALSE
     )
   }
+
+  # https://github.com/zarr-developers/zarr-specs/issues/378
+  # we should potentially also check that the chunk size is not 0,
+  # but this is a conscious spec deviation we support
   return(invisible(!oversized_chunk))
 }
