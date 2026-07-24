@@ -12,6 +12,8 @@
   order = "C",
   zarr_version = 3L
 ) {
+  .check_node_name(basename(array_path))
+
   if (!is.null(compressor$id) && compressor$id == "blosc") {
     nbytes <- parse_npy_datatype(data_type)$nbytes
     compressor$typesize <- compressor$typesize %||% nbytes
@@ -348,6 +350,7 @@ write_zarr_group <- function(
   stopifnot(
     "`zarr_version` must be 2 or 3" = zarr_version %in% c(2L, 3L)
   )
+  .check_node_name(basename(group), allow_root = TRUE)
 
   zarr_path <- .normalize_array_path(zarr_path)
   group_path <- paste0(zarr_path, group)
