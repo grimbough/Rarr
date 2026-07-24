@@ -33,6 +33,13 @@ Read the .zattrs file associated with a Zarr array or group
 }
 \examples{
 z1 <- withr::local_tempdir(fileext = ".zarr")
+create_empty_zarr_array(
+  z1,
+  fill_value = 0L,
+  dim = c(10, 10),
+  chunk_dim = c(2, 5),
+  zarr_version = 3L
+)
 write_zarr_attributes(z1, list(date = "2025-01-01", author = "Jane Doe"))
 
 }

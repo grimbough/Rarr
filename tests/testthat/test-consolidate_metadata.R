@@ -1,10 +1,6 @@
 test_that("zarr_consolidate_metadata() on v2", {
   zarr_v2 <- withr::local_tempfile(fileext = ".zarr")
-  dir.create(zarr_v2)
-  jsonlite::write_json(
-    list("zarr_format" = 2L),
-    file.path(zarr_v2, ".zgroup")
-  )
+  write_zarr_group(zarr_v2, "", zarr_version = 2L)
   write_zarr_array(
     array(1:4, dim = c(2, 2)),
     file.path(zarr_v2, "array1"),
@@ -30,15 +26,7 @@ test_that("zarr_consolidate_metadata() on v2", {
 
 test_that("zarr_consoliate_metadata() on v3", {
   zarr_v3 <- withr::local_tempfile(fileext = ".zarr")
-  dir.create(zarr_v3)
-  jsonlite::write_json(
-    list(
-      zarr_format = 3L,
-      node_type = "group"
-    ),
-    file.path(zarr_v3, "zarr.json"),
-    auto_unbox = TRUE
-  )
+  write_zarr_group(zarr_v3, "", zarr_version = 3L)
   write_zarr_array(
     array(1:4, dim = c(2, 2)),
     file.path(zarr_v3, "array1"),
