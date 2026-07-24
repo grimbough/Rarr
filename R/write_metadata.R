@@ -289,6 +289,7 @@ zarr_consolidate_metadata <- function(
       zarr_consolidated_format = 1L,
       metadata = setNames(consolidated, metadata_files)
     )
+    consolidated_path <- paste0(zarr_store_path, ".zmetadata")
   } else {
     attrs <- read_zarr_attributes(zarr_store_path, s3_client = s3_client)
     res <- list(
@@ -301,16 +302,11 @@ zarr_consolidate_metadata <- function(
         metadata = setNames(consolidated, dirname(metadata_files))
       )
     )
+    consolidated_path <- paste0(zarr_store_path, "zarr.json")
   }
 
   if (action == "return") {
     return(res)
-  }
-
-  if (version == 2L) {
-    consolidated_path <- paste0(zarr_store_path, ".zmetadata")
-  } else {
-    consolidated_path <- paste0(zarr_store_path, "zarr.json")
   }
 
   write_json(
