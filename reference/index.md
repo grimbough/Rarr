@@ -28,6 +28,8 @@
   : Print a summary of a Zarr array or group
 - [`zarr_consolidate_metadata()`](https://huber-group-embl.github.io/Rarr/reference/zarr_consolidate_metadata.md)
   : Consolidate Zarr metadata files into a single file
+- [`write_zarr_group()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_group.md)
+  : Initialize a Zarr group
 
 ## Compression helpers
 

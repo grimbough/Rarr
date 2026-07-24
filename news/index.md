@@ -21,6 +21,17 @@
 - Unless `data_type` is specified explicitly, integers are now written
   using the smallest possible bitsize based on the array `x` range in
   [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md).
+- Attributes can no longer be written before an array or group has been
+  initialized at the target location. This is visible in two situations:
+  - `write_zarr_attributes(zarr_version = 3L)` fails if ran before
+    [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md)/
+    [`create_empty_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/create_empty_zarr_array.md)
+    or
+    [`write_zarr_group()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_group.md).
+  - [`create_empty_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/create_empty_zarr_array.md)
+    (and thus
+    [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md))
+    fail if attributes already exist at the target location.
 
 ### New features
 
@@ -47,6 +58,11 @@
 - [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md)
   now returns a new logical field `attributes` indicating whether each
   array has associated attributes.
+- A new
+  [`write_zarr_group()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_group.md)
+  function is available, based on a request and initial draft from Artür
+  Manukyan in
+  [\#18](https://github.com/Huber-group-EMBL/Rarr/issues/18).
 
 ### Minor improvements
 
@@ -90,6 +106,15 @@
   [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md)
   now use the correct data type (`bool`) in metadata for boolean arrays.
   Thanks to a report by Artür Manukyan.
+- Rarr is now stricter regarding allowed names for arrays and groups, as
+  requested by the [Zarr
+  specification](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html#node-names).
+- [`create_empty_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/create_empty_zarr_array.md)
+  (and consequently
+  [`write_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_array.md))
+  now refuses to write in a non-empty location, because this could lead
+  to inconsistent or broken zarr arrays, based on a request from Hervé
+  Pagès ([\#136](https://github.com/Huber-group-EMBL/Rarr/issues/136)).
 
 ### Internal changes
 

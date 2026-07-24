@@ -53,11 +53,7 @@ returned invisibly.
 ``` r
 # v2
 zarr_v2 <- withr::local_tempfile(fileext = ".zarr")
-dir.create(zarr_v2)
-jsonlite::write_json(
-  list("zarr_format" = 2L),
-  file.path(zarr_v2, ".zgroup")
-)
+write_zarr_group(zarr_v2, "", zarr_version = 2L)
 write_zarr_array(
   array(1:4, dim = c(2, 2)),
   file.path(zarr_v2, "array1"),
@@ -81,9 +77,7 @@ zarr_consolidate_metadata(zarr_v2, action = "return")
 #> $metadata
 #> $metadata$.zgroup
 #> $metadata$.zgroup$zarr_format
-#> $metadata$.zgroup$zarr_format[[1]]
 #> [1] 2
-#> 
 #> 
 #> 
 #> $metadata$`array1/.zarray`
@@ -184,10 +178,10 @@ zarr_consolidate_metadata(zarr_v2, action = "return")
 zarr_consolidate_metadata(zarr_v2, action = "write")
 zarr_overview(zarr_v2)
 #> Type: Group of Arrays
-#> Path: /tmp/RtmpAVkqTw/file1e7f4bc4d0bd.zarr
+#> Path: /tmp/RtmpQ6y0Oz/file1d3e527df11a.zarr
 #> Arrays:
 #> ---
-#>   Path: /tmp/RtmpAVkqTw/file1e7f4bc4d0bd.zarr/array1
+#>   Path: /tmp/RtmpQ6y0Oz/file1d3e527df11a.zarr/array1
 #>   Shape: 2 x 2
 #>   Chunk Shape: 1 x 2
 #>   No. of Chunks: 2 (2 x 1)
@@ -196,7 +190,7 @@ zarr_overview(zarr_v2)
 #>   Compressor: zstd
 #>   Attributes: yes
 #> ---
-#>   Path: /tmp/RtmpAVkqTw/file1e7f4bc4d0bd.zarr/array2
+#>   Path: /tmp/RtmpQ6y0Oz/file1d3e527df11a.zarr/array2
 #>   Shape: 2 x 2
 #>   Chunk Shape: 1 x 2
 #>   No. of Chunks: 2 (2 x 1)

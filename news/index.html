@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.26</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.27</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,12 @@
 <li>The name and configuration options for the fixed-length-ascii (<code>|S</code> in Zarr v2) and fixed-length-ucs4 (<code>&lt;U</code> or <code>&gt;U</code> in Zarr v2) data types have been updated to <code>null_terminated_bytes</code> and <code>fixed_length_utf32</code> respectively to match their newly specified format in Zarr v3.</li>
 <li>Structured data types (record arrays) now always return lists as the internal elements, instead of vectors as previously. This allows structured data types to contain different data types in a single element.</li>
 <li>Unless <code>data_type</code> is specified explicitly, integers are now written using the smallest possible bitsize based on the array <code>x</code> range in <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>.</li>
+<li>Attributes can no longer be written before an array or group has been initialized at the target location. This is visible in two situations:
+<ul><li>
+<code>write_zarr_attributes(zarr_version = 3L)</code> fails if ran before <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>/ <code><a href="../reference/create_empty_zarr_array.html">create_empty_zarr_array()</a></code> or <code><a href="../reference/write_zarr_group.html">write_zarr_group()</a></code>.</li>
+<li>
+<code><a href="../reference/create_empty_zarr_array.html">create_empty_zarr_array()</a></code> (and thus <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>) fail if attributes already exist at the target location.</li>
+</ul></li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-2-1">New features<a class="anchor" aria-label="anchor" href="#new-features-2-1"></a></h3>
@@ -59,6 +65,7 @@
 <li>The <code>sharding_indexed</code> codec is now supported to read sharded Zarr arrays.</li>
 <li>
 <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code> now returns a new logical field <code>attributes</code> indicating whether each array has associated attributes.</li>
+<li>A new <code><a href="../reference/write_zarr_group.html">write_zarr_group()</a></code> function is available, based on a request and initial draft from Artür Manukyan in <a href="https://github.com/Huber-group-EMBL/Rarr/issues/18" class="external-link">#18</a>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-2-1">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-2-1"></a></h3>
@@ -79,6 +86,9 @@
 <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code> and <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code> on Zarr v3 files hosted on S3. Thanks to a report and a patch by Artür Manukyan.</li>
 <li>
 <code><a href="../reference/create_empty_zarr_array.html">create_empty_zarr_array()</a></code> and by extension <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code> now use the correct data type (<code>bool</code>) in metadata for boolean arrays. Thanks to a report by Artür Manukyan.</li>
+<li>Rarr is now stricter regarding allowed names for arrays and groups, as requested by the <a href="https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html#node-names" class="external-link">Zarr specification</a>.</li>
+<li>
+<code><a href="../reference/create_empty_zarr_array.html">create_empty_zarr_array()</a></code> (and consequently <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>) now refuses to write in a non-empty location, because this could lead to inconsistent or broken zarr arrays, based on a request from Hervé Pagès (<a href="https://github.com/Huber-group-EMBL/Rarr/issues/136" class="external-link">#136</a>).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="internal-changes-2-1">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-2-1"></a></h3>
