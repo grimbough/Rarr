@@ -19,6 +19,7 @@ reference:
     contents:
       - zarr_overview
       - zarr_consolidate_metadata
+      - write_zarr_group
   - title: "Compression helpers"
     contents:
       - starts_with("use_")
