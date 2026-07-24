@@ -351,15 +351,19 @@ write_zarr_group <- function(
     "`zarr_version` must be 2 or 3" = zarr_version %in% c(2L, 3L)
   )
   .check_node_name(basename(group), allow_root = TRUE)
+  metadata_file <- c(".zgroup", "zarr.json")[zarr_version - 1L]
 
   zarr_path <- .normalize_array_path(zarr_path)
   group_path <- paste0(zarr_path, group)
-  parent_group_path <- dirname(group_path)
 
-  metadata_file <- c(".zgroup", "zarr.json")[zarr_version - 1L]
-
-  if (!.store_check_exist(parent_group_path, metadata_file)) {
-    write_zarr_group(zarr_path, parent_group_path, zarr_version)
+  if (nzchar(group)) {
+    # if nzchar, we're already at root and don't want to recurse
+    parent_group <- dirname(group)
+    if (
+      !.store_check_exist(zarr_path, file.path(parent_group, metadata_file))
+    ) {
+      write_zarr_group(zarr_path, parent_group, zarr_version)
+    }
   }
 
   if (!dir.exists(group_path)) {
