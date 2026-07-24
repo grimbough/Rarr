@@ -363,6 +363,9 @@ write_zarr_group <- function(
   if (nzchar(group)) {
     # if nzchar, we're already at root and don't want to recurse
     parent_group <- dirname(group)
+    if (parent_group == ".") {
+      parent_group <- ""
+    }
     if (
       !.store_check_exist(zarr_path, file.path(parent_group, metadata_file))
     ) {
