@@ -26,6 +26,7 @@ touchstone::benchmark_run(
       nrow = 5,
       ncol = 2
     )
+    unlink("boolean.zarr", recursive = TRUE)
   },
   write_bool = write_zarr_array(
     x = x_bool,
@@ -41,6 +42,7 @@ touchstone::benchmark_run(
   {
     library(Rarr)
     x_int8 <- array(1:2e2, dim = c(2, 10, 10))
+    unlink("int8.zarr", recursive = TRUE)
   },
   write_int8 = write_zarr_array(
     x = x_int8,
@@ -57,6 +59,7 @@ touchstone::benchmark_run(
   {
     library(Rarr)
     x_int16 <- array(1:1e3, dim = c(10, 10, 10))
+    unlink("int16.zarr", recursive = TRUE)
   },
   write_int16 = write_zarr_array(
     x = x_int16,
@@ -73,6 +76,7 @@ touchstone::benchmark_run(
   {
     library(Rarr)
     x_int32 <- array(1:1e3, dim = c(10, 10, 10))
+    unlink("int32.zarr", recursive = TRUE)
   },
   write_int32 = write_zarr_array(
     x = x_int32,
@@ -89,6 +93,7 @@ touchstone::benchmark_run(
   {
     library(Rarr)
     x_float32 <- array(runif(1e3), dim = c(10, 10, 10))
+    unlink("float32.zarr", recursive = TRUE)
   },
   write_float32 = write_zarr_array(
     x = x_float32,
@@ -104,6 +109,7 @@ touchstone::benchmark_run(
   {
     library(Rarr)
     x_double <- array(runif(1e3), dim = c(10, 10, 10))
+    unlink("double.zarr", recursive = TRUE)
   },
   write_double = write_zarr_array(
     x = x_double,
@@ -123,6 +129,7 @@ touchstone::benchmark_run(
       nrow = 10,
       ncol = 10
     )
+    unlink("string.zarr", recursive = TRUE)
   },
   write_string = write_zarr_array(
     x = x_string,
@@ -151,6 +158,7 @@ touchstone::benchmark_run(
       nrow = 4,
       ncol = 2
     )
+    unlink("unicode.zarr", recursive = TRUE)
   },
   write_unicode = write_zarr_array(
     x = x_unicode,
@@ -179,6 +187,7 @@ touchstone::benchmark_run(
       nrow = 4,
       ncol = 2
     )
+    unlink("unicode.zarr", recursive = TRUE)
     write_unicode <- write_zarr_array(
       x = x_unicode,
       zarr_array_path = "unicode.zarr",
@@ -195,6 +204,7 @@ touchstone::benchmark_run(
   {
     library(Rarr)
     x_int32 <- array(1:1e3, dim = c(10, 10, 10))
+    unlink("int32.zarr", recursive = TRUE)
     write_int32 <- write_zarr_array(
       x = x_int32,
       zarr_array_path = "int32.zarr",
@@ -211,6 +221,7 @@ touchstone::benchmark_run(
   {
     library(Rarr)
     x_double <- array(runif(1e3), dim = c(10, 10, 10))
+    unlink("double.zarr", recursive = TRUE)
     write_double <- write_zarr_array(
       x = x_double,
       zarr_array_path = "double.zarr",
@@ -230,6 +241,7 @@ touchstone::benchmark_run(
       nrow = 10,
       ncol = 10
     )
+    unlink("string.zarr", recursive = TRUE)
     write_string <- write_zarr_array(
       x = x_string,
       zarr_array_path = "string.zarr",
@@ -244,6 +256,7 @@ touchstone::benchmark_run(
 touchstone::benchmark_run(
   {
     library(Rarr)
+    unlink("empty.zarr", recursive = TRUE)
     write_empty <- create_empty_zarr_array(
       zarr_array_path = "empty.zarr",
       dim = c(10, 10, 10),
@@ -409,6 +422,7 @@ touchstone::benchmark_run(
 touchstone::benchmark_run(
   {
     library(Rarr)
+    unlink("zstd.zarr", recursive = TRUE)
   },
   write_zstd = write_zarr_array(
     array(1:1e6, dim = c(100, 100, 100)),
@@ -422,6 +436,7 @@ touchstone::benchmark_run(
 touchstone::benchmark_run(
   {
     library(Rarr)
+    unlink("zstd.zarr", recursive = TRUE)
     write_zarr_array(
       array(1:1e6, dim = c(100, 100, 100)),
       "zstd.zarr",
@@ -437,6 +452,7 @@ touchstone::benchmark_run(
 touchstone::benchmark_run(
   {
     library(Rarr)
+    unlink("blosc_lz4.zarr", recursive = TRUE)
   },
   write_blosc_lz4 = write_zarr_array(
     array(1:1e6, dim = c(100, 100, 100)),
@@ -451,6 +467,7 @@ touchstone::benchmark_run(
 touchstone::benchmark_run(
   {
     library(Rarr)
+    unlink("blosc_lz4.zarr", recursive = TRUE)
     write_zarr_array(
       array(1:1e6, dim = c(100, 100, 100)),
       "blosc_lz4.zarr",
@@ -496,6 +513,7 @@ touchstone::benchmark_run(
 touchstone::benchmark_run(
   {
     library(Rarr)
+    unlink("transpose.zarr", recursive = TRUE)
     write_zarr_array(
       array(1:1e3, dim = c(10, 10, 10)),
       "transpose.zarr",
