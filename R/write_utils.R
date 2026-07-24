@@ -84,3 +84,54 @@
     return("<u4")
   }
 }
+
+# https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html#node-names
+# It's slightly overzealous to apply everything to v2, but it makes our life
+# much easier and follows our 'v3 first' philosophy.
+.check_node_name <- function(name, allow_root = FALSE) {
+  if (!nzchar(name) && !allow_root) {
+    stop(
+      "`",
+      name,
+      "` is not a valid Zarr node name. ",
+      "Zarr node names cannot be empty strings.",
+      call. = FALSE
+    )
+  }
+  if (grepl("/", name, fixed = TRUE)) {
+    stop(
+      "`",
+      name,
+      "` is not a valid Zarr node name. ",
+      "Zarr node names cannot contain the '/' character.",
+      call. = FALSE
+    )
+  }
+  if (grepl("^[.]+$", name)) {
+    stop(
+      "`",
+      name,
+      "` is not a valid Zarr node name. ",
+      "Zarr node names cannot contain only the '.' character.",
+      call. = FALSE
+    )
+  }
+  if (startsWith(name, "__")) {
+    stop(
+      "`",
+      name,
+      "` is not a valid Zarr node name. ",
+      "Zarr node names cannot start with '__'.",
+      call. = FALSE
+    )
+  }
+  if (name %in% c(METADATA_V2_FILES, METADATA_V3_FILES)) {
+    stop(
+      "`",
+      name,
+      "` is a reserved name for Zarr metadata. ",
+      "Please provide a different node name.",
+      call. = FALSE
+    )
+  }
+}
