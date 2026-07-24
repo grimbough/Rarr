@@ -16,6 +16,12 @@
 * Unless `data_type` is specified explicitly, integers are now written using 
   the smallest possible bitsize based on the array `x` range in 
   `write_zarr_array()`.
+* Attributes can no longer be written before an array or group has been 
+  initialized at the target location. This is visible in two situations:
+  * `write_zarr_attributes(zarr_version = 3L)` fails if ran before 
+  `write_zarr_array()`/ `create_empty_zarr_array()` or `write_zarr_group()`.
+  * `create_empty_zarr_array()` (and thus `write_zarr_array()`) fail if
+  attributes already exist at the target location.
 
 ## New features
 
@@ -34,6 +40,8 @@
 * The `sharding_indexed` codec is now supported to read sharded Zarr arrays.
 * `zarr_overview()` now returns a new logical field `attributes` indicating
   whether each array has associated attributes.
+* A new `write_zarr_group()` function is available, based on a request and
+  initial draft from Artür Manukyan in #18.
 
 ## Minor improvements
 
@@ -58,7 +66,6 @@
   argument in `read_zarr_array()` is a continuous sequence. One such example
   is when the entire array is read (`index` argument missing).
 
-
 ## Bug fixes
 
 * Using blosc compression via variable-length types such as when using the 
@@ -68,6 +75,12 @@
 * `create_empty_zarr_array()` and by extension `write_zarr_array()` now use
   the correct data type (`bool`) in metadata for boolean arrays. Thanks to
   a report by Artür Manukyan.
+* Rarr is now stricter regarding allowed names for arrays and groups, as
+  requested by the [Zarr specification](https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html#node-names).
+* `create_empty_zarr_array()` (and consequently `write_zarr_array()`) now
+  refuses to write in a non-empty location, because this could lead to 
+  inconsistent or broken zarr arrays, based on a request from Hervé Pagès 
+  (#136).
 
 ## Internal changes
 
