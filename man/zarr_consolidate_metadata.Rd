@@ -38,11 +38,7 @@ which is especially beneficial for remote stores like S3.
 \examples{
 # v2
 zarr_v2 <- withr::local_tempfile(fileext = ".zarr")
-dir.create(zarr_v2)
-jsonlite::write_json(
-  list("zarr_format" = 2L),
-  file.path(zarr_v2, ".zgroup")
-)
+write_zarr_group(zarr_v2, "", zarr_version = 2L)
 write_zarr_array(
   array(1:4, dim = c(2, 2)),
   file.path(zarr_v2, "array1"),

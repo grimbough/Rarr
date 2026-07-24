@@ -94,6 +94,13 @@
 #' @export
 #' @examples
 #' z1 <- withr::local_tempdir(fileext = ".zarr")
+#' create_empty_zarr_array(
+#'   z1,
+#'   fill_value = 0L,
+#'   dim = c(10, 10),
+#'   chunk_dim = c(2, 5),
+#'   zarr_version = 3L
+#' )
 #' write_zarr_attributes(z1, list(date = "2025-01-01", author = "Jane Doe"))
 #'
 write_zarr_attributes <- function(
@@ -194,11 +201,7 @@ write_zarr_attributes <- function(
 #' @examples
 #' # v2
 #' zarr_v2 <- withr::local_tempfile(fileext = ".zarr")
-#' dir.create(zarr_v2)
-#' jsonlite::write_json(
-#'   list("zarr_format" = 2L),
-#'   file.path(zarr_v2, ".zgroup")
-#' )
+#' write_zarr_group(zarr_v2, "", zarr_version = 2L)
 #' write_zarr_array(
 #'   array(1:4, dim = c(2, 2)),
 #'   file.path(zarr_v2, "array1"),

@@ -9,9 +9,7 @@
       $metadata
       $metadata$.zgroup
       $metadata$.zgroup$zarr_format
-      $metadata$.zgroup$zarr_format[[1]]
       [1] 2
-      
       
       
       $metadata$`array1/.zarray`
