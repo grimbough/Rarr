@@ -102,6 +102,7 @@ write_zarr_attributes <- function(
   overwrite = TRUE,
   zarr_version = if (has_metadata_v2) 2L else 3L
 ) {
+  zarr_path <- .normalize_array_path(zarr_path)
   metadata_v2 <- .store_check_exist(
     zarr_path,
     METADATA_V2_FILES
@@ -121,7 +122,7 @@ write_zarr_attributes <- function(
     "`zarr_version` must be 2 or 3" = zarr_version %in% c(2L, 3L),
     "list elements should be named" = !is.null(names(new.zattrs))
   )
-  zarr_path <- .normalize_array_path(zarr_path)
+
   attrs_path <- if (zarr_version == 2L) {
     paste0(zarr_path, ".zattrs")
   } else {
