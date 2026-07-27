@@ -1,7 +1,6 @@
-from zarr.abc import numcodec
-import zarr
 import numcodecs
 import numpy as np
+import zarr
 
 z = zarr.open('inst/extdata/zarr_examples/column-first/int32.zarr', mode='w', shape=(30, 20, 10),
                chunks=(10, 10, 5), dtype='i4', order="C", dimension_separator = "/", zarr_format=2)

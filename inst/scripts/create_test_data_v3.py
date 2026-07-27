@@ -1,6 +1,6 @@
-import zarr
-import numpy as np
 import numcodecs.zarr3
+import numpy as np
+import zarr
 from zarr.core.dtype.npy.structured import Struct
 
 z = zarr.create_array('inst/extdata/zarr_examples/column-first/int32_v3.zarr', shape=(30, 20, 10),
