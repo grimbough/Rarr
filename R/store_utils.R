@@ -71,7 +71,8 @@
       path,
       recursive = recursive,
       include.dirs = TRUE,
-      all.files = TRUE
+      all.files = TRUE,
+      no.. = TRUE
     )
   } else {
     s3_client$list_objects(path, recursive = recursive)
