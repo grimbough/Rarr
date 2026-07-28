@@ -302,14 +302,6 @@
       
       
       
-      $consolidated_metadata$metadata$.
-      $consolidated_metadata$metadata$.$zarr_format
-      [1] 3
-      
-      $consolidated_metadata$metadata$.$node_type
-      [1] "group"
-      
-      
       
       
 
