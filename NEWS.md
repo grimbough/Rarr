@@ -97,6 +97,8 @@
 * Parsing Zarr v2 datatypes and the bytes codec decoding operation are now 
   handled internally by the new 
   [grumpy CRAN package](https://cran.r-project.org/package=grumpy).
+* When reading a Zarr array composed of a single chunk, `read_zarr_array()` 
+  now takes a shortcut which saves a data copy.
 
 # Rarr 1.99
 
