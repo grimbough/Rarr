@@ -278,6 +278,9 @@ zarr_consolidate_metadata <- function(
   version <- if (any(metadata_v2_files)) 2L else 3L
   metadata_files <- child_meta[metadata_v2_files | metadata_v3_files]
 
+  # Root metadata is not included in v3
+  metadata_files <- metadata_files[metadata_files != "zarr.json"]
+
   consolidated <- lapply(
     paste0(zarr_store_path, metadata_files),
     .read_json_file,
