@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.29</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.30</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,6 +89,7 @@
 <li>Rarr is now stricter regarding allowed names for arrays and groups, as requested by the <a href="https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html#node-names" class="external-link">Zarr specification</a>.</li>
 <li>
 <code><a href="../reference/create_empty_zarr_array.html">create_empty_zarr_array()</a></code> (and consequently <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>) now refuses to write in a non-empty location, because this could lead to inconsistent or broken zarr arrays, based on a request from Hervé Pagès (<a href="https://github.com/Huber-group-EMBL/Rarr/issues/136" class="external-link">#136</a>).</li>
+<li>Rarr now compiles properly on Window ARM64, thanks a to report and patch from Jeroen Ooms (<a href="https://github.com/Huber-group-EMBL/Rarr/issues/224" class="external-link">#224</a>).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="internal-changes-2-1">Internal changes<a class="anchor" aria-label="anchor" href="#internal-changes-2-1"></a></h3>
