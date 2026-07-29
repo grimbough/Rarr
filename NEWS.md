@@ -81,6 +81,8 @@
   refuses to write in a non-empty location, because this could lead to 
   inconsistent or broken zarr arrays, based on a request from Hervé Pagès 
   (#136).
+* Rarr now compiles properly on Window ARM64, thanks a to report and patch from
+  Jeroen Ooms (#224).
 
 ## Internal changes
 
