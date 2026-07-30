@@ -98,6 +98,14 @@ use_blosc <- function(
 #' @rdname compressors
 #' @export
 use_zlib <- function(level = 6L) {
+  if (level != 6L) {
+    warning(
+      "Zlib compression `level` value is ignored. ",
+      "The underlying implementation always uses level 6.",
+      call. = FALSE
+    )
+    level <- 6L
+  }
   res <- list(id = "zlib", level = as.integer(level))
   return(res)
 }
@@ -105,13 +113,29 @@ use_zlib <- function(level = 6L) {
 #' @rdname compressors
 #' @export
 use_gzip <- function(level = 6L) {
+  if (level != 6L) {
+    warning(
+      "Gzip compression `level` value is ignored. ",
+      "The underlying implementation always uses level 6.",
+      call. = FALSE
+    )
+    level <- 6L
+  }
   res <- list(id = "gzip", level = as.integer(level))
   return(res)
 }
 
 #' @rdname compressors
 #' @export
-use_bz2 <- function(level = 6L) {
+use_bz2 <- function(level = 9L) {
+  if (level != 9L) {
+    warning(
+      "Bzip2 compression `level` value is ignored. ",
+      "The underlying implementation always uses level 9.",
+      call. = FALSE
+    )
+    level <- 9L
+  }
   res <- list(id = "bz2", level = as.integer(level))
   return(res)
 }
@@ -119,6 +143,14 @@ use_bz2 <- function(level = 6L) {
 #' @rdname compressors
 #' @export
 use_lzma <- function(level = 9L) {
+  if (level != 9L) {
+    warning(
+      "LZMA compression `level` value is ignored. ",
+      "The underlying implementation always uses level 9.",
+      call. = FALSE
+    )
+    level <- 9L
+  }
   res <- list(id = "lzma", format = 1L, level = as.integer(level))
   return(res)
 }
@@ -135,11 +167,14 @@ use_lz4 <- function() {
 use_zstd <- function(level = 0L) {
   # Question: we could potentially save level 0 in the metadata as the actual
   # value picked by the zstd library. For now, we follow zarr python approach.
-  if (level < 0L || level > 22L) {
-    stop(
-      "Zstd compression `level` value must be an integer between 0 and 22.",
+  if (level %notin% c(0L, 3L)) {
+    warning(
+      "Zstd compression `level` value is ignored. ",
+      "The underlying implementation always uses level 0 ",
+      "(which automatically selects level 3).",
       call. = FALSE
     )
+    level <- 0L
   }
   res <- list(id = "zstd", level = as.integer(level))
   return(res)
