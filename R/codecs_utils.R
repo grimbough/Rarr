@@ -75,7 +75,9 @@
       candidate_codec <- switch(
         candidate_codec,
         "numcodecs.lz4" = "lz4",
-        "zstd" = if ("zstd" %in% names(extSoftVersion())) {
+        "zstd" = if (
+          !is.na(extSoftVersion()["zstd"]) && nzchar(extSoftVersion()["zstd"])
+        ) {
           "zstd_base"
         } else {
           "zstd_custom"
@@ -88,7 +90,7 @@
           "functions for zstd with the expectation it is available everywhere. ",
           "If you are seeing this warning, it means your R installation does ",
           "not have zstd support. Please report at ",
-          "https://github.com/Huber-group-EMBL/Rarr/issues.",
+          "https://github.com/Huber-group-EMBL/Rarr/issues. ",
           "If no reports are received, this support will be removed in a ",
           "future release.",
           call. = FALSE
