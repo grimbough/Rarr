@@ -55,7 +55,7 @@ zarr_overview <- function(
   zarr_array_path <- .normalize_array_path(zarr_array_path)
   s3_client <- s3_client %||% .create_s3_client(path = zarr_array_path)
 
-  dot_zmeta <- .read_consolidated_metadata(
+  dot_zmeta <- read_zarr_consolidated_metadata(
     zarr_path = zarr_array_path,
     s3_client = s3_client
   )
@@ -459,7 +459,7 @@ zarr_overview <- function(
   return(fill_value)
 }
 
-#' Read consolidated metadata file
+#' Read consolidated metadata
 #'
 #' @inheritParams .read_array_metadata
 #' @param consolidate One of `"never"` (default), `"missing"` or `"always"`.
@@ -499,7 +499,7 @@ zarr_overview <- function(
 #' m <- read_zarr_consolidated_metadata(z)
 #' head(m)
 #'
-.read_consolidated_metadata <- function(
+read_zarr_consolidated_metadata <- function(
   zarr_path,
   consolidate = c("never", "missing", "always"),
   s3_client = NULL

@@ -5,13 +5,11 @@ template:
 reference:
   - title: "Read Zarr data"
     contents:
-      - read_zarr_array
+      - starts_with("read_zarr_")
       - zarr_overview
-      - read_zarr_attributes
   - title: "Write Zarr data"
     contents:
-      - write_zarr_array
-      - write_zarr_attributes
+      - starts_with("write_zarr_")
       - update_zarr_array
       - create_empty_zarr_array
       - zarr_consolidate_metadata
@@ -19,6 +17,7 @@ reference:
     contents:
       - zarr_overview
       - zarr_consolidate_metadata
+      - read_zarr_consolidated_metadata
       - write_zarr_group
   - title: "Compression helpers"
     contents:
