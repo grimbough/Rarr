@@ -492,34 +492,61 @@ zarr_overview <- function(
 .read_consolidated_metadata <- function(
   zarr_path,
   nodes = c("group", "array"),
+  consolidate = c("never", "missing", "always"),
   s3_client = NULL
 ) {
+  nodes <- match.arg(nodes)
+  consolidate <- match.arg(consolidate)
+  zarr_path <- .normalize_array_path(zarr_path)
   s3_client <- s3_client %||% .create_s3_client(zarr_path)
 
-  metadata_file <- .store_check_exist(
-    zarr_path,
-    files = c(".zmetadata", "zarr.json"),
-    s3_client
-  )
-  if (!metadata_file[".zmetadata"] && !metadata_file["zarr.json"]) {
-    return(NULL)
-  }
-  if (metadata_file[".zmetadata"] && metadata_file["zarr.json"]) {
-    stop(
-      "The path contains both `.zmetadata` (Zarr V2 specification) and ",
-      "`zarr.json` (Zarr V3 specification) consolidated metadata files.\n",
-      "An array or group must conform to either the Zarr V2 or V3 ",
-      "specification.",
-      call. = FALSE
+  if (consolidate == "always") {
+    zmeta <- zarr_consolidate_metadata(
+      zarr_path,
+      s3_client = s3_client,
+      action = "return"
     )
+  } else {
+    metadata_file <- .store_check_exist(
+      zarr_path,
+      files = c(".zmetadata", "zarr.json"),
+      s3_client
+    )
+    if (metadata_file[".zmetadata"] && metadata_file["zarr.json"]) {
+      stop(
+        "The path contains both `.zmetadata` (Zarr V2 specification) and ",
+        "`zarr.json` (Zarr V3 specification) consolidated metadata files.\n",
+        "An array or group must conform to either the Zarr V2 or V3 ",
+        "specification.",
+        call. = FALSE
+      )
+    }
+
+    if (!metadata_file[".zmetadata"] && !metadata_file["zarr.json"]) {
+      if (consolidate == "never") {
+        return(NULL)
+      }
+      # No need to check consolidate == "missing" as we've used other values
+      # already
+      zmeta <- zarr_consolidate_metadata(
+        zarr_path,
+        s3_client = s3_client,
+        action = "return"
+      )
+    } else {
+      zmeta_path <- paste0(zarr_path, names(metadata_file)[metadata_file])
+
+      # At this stage, we are sure the file exists
+      zmeta <- .read_json_file(zmeta_path, s3_client)
+    }
   }
-
-  zmeta_path <- paste0(zarr_path, names(metadata_file)[metadata_file])
-
-  # At this stage, we are sure the file exists
-  zmeta <- .read_json_file(zmeta_path, s3_client)
-
-  if (metadata_file[".zmetadata"]) {
+  if (isTRUE(zmeta$zarr_format == 3L)) {
+    # zarr_format might not exist. E.g, in v2 so isTRUE().
+    if (zmeta$node_type == "array") {
+      return(NULL)
+    }
+    zmeta <- zmeta$consolidated_metadata
+  } else {
     arrays <- names(zmeta$metadata)[endsWith(
       names(zmeta$metadata),
       "/.zarray"
@@ -535,11 +562,6 @@ zarr_overview <- function(
         )
       }
     )
-  } else {
-    if (zmeta$node_type == "array") {
-      return(NULL)
-    }
-    zmeta <- zmeta$consolidated_metadata
   }
   if (length(zmeta$metadata) == 0L) {
     warning(
