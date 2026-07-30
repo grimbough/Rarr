@@ -189,7 +189,13 @@ read_data <- function(
   }
 
   if (is.null(s3_client)) {
-    size <- file.size(current_chunk_path)
+    if (anyNA(metadata$datatype$nbytes)) {
+      size <- file.info(current_chunk_path)$size
+    } else {
+      # Max size of an uncompressed chunk.
+      # This is faster than using file.size() because it avoids a system call.
+      size <- prod(c(chunk_dim, metadata$datatype$nbytes, 8L))
+    }
     raw_chunk <- readBin(con = current_chunk_path, what = "raw", n = size)
   } else {
     raw_chunk <- s3_client$get_object(
