@@ -57,7 +57,6 @@ zarr_overview <- function(
 
   dot_zmeta <- .read_consolidated_metadata(
     zarr_path = zarr_array_path,
-    nodes = "array",
     s3_client = s3_client
   )
   if (!is.null(dot_zmeta)) {
@@ -491,11 +490,9 @@ zarr_overview <- function(
 #' @keywords internal
 .read_consolidated_metadata <- function(
   zarr_path,
-  nodes = c("group", "array"),
   consolidate = c("never", "missing", "always"),
   s3_client = NULL
 ) {
-  nodes <- match.arg(nodes)
   consolidate <- match.arg(consolidate)
   zarr_path <- .normalize_array_path(zarr_path)
   s3_client <- s3_client %||% .create_s3_client(zarr_path)
