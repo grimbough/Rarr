@@ -461,26 +461,44 @@ zarr_overview <- function(
 
 #' Read consolidated metadata file
 #'
+#' @inheritParams .read_array_metadata
+#' @param consolidate One of `"never"` (default), `"missing"` or `"always"`.
+#'   This controls whether the consolidated metadata needs to be (re)generated
+#'   on the fly, in memory. If `"never"` then the consolidated metadata is only
+#'   read if it already exists, and `NULL` is returned otherwise. If `"missing"`
+#'   then the consolidated metadata is generated if it does not already exist.
+#'   If `"always"` then the consolidated metadata is always (re)generated, even
+#'   if it already exists.
+#'
+#' @returns A list containing the consolidated metadata, formatted as Zarr v3
+#'   consolidated metadata.
+#'   If `consolidate = "never"` and the consolidated metadata does not exist,
+#'   `NULL` is returned.
+#'
 #' @details
-#' This is stored in the `.zmetadata` file at the root of a Zarr store.
+#' This is stored in the `.zmetadata` (Zarr v2) or `zarr.json` (Zarr v3) file at
+#' the root of a Zarr store.
+#'
 #' Note that it is not documented in the official Zarr specification, because
 #' it is not (yet?) part of the standard.
 #'
-#' It is implemented in zarr-python and discussed under the
-#' "consolidated metadata" phrase.
-#'
 #' In particular, it lists the location of all the metadata files for arrays in
-#' the current group, so it is not necessary to crawl to discover them.
+#' the current group, so it is not necessary to crawl to discover them. It
+#' leads to much better performance, in particular when reading arrays from S3
+#' storage.
 #'
 #' @references
 #' <https://zarr.readthedocs.io/en/latest/user-guide/consolidated_metadata.html>
 #'
-#'
-#' @inheritParams .read_array_metadata
-#'
 #' @importFrom grumpy parse_npy_datatype
 #'
-#' @keywords internal
+#' @export
+#'
+#' @examples
+#' z <- system.file("extdata", "zarr_examples", "metadata", "consolidated.zarr", package = "Rarr")
+#' m <- read_zarr_consolidated_metadata(z)
+#' head(m)
+#'
 .read_consolidated_metadata <- function(
   zarr_path,
   consolidate = c("never", "missing", "always"),
