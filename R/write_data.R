@@ -441,16 +441,15 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bpmapply() ?
-  res <- mapply(
-    FUN = .update_chunk,
+  res <- vapply(
     chunk_names,
-    MoreArgs = list(
-      x = x,
-      chunk_positions = chunk_positions,
-      zarr_array_path = zarr_array_path,
-      chunk_dim = chunk_dim,
-      metadata = metadata
-    )
+    .update_chunk,
+    x = x,
+    chunk_positions = chunk_positions,
+    zarr_array_path = zarr_array_path,
+    chunk_dim = chunk_dim,
+    metadata = metadata,
+    FUN.VALUE = logical(1L)
   )
 
   return(invisible(all(res)))
