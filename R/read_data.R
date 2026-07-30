@@ -249,7 +249,7 @@ read_chunk <- function(
   }
   # Array -> Array codecs
   for (codec in decoders[["array_array"]]) {
-    converted_chunk <- do.call(codec, list(converted_chunk))
+    converted_chunk <- codec(converted_chunk)
   }
 
   return(converted_chunk)

@@ -516,7 +516,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
 ) {
   # Array to array codecs
   for (codec in metadata$configured_encoders[["array_array"]]) {
-    input_chunk <- do.call(codec, list(input_chunk))
+    input_chunk <- codec(input_chunk)
   }
   # Array to bytes codecs
   for (codec in metadata$configured_encoders[["array_bytes"]]) {
