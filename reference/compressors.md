@@ -18,7 +18,7 @@ use_zlib(level = 6L)
 
 use_gzip(level = 6L)
 
-use_bz2(level = 6L)
+use_bz2(level = 9L)
 
 use_lzma(level = 9L)
 
@@ -82,6 +82,7 @@ will be written to the .zarray metadata when the Zarr array is created.
 ## define 2 compression filters for blosc (using snappy) and bzip2 (level 5)
 blosc_with_snappy_compression <- use_blosc(cname = "snappy")
 bzip2_compression <- use_bz2(level = 5)
+#> Warning: Bzip2 compression `level` value is ignored. The underlying implementation always uses level 9.
 
 ## create an example array to write to a file
 x <- array(runif(n = 1000, min = -10, max = 10), dim = c(10, 20, 5))

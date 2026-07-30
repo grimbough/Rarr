@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.31</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.32</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,8 @@
 <li>
 <code><a href="../reference/create_empty_zarr_array.html">create_empty_zarr_array()</a></code> (and thus <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code>) fail if attributes already exist at the target location.</li>
 </ul></li>
+<li>ZSTD compression and decompression now relies on base R <code><a href="https://rdrr.io/r/base/memCompress.html" class="external-link">memCompress()</a></code> and <code><a href="https://rdrr.io/r/base/memCompress.html" class="external-link">memDecompress()</a></code> functions. The bundled ZSTD library and the custom ZSTD compression/decompression of R objects code will be removed in a future version of this package. Please get in touch if your R installation does not come with ZSTD support and you rely on our custom implementation.</li>
+<li>User-specified compression levels are now ignored when writing. This change is necessary to eventually enable writing on S3, and writing sharded arrays. It allows results in better speed performance when writing. A patch will be provided to base R to enable custom user-specified compression levels again in the future.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-2-1">New features<a class="anchor" aria-label="anchor" href="#new-features-2-1"></a></h3>
