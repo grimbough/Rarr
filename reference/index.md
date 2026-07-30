@@ -4,10 +4,12 @@
 
 - [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md)
   : Read a Zarr array
-- [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md)
-  : Print a summary of a Zarr array or group
 - [`read_zarr_attributes()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_attributes.md)
   : Read the attributes associated with a Zarr array or group
+- [`read_zarr_consolidated_metadata()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_consolidated_metadata.md)
+  : Read consolidated metadata
+- [`zarr_overview()`](https://huber-group-embl.github.io/Rarr/reference/zarr_overview.md)
+  : Print a summary of a Zarr array or group
 
 ## Write Zarr data
 
@@ -15,6 +17,8 @@
   : Write an R array to Zarr
 - [`write_zarr_attributes()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_attributes.md)
   : Read the .zattrs file associated with a Zarr array or group
+- [`write_zarr_group()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_group.md)
+  : Initialize a Zarr group
 - [`update_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/update_zarr_array.md)
   : Update (a subset of) an existing Zarr array
 - [`create_empty_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/create_empty_zarr_array.md)
@@ -28,6 +32,8 @@
   : Print a summary of a Zarr array or group
 - [`zarr_consolidate_metadata()`](https://huber-group-embl.github.io/Rarr/reference/zarr_consolidate_metadata.md)
   : Consolidate Zarr metadata files into a single file
+- [`read_zarr_consolidated_metadata()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_consolidated_metadata.md)
+  : Read consolidated metadata
 - [`write_zarr_group()`](https://huber-group-embl.github.io/Rarr/reference/write_zarr_group.md)
   : Initialize a Zarr group
 

@@ -63,6 +63,10 @@
   function is available, based on a request and initial draft from Artür
   Manukyan in
   [\#18](https://github.com/Huber-group-EMBL/Rarr/issues/18).
+- The
+  [`read_zarr_consolidated_metadata()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_consolidated_metadata.md)
+  function is now exported, fulfilling the request from Sharla Gelfand
+  in [\#116](https://github.com/Huber-group-EMBL/Rarr/issues/116).
 
 ### Minor improvements
 
@@ -135,7 +139,7 @@
   existence in the lower-level shared utilities
   [`.read_array_metadata()`](https://huber-group-embl.github.io/Rarr/reference/dot-read_array_metadata.md)
   and
-  [`.read_consolidated_metadata()`](https://huber-group-embl.github.io/Rarr/reference/dot-read_consolidated_metadata.md).
+  [`read_zarr_consolidated_metadata()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_consolidated_metadata.md).
   While this is still discouraged, this also facilitates re-use of the
   internal functions in other packages (e.g., ZarrArray).
 - Parsing Zarr v2 datatypes and the bytes codec decoding operation are
