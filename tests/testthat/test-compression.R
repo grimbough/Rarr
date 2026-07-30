@@ -51,8 +51,8 @@ test_that("error when setting up compressors with invalid level", {
     use_blosc(clevel = 30),
     "`clevel` value must be an integer between 0 and 9"
   )
-  expect_error(
+  expect_warning(
     use_zstd(level = 30),
-    "`level` value must be an integer between 0 and 22"
+    "`level` value is ignored"
   )
 })
