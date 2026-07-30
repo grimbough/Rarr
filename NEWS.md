@@ -22,6 +22,16 @@
   `write_zarr_array()`/ `create_empty_zarr_array()` or `write_zarr_group()`.
   * `create_empty_zarr_array()` (and thus `write_zarr_array()`) fail if
   attributes already exist at the target location.
+* ZSTD compression and decompression now relies on base R `memCompress()` and
+  `memDecompress()` functions. The bundled ZSTD library and the custom ZSTD
+  compression/decompression of R objects code will be removed in a future 
+  version of this package. Please get in touch if your R installation does
+  not come with ZSTD support and you rely on our custom implementation.
+* User-specified compression levels are now ignored when writing. This change
+  is necessary to eventually enable writing on S3, and writing sharded arrays.
+  It allows results in better speed performance when writing.
+  A patch will be provided to base R to enable custom user-specified 
+  compression levels again in the future.
 
 ## New features
 
