@@ -93,8 +93,8 @@
   further optimizations which now only need to take place in a single function.
 * Some code duplication has been removed by moving metadata file existence in
   the lower-level shared utilities `.read_array_metadata()` and 
-  `.read_consolidated_metadata()`. While this is still discouraged, this also
-  facilitates re-use of the internal functions in other packages 
+  `read_zarr_consolidated_metadata()`. While this is still discouraged, this 
+  also facilitates re-use of the internal functions in other packages 
   (e.g., ZarrArray).
 * Parsing Zarr v2 datatypes and the bytes codec decoding operation are now 
   handled internally by the new 
