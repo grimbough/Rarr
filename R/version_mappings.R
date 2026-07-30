@@ -137,3 +137,66 @@
     paste0(base_type, 8L * nbytes)
   )
 }
+
+.convert_consolidated_metadata_version <- function(
+  zmeta,
+  version_from,
+  version_to
+) {
+  if (version_from != 2L || version_to != 3L) {
+    # nocov start
+    stop(
+      "Only conversion from version 2 to version 3 is supported.",
+      call. = FALSE
+    )
+    # nocov end
+  }
+
+  arrays <- names(zmeta)[endsWith(
+    names(zmeta),
+    "/.zarray"
+  )]
+  groups <- names(zmeta)[endsWith(
+    names(zmeta),
+    "/.zgroup"
+  )]
+
+  res <- list()
+
+  for (a in arrays) {
+    array_name <- dirname(a)
+
+    # Metadata (.zarray)
+    meta <- zmeta[[a]]
+    meta$datatype <- parse_npy_datatype(meta$dtype)
+    meta <- .convert_metadata_version(
+      meta,
+      version_from = 2L,
+      version_to = 3L
+    )
+    meta$dt <- NULL
+
+    # Attributes (.zattrs)
+    attrs <- zmeta[[file.path(array_name, ".zattrs")]]
+    meta$attributes <- attrs
+
+    res[[array_name]] <- meta
+  }
+
+  for (g in groups) {
+    group_name <- dirname(g)
+
+    # Metadata (.zgroup)
+    meta <- zmeta[[g]]
+    meta$node_type <- "group"
+    meta$zarr_format <- 2L
+
+    # Attributes (.zattrs)
+    attrs <- zmeta[[file.path(group_name, ".zattrs")]]
+    meta$attributes <- attrs
+
+    res[[group_name]] <- meta
+  }
+
+  return(res)
+}

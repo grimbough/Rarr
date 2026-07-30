@@ -61,25 +61,19 @@ zarr_overview <- function(
   )
   if (!is.null(dot_zmeta)) {
     is_array <- vapply(
-      dot_zmeta$metadata,
-      function(x) !is.null(x$node_type) && x$node_type == "array",
+      dot_zmeta,
+      function(x) x$node_type == "array",
       FUN.VALUE = logical(1L)
     )
-    arrays <- names(dot_zmeta$metadata)[is_array]
+    arrays <- names(dot_zmeta)[is_array]
     tmp <- lapply(
       arrays,
       FUN = function(x) {
-        if (endsWith(x, "/.zarray")) {
-          v2_attrs <- sub(".zarray", ".zattrs", x, fixed = TRUE)
-          has_attrs <- length(dot_zmeta$metadata[[v2_attrs]]) > 0L
-        } else {
-          has_attrs <- length(dot_zmeta$metadata[[x]]$attributes) > 0L
-        }
         .rbind_array_metadata(
           array_name = x,
-          metadata = dot_zmeta$metadata,
+          metadata = dot_zmeta,
           zarr_array_path = zarr_array_path,
-          has_attrs = has_attrs
+          has_attrs = length(dot_zmeta[[x]]$attributes) > 0L
         )
       }
     )
@@ -129,7 +123,6 @@ zarr_overview <- function(
 ) {
   if (array_name %in% names(metadata)) {
     array_metadata <- metadata[[array_name]]
-    array_name <- dirname(array_name)
   } else {
     array_metadata <- metadata
   }
@@ -542,25 +535,16 @@ zarr_overview <- function(
     if (zmeta$node_type == "array") {
       return(NULL)
     }
-    zmeta <- zmeta$consolidated_metadata
+    zmeta <- zmeta$consolidated_metadata$metadata
   } else {
-    arrays <- names(zmeta$metadata)[endsWith(
-      names(zmeta$metadata),
-      "/.zarray"
-    )]
-    zmeta$metadata[arrays] <- lapply(
-      zmeta$metadata[arrays],
-      function(metadata) {
-        metadata$datatype <- parse_npy_datatype(metadata$dtype)
-        .convert_metadata_version(
-          metadata,
-          version_from = 2L,
-          version_to = 3L
-        )
-      }
+    zmeta <- .convert_consolidated_metadata_version(
+      zmeta$metadata,
+      2L,
+      3L
     )
   }
-  if (length(zmeta$metadata) == 0L) {
+
+  if (length(zmeta) == 0L) {
     warning(
       "The consolidated metadata file was found but was empty. ",
       "Consider filling it with `zarr_consolidate_metadata()`.",
