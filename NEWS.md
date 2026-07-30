@@ -42,6 +42,8 @@
   whether each array has associated attributes.
 * A new `write_zarr_group()` function is available, based on a request and
   initial draft from Artür Manukyan in #18.
+* The `read_zarr_consolidated_metadata()` function is now exported, fulfilling
+  the request from Sharla Gelfand in #116.
 
 ## Minor improvements
 
