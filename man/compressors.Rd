@@ -23,7 +23,7 @@ use_zlib(level = 6L)
 
 use_gzip(level = 6L)
 
-use_bz2(level = 6L)
+use_bz2(level = 9L)
 
 use_lzma(level = 9L)
 
