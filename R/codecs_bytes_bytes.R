@@ -91,7 +91,7 @@ codec_lz4_encode <- function(bytes, ...) {
   )
 }
 
-codec_zstd_decode <- function(bytes, ...) {
+codec_zstd_custom_decode <- function(bytes, ...) {
   .Call(
     "decompress_chunk_ZSTD",
     bytes,
@@ -99,7 +99,7 @@ codec_zstd_decode <- function(bytes, ...) {
   )
 }
 
-codec_zstd_encode <- function(bytes, ...) {
+codec_zstd_custom_encode <- function(bytes, ...) {
   compressor_config <- list(...)
   .Call(
     "compress_chunk_ZSTD",
@@ -107,4 +107,12 @@ codec_zstd_encode <- function(bytes, ...) {
     as.integer(compressor_config$level),
     PACKAGE = "Rarr"
   )
+}
+
+codec_zstd_base_decode <- function(bytes, ...) {
+  memDecompress(bytes, type = "zstd", asChar = FALSE)
+}
+
+codec_zstd_base_encode <- function(bytes, ...) {
+  memCompress(bytes, type = "zstd")
 }
