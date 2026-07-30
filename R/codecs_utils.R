@@ -75,9 +75,31 @@
       candidate_codec <- switch(
         candidate_codec,
         "numcodecs.lz4" = "lz4",
+        "zstd" = if ("zstd" %in% names(extSoftVersion())) {
+          "zstd_base"
+        } else {
+          "zstd_custom"
+        },
         candidate_codec
       )
-      func_name <- paste("codec", candidate_codec, operation, sep = "_")
+      if (candidate_codec == "zstd_custom") {
+        warning(
+          "Rarr now relies on the base R memCompress() and memDecompress() ",
+          "functions for zstd with the expectation it is available everywhere. ",
+          "If you are seeing this warning, it means your R installation does ",
+          "not have zstd support. Please report at ",
+          "https://github.com/Huber-group-EMBL/Rarr/issues.",
+          "If no reports are received, this support will be removed in a ",
+          "future release.",
+          call. = FALSE
+        )
+      }
+      func_name <- paste(
+        "codec",
+        candidate_codec,
+        operation,
+        sep = "_"
+      )
       bytes_bytes_env[[candidate_codec]] <- eval(bquote(function(bytes) {
         do.call(.(func_name), c(list(bytes), .(cfg)))
       }))
