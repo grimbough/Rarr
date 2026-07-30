@@ -84,7 +84,10 @@
         },
         candidate_codec
       )
-      if (candidate_codec == "zstd_custom") {
+      if (
+        candidate_codec == "zstd_custom" &&
+          !identical(Sys.getenv("OLDREL_TESTS"), "true")
+      ) {
         warning(
           "Rarr now relies on the base R memCompress() and memDecompress() ",
           "functions for zstd with the expectation it is available everywhere. ",
