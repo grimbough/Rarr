@@ -2349,7 +2349,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 3
+#serial 4
 
 
 
@@ -2391,7 +2391,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 #   and this notice are preserved.  This file is offered as-is, without any
 #   warranty.
 
-#serial 6
+#serial 11
 
 
 
@@ -3631,9 +3631,6 @@ printf "%s\n" "$as_me: Using system Zstd library" >&6;}
 
 fi
 
-
-
-
 ##############################
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: configuring the BLOSC filter..." >&5
@@ -3718,15 +3715,18 @@ printf "%s\n" "$as_me: compiling bundled BLOSC library" >&6;}
 esac
 
   ## see if -msse2 is a supported flag
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -msse2" >&5
-printf %s "checking whether C compiler accepts -msse2... " >&6; }
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the C compiler accepts -msse2" >&5
+printf %s "checking whether the C compiler accepts -msse2... " >&6; }
 if test ${ax_cv_check_cflags___msse2+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
 
   ax_check_save_flags=$CFLAGS
-  CFLAGS="$CFLAGS  -msse2"
+  if test x"$GCC" = xyes ; then
+    add_gnu_werror="-Werror"
+  fi
+  CFLAGS="$CFLAGS  -msse2 $add_gnu_werror"
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3765,15 +3765,18 @@ printf "%s\n" "$as_me: Bioc build machine; disabling MAVX2" >&6;}
     MAVX2=false
   else
     ## see if -mavx2 is a supported flag
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -mavx2" >&5
-printf %s "checking whether C compiler accepts -mavx2... " >&6; }
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the C compiler accepts -mavx2" >&5
+printf %s "checking whether the C compiler accepts -mavx2... " >&6; }
 if test ${ax_cv_check_cflags___mavx2+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
 
   ax_check_save_flags=$CFLAGS
-  CFLAGS="$CFLAGS  -mavx2"
+  if test x"$GCC" = xyes ; then
+    add_gnu_werror="-Werror"
+  fi
+  CFLAGS="$CFLAGS  -mavx2 $add_gnu_werror"
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3881,6 +3884,12 @@ fi
 fi
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ax_cv_gcc_check_x86_cpu_init" >&5
 printf "%s\n" "$ax_cv_gcc_check_x86_cpu_init" >&6; }
+  ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
   if test "X$ax_cv_gcc_check_x86_cpu_init" = "Xno"
 then :
   as_fn_error $? "Need GCC to support X86 CPU features tests" "$LINENO" 5
