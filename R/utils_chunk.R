@@ -1,10 +1,3 @@
-.get_chunk_size <- function(chunk_dim, datatype) {
-  # Max size of an uncompressed chunk.
-  # This is faster than using file.size() because it avoids a system call.
-  return(prod(c(chunk_dim, datatype$nbytes, 8L)))
-}
-
-
 .create_chunk_names <- function(chunk_indices, metadata) {
   # In the DelayedArray framework, we can have integer(0) indices
   # https://github.com/Huber-group-EMBL/Rarr/issues/112.

@@ -114,8 +114,6 @@ read_data <- function(
   chunk_exists <- .store_check_exist(zarr_array_path, chunk_names, s3_client)
   existing_idx <- which(chunk_exists)
 
-  max_chunk_size <- .get_chunk_size(chunk_dim, metadata$datatype)
-
   warnings <- list()
   ## hopefully we can eventually do this in parallel
   chunk_selections <- withCallingHandlers(
@@ -131,8 +129,7 @@ read_data <- function(
           chunk_dim = chunk_dim,
           s3_client = s3_client,
           s3_bucket = bucket,
-          chunk_positions = chunk_positions,
-          chunk_size = max_chunk_size
+          chunk_positions = chunk_positions
         )
       }
     ),
@@ -178,8 +175,7 @@ read_data <- function(
   chunk_dim,
   s3_client,
   s3_bucket,
-  chunk_positions,
-  chunk_size
+  chunk_positions
 ) {
   ## find elements to select from the chunk and what in the output we replace
   chunk_info <- chunk_positions[[chunk_name]]
@@ -194,7 +190,6 @@ read_data <- function(
 
   raw_chunk <- .store_get_bytes(
     path = current_chunk_path,
-    size = chunk_size,
     s3_client = s3_client,
     s3_bucket = s3_bucket
   )
