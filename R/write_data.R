@@ -439,6 +439,8 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   )
   chunk_names <- names(chunk_positions)
 
+  max_chunk_size <- .get_chunk_size(chunk_dim, metadata$datatype)
+
   ## only update the chunks that need to be
   ## TODO: maybe this can be done in parallel is bpmapply() ?
   res <- vapply(
@@ -448,6 +450,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     chunk_positions = chunk_positions,
     zarr_array_path = zarr_array_path,
     chunk_dim = chunk_dim,
+    chunk_size = max_chunk_size,
     metadata = metadata,
     FUN.VALUE = logical(1L)
   )
@@ -461,6 +464,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   zarr_array_path,
   chunk_positions,
   chunk_dim,
+  chunk_size,
   metadata
 ) {
   ## determine which elements of x are being used and where in this specific
@@ -471,12 +475,12 @@ update_zarr_array <- function(zarr_array_path, x, index) {
   idx_in_chunk <- chunk_info$index_in_chunk
 
   if (.store_check_exist(zarr_array_path, chunk_name, s3_client = NULL)) {
-    if (anyNA(metadata$datatype$nbytes)) {
-      size <- file.info(chunk_path)$size
-    } else {
-      size <- prod(c(chunk_dim, metadata$datatype$nbytes, 8L))
-    }
-    raw_chunk <- readBin(con = chunk_path, what = "raw", n = size)
+    raw_chunk <- .store_get_bytes(
+      path = chunk_path,
+      size = chunk_size,
+      s3_client = NULL,
+      s3_bucket = NULL
+    )
     chunk_in_mem <- read_chunk(
       chunk_bytes = raw_chunk,
       chunk_dim = chunk_dim,

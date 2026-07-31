@@ -114,6 +114,8 @@ read_data <- function(
   chunk_exists <- .store_check_exist(zarr_array_path, chunk_names, s3_client)
   existing_idx <- which(chunk_exists)
 
+  max_chunk_size <- .get_chunk_size(chunk_dim, metadata$datatype)
+
   warnings <- list()
   ## hopefully we can eventually do this in parallel
   chunk_selections <- withCallingHandlers(
@@ -129,7 +131,8 @@ read_data <- function(
           chunk_dim = chunk_dim,
           s3_client = s3_client,
           s3_bucket = bucket,
-          chunk_positions = chunk_positions
+          chunk_positions = chunk_positions,
+          chunk_size = max_chunk_size
         )
       }
     ),
@@ -175,7 +178,8 @@ read_data <- function(
   chunk_dim,
   s3_client,
   s3_bucket,
-  chunk_positions
+  chunk_positions,
+  chunk_size
 ) {
   ## find elements to select from the chunk and what in the output we replace
   chunk_info <- chunk_positions[[chunk_name]]
@@ -188,21 +192,12 @@ read_data <- function(
     message(current_chunk_path)
   }
 
-  if (is.null(s3_client)) {
-    if (anyNA(metadata$datatype$nbytes)) {
-      size <- file.info(current_chunk_path)$size
-    } else {
-      # Max size of an uncompressed chunk.
-      # This is faster than using file.size() because it avoids a system call.
-      size <- prod(c(chunk_dim, metadata$datatype$nbytes, 8L))
-    }
-    raw_chunk <- readBin(con = current_chunk_path, what = "raw", n = size)
-  } else {
-    raw_chunk <- s3_client$get_object(
-      Bucket = s3_bucket,
-      Key = current_chunk_path
-    )$Body
-  }
+  raw_chunk <- .store_get_bytes(
+    path = current_chunk_path,
+    size = chunk_size,
+    s3_client = s3_client,
+    s3_bucket = s3_bucket
+  )
 
   ## read this chunk
   chunk <- read_chunk(

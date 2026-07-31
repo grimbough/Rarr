@@ -79,6 +79,20 @@
   }
 }
 
+.store_get_bytes <- function(path, size, s3_client = NULL, s3_bucket = NULL) {
+  if (is.null(s3_client)) {
+    if (is.na(size)) {
+      size <- file.info(path)$size
+    }
+    readBin(con = path, what = "raw", n = size)
+  } else {
+    s3_client$get_object(
+      Bucket = s3_bucket,
+      Key = path
+    )$Body
+  }
+}
+
 #' Read a JSON file from local disk or S3
 #'
 #' @param path Full path (local or S3) to a JSON file.
