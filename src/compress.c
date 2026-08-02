@@ -16,8 +16,11 @@ SEXP compress_chunk_BLOSC(
   const int shuffle_mode = INTEGER(shuffle)[0];
   const size_t typesize = (size_t)INTEGER(type_size)[0];
   const size_t block_size = (size_t)INTEGER(blocksize)[0];
+
+  const size_t input_size = (size_t) Rf_xlength(input);
+  const size_t output_size = (size_t) input_size + BLOSC_MAX_OVERHEAD;
   
-  SEXP output = PROTECT(Rf_allocVector(RAWSXP, xlength(input)+BLOSC_MAX_OVERHEAD));
+  SEXP output = PROTECT(Rf_allocVector(RAWSXP, output_size));
   void *p_output = RAW(output);
 
   blosc_init();
@@ -27,10 +30,10 @@ SEXP compress_chunk_BLOSC(
     compression_level, 
     shuffle_mode, 
     typesize,
-    xlength(input), 
+    input_size, 
     p_input, 
     p_output, 
-    xlength(output)
+    output_size
   );
 
   if(dsize > 0) {
