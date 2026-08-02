@@ -17,7 +17,7 @@ SEXP compress_chunk_BLOSC(
   const size_t typesize = (size_t)INTEGER(type_size)[0];
   const size_t block_size = (size_t)INTEGER(blocksize)[0];
   
-  SEXP output = PROTECT(R_allocResizableVector(RAWSXP, xlength(input)+BLOSC_MAX_OVERHEAD));
+  SEXP output = PROTECT(Rf_allocVector(RAWSXP, xlength(input)+BLOSC_MAX_OVERHEAD));
   void *p_output = RAW(output);
 
   blosc_init();
@@ -35,7 +35,7 @@ SEXP compress_chunk_BLOSC(
 
   if(dsize > 0) {
     /* shrink our output buffer to contain only the compressed bytes */
-    R_resizeVector(output, dsize);
+    output = Rf_xlengthgets(output, dsize);
     UNPROTECT(1);
     return output;
   }
@@ -58,7 +58,7 @@ SEXP compress_chunk_LZ4(SEXP input) {
   SEXP output;
   int dsize;
   
-  output = PROTECT(R_allocResizableVector(RAWSXP, output_size));
+  output = PROTECT(Rf_allocVector(RAWSXP, output_size));
   p_output = RAW(output);
 
   dsize = LZ4_compress_default((char *)p_input, (char *)p_output, input_size, output_size);
@@ -68,7 +68,7 @@ SEXP compress_chunk_LZ4(SEXP input) {
   }
   
   /* shrink our output vector to include only the compressed bytes */
-  R_resizeVector(output, dsize);
+  output = Rf_xlengthgets(output, dsize);
 
   UNPROTECT(1);
   return output;
@@ -92,7 +92,7 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
   const size_t output_size = (size_t) ZSTD_compressBound(input_size);
   const int compressionLevel = INTEGER(compression_level)[0];
   
-  SEXP output = PROTECT(R_allocResizableVector(RAWSXP, output_size));
+  SEXP output = PROTECT(Rf_allocVector(RAWSXP, output_size));
   p_output = RAW(output);
   
   size_t dsize = ZSTD_compress(p_output, output_size, p_input, input_size, compressionLevel);
@@ -102,18 +102,8 @@ SEXP compress_chunk_ZSTD(SEXP input, SEXP compression_level) {
   }
   
   /* shrink our output vector to include only the compressed bytes */
-  R_resizeVector(output, dsize);
+  output = Rf_xlengthgets(output, dsize);
   
   UNPROTECT(1);
   return output;
 } 
-
-/* From https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Some-backports-1 */
-#if R_VERSION < R_Version(4, 6, 0)
-SEXP R_allocResizableVector(SEXPTYPE type, R_xlen_t maxlen) {
-  SEXP ret = Rf_allocVector(type, maxlen);
-  SET_TRUELENGTH(ret, maxlen);
-  SET_GROWABLE_BIT(ret);
-  return ret;
-}
-#endif
