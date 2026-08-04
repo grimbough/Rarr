@@ -20,22 +20,25 @@ SEXP codec_vlen_utf8_decode_c(SEXP input, SEXP chunk_dim) {
   /* Read nvalues (little-endian uint32) */
   uint32_t nvalues;
   memcpy(&nvalues, buf, 4);
-  size_t pos = 4;
 
   SEXP data = PROTECT(allocVector(STRSXP, (R_xlen_t)nvalues));
 
+  const unsigned char *pos = buf + 4;
+  const unsigned char *end = buf + buf_len;
+
   for (uint32_t i = 0; i < nvalues; i++) {
-    if (pos + 4 > (size_t)buf_len)
+
+    if (pos + 4 > end)
       error("vlen-utf8 buffer too short reading length of element %u", i);
 
     uint32_t nbytes;
-    memcpy(&nbytes, buf + pos, 4);
+    memcpy(&nbytes, pos, 4);
     pos += 4;
 
-    if (pos + nbytes > (size_t)buf_len)
+    if (pos + nbytes > end)
       error("vlen-utf8 buffer too short reading data of element %u", i);
 
-    SET_STRING_ELT(data, i, mkCharLenCE((const char *)(buf + pos), (int)nbytes, CE_UTF8));
+    SET_STRING_ELT(data, i, mkCharLenCE((const char *)pos, (int)nbytes, CE_UTF8));
     pos += nbytes;
   }
 
