@@ -406,7 +406,7 @@ contents is as expected.
     ## [25] Rcpp_1.1.2          R.oo_1.27.1         R.utils_2.13.0     
     ## [28] systemfonts_1.3.2   digest_0.6.39       R6_2.6.1           
     ## [31] curl_7.1.0          paws.common_0.8.10  paws.storage_0.10.0
-    ## [34] magrittr_2.0.5      R.methodsS3_1.8.2   bslib_0.11.0       
+    ## [34] magrittr_2.0.5      R.methodsS3_1.8.2   bslib_0.12.0       
     ## [37] tools_4.7.0         pkgdown_2.2.1       cachem_1.1.0       
     ## [40] desc_1.4.3
 
