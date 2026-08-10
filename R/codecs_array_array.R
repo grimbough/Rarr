@@ -9,8 +9,16 @@ codec_transpose_encode <- function(array, indices = seq_along(dim(array))) {
 }
 
 codec_transpose_decode <- function(array, indices = seq_along(dim(array))) {
-  dim(array) <- dim(array)[indices]
-  array <- aperm(array, indices)
+  final_dim <- dim(array)
+
+  if (sum(dim(array) > 1L) == 2L) {
+    array <- drop(array)
+    array <- t(array)
+    dim(array) <- final_dim
+  } else {
+    dim(array) <- dim(array)[indices]
+    array <- aperm(array, indices)
+  }
 
   return(array)
 }
