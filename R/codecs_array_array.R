@@ -12,22 +12,26 @@ codec_transpose_decode <- function(array, indices = seq_along(dim(array))) {
   # FIXME: we manually dispatch aperm() to t() but eventually, there should be
   # an aperm.matrix() method.
   # When this happens, we only have to handle the drop() case.
-
-  final_dim <- dim(array)
-
-  to_drop <- final_dim == 1L
+  to_drop <- dim(array) == 1L
   if (any(to_drop)) {
+    final_dim <- dim(array)
     array <- drop(array)
     indices <- order(indices[!to_drop])
   }
 
-  if (is.matrix(array) && all(indices == c(2L, 1L))) {
+  if (is.null(dim(array)) || length(dim(array)) < 2L) {
+    array <- array
+  } else if (is.matrix(array) && all(indices == c(2L, 1L))) {
+    dim(array) <- rev(dim(array))
     array <- t(array)
-    dim(array) <- final_dim
   } else {
     dim(array) <- dim(array)[indices]
     array <- aperm(array, indices)
   }
 
+  # Restore dropped dimensions
+  if (any(to_drop)) {
+    dim(array) <- final_dim
+  }
   return(array)
 }
