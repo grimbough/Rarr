@@ -11,6 +11,7 @@ codec_transpose_encode <- function(array, indices = seq_along(dim(array))) {
 codec_transpose_decode <- function(array, indices = seq_along(dim(array))) {
   # FIXME: we manually dispatch aperm() to t() but eventually, there should be
   # an aperm.matrix() method.
+  # https://bugs.r-project.org/show_bug.cgi?id=19133
   # When this happens, we only have to handle the drop() case.
   to_drop <- dim(array) == 1L
   if (any(to_drop)) {
