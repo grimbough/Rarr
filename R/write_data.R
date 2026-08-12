@@ -412,7 +412,7 @@ update_zarr_array <- function(zarr_array_path, x, index) {
     "unicode" = "character",
     NULL
   )
-  if (!identical(storage.mode(x), existing_storage)) {
+  if (storage.mode(x) != existing_storage) {
     stop("New data is not of the same type as the existing array.")
   }
 

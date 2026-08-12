@@ -142,7 +142,7 @@ read_data <- function(
     warning(w)
   }
 
-  if (length(chunk_selections) == 1L && identical(chunk_dim, lengths(index))) {
+  if (length(chunk_selections) == 1L && all(chunk_dim == lengths(index))) {
     # If the chunk shape is the same as the requested shape, we can just return the
     # single chunk that was read.
     # This saves us from having to allocate a new array and copy the chunk into it.
