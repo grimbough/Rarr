@@ -15,3 +15,20 @@ NULL
 `%notin%` <- function(x, table) {
   match(x, table, nomatch = 0L) == 0L
 }
+
+# Backport from R 4.7.0
+Partial <- function(f, ...) {
+  f <- match.fun(f)
+  args <- list(...)
+  function(...) {
+    do.call(f, c(args, list(...)))
+  }
+}
+
+Partial_with_splicing <- function(f, ...) {
+  f <- match.fun(f)
+  args <- rlang::list2(...)
+  function(...) {
+    do.call(f, c(args, list(...)))
+  }
+}

@@ -1,7 +1,7 @@
 #' @importFrom grumpy convert_bytes_to_array
 codec_bytes_decode <- function(
   input,
-  chunk_dim,
+  outer_chunk_dim,
   datatype,
   endian,
   ...
@@ -9,7 +9,7 @@ codec_bytes_decode <- function(
   convert_bytes_to_array(
     input,
     datatype$base_type,
-    chunk_dim,
+    outer_chunk_dim,
     datatype$nbytes,
     endian
   )
@@ -70,21 +70,21 @@ codec_bytes_encode <- function(input, datatype, endian) {
   return(raw_vlen_utf8)
 }
 
-`codec_vlen-utf8_decode` <- function(input, chunk_dim, ...) {
-  .Call("codec_vlen_utf8_decode_c", input, chunk_dim, PACKAGE = "Rarr")
+`codec_vlen-utf8_decode` <- function(input, outer_chunk_dim, ...) {
+  .Call("codec_vlen_utf8_decode_c", input, outer_chunk_dim, PACKAGE = "Rarr")
 }
 
 codec_sharding_indexed_decode <- function(
   input,
-  shard_dim,
+  outer_chunk_dim,
   datatype,
   fill_value,
   ...
 ) {
   config <- list(...)
   chunk_dim <- unlist(config$chunk_shape)
-  nb_dims <- length(shard_dim)
-  index_shape <- c(2L, shard_dim / chunk_dim)
+  nb_dims <- length(outer_chunk_dim)
+  index_shape <- c(2L, outer_chunk_dim / chunk_dim)
   index_length <- prod(index_shape)
   index_nbytes <- index_length * 8L
   names(config$index_codecs) <- vapply(
@@ -147,7 +147,7 @@ codec_sharding_indexed_decode <- function(
       )
     }
   )
-  shard <- array(fill_value, dim = shard_dim)
+  shard <- array(fill_value, dim = outer_chunk_dim)
   non_empty_coords <- which(
     asplit(index, 1L)[[2L]] > 0L,
     arr.ind = TRUE

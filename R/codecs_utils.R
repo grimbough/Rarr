@@ -49,12 +49,8 @@
     if (is.unsorted(cfg)) {
       array_array_env[["transpose"]] <- switch(
         operation,
-        "encode" = eval(bquote(function(x) {
-          codec_transpose_encode(x, .(cfg))
-        })),
-        "decode" = eval(bquote(function(x) {
-          codec_transpose_decode(x, .(cfg))
-        }))
+        "encode" = Partial(codec_transpose_encode, indices = cfg),
+        "decode" = Partial(codec_transpose_decode, indices = cfg)
       )
     }
   }
@@ -62,9 +58,10 @@
   for (candidate_codec in array_bytes_codecs) {
     cfg <- codecs[[candidate_codec]]$configuration %||% NA_character_
     func_name <- paste("codec", candidate_codec, operation, sep = "_")
-    array_bytes_env[[candidate_codec]] <- eval(bquote(function(...) {
-      do.call(.(func_name), c(list(...), .(cfg)))
-    }))
+    array_bytes_env[[candidate_codec]] <- Partial_with_splicing(
+      func_name,
+      !!!cfg
+    )
   }
 
   # Compressors
@@ -105,9 +102,10 @@
         operation,
         sep = "_"
       )
-      bytes_bytes_env[[candidate_codec]] <- eval(bquote(function(bytes) {
-        do.call(.(func_name), c(list(bytes), .(cfg)))
-      }))
+      bytes_bytes_env[[candidate_codec]] <- Partial_with_splicing(
+        func_name,
+        !!!cfg
+      )
     }
   }
 

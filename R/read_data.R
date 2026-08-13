@@ -239,10 +239,10 @@ read_chunk <- function(
   # Bytes -> Array codecs
   for (codec in decoders[["array_bytes"]]) {
     converted_chunk <- codec(
-      chunk_bytes,
-      chunk_dim,
-      datatype,
-      fill_value
+      input = chunk_bytes,
+      outer_chunk_dim = chunk_dim,
+      datatype = datatype,
+      fill_value = fill_value
     )
   }
   # Array -> Array codecs
