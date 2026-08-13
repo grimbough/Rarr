@@ -17,6 +17,13 @@
   array_array_codecs <- intersect(codecs_names, CODEC_ARRAY_ARRAY)
   array_bytes_codecs <- intersect(codecs_names, CODEC_ARRAY_BYTES)
 
+  if (length(array_bytes_codecs) != 1L) {
+    stop(
+      "A single 'bytes-array' codec must be provided",
+      call. = FALSE
+    )
+  }
+
   unsupported_codecs <- setdiff(
     codecs_names,
     c(
@@ -55,14 +62,13 @@
     }
   }
 
-  for (candidate_codec in array_bytes_codecs) {
-    cfg <- codecs[[candidate_codec]]$configuration %||% NA_character_
-    func_name <- paste("codec", candidate_codec, operation, sep = "_")
-    array_bytes_env[[candidate_codec]] <- Partial_with_splicing(
-      func_name,
-      !!!cfg
-    )
-  }
+  # No loop here since there is always a single array_bytes codec
+  cfg <- codecs[[array_bytes_codecs]]$configuration %||% NA_character_
+  func_name <- paste("codec", array_bytes_codecs, operation, sep = "_")
+  array_bytes_env[[array_bytes_codecs]] <- Partial_with_splicing(
+    func_name,
+    !!!cfg
+  )
 
   # Compressors
   for (candidate_codec in bytes_bytes_codecs) {
