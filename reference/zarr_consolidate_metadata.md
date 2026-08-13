@@ -178,10 +178,10 @@ zarr_consolidate_metadata(zarr_v2, action = "return")
 zarr_consolidate_metadata(zarr_v2, action = "write")
 zarr_overview(zarr_v2)
 #> Type: Group of Arrays
-#> Path: /tmp/Rtmp8JfRVW/file1e517db1d084.zarr
+#> Path: /tmp/RtmpbU2Nni/file1dc4d0bfc8f.zarr
 #> Arrays:
 #> ---
-#>   Path: /tmp/Rtmp8JfRVW/file1e517db1d084.zarr/array1
+#>   Path: /tmp/RtmpbU2Nni/file1dc4d0bfc8f.zarr/array1
 #>   Shape: 2 x 2
 #>   Chunk Shape: 1 x 2
 #>   No. of Chunks: 2 (2 x 1)
@@ -190,7 +190,7 @@ zarr_overview(zarr_v2)
 #>   Compressor: zstd
 #>   Attributes: yes
 #> ---
-#>   Path: /tmp/Rtmp8JfRVW/file1e517db1d084.zarr/array2
+#>   Path: /tmp/RtmpbU2Nni/file1dc4d0bfc8f.zarr/array2
 #>   Shape: 2 x 2
 #>   Chunk Shape: 1 x 2
 #>   No. of Chunks: 2 (2 x 1)
