@@ -3,12 +3,13 @@
 #' @param codecs A list containing the Zarr v3 codecs
 #' @param operation One of "encode" or "decode"
 #'
-#' @returns An list of 3 environments containing functions:
+#' @returns An list of 3 lists containing functions:
 #' - `bytes_bytes_codecs`: functions to encode/decode raw bytes
 #' - `array_array_codecs`: functions to encode/decode R arrays
 #' - `array_bytes_codecs`: functions to encode/decode between R arrays and raw bytes
 #'
 #' @keywords internal
+#' @noRd
 .configure_codecs <- function(codecs, operation = c("encode", "decode")) {
   codecs_names <- names(codecs)
   operation <- match.arg(operation)
