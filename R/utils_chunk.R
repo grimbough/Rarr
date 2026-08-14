@@ -1,8 +1,12 @@
 .create_chunk_names <- function(chunk_indices, metadata) {
-  # In the DelayedArray framework, we can have integer(0) indices
-  # https://github.com/Huber-group-EMBL/Rarr/issues/112.
   if (nrow(chunk_indices) == 0L) {
+    # In the DelayedArray framework, we can have integer(0) indices
+    # https://github.com/Huber-group-EMBL/Rarr/issues/112.
     return(character(0L))
+  }
+  if (metadata$zarr_format == 3L && identical(metadata$shape, 1L)) {
+    # Special case for scalar in v3
+    return("c")
   }
 
   dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
@@ -12,22 +16,11 @@
     rep("%s", ncol(chunk_indices)),
     collapse = dim_separator
   )
-  chunk_names <- do.call(sprintf, c(chunk_name_template, chunk_indices))
-
-  if (metadata[["zarr_format"]] == 3L) {
-    if (identical(metadata[["shape"]], 1L) && length(chunk_names) > 0L) {
-      chunk_names <- "c"
-    } else {
-      # In the DelayedArray framework, we can have integer(0) indices
-      # https://github.com/Huber-group-EMBL/Rarr/issues/112
-      chunk_names <- paste(
-        "c",
-        chunk_names,
-        sep = dim_separator,
-        recycle0 = TRUE
-      )
-    }
+  if (metadata$zarr_format == 3L) {
+    chunk_name_template <- paste("c", chunk_name_template, sep = dim_separator)
   }
+
+  chunk_names <- do.call(sprintf, c(chunk_name_template, chunk_indices))
 
   return(chunk_names)
 }
