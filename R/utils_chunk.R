@@ -7,13 +7,12 @@
 
   dim_separator <- metadata$chunk_key_encoding$configuration$separator %||% "/"
 
-  # This is faster than vapply()
-  chunk_names <- as.vector(apply(
-    chunk_indices,
-    1L,
-    paste,
+  # Faster and ready for https://github.com/zarr-developers/zarr-extensions/pull/69
+  chunk_name_template <- paste(
+    rep("%s", ncol(chunk_indices)),
     collapse = dim_separator
-  ))
+  )
+  chunk_names <- do.call(sprintf, c(chunk_name_template, chunk_indices))
 
   if (metadata[["zarr_format"]] == 3L) {
     if (identical(metadata[["shape"]], 1L) && length(chunk_names) > 0L) {
@@ -96,7 +95,7 @@
     index0 <- relist(index0, index)
   }
   chunk_keys <- do.call(expand.grid, lapply(per_dim, names))
-  key_strings <- .create_chunk_names(as.matrix(chunk_keys), metadata)
+  key_strings <- .create_chunk_names(chunk_keys, metadata)
   setNames(
     lapply(seq_along(key_strings), function(i) {
       positions <- mapply(
