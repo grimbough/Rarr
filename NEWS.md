@@ -54,6 +54,7 @@
   initial draft from Artür Manukyan in #18.
 * The `read_zarr_consolidated_metadata()` function is now exported, fulfilling
   the request from Sharla Gelfand in #116.
+* The new `bfloat16` data type is now supported for reading.
 
 ## Minor improvements
 
@@ -77,6 +78,7 @@
 * Performance has been improved for writing and in the case where the `index`
   argument in `read_zarr_array()` is a continuous sequence. One such example
   is when the entire array is read (`index` argument missing).
+* Performance has been improved when reading 
 
 ## Bug fixes
 
