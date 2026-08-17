@@ -45,6 +45,10 @@
   sharded arrays. It allows results in better speed performance when
   writing. A patch will be provided to base R to enable custom
   user-specified compression levels again in the future.
+- Functions related to the `DelayedArray` backend have been dropped
+  entirely after being deprecated in the previous release. To use the
+  `DelayedArray` backend, or lazy reading or Zarr datasets, look at the
+  `ZarrArray` package.
 
 ### New features
 
@@ -168,10 +172,7 @@
 
 ### Breaking changes
 
-- The DelayedArray backend
-  ([`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
-  and
-  [`ZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
+- The DelayedArray backend (`writeZarrArray()` and `ZarrArray()`
   functions) has been migrated to a separate, dedicated package. This
   reduces the number of dependencies from 37 to 24. This also greatly
   improves performance in for the standard case (when the DelayedArray
@@ -324,12 +325,11 @@
 
 - `.url_parse_other()` now accounts for port numbers in host name and
   colons in S3 buckets.
-- [`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
-  now allows writing character arrays, and no longer errors complaining
-  about null ‘nchar’ argument value. Default of ‘nchar’ is now `NULL`.
-- [`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
-  no longer silently and incorrectly fills the last rows/columns when
-  `dim` is not divisible by `chunk_dim`.
+- `writeZarrArray()` now allows writing character arrays, and no longer
+  errors complaining about null ‘nchar’ argument value. Default of
+  ‘nchar’ is now `NULL`.
+- `writeZarrArray()` no longer silently and incorrectly fills the last
+  rows/columns when `dim` is not divisible by `chunk_dim`.
 - The object name is no longer repeated (e.g., `name.zarrname.zarr`)
   when writing a Zarr array to a file in the current working directory.
 - Invalid URLs for examples with S3 storage in

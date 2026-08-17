@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.36</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.37</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,6 +55,7 @@
 </ul></li>
 <li>ZSTD compression and decompression now relies on base R <code><a href="https://rdrr.io/r/base/memCompress.html" class="external-link">memCompress()</a></code> and <code><a href="https://rdrr.io/r/base/memCompress.html" class="external-link">memDecompress()</a></code> functions. The bundled ZSTD library and the custom ZSTD compression/decompression of R objects code will be removed in a future version of this package. Please get in touch if your R installation does not come with ZSTD support and you rely on our custom implementation.</li>
 <li>User-specified compression levels are now ignored when writing. This change is necessary to eventually enable writing on S3, and writing sharded arrays. It allows results in better speed performance when writing. A patch will be provided to base R to enable custom user-specified compression levels again in the future.</li>
+<li>Functions related to the <code>DelayedArray</code> backend have been dropped entirely after being deprecated in the previous release. To use the <code>DelayedArray</code> backend, or lazy reading or Zarr datasets, look at the <code>ZarrArray</code> package.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-2-1">New features<a class="anchor" aria-label="anchor" href="#new-features-2-1"></a></h3>
@@ -108,7 +109,7 @@
 <h2 class="pkg-version" data-toc-text="1.99" id="rarr-199">Rarr 1.99<a class="anchor" aria-label="anchor" href="#rarr-199"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-1-99">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-99"></a></h3>
-<ul><li>The DelayedArray backend (<code><a href="../reference/ZarrArray-deprecated.html">writeZarrArray()</a></code> and <code><a href="../reference/ZarrArray-deprecated.html">ZarrArray()</a></code> functions) has been migrated to a separate, dedicated package. This reduces the number of dependencies from 37 to 24. This also greatly improves performance in for the standard case (when the DelayedArray backend is not used).</li>
+<ul><li>The DelayedArray backend (<code>writeZarrArray()</code> and <code>ZarrArray()</code> functions) has been migrated to a separate, dedicated package. This reduces the number of dependencies from 37 to 24. This also greatly improves performance in for the standard case (when the DelayedArray backend is not used).</li>
 <li>
 <code><a href="../reference/write_zarr_array.html">write_zarr_array()</a></code> now writes Zarr v3 by default. Writing Zarr v2 is still possible by explicitly setting the argument <code>zarr_version = 2</code>.</li>
 </ul></div>
@@ -205,9 +206,9 @@
 <ul><li>
 <code>.url_parse_other()</code> now accounts for port numbers in host name and colons in S3 buckets.</li>
 <li>
-<code><a href="../reference/ZarrArray-deprecated.html">writeZarrArray()</a></code> now allows writing character arrays, and no longer errors complaining about null ‘nchar’ argument value. Default of ‘nchar’ is now <code>NULL</code>.</li>
+<code>writeZarrArray()</code> now allows writing character arrays, and no longer errors complaining about null ‘nchar’ argument value. Default of ‘nchar’ is now <code>NULL</code>.</li>
 <li>
-<code><a href="../reference/ZarrArray-deprecated.html">writeZarrArray()</a></code> no longer silently and incorrectly fills the last rows/columns when <code>dim</code> is not divisible by <code>chunk_dim</code>.</li>
+<code>writeZarrArray()</code> no longer silently and incorrectly fills the last rows/columns when <code>dim</code> is not divisible by <code>chunk_dim</code>.</li>
 <li>The object name is no longer repeated (e.g., <code>name.zarrname.zarr</code>) when writing a Zarr array to a file in the current working directory.</li>
 <li>Invalid URLs for examples with S3 storage in <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code> and <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code> have been updated.</li>
 <li>

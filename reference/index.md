@@ -47,9 +47,3 @@
   [`use_lz4()`](https://huber-group-embl.github.io/Rarr/reference/compressors.md)
   [`use_zstd()`](https://huber-group-embl.github.io/Rarr/reference/compressors.md)
   : Define compression tool and settings
-
-## Deprecated functions
-
-- [`ZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
-  [`writeZarrArray()`](https://huber-group-embl.github.io/Rarr/reference/ZarrArray-deprecated.md)
-  **\[superseded\]** : Deprecated DelayedArray backend functions
