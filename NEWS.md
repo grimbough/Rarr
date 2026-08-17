@@ -32,6 +32,9 @@
   It allows results in better speed performance when writing.
   A patch will be provided to base R to enable custom user-specified 
   compression levels again in the future.
+* Functions related to the `DelayedArray` backend have been dropped entirely 
+  after being deprecated in the previous release. To use the `DelayedArray`
+  backend, or lazy reading or Zarr datasets, look at the `ZarrArray` package.
 
 ## New features
 
