@@ -54,6 +54,7 @@ datatype support.  It will be updated as progress is made.
 |`half` / `float16`   | &#x2714; / &#x274C; | (via `{grumpy}`) |
 |`single` / `float32` | &#x2714; / &#x2714; | (via `{grumpy}`) |
 |`double` / `float64` | &#x2714; / &#x2714; | (via `{grumpy}`) |
+|`bfloat16`           | &#x2714; / &#x274C; | |
 |`complex`            | &#x274C; / &#x274C; | |
 |`timedelta`          | &#x274C; / &#x274C; | |
 |`datetime`           | &#x274C; / &#x274C; | |
