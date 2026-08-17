@@ -25,7 +25,6 @@ Imports:
     curl,
     grumpy,
     jsonlite,
-    lifecycle,
     paws.storage,
     R.utils,
     rlang,
