@@ -80,6 +80,7 @@
   [`read_zarr_consolidated_metadata()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_consolidated_metadata.md)
   function is now exported, fulfilling the request from Sharla Gelfand
   in [\#116](https://github.com/Huber-group-EMBL/Rarr/issues/116).
+- The new `bfloat16` data type is now supported for reading.
 
 ### Minor improvements
 
@@ -108,6 +109,7 @@
   [`read_zarr_array()`](https://huber-group-embl.github.io/Rarr/reference/read_zarr_array.md)
   is a continuous sequence. One such example is when the entire array is
   read (`index` argument missing).
+- Performance has been improved when reading
 
 ### Bug fixes
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">Rarr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.35</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.36</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,6 +69,7 @@
 <code><a href="../reference/zarr_overview.html">zarr_overview()</a></code> now returns a new logical field <code>attributes</code> indicating whether each array has associated attributes.</li>
 <li>A new <code><a href="../reference/write_zarr_group.html">write_zarr_group()</a></code> function is available, based on a request and initial draft from Artür Manukyan in <a href="https://github.com/Huber-group-EMBL/Rarr/issues/18" class="external-link">#18</a>.</li>
 <li>The <code><a href="../reference/read_zarr_consolidated_metadata.html">read_zarr_consolidated_metadata()</a></code> function is now exported, fulfilling the request from Sharla Gelfand in <a href="https://github.com/Huber-group-EMBL/Rarr/issues/116" class="external-link">#116</a>.</li>
+<li>The new <code>bfloat16</code> data type is now supported for reading.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-2-1">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-2-1"></a></h3>
@@ -81,6 +82,7 @@
 <li>Chunks larger than the whole array in one or multiple dimensions are now permitted, based on a request by Artür Manukyan.</li>
 <li>0 is now a valid, and the default, compression level for Zstd. In practice, it doesn’t have any effect because level 0 currently corresponds to level 3.</li>
 <li>Performance has been improved for writing and in the case where the <code>index</code> argument in <code><a href="../reference/read_zarr_array.html">read_zarr_array()</a></code> is a continuous sequence. One such example is when the entire array is read (<code>index</code> argument missing).</li>
+<li>Performance has been improved when reading</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-1"></a></h3>
