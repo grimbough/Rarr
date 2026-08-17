@@ -20,15 +20,21 @@ export(write_zarr_group)
 export(zarr_consolidate_metadata)
 export(zarr_overview)
 importFrom(R.utils,getAbsolutePath)
-importFrom(grumpy,convert_bytes_to_array)
-importFrom(grumpy,parse_npy_datatype)
-importFrom(jsonlite,fromJSON)
-importFrom(jsonlite,read_json)
-importFrom(jsonlite,write_json)
+importFrom(grumpy,
+  convert_bytes_to_array,
+  parse_npy_datatype
+)
+importFrom(jsonlite,
+  fromJSON,
+  read_json,
+  write_json
+)
 importFrom(lifecycle,deprecate_warn)
 importFrom(paws.storage,s3)
 importFrom(stats,setNames)
-importFrom(utils,modifyList)
-importFrom(utils,relist)
-importFrom(utils,tail)
+importFrom(utils,
+  modifyList,
+  relist,
+  tail
+)
 useDynLib(Rarr)
