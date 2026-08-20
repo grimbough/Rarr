@@ -59,6 +59,8 @@
     chunk_dim <- as.integer(chunk_dim)
   }
 
+  # FIXME:
+  # - make this work for compat sequence that don't start at one
   if (
     all(vapply(index, is.compact, logical(1L))) &&
       all(vapply(index, min, integer(1L)) == 1L)
