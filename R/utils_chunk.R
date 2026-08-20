@@ -55,13 +55,10 @@
   metadata,
   chunk_dim = unlist(metadata$chunk_grid$configuration$chunk_shape)
 ) {
-  index0 <- lapply(index, reindex, from = 1L, to = 0L)
   if (!is.integer(chunk_dim)) {
     chunk_dim <- as.integer(chunk_dim)
   }
-  # FIXME:
-  # - make this work for compat sequence that don't start at one
-  # - fold the second step (index_in_chunk) here
+
   if (
     all(vapply(index, is.compact, logical(1L))) &&
       all(vapply(index, min, integer(1L)) == 1L)
@@ -80,31 +77,36 @@
       chunk_dim,
       SIMPLIFY = FALSE
     )
+    in_chunk <- lapply(per_dim, \(pd) lapply(pd, seq_along))
   } else {
-    index0 <- unlist(index0)
-    per_dim <- (index0 %/% rep(chunk_dim, times = lengths(index))) |>
-      relist(index) |>
-      lapply(function(x) split(seq_along(x), x))
-    index0 <- relist(index0, index)
+    flat0 <- unlist(index) - 1L
+    cs <- rep(chunk_dim, times = lengths(index))
+    id <- flat0 %/% cs
+    # We compute the remainder "manually" to avoid expensive %% call,
+    # when %/% did all the work already
+    rem <- flat0 - id * cs
+    per_dim <- relist(id, index) |>
+      lapply(\(x) split(seq_along(x), x))
+    in_chunk <- mapply(
+      \(rem, pd) lapply(pd, \(pos) rem[pos] + 1L),
+      relist(rem, index),
+      per_dim,
+      SIMPLIFY = FALSE
+    )
   }
+
   chunk_keys <- do.call(expand.grid, lapply(per_dim, names))
   key_strings <- .create_chunk_names(chunk_keys, metadata)
+  key_pos <- do.call(expand.grid, lapply(per_dim, seq_along))
+
+  # Transpose the list to get the result per chunk, rather than per dimension.
   setNames(
-    lapply(seq_along(key_strings), function(i) {
-      positions <- mapply(
-        \(d, k) d[[k]],
-        per_dim,
-        chunk_keys[i, ],
-        SIMPLIFY = FALSE
+    lapply(seq_len(nrow(key_pos)), \(i) {
+      k <- key_pos[i, ]
+      list(
+        positions = mapply(\(d, kk) d[[kk]], per_dim, k, SIMPLIFY = FALSE),
+        index_in_chunk = mapply(\(d, kk) d[[kk]], in_chunk, k, SIMPLIFY = FALSE)
       )
-      index_in_chunk <- mapply(
-        \(idx, pos, cs) reindex(idx[pos] %% cs, from = 0L, to = 1L),
-        index0,
-        positions,
-        chunk_dim,
-        SIMPLIFY = FALSE
-      )
-      list(positions = positions, index_in_chunk = index_in_chunk)
     }),
     key_strings
   )
