@@ -20,12 +20,10 @@ codec_transpose_decode <- function(array, indices = seq_along(dim(array))) {
     indices <- order(indices[!to_drop])
   }
 
-  if (is.null(dim(array)) || length(dim(array)) < 2L) {
-    array <- array
-  } else if (is.matrix(array) && all(indices == c(2L, 1L))) {
+  if (is.matrix(array) && all(indices == c(2L, 1L))) {
     dim(array) <- rev(dim(array))
     array <- t(array)
-  } else {
+  } else if (sum(!to_drop) >= 3L) {
     dim(array) <- dim(array)[indices]
     array <- aperm(array, indices)
   }
