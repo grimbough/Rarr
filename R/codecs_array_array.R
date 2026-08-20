@@ -14,6 +14,14 @@ codec_transpose_decode <- function(array, indices = seq_along(dim(array))) {
   # https://bugs.r-project.org/show_bug.cgi?id=19133
   # When this happens, we only have to handle the drop() case.
   to_drop <- dim(array) == 1L
+
+  if (sum(!to_drop) < 2L) {
+    # "1D-like" array.
+    # R transpose would turn into a column vector, but since Zarr transpose
+    # keeps the shape, that's actually identity.
+    return(array)
+  }
+
   if (any(to_drop)) {
     final_dim <- dim(array)
     array <- drop(array)
@@ -23,7 +31,7 @@ codec_transpose_decode <- function(array, indices = seq_along(dim(array))) {
   if (is.matrix(array) && all(indices == c(2L, 1L))) {
     dim(array) <- rev(dim(array))
     array <- t(array)
-  } else if (sum(!to_drop) >= 3L) {
+  } else {
     dim(array) <- dim(array)[indices]
     array <- aperm(array, indices)
   }
