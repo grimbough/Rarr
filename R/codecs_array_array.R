@@ -30,7 +30,7 @@ codec_transpose_decode <- function(array, indices = seq_along(dim(array))) {
 
   if (is.matrix(array) && all(indices == c(2L, 1L))) {
     dim(array) <- rev(dim(array))
-    array <- t(array)
+    array <- .Call("fast_transpose", array, PACKAGE = "Rarr")
   } else {
     dim(array) <- dim(array)[indices]
     array <- aperm(array, indices)
