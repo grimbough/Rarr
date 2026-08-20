@@ -62,7 +62,11 @@
   # FIXME:
   # - make this work for compat sequence that don't start at one
   if (
-    all(vapply(index, is.compact, logical(1L))) &&
+    all(vapply(
+      index,
+      function(x) is.compact(x) || is.scalar(x),
+      logical(1L)
+    )) &&
       all(vapply(index, min, integer(1L)) == 1L)
   ) {
     per_dim <- mapply(

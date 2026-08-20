@@ -1,6 +1,9 @@
 is.compact <- function(x) {
   .Call("is_compact", x, PACKAGE = "Rarr")
 }
+is.scalar <- function(x) {
+  is.atomic(x) && length(x) == 1L
+}
 
 reindex <- function(x, from = 1L, to = 0L) {
   offset <- from - to
