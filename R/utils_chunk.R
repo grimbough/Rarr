@@ -79,7 +79,7 @@
     )
     in_chunk <- lapply(per_dim, \(pd) lapply(pd, seq_along))
   } else {
-    flat0 <- unlist(index) - 1L
+    flat0 <- unlist(lapply(index, reindex, from = 1L, to = 0L))
     cs <- rep(chunk_dim, times = lengths(index))
     id <- flat0 %/% cs
     # We compute the remainder "manually" to avoid expensive %% call,
