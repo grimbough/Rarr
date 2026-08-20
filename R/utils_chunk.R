@@ -89,8 +89,8 @@
     per_dim <- relist(id, index) |>
       lapply(\(x) split(seq_along(x), x))
     in_chunk <- mapply(
-      \(rem, pd) lapply(pd, \(pos) rem[pos] + 1L),
-      relist(rem, index),
+      \(rem, pd) lapply(pd, \(pos) rem[pos]),
+      relist(rem + 1L, index),
       per_dim,
       SIMPLIFY = FALSE
     )
