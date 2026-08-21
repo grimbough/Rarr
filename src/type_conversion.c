@@ -8,7 +8,7 @@ SEXP type_convert_bfloat(SEXP input, SEXP n_bytes, SEXP dims, SEXP endian) {
   const R_xlen_t length = xlength(input);
 
   const bool big_endian = strcmp(CHAR(STRING_ELT(endian, 0)), "big") == 0;
-  const uint8_t *raw = (const uint8_t *)RAW(input);
+  const uint8_t *raw = (const uint8_t *)RAW_RO(input);
   const R_xlen_t data_length = length / nbytes;
 
   SEXP data = PROTECT(allocVector(REALSXP, data_length));

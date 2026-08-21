@@ -3,7 +3,7 @@
 
 SEXP decompress_chunk_BLOSC(SEXP input) {
   
-  const void* p_input = RAW(input);
+  const void* p_input = RAW_RO(input);
   void *p_output;
   size_t cbytes, blocksize, outbuf_size;
   SEXP output;
@@ -23,7 +23,7 @@ SEXP decompress_chunk_BLOSC(SEXP input) {
 
 SEXP decompress_chunk_LZ4(SEXP input, SEXP _outbuffersize) {
   
-  const void* p_input = RAW(input);
+  const void* p_input = RAW_RO(input);
   void* p_output;
   int outbuf_size;
   const int compressed_size = (int) xlength(input);
@@ -55,7 +55,7 @@ ZSTDLIB_API size_t ZSTD_decompress( void* dst, size_t dstCapacity,
 
 SEXP decompress_chunk_ZSTD(SEXP input) {
   
-  const void* p_input = RAW(input);
+  const void* p_input = RAW_RO(input);
   void* p_output;
   const size_t compressed_size = (size_t) xlength(input);
   SEXP output;

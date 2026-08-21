@@ -11,7 +11,7 @@
  */
 SEXP codec_vlen_utf8_decode_c(SEXP input, SEXP chunk_dim) {
 
-  const unsigned char *buf = RAW(input);
+  const unsigned char *buf = RAW_RO(input);
   const R_xlen_t buf_len = xlength(input);
 
   if (buf_len < 4)
